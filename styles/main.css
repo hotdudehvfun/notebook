@@ -67,8 +67,8 @@ body {
   font-size: 1.3rem;
   text-transform: capitalize;
   text-align: center;
-  flex: 1;
   padding: 0.5rem;
+  width: -webkit-fill-available;
 }
 
 .list-with-title:active {
@@ -1086,4 +1086,16 @@ input:checked + .slider:before {
 {
   color: mediumpurple;
   font-size: 2rem;
+}
+
+
+.flex-row {
+    display:flex;
+    flex-direction:row;
+}
+.align-center{
+    align-items: center;
+}
+.justify-space-between{
+justify-content: space-between;
 }
