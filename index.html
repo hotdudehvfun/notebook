@@ -28,9 +28,15 @@
     <script src="scripts/storage.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dark.css">
+    
 </head>
 
-<body ng-app="myapp" ng-controller='myctrl' ng-swipe-right="handleBackButton()">
+<body 
+    ng-app="myapp" 
+    ng-controller='myctrl' 
+    ng-swipe-right="handleBackButton()"
+    data-theme="{{theme}}">
     <div class="main-container">
         <div class="app-container">
 
@@ -47,7 +53,6 @@
                     class="material-icons"
                     ng-click="toggle_list_more_options_visibility()"
                     ng-bind="nav_more_vert_icon"
-                    ng-show="show_nav_more_vert_button"
                     ></i>
                 </div>
 
@@ -84,8 +89,7 @@
                 <!-- lists -->
                 <Div id="view-lists" style="display: block;" ng-hide="search.length>0">
                     <div ng-repeat="(key,value) in listArray">
-                        <div class="list-panel-item" ng-click="loadList($index)"
-                            ng-style="{borderColor: value.borderColor}">
+                        <div class="list-panel-item" ng-click="loadList($index)">
                             <div class="list-panel-item-title">
                                 <i class="material-icons">book</i>
                                 <article class="selected" ng-bind="value.title"></article>
@@ -202,17 +206,27 @@
                 <span id="total_size" ng-bind="app_size_value"></span>
             </div>
     
-            <div id="change-theme-button" class="task-more-options-item">
-                <i class="material-icons">toggle_off</i>
-                <span>Switch Theme</span>
+            <div id="change-theme-button" class="task-more-options-item" ng-click="toggle_theme()">
+                <i class="material-icons">{{theme_menu_icon}}</i>
+                <span>{{theme_menu_text}}</span>
             </div>
     
-            <div ng-click="purgeList()" id="remove-all-tasks-button" class="task-more-options-item">
+            <div 
+            ng-click="purgeList()" 
+            id="remove-all-tasks-button" 
+            class="task-more-options-item"
+            ng-show="show_purge_list_option"
+            >
                 <i class="material-icons">opacity</i>
                 <span>Empty List</span>
             </div>
     
-            <div id="delete-list-ok" class="task-more-options-item text-red-500" ng-click="handleDeleteList()">
+            <div 
+            id="delete-list-ok" 
+            class="task-more-options-item text-red-500" 
+            ng-click="handleDeleteList()"
+            ng-show="show_delete_list_option"
+            >
                 <i class="material-icons">delete</i>
                 <span>Delete List!</span>
             </div>

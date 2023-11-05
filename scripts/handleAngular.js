@@ -37,6 +37,8 @@ app.controller('myctrl', function ($scope, $sce) {
       $scope.selectedListIndex = index;
       $scope.pageTitle = $scope.selectedListName;
       $scope.show_nav_more_vert_button = true
+      $scope.show_delete_list_option = true
+      $scope.show_purge_list_option = true
       console.log($scope.taskArray);
       
       //hide list view
@@ -68,7 +70,8 @@ app.controller('myctrl', function ($scope, $sce) {
     document.querySelector("#view-list-items").style.display = "none";
     $scope.search="";
     $scope.pageTitle = $scope.defaultPageTitle;
-    $scope.show_nav_more_vert_button = false
+    $scope.show_delete_list_option = false
+    $scope.show_purge_list_option = false
   }
 
   $scope.init_hammer_touch_events=function()
@@ -372,6 +375,24 @@ app.controller('myctrl', function ($scope, $sce) {
   }
 
 
+  $scope.toggle_theme=function()
+  {
+    if($scope.theme=="light")
+    {
+      //change to dark dark_mode
+      $scope.theme = "dark"
+      $scope.theme_menu_text = "Turn On Light Theme"
+      $scope.theme_menu_icon = "light_mode"
+    }else{
+      //change to light_mode
+      $scope.theme = "light"
+      $scope.theme_menu_text = "Turn On Dark Theme"
+      $scope.theme_menu_icon = "dark_mode"
+    }
+    $scope.toggle_list_more_options_visibility()
+  }
+
+
   //define all funcions above init
   $scope.init = function ()
   {
@@ -379,11 +400,14 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.moveInProgress=false
     $scope.mergeInProgress=false
     $scope.show_list_more_options = false
-    $scope.show_task_more_options = false
-    
+    $scope.show_task_more_options = false    
     $scope.nav_more_vert_icon="more_vert"
     $scope.show_nav_more_vert_button = false
-
+    $scope.theme = "light"
+    $scope.theme_menu_text = "Turn On Dark Theme"
+    $scope.theme_menu_icon = "dark_mode"
+    $scope.show_delete_list_option = false
+    $scope.show_purge_list_option = false
     $scope.listArray = readData();
     if(patchApplied)
     {

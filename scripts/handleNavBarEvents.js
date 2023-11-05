@@ -69,10 +69,6 @@ handleRemoveAllTasks = () => {
     }
 }
 
-function handleDeleteList()
-{
-    
-}
 
 
 
