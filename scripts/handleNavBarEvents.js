@@ -4,7 +4,6 @@ addEventListeners = () => {
     viewMoreOptions();
     handleRemoveCompletedTasks();
     handleRemoveAllTasks();
-    handleDeleteList();
 }
 
 
