@@ -2,7 +2,7 @@
     "short_name": "Notebook",
     "name": "Notebook",
     "start_url": "/notebook/",
-    "background_color": "#3b82f6",
+    "background_color": "aliceblue",
     "scope": "/notebook/",
     "display": "standalone",
     "orientation": "portrait-primary",
@@ -10,7 +10,7 @@
     "description": "Notebook app by hotdudehvfun",
     "dir": "ltr",
     "lang": "en-US",
-    "theme_color": "#3b82f6",
+    "theme_color": "aliceblue",
     "icons": [
       {
         "src": "img/android/android-launchericon-512-512.png",
