@@ -132,7 +132,7 @@
             <!-- bottom panels -->
             <!-- PANEL 1: create new list -->
             <!-- show only when list view is in focus -->
-            <div id="add-new-task-with-new-list" class="nav-bar-panel visible" style="box-shadow: 1px 1px 3px #707070;" ng-show="defaultPageTitle==pageTitle">
+            <div id="add-new-task-with-new-list" class="nav-bar-panel visible" ng-show="defaultPageTitle==pageTitle">
                 <div style="display: flex;flex-direction: row;align-items: center;">
                     <i class="material-icons add_task_icon">book</i>
                     <input ng-keypress="checkIfEnterPressed($event)" class="add-new-list-title ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched" ng-model="newListName" ng-attr-placeholder="New NoteBook name..." placeholder="New NoteBook name...">
