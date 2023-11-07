@@ -25,7 +25,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="scripts/hammer.js"></script>
-    <script src="scripts/storage.js"></script>
+    
+    <script src="scripts/class/List.js"></script>
+    <script src="scripts/class/Task.js"></script>
+    
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
@@ -44,8 +48,11 @@
             <div id="selected-list-info">
                 <!-- name and back button -->
                 <div style="display: flex;flex-direction: row;align-items: center;">
-                    <i id="back-button" class="material-icons" ng-click="handleBackButton();"
-                        ng-hide="defaultPageTitle==pageTitle" ng-show="search.length>0">arrow_back</i>
+                    <i 
+                    id="back-button" 
+                    class="material-icons" 
+                    ng-click="handleBackButton()"
+                    ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</i>
                     <div class="list-with-title" id="selectedList" style="display: block;" ng-bind="pageTitle"></div>
                     <i 
                     id="open-more-panel" 
@@ -87,7 +94,9 @@
                 <!-- search results end-->
 
                 <!-- lists -->
-                <Div id="view-lists" style="display: block;" ng-hide="search.length>0">
+                <Div 
+                ng-hide="search.length>0 || selectedListIndex>=0"
+                >
                     <div ng-repeat="(key,value) in listArray">
                         <div class="list-panel-item" ng-click="loadList($index)">
                             <div class="list-panel-item-title">
@@ -100,7 +109,10 @@
                 </Div>
 
                 <!-- view tasks  -->
-                <Div id="view-list-items" style="display: none;" ng-hide="search.length>0">
+                <Div 
+                id="view-list-items"
+                ng-hide="search.length>0 || selectedListIndex==-1"
+                >
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
                         <div class="task" ng-class="{completed: value.isTaskCompleted}">
@@ -215,8 +227,7 @@
             ng-click="purgeList()" 
             id="remove-all-tasks-button" 
             class="task-more-options-item"
-            ng-show="show_purge_list_option"
-            >
+            ng-show="show_purge_list_option">
                 <i class="material-icons">opacity</i>
                 <span>Empty List</span>
             </div>

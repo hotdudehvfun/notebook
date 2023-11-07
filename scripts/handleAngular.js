@@ -1,8 +1,7 @@
 let app = angular.module("myapp", []);
 //use this to create new properties on previous version
 let patchApplied=false;
-console.log("version:3.1.0")
-
+console.log("app version:3.1.0")
 app.filter("sanitize", ['$sce', function($sce)
 {
   return function(htmlCode){
@@ -11,7 +10,6 @@ app.filter("sanitize", ['$sce', function($sce)
 }]);
 
 app.controller('myctrl', function ($scope, $sce) {
-
   //for searching made easy
   $scope.getTasksOnly = function()
   {
@@ -31,22 +29,13 @@ app.controller('myctrl', function ($scope, $sce) {
     // a valid list is selected
     if(index>=0)
     {
-     
       $scope.taskArray = $scope.listArray[index].taskArray;
       $scope.selectedListName = $scope.listArray[index].title;
       $scope.selectedListIndex = index;
       $scope.pageTitle = $scope.selectedListName;
-      $scope.show_nav_more_vert_button = true
       $scope.show_delete_list_option = true
       $scope.show_purge_list_option = true
       console.log($scope.taskArray);
-      
-      //hide list view
-      document.querySelector("#view-lists").style.display = "none";
-      
-      //show its content
-      document.querySelector("#view-list-items").style.display = "block";
-      
       if($scope.moveInProgress)
       {
         //save task to move
@@ -66,12 +55,11 @@ app.controller('myctrl', function ($scope, $sce) {
   $scope.handleBackButton = function () {
     //on back button show notebooks
     //hide notes
-    document.querySelector("#view-lists").style.display = "block";
-    document.querySelector("#view-list-items").style.display = "none";
     $scope.search="";
     $scope.pageTitle = $scope.defaultPageTitle;
     $scope.show_delete_list_option = false
     $scope.show_purge_list_option = false
+    $scope.selectedListIndex = -1
   }
 
   $scope.init_hammer_touch_events=function()
@@ -100,7 +88,8 @@ app.controller('myctrl', function ($scope, $sce) {
     if ($scope.newListName.length > 1)
     {
       let newList = new List($scope.newListName);
-      $scope.selectedListIndex = $scope.listArray.push(newList) - 1;
+      // $scope.selectedListIndex = 
+      $scope.listArray.push(newList)
       showToast(`Notebook create:  ${newList.title}`);
       document.querySelector(".add-new-list-title").value=""
       $scope.saveData();
@@ -132,6 +121,10 @@ app.controller('myctrl', function ($scope, $sce) {
     localStorage.appData = json;
     //save selectedListIndex
     localStorage.selectedListIndex = $scope.selectedListIndex;
+
+    //save theme
+    localStorage.theme = $scope.theme
+    console.log("theme saved = ",localStorage.theme)
   }
 
   $scope.emptyList = handleNoTasksState();
@@ -390,9 +383,22 @@ app.controller('myctrl', function ($scope, $sce) {
       $scope.theme_menu_icon = "dark_mode"
     }
     $scope.toggle_list_more_options_visibility()
+    $scope.saveData()
   }
 
-
+  $scope.init_theme = function () {
+    const old_theme = localStorage.theme || "light";
+    $scope.theme = old_theme;
+  
+    if ($scope.theme === "light") {
+      $scope.theme_menu_text = "Turn On Dark Theme";
+      $scope.theme_menu_icon = "dark_mode";
+    } else {
+      $scope.theme_menu_text = "Turn On Light Theme";
+      $scope.theme_menu_icon = "light_mode";
+    }
+  };
+  
   //define all funcions above init
   $scope.init = function ()
   {
@@ -403,12 +409,16 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.show_task_more_options = false    
     $scope.nav_more_vert_icon="more_vert"
     $scope.show_nav_more_vert_button = false
-    $scope.theme = "light"
-    $scope.theme_menu_text = "Turn On Dark Theme"
-    $scope.theme_menu_icon = "dark_mode"
     $scope.show_delete_list_option = false
     $scope.show_purge_list_option = false
+    $scope.selectedListIndex = -1
+    
+    //read saved data
     $scope.listArray = readData();
+    
+    
+
+    
     if(patchApplied)
     {
       //if new property added to previous version
@@ -423,6 +433,10 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.taskI=-1;
     $scope.allTasks=$scope.getTasksOnly();
     $scope.init_hammer_touch_events()
+    
+    //default theme
+    $scope.init_theme()
+
   };
   
   $scope.init();
