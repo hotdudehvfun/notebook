@@ -325,6 +325,31 @@ app.controller('myctrl', function ($scope, $sce) {
     }   
   }
 
+  $scope.move_task=function(distance)
+  { 
+    // move completed tasks at end
+    if($scope.taskI!=undefined)
+    {
+      let key = $scope.taskI
+
+      if(key+distance<0)
+      {
+        showToast("Task already at top")
+      }else if(key+distance>=$scope.taskArray.length)
+      {
+        showToast("Task already at bottom")
+      }else{
+        let temp = $scope.taskArray[key + distance]
+        $scope.taskArray[key + distance] = $scope.taskArray[key]
+        $scope.taskArray[key] = temp
+        let str = distance<0?"Task moved up":"Task moved down";
+        showToast(str)
+      }
+      $scope.saveData();
+      $scope.show_task_more_options = false
+    }   
+  }
+
 
   $scope.strike_out_task=function()
   {
@@ -398,6 +423,9 @@ app.controller('myctrl', function ($scope, $sce) {
       $scope.theme_menu_icon = "light_mode";
     }
   };
+
+
+  
   
   //define all funcions above init
   $scope.init = function ()

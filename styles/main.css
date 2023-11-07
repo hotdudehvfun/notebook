@@ -254,9 +254,9 @@ input:focus {
     transform: translateX(-50%);
     /* z-index: 999; */
     /* opacity: 0; */
-    background: #ffffff;
+    background: var(--accent);
     box-shadow: 0px 2px 2px #80808066;
-    color: #44409b;
+    color: white;
     text-transform: capitalize;
     padding: 10px 20px;
     border-radius: 100px;

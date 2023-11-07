@@ -150,7 +150,7 @@
             <!-- show only when list view is in focus -->
             <div id="add-new-task-with-new-list" class="nav-bar-panel visible" ng-show="defaultPageTitle==pageTitle">
                 <div style="display: flex;flex-direction: row;align-items: center;">
-                    <i class="material-icons add_task_icon">book</i>
+                    <!-- <i class="material-icons add_task_icon">book</i> -->
                     <input ng-keypress="checkIfEnterPressed($event)" class="add-new-list-title ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched" ng-model="newListName" ng-attr-placeholder="New NoteBook name..." placeholder="New NoteBook name...">
                     <i ng-click="handleCreateList();" class="material-icons add_task_icon">edit_document</i>
                 </div>
@@ -158,8 +158,10 @@
 
             <!-- PANEL 2: add new task  -->
             <!-- show only when single list is in focus -->
-            <div id="add-task-panel-with-selected-list" class="nav-bar-panel visible"
-                ng-show="defaultPageTitle!=pageTitle">
+            <div 
+            id="add-task-panel-with-selected-list" 
+            class="nav-bar-panel visible"
+            ng-show="defaultPageTitle!=pageTitle">
                 <div class="add-task-edit-options">
                     <div class="button" onclick="insertList('ol')">
                         <i class="material-icons">format_list_numbered</i>
@@ -177,23 +179,15 @@
                 align-items: center;
             ">
 
-                    <i class="material-icons add_task_icon">radio_button_unchecked</i>
+                    <!-- <i class="material-icons add_task_icon">radio_button_unchecked</i> -->
                     <div ng-focus="focus=true" ng-blur="focus=false" contenteditable="true" id="newTaskContent"
                         class="new-task-content" placeholder="Add notes here..."></div>
                     <i id="add-new-task-ok" ng-click="handleSaveTask();" class="material-icons add_task_icon">edit_document</i>
                     <i id="confirm-change-button" style="display: none;" ng-click="updateTask()" class="material-icons add_task_icon">edit_document</i>
 
                 </div>
-
-
             </div>
-
         </div>
-
-
-
-
-
     </div>
 
 
@@ -268,6 +262,15 @@
                 <i class="material-icons">delete</i>
                 <div>Delete note</div>
             </div>
+            <div class="task-more-options-item" ng-click="move_task(-1)">
+                <i class="material-icons">expand_less</i>
+                <div>Move Up</div>
+            </div>
+            <div class="task-more-options-item" ng-click="move_task(1)">
+                <i class="material-icons">expand_more</i>
+                <div>Move Down</div>
+            </div>
+            
 
             <div class="task-more-options-item" ng-click="moveTask();">
                 <i class="material-icons">mediation</i>
