@@ -8,10 +8,8 @@
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <meta content="" name="keywords">
     <meta content="" name="description">
-
     <meta http-equiv="cache-control" content="max-age=800" />
     <meta http-equiv="cache-control" content="Private" />
-
     <link rel="apple-touch-icon" sizes="180x180" href="img/ios/180.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/ios/32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/ios/16.png">
@@ -19,28 +17,19 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="aliceblue" />
     <meta name="mobile-web-app-capable" content="yes">
-
-    
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="scripts/hammer.js"></script>
-    
     <script src="scripts/class/List.js"></script>
     <script src="scripts/class/Task.js"></script>
-    
-
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
-    
+
 </head>
 
-<body 
-    ng-app="myapp" 
-    ng-controller='myctrl' 
-    ng-swipe-right="handleBackButton()"
-    data-theme="{{theme}}">
+<body ng-app="myapp" ng-controller='myctrl' ng-swipe-right="handleBackButton()" data-theme="{{theme}}">
     <div class="main-container">
         <div class="app-container">
 
@@ -48,19 +37,11 @@
             <div id="selected-list-info">
                 <!-- name and back button -->
                 <div style="display: flex;flex-direction: row;align-items: center;">
-                    <i 
-                    id="back-button" 
-                    class="material-icons" 
-                    ng-click="handleBackButton()"
-                    ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</i>
+                    <i id="back-button" class="material-icons" ng-click="handleBackButton()"
+                        ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</i>
                     <div class="list-with-title" id="selectedList" style="display: block;" ng-bind="pageTitle"></div>
-                    <i 
-                    id="open-more-panel" 
-                    style="z-index: 999;" 
-                    class="material-icons"
-                    ng-click="toggle_list_more_options_visibility()"
-                    ng-bind="nav_more_vert_icon"
-                    ></i>
+                    <i id="open-more-panel" style="z-index: 999;" class="material-icons"
+                        ng-click="toggle_list_more_options_visibility()" ng-bind="nav_more_vert_icon"></i>
                 </div>
 
 
@@ -94,9 +75,7 @@
                 <!-- search results end-->
 
                 <!-- lists -->
-                <Div 
-                ng-hide="search.length>0 || selectedListIndex>=0"
-                >
+                <Div ng-hide="search.length>0 || selectedListIndex>=0">
                     <div ng-repeat="(key,value) in listArray">
                         <div class="list-panel-item" ng-click="loadList($index)">
                             <div class="list-panel-item-title">
@@ -109,10 +88,7 @@
                 </Div>
 
                 <!-- view tasks  -->
-                <Div 
-                id="view-list-items"
-                ng-hide="search.length>0 || selectedListIndex==-1"
-                >
+                <Div id="view-list-items" ng-hide="search.length>0 || selectedListIndex==-1">
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
                         <div class="task" ng-class="{completed: value.isTaskCompleted}">
@@ -123,23 +99,17 @@
                         </div>
                     </div>
                     <!-- empty state empty list-->
-                    <div 
-                    style="text-align: center;" 
-                    ng-show="taskArray.length==0">
+                    <div style="text-align: center;" ng-show="taskArray.length==0">
                         <h1>
-                            (>_<)
-                        </h1>
-                        <span>Nothing to see here.</span>                    
+                            (>_<) </h1>
+                                <span>Nothing to see here.</span>
                     </div>
                 </Div>
                 <!-- empty state no list-->
-                <div 
-                style="text-align: center;" 
-                ng-show="listArray.length==0">
+                <div style="text-align: center;" ng-show="listArray.length==0">
                     <h1>
-                        (>_<)
-                    </h1>
-                    <span>Nothing to see here.</span>                    
+                        (>_<) </h1>
+                            <span>Nothing to see here.</span>
                 </div>
 
             </div>
@@ -151,17 +121,18 @@
             <div id="add-new-task-with-new-list" class="nav-bar-panel visible" ng-show="defaultPageTitle==pageTitle">
                 <div style="display: flex;flex-direction: row;align-items: center;">
                     <!-- <i class="material-icons add_task_icon">book</i> -->
-                    <input ng-keypress="checkIfEnterPressed($event)" class="add-new-list-title ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched" ng-model="newListName" ng-attr-placeholder="New NoteBook name..." placeholder="New NoteBook name...">
+                    <input ng-keypress="checkIfEnterPressed($event)"
+                        class="add-new-list-title ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"
+                        ng-model="newListName" ng-attr-placeholder="New NoteBook name..."
+                        placeholder="New NoteBook name...">
                     <i ng-click="handleCreateList();" class="material-icons add_task_icon">edit_document</i>
                 </div>
             </div>
 
             <!-- PANEL 2: add new task  -->
             <!-- show only when single list is in focus -->
-            <div 
-            id="add-task-panel-with-selected-list" 
-            class="nav-bar-panel visible"
-            ng-show="defaultPageTitle!=pageTitle">
+            <div id="add-task-panel-with-selected-list" class="nav-bar-panel visible"
+                ng-show="defaultPageTitle!=pageTitle">
                 <div class="add-task-edit-options">
                     <div class="button" onclick="insertList('ol')">
                         <i class="material-icons">format_list_numbered</i>
@@ -182,8 +153,10 @@
                     <!-- <i class="material-icons add_task_icon">radio_button_unchecked</i> -->
                     <div ng-focus="focus=true" ng-blur="focus=false" contenteditable="true" id="newTaskContent"
                         class="new-task-content" placeholder="Add notes here..."></div>
-                    <i id="add-new-task-ok" ng-click="handleSaveTask();" class="material-icons add_task_icon">edit_document</i>
-                    <i id="confirm-change-button" style="display: none;" ng-click="updateTask()" class="material-icons add_task_icon">edit_document</i>
+                    <i id="add-new-task-ok" ng-click="handleSaveTask();"
+                        class="material-icons add_task_icon">edit_document</i>
+                    <i id="confirm-change-button" style="display: none;" ng-click="updateTask()"
+                        class="material-icons add_task_icon">edit_document</i>
 
                 </div>
             </div>
@@ -211,27 +184,20 @@
                 <i class="material-icons">cloud</i>
                 <span id="total_size" ng-bind="app_size_value"></span>
             </div>
-    
+
             <div id="change-theme-button" class="task-more-options-item" ng-click="toggle_theme()">
                 <i class="material-icons">{{theme_menu_icon}}</i>
                 <span>{{theme_menu_text}}</span>
             </div>
-    
-            <div 
-            ng-click="purgeList()" 
-            id="remove-all-tasks-button" 
-            class="task-more-options-item"
-            ng-show="show_purge_list_option">
+
+            <div ng-click="purgeList()" id="remove-all-tasks-button" class="task-more-options-item"
+                ng-show="show_purge_list_option">
                 <i class="material-icons">opacity</i>
                 <span>Empty List</span>
             </div>
-    
-            <div 
-            id="delete-list-ok" 
-            class="task-more-options-item text-red-500" 
-            ng-click="handleDeleteList()"
-            ng-show="show_delete_list_option"
-            >
+
+            <div id="delete-list-ok" class="task-more-options-item text-red-500" ng-click="handleDeleteList()"
+                ng-show="show_delete_list_option">
                 <i class="material-icons">delete</i>
                 <span>Delete List!</span>
             </div>
@@ -270,7 +236,7 @@
                 <i class="material-icons">expand_more</i>
                 <div>Move Down</div>
             </div>
-            
+
 
             <div class="task-more-options-item" ng-click="moveTask();">
                 <i class="material-icons">mediation</i>

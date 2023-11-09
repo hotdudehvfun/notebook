@@ -1,9 +1,9 @@
 {
     "short_name": "Notebook",
     "name": "Notebook",
-    "start_url": "/",
+    "start_url": "/notebook/",
     "background_color": "aliceblue",
-    "scope": "/",
+    "scope": "/notebook/",
     "display": "standalone",
     "orientation": "portrait-primary",
     "prefer_related_applications": true,
