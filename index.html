@@ -39,14 +39,22 @@
                 <div style="display: flex;flex-direction: row;align-items: center;">
                     <i id="back-button" class="material-icons" ng-click="handleBackButton()"
                         ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</i>
-                    <div class="list-with-title" id="selectedList" style="display: block;" ng-bind="pageTitle"></div>
+                    <div 
+                    class="list-with-title" 
+                    id="selectedList" 
+                    style="display: block;"
+                    ng-click="show_notification()" 
+                    ng-bind="pageTitle"></div>
                     <i id="open-more-panel" style="z-index: 999;" class="material-icons"
                         ng-click="toggle_list_more_options_visibility()" ng-bind="nav_more_vert_icon"></i>
                 </div>
 
 
                 <!-- search button -->
-                <input id="search-box" ng-model="search" ng-attr-placeholder="Search..." value="" />
+                <div class="flex-row align-center m-2 bg-list-bg rounded-2 px-2">
+                    <i class="material-icons">search</i>
+                <input id="search-box" ng-model="search" ng-attr-placeholder="Search" value="" />
+                </div>
 
 
                 <!-- cancel action interface -->
@@ -75,9 +83,15 @@
                 <!-- search results end-->
 
                 <!-- lists -->
-                <Div ng-hide="search.length>0 || selectedListIndex>=0">
+                <div 
+                ng-hide="search.length>0 || selectedListIndex>=0" 
+                class="lists-container m-2 rounded-2 fade_scale_animation">
                     <div ng-repeat="(key,value) in listArray">
-                        <div class="list-panel-item" ng-click="loadList($index)">
+                        <div 
+                        class="list-panel-item" 
+                        ng-click="loadList($index)"
+                        ng-mouseup="mouse_up()" 
+                        ng-mousedown="mouse_down()">
                             <div class="list-panel-item-title">
                                 <i class="material-icons">book</i>
                                 <article class="selected" ng-bind="value.title"></article>
@@ -85,10 +99,13 @@
                             <span class="list-sub-text" ng-bind="(value.taskArray.length) + ' items'"></span>
                         </div>
                     </div>
-                </Div>
+                </div>
 
                 <!-- view tasks  -->
-                <Div id="view-list-items" ng-hide="search.length>0 || selectedListIndex==-1">
+                <Div 
+                id="view-list-items" 
+                ng-hide="search.length>0 || selectedListIndex==-1"
+                class="fade_scale_animation">
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
                         <div class="task" ng-class="{completed: value.isTaskCompleted}">
@@ -118,12 +135,16 @@
             <!-- bottom panels -->
             <!-- PANEL 1: create new list -->
             <!-- show only when list view is in focus -->
-            <div id="add-new-task-with-new-list" class="nav-bar-panel visible" ng-show="defaultPageTitle==pageTitle">
+            <div 
+                id="add-new-task-with-new-list" 
+                class="nav-bar-panel visible" 
+                ng-show="defaultPageTitle==pageTitle">
                 <div style="display: flex;flex-direction: row;align-items: center;">
-                    <!-- <i class="material-icons add_task_icon">book</i> -->
-                    <input ng-keypress="checkIfEnterPressed($event)"
+                    <input 
+                        ng-keypress="checkIfEnterPressed($event)"
                         class="add-new-list-title ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"
-                        ng-model="newListName" ng-attr-placeholder="New NoteBook name..."
+                        ng-model="newListName" 
+                        ng-attr-placeholder="New NoteBook name..."
                         placeholder="New NoteBook name...">
                     <i ng-click="handleCreateList();" class="material-icons add_task_icon">edit_document</i>
                 </div>
