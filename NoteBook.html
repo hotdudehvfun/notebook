@@ -1,0 +1,336 @@
+
+<!-- saved from url=(0032)http://127.0.0.1:5500/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>
+    <title>NoteBook</title>
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <meta http-equiv="cache-control" content="max-age=800">
+    <meta http-equiv="cache-control" content="Private">
+    <link rel="apple-touch-icon" sizes="180x180" href="http://127.0.0.1:5500/img/ios/180.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="http://127.0.0.1:5500/img/ios/32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="http://127.0.0.1:5500/img/ios/16.png">
+    <link rel="icon" href="http://127.0.0.1:5500/img/logo.png">
+    <link rel="manifest" href="http://127.0.0.1:5500/manifest.json">
+    <meta name="theme-color" content="aliceblue">
+    <meta name="mobile-web-app-capable" content="yes">
+    <script src="./NoteBook_files/angular.min.js"></script>
+    <script src="./NoteBook_files/angular-sanitize.js"></script>
+    <script src="./NoteBook_files/jquery.min.js"></script>
+    <script src="./NoteBook_files/hammer.js"></script>
+    <script src="./NoteBook_files/List.js"></script>
+    <script src="./NoteBook_files/Task.js"></script>
+    <link href="./NoteBook_files/icon" rel="stylesheet">
+    <link rel="stylesheet" href="./NoteBook_files/main.css">
+    <link rel="stylesheet" href="./NoteBook_files/dark.css">
+
+</head>
+
+<body ng-app="myapp" ng-controller="myctrl" ng-swipe-right="handleBackButton()" data-theme="dark" class="ng-scope" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+    <div class="main-container">
+        <div class="app-container">
+
+            <!-- current list selected -->
+            <div id="selected-list-info">
+                <!-- name and back button -->
+                <div style="display: flex;flex-direction: row;align-items: center;">
+                    <i id="back-button" class="material-icons ng-hide" ng-click="handleBackButton()" ng-show="search.length&gt;0 || selectedListIndex&gt;=0">arrow_back_ios</i>
+                    <div class="list-with-title ng-binding" id="selectedList" style="display: block;" ng-click="show_notification()" ng-bind="pageTitle">Notebooks</div>
+                    <i id="open-more-panel" style="z-index: 999;" class="material-icons ng-binding" ng-click="toggle_list_more_options_visibility()" ng-bind="nav_more_vert_icon">more_horiz</i>
+                </div>
+
+
+                <!-- search button -->
+                <div class="flex-row align-center m-2 bg-list-bg rounded-2 px-2">
+                    <i class="material-icons">search</i>
+                <input id="search-box" ng-model="search" ng-attr-placeholder="Search" value="" class="ng-pristine ng-untouched ng-valid ng-empty" placeholder="Search">
+                </div>
+
+
+                <!-- cancel action interface -->
+                <div ng-click="cancelAction();" class="cancel-action danger ng-hide" ng-show="moveInProgress || mergeInProgress">
+                    <div>
+                        <i class="material-icons">close</i>
+                        <div>Cancel Action</div>
+                    </div>
+                </div>
+            </div>
+
+            <!--contains tasks-->
+            <div id="tasks-container">
+                <!-- search results start-->
+                <div id="search-results" style="display: block;" ng-show="search.length&gt;0" class="ng-hide">
+                    <div style="text-align: center;font-size: 125%;">Search Results</div>
+                    <div style="text-align: center;font-size: 85%;" class="ng-binding">Results found: 2</div>
+                    <!-- ngRepeat: task in filtered_search = (allTasks | filter: search | limitTo: 10) --><div ng-repeat="task in filtered_search = (allTasks | filter: search | limitTo: 10)" class="ng-scope">
+                        <div class="task" ng-click="">
+                            <i class="material-icons ng-binding" ng-bind="task.taskIcon">radio_button_unchecked</i>
+                            <span ng-bind-html="task.title | sanitize" class="ng-binding">We have added first note!</span>
+                        </div>
+                    </div><!-- end ngRepeat: task in filtered_search = (allTasks | filter: search | limitTo: 10) --><div ng-repeat="task in filtered_search = (allTasks | filter: search | limitTo: 10)" class="ng-scope">
+                        <div class="task" ng-click="">
+                            <i class="material-icons ng-binding" ng-bind="task.taskIcon">radio_button_unchecked</i>
+                            <span ng-bind-html="task.title | sanitize" class="ng-binding">ok</span>
+                        </div>
+                    </div><!-- end ngRepeat: task in filtered_search = (allTasks | filter: search | limitTo: 10) -->
+                </div>
+                <!-- search results end-->
+
+                <!-- lists -->
+                <div ng-hide="search.length&gt;0 || selectedListIndex&gt;=0" class="lists-container m-2 rounded-2 fade_scale_animation">
+                    <!-- ngRepeat: (key,value) in listArray --><div ng-repeat="(key,value) in listArray" class="ng-scope">
+                        <div class="list-panel-item" ng-click="loadList($index)" ng-mouseup="mouse_up()" ng-mousedown="mouse_down()">
+                            <div class="list-panel-item-title">
+                                <i class="material-icons">book</i>
+                                <article class="selected ng-binding" ng-bind="value.title">Your First Notebook</article>
+                            </div>
+                            <span class="list-sub-text ng-binding" ng-bind="(value.taskArray.length) + &#39; items&#39;">2 items</span>
+                        </div>
+                    </div><!-- end ngRepeat: (key,value) in listArray --><div ng-repeat="(key,value) in listArray" class="ng-scope">
+                        <div class="list-panel-item" ng-click="loadList($index)" ng-mouseup="mouse_up()" ng-mousedown="mouse_down()">
+                            <div class="list-panel-item-title">
+                                <i class="material-icons">book</i>
+                                <article class="selected ng-binding" ng-bind="value.title">okkk</article>
+                            </div>
+                            <span class="list-sub-text ng-binding" ng-bind="(value.taskArray.length) + &#39; items&#39;">0 items</span>
+                        </div>
+                    </div><!-- end ngRepeat: (key,value) in listArray --><div ng-repeat="(key,value) in listArray" class="ng-scope">
+                        <div class="list-panel-item" ng-click="loadList($index)" ng-mouseup="mouse_up()" ng-mousedown="mouse_down()">
+                            <div class="list-panel-item-title">
+                                <i class="material-icons">book</i>
+                                <article class="selected ng-binding" ng-bind="value.title">okkk</article>
+                            </div>
+                            <span class="list-sub-text ng-binding" ng-bind="(value.taskArray.length) + &#39; items&#39;">0 items</span>
+                        </div>
+                    </div><!-- end ngRepeat: (key,value) in listArray -->
+                </div>
+
+                <!-- view tasks  -->
+                <div id="view-list-items" ng-hide="search.length&gt;0 || selectedListIndex==-1" class="fade_scale_animation ng-hide">
+                    <!-- ngRepeat: (key,value) in taskArray --><div ng-repeat="(key,value) in taskArray" class="ng-scope">
+                        <!-- ng-class= css_class : condition -->
+                        <div class="task" ng-class="{completed: value.isTaskCompleted}">
+                            <i class="material-icons ng-binding" ng-bind="value.taskIcon" ng-click="toggle_task_complete($event,key);">radio_button_unchecked</i>
+                            <span ng-bind-html="value.title | sanitize" ng-click="handleClickOnTask($event,key);" class="ng-binding">We have added first note!</span>
+                        </div>
+                    </div><!-- end ngRepeat: (key,value) in taskArray --><div ng-repeat="(key,value) in taskArray" class="ng-scope">
+                        <!-- ng-class= css_class : condition -->
+                        <div class="task" ng-class="{completed: value.isTaskCompleted}">
+                            <i class="material-icons ng-binding" ng-bind="value.taskIcon" ng-click="toggle_task_complete($event,key);">radio_button_unchecked</i>
+                            <span ng-bind-html="value.title | sanitize" ng-click="handleClickOnTask($event,key);" class="ng-binding">ok</span>
+                        </div>
+                    </div><!-- end ngRepeat: (key,value) in taskArray -->
+                    <!-- empty state empty list-->
+                    <div style="text-align: center;" ng-show="taskArray.length==0" class="ng-hide">
+                        <h1>
+                            (&gt;_&lt;) </h1>
+                                <span>Nothing to see here.</span>
+                    </div>
+                </div>
+                <!-- empty state no list-->
+                <div style="text-align: center;" ng-show="listArray.length==0" class="ng-hide">
+                    <h1>
+                        (&gt;_&lt;) </h1>
+                            <span>Nothing to see here.</span>
+                </div>
+
+            </div>
+
+
+            <!-- bottom panels -->
+            <!-- PANEL 1: create new list -->
+            <!-- show only when list view is in focus -->
+            <div id="add-new-task-with-new-list" class="nav-bar-panel visible" ng-show="defaultPageTitle==pageTitle">
+                <div style="display: flex;flex-direction: row;align-items: center;">
+                    <input ng-keypress="checkIfEnterPressed($event)" class="add-new-list-title ng-valid ng-dirty ng-valid-parse ng-touched ng-pristine ng-untouched ng-empty" ng-model="newListName" ng-attr-placeholder="New NoteBook name..." placeholder="New NoteBook name...">
+                    <i ng-click="handleCreateList();" class="material-icons add_task_icon">edit_document</i>
+                </div>
+            </div>
+
+            <!-- PANEL 2: add new task  -->
+            <!-- show only when single list is in focus -->
+            <div id="add-task-panel-with-selected-list" class="nav-bar-panel visible ng-hide" ng-show="defaultPageTitle!=pageTitle">
+                <div class="add-task-edit-options">
+                    <div class="button" onclick="insertList(&#39;ol&#39;)">
+                        <i class="material-icons">format_list_numbered</i>
+                    </div>
+                    <div class="button" onclick="insertHeading()">
+                        <i class="material-icons">title</i>
+                    </div>
+                    <div class="button" onclick="insertList(&#39;ul&#39;)">
+                        <i class="material-icons">list</i>
+                    </div>
+                </div>
+                <div style="
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            ">
+
+                    <!-- <i class="material-icons add_task_icon">radio_button_unchecked</i> -->
+                    <div ng-focus="focus=true" ng-blur="focus=false" contenteditable="true" id="newTaskContent" class="new-task-content" placeholder="Add notes here..."></div>
+                    <i id="add-new-task-ok" ng-click="handleSaveTask();" class="material-icons add_task_icon">edit_document</i>
+                    <i id="confirm-change-button" style="display: none;" ng-click="updateTask()" class="material-icons add_task_icon">edit_document</i>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- more options panel -->
+    <div id="list-more-options-container" ng-show="show_list_more_options" class="ng-hide">
+        <div class="list-more-optionas-holder">
+            <div id="remove-completed-tasks-button" class="task-more-options-item">
+                <i class="material-icons">cloud</i>
+                <span id="total_size" ng-bind="app_size_value" class="ng-binding"></span>
+            </div>
+
+            <div id="change-theme-button" class="task-more-options-item" ng-click="toggle_theme()">
+                <i class="material-icons ng-binding">light_mode</i>
+                <span class="ng-binding">Turn On Light Theme</span>
+            </div>
+
+            <div ng-click="purgeList()" id="remove-all-tasks-button" class="task-more-options-item ng-hide" ng-show="show_purge_list_option">
+                <i class="material-icons">opacity</i>
+                <span>Empty List</span>
+            </div>
+
+            <div id="delete-list-ok" class="task-more-options-item text-red-500 ng-hide" ng-click="handleDeleteList()" ng-show="show_delete_list_option">
+                <i class="material-icons">delete</i>
+                <span>Delete List!</span>
+            </div>
+            <div class="task-more-options-item text-red-500" ng-click="toggle_list_more_options_visibility()">
+                <i class="material-icons">cancel</i>
+                <div>Close</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- blocking screen  -->
+    <div class="block-screen ng-hide" ng-show="show_list_more_options || show_task_more_options"></div>
+
+    <!-- toast message -->
+    <div class="toast" style="z-index: -99; opacity: 0;">
+    </div>
+
+
+
+    <!-- taskMoreOptiosContainer -->
+    <div class="taskMoreOptionsConatiner ng-hide" ng-show="show_task_more_options">
+        <div class="task-more-options-holder">
+            <div class="task-more-options-item" id="editTaskButton" ng-click="editTask();">
+                <i class="material-icons ">edit</i>
+                <div>Edit note</div>
+            </div>
+            <div class="task-more-options-item" ng-click="deleteTask();">
+                <i class="material-icons">delete</i>
+                <div>Delete note</div>
+            </div>
+            <div class="task-more-options-item" ng-click="move_task(-1)">
+                <i class="material-icons">expand_less</i>
+                <div>Move Up</div>
+            </div>
+            <div class="task-more-options-item" ng-click="move_task(1)">
+                <i class="material-icons">expand_more</i>
+                <div>Move Down</div>
+            </div>
+
+
+            <div class="task-more-options-item" ng-click="moveTask();">
+                <i class="material-icons">mediation</i>
+                <div>Move to another list</div>
+            </div>
+            <div class="task-more-options-item" ng-click="mergeTask();">
+                <i class="material-icons">architecture</i>
+                <div>Merge with another note</div>
+            </div>
+
+            <div class="task-more-options-item ng-hide" ng-click="strike_out_task();" ng-show="task_completed_state">
+                <i class="material-icons">done_outline</i>
+                <div>Strike Clear</div>
+            </div>
+            <div class="task-more-options-item" ng-click="strike_out_task();" ng-show="!task_completed_state">
+                <i class="material-icons">done</i>
+                <div>Strike Out</div>
+            </div>
+            <div class="task-more-options-item text-red-500" ng-click="close_task_more_options()">
+                <i class="material-icons">cancel</i>
+                <div>Close</div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script type="text/javascript" src="./NoteBook_files/handleAngular.js"></script>
+    <script type="text/javascript" src="./NoteBook_files/htmlGenerator.js"></script>
+    <script type="text/javascript" src="./NoteBook_files/handleSingleTaskEvents.js"></script>
+    <script type="text/javascript" src="./NoteBook_files/handleOpenCloseEventOfNavBarPanels.js"></script>
+    <script type="text/javascript" src="./NoteBook_files/handleNavBarEvents.js"></script>
+    <script type="text/javascript" src="./NoteBook_files/utilities.js"></script>
+    <script type="text/javascript" src="./NoteBook_files/svgAnimation.js"></script>
+    <script type="text/javascript" src="./NoteBook_files/icon_database.js"></script>
+
+
+
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body></html>

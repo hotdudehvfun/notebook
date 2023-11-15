@@ -1,7 +1,13 @@
-// document.addEventListener('DOMContentLoaded', function ()
-// {
-//   addEventListeners();
-// });
+document.addEventListener('DOMContentLoaded', function ()
+{
+ 
+  addEventListeners();
+
+});
+
+
+
+
 
 handleNoListState=()=>
 {

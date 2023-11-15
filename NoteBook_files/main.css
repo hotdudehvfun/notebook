@@ -77,6 +77,9 @@ body {
     width: -webkit-fill-available;
 }
 
+.list-with-title:active {
+    box-shadow: 0 4px 4px #80808070;
+}
 
 .selected-list {
     color: white;
@@ -198,12 +201,6 @@ input:focus {
     padding: 0.5rem 1rem;
     border-radius: 1rem;
     width: 100%;
-    transition:0.5s all;
-}
-
-.list-panel-item:active
-{
-    transform:scale(0.9)
 }
 
 .list-panel-item i {
@@ -270,8 +267,9 @@ input:focus {
 
 .task {
     padding: 10px 16px;
-    display: flex;
+    display: inline-flex;
     word-break: break-word;
+    align-self: center;
     user-select: all;
     background-color: var(--list-bg);
     border-radius: 15px;
@@ -289,7 +287,7 @@ input:focus {
 
 .task i {
     color:var(--font-color);
-    font-size: 1.2rem;
+    font-size: 100%;
 }
 
 .task span {
@@ -501,7 +499,7 @@ search_list_name {
 
 .nav-bar-panel {
     width: 100%;
-    background: var(--list-bg);
+    background: var(--bg-color);
     color: var(--font-color);
     flex-direction: column;
     padding: 1rem 0.5rem;
@@ -727,9 +725,12 @@ div#list-more-options-container {
 }
 
 .list-sub-text {
+    font-size: 85%;
     color: var(--accent);
     align-self: center;
+    font-style: italic;
     margin: .5rem;
+    width: 100%;
     text-align: end;
 }
 
@@ -924,6 +925,7 @@ div#close-task-more-options {
 input.add-new-list-title {
     width: 100%;
     background: #44409b1f;
+    border-radius: 8px;
     color: var(--font-color);
     padding: 1.5rem;
 }
@@ -1035,7 +1037,6 @@ input:checked + .slider:before {
 .add-task-edit-options {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
 }
 
 #open-add-new-list-panel>div {

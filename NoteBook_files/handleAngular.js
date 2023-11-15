@@ -20,23 +20,17 @@ app.controller('myctrl', function ($scope, $sce) {
   };
 
 
-  $scope.load_list_info = function(index){
-    $scope.selectedListIndex = index;
-    $scope.list_index_for_hold_event = index
-    $scope.show_delete_list_option = true
-    $scope.show_purge_list_option = true
-  }
 
   $scope.loadList = function (index) {
     // a valid list is selected
     if (index >= 0) {
       $scope.taskArray = $scope.listArray[index].taskArray;
-      // when name is changed list view is hided and task view is shown
       $scope.selectedListName = $scope.listArray[index].title;
+      $scope.selectedListIndex = index;
       $scope.pageTitle = $scope.selectedListName;
-      // console.log($scope.selectedListName)
-      //load list info, this function also used by tap and hold event to load list info
-      $scope.load_list_info(index)
+      $scope.show_delete_list_option = true
+      $scope.show_purge_list_option = true
+      console.log($scope.taskArray);
       if ($scope.moveInProgress) {
         //save task to move
         $scope.taskArray.push($scope.noteToMove);
@@ -339,7 +333,6 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.show_list_more_options = !$scope.show_list_more_options
     $scope.nav_more_vert_icon = $scope.show_list_more_options ? "close" : "more_horiz";
     $scope.app_size()
-    
   }
 
   $scope.app_size = function () {
@@ -414,21 +407,16 @@ app.controller('myctrl', function ($scope, $sce) {
   {
     $scope.mouse_down_time = new Date().getTime()
   }
-  
-  $scope.mouse_up = function(list_index)
+  $scope.mouse_up = function()
   {
     $scope.mouse_up_time = new Date().getTime()
     let diff = $scope.mouse_up_time - $scope.mouse_down_time
     if(diff<300)
     {
       console.log("click event")
-      $scope.loadList(list_index)
     }else
     {
       console.log("hold event")
-      //list info is required to show more options 
-      $scope.load_list_info(list_index)
-      $scope.toggle_list_more_options_visibility()
     }
     $scope.mouse_up_time = 0
     $scope.mouse_down_time = 0

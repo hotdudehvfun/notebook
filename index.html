@@ -40,13 +40,17 @@
                     <i id="back-button" class="material-icons" ng-click="handleBackButton()"
                         ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</i>
                     <div 
-                    class="list-with-title" 
-                    id="selectedList" 
-                    style="display: block;"
-                    ng-click="show_notification()" 
-                    ng-bind="pageTitle"></div>
-                    <i id="open-more-panel" style="z-index: 999;" class="material-icons"
-                        ng-click="toggle_list_more_options_visibility()" ng-bind="nav_more_vert_icon"></i>
+                        class="list-with-title" 
+                        id="selectedList" 
+                        style="display: block;"
+                        ng-click="show_notification()" 
+                        ng-bind="pageTitle"></div>
+                    <i 
+                        id="open-more-panel" 
+                        style="z-index: 999;" 
+                        class="material-icons"
+                        ng-click="toggle_list_more_options_visibility()" 
+                        ng-bind="nav_more_vert_icon"></i>
                 </div>
 
 
@@ -89,14 +93,13 @@
                     <div ng-repeat="(key,value) in listArray">
                         <div 
                         class="list-panel-item" 
-                        ng-click="loadList($index)"
-                        ng-mouseup="mouse_up()" 
+                        ng-mouseup="mouse_up(key)" 
                         ng-mousedown="mouse_down()">
                             <div class="list-panel-item-title">
                                 <i class="material-icons">book</i>
                                 <article class="selected" ng-bind="value.title"></article>
+                                <span class="list-sub-text" ng-bind="(value.taskArray.length)"></span>
                             </div>
-                            <span class="list-sub-text" ng-bind="(value.taskArray.length) + ' items'"></span>
                         </div>
                     </div>
                 </div>
@@ -105,7 +108,7 @@
                 <Div 
                 id="view-list-items" 
                 ng-hide="search.length>0 || selectedListIndex==-1"
-                class="fade_scale_animation">
+                class="fade_scale_animation m-2">
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
                         <div class="task" ng-class="{completed: value.isTaskCompleted}">
@@ -142,7 +145,7 @@
                 <div style="display: flex;flex-direction: row;align-items: center;">
                     <input 
                         ng-keypress="checkIfEnterPressed($event)"
-                        class="add-new-list-title ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"
+                        class="add-new-list-title rounded-2"
                         ng-model="newListName" 
                         ng-attr-placeholder="New NoteBook name..."
                         placeholder="New NoteBook name...">
@@ -156,13 +159,13 @@
                 ng-show="defaultPageTitle!=pageTitle">
                 <div class="add-task-edit-options">
                     <div class="button" onclick="insertList('ol')">
-                        <i class="material-icons">format_list_numbered</i>
+                        <div class="chip">1. 2. 3.</div>
                     </div>
                     <div class="button" onclick="insertHeading()">
-                        <i class="material-icons">title</i>
+                        <div class="chip">Heading</div>
                     </div>
                     <div class="button" onclick="insertList('ul')">
-                        <i class="material-icons">list</i>
+                        <div class="chip">#... #...</div>
                     </div>
                 </div>
                 <div style="
@@ -172,8 +175,11 @@
             ">
 
                     <!-- <i class="material-icons add_task_icon">radio_button_unchecked</i> -->
-                    <div ng-focus="focus=true" ng-blur="focus=false" contenteditable="true" id="newTaskContent"
-                        class="new-task-content" placeholder="Add notes here..."></div>
+                    <div 
+                        contenteditable="true" 
+                        id="newTaskContent"
+                        class="new-task-content rounded-2" 
+                        placeholder="Create task..."></div>
                     <i id="add-new-task-ok" ng-click="handleSaveTask();"
                         class="material-icons add_task_icon">edit_document</i>
                     <i id="confirm-change-button" style="display: none;" ng-click="updateTask()"
@@ -217,7 +223,10 @@
                 <span>Empty List</span>
             </div>
 
-            <div id="delete-list-ok" class="task-more-options-item text-red-500" ng-click="handleDeleteList()"
+            <div 
+                id="delete-list-ok" 
+                class="task-more-options-item text-red-500" 
+                ng-click="handleDeleteList()"
                 ng-show="show_delete_list_option">
                 <i class="material-icons">delete</i>
                 <span>Delete List!</span>
@@ -291,7 +300,7 @@
     <script type="text/javascript" src="scripts/htmlGenerator.js"></script>
     <script type="text/javascript" src="scripts/handleSingleTaskEvents.js"></script>
     <script type="text/javascript" src="scripts/handleOpenCloseEventOfNavBarPanels.js"></script>
-    <script type="text/javascript" src="scripts/handleNavBarEvents.js"></script>
+    <!-- <script type="text/javascript" src="scripts/handleNavBarEvents.js"></script> -->
     <script type="text/javascript" src="scripts/utilities.js"></script>
     <script type="text/javascript" src="scripts/svgAnimation.js"></script>
     <script type="text/javascript" src="scripts/icon_database.js"></script>
