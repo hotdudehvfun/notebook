@@ -24,6 +24,9 @@ html{
 
 body {
     margin: 0;
+    position: absolute;
+    top:0px;
+    left:0px;
     padding: 0px;
     overflow: hidden;
     height: 100%;

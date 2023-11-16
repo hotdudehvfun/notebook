@@ -20,7 +20,8 @@ app.controller('myctrl', function ($scope, $sce) {
   };
 
 
-  $scope.load_list_info = function(index){
+  $scope.load_list_info = function(index)
+  {
     $scope.selectedListIndex = index;
     $scope.list_index_for_hold_event = index
     $scope.show_delete_list_option = true

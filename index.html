@@ -1,5 +1,4 @@
 <html>
-
 <head>
     <title>NoteBook</title>
     <meta charset="UTF-8">
@@ -88,7 +87,7 @@
 
                 <!-- lists -->
                 <div 
-                ng-hide="search.length>0 || selectedListIndex>=0" 
+                ng-show="defaultPageTitle==pageTitle"
                 class="lists-container m-2 rounded-2 fade_scale_animation">
                     <div ng-repeat="(key,value) in listArray">
                         <div 
@@ -107,7 +106,7 @@
                 <!-- view tasks  -->
                 <Div 
                 id="view-list-items" 
-                ng-hide="search.length>0 || selectedListIndex==-1"
+                ng-show="defaultPageTitle!=pageTitle"
                 class="fade_scale_animation m-2">
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
@@ -141,7 +140,8 @@
             <div 
                 id="add-new-task-with-new-list" 
                 class="nav-bar-panel visible" 
-                ng-show="defaultPageTitle==pageTitle">
+                ng-show="defaultPageTitle==pageTitle"
+                >
                 <div style="display: flex;flex-direction: row;align-items: center;">
                     <input 
                         ng-keypress="checkIfEnterPressed($event)"
@@ -155,8 +155,11 @@
 
             <!-- PANEL 2: add new task  -->
             <!-- show only when single list is in focus -->
-            <div id="add-task-panel-with-selected-list" class="nav-bar-panel visible"
-                ng-show="defaultPageTitle!=pageTitle">
+            <div 
+                id="add-task-panel-with-selected-list"
+                class="nav-bar-panel visible"
+                ng-show="defaultPageTitle!=pageTitle"
+                >
                 <div class="add-task-edit-options">
                     <div class="button" onclick="insertList('ol')">
                         <div class="chip">1. 2. 3.</div>
