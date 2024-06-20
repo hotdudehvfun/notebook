@@ -365,11 +365,13 @@ app.controller('myctrl', function ($scope, $sce) {
       $scope.theme = "dark"
       $scope.theme_menu_text = "Turn On Light Theme"
       $scope.theme_menu_icon = "light_mode"
+      document.querySelector("#theme-color").setAttribute("content","gray")
     } else {
       //change to light_mode
       $scope.theme = "light"
       $scope.theme_menu_text = "Turn On Dark Theme"
       $scope.theme_menu_icon = "dark_mode"
+      document.querySelector("#theme-color").setAttribute("content","aliceblue")
     }
     $scope.toggle_list_more_options_visibility()
     $scope.saveData()
