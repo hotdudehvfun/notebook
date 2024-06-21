@@ -15,7 +15,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="img/ios/16.png">
     <link rel="icon" href="/img/logo.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="aliceblue" />
+    <meta id="theme-color" name="theme-color" content="aliceblue" />
     <meta name="mobile-web-app-capable" content="yes">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
@@ -23,7 +23,7 @@
     <script src="scripts/hammer.js"></script>
     <script src="scripts/class/List.js"></script>
     <script src="scripts/class/Task.js"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
 
@@ -37,27 +37,32 @@
             <div id="selected-list-info">
                 <!-- name and back button -->
                 <div style="display: flex;flex-direction: row;align-items: center;">
-                    <i id="back-button" class="material-icons" ng-click="handleBackButton()"
-                        ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</i>
+                    <span id="back-button" class="material-symbols-outlined" ng-click="handleBackButton()"
+                        ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</span>
                     <div 
                         class="list-with-title" 
                         id="selectedList" 
                         style="display: block;"
                         ng-click="show_notification()" 
                         ng-bind="pageTitle"></div>
-                    <i 
+                        
+                    <span 
                         id="open-more-panel" 
                         style="z-index: 999;" 
-                        class="material-icons"
+                        class="material-symbols-outlined"
                         ng-click="toggle_list_more_options_visibility()" 
-                        ng-bind="nav_more_vert_icon"></i>
+                        ng-bind="nav_more_vert_icon"></span>
+
                 </div>
 
 
                 <!-- search button -->
                 <div class="flex-row align-center m-2 bg-list-bg rounded-2 px-2">
-                    <i class="material-icons">search</i>
-                <input id="search-box" ng-model="search" ng-attr-placeholder="Search" value="" />
+                    <span class="material-symbols-outlined">search</span>
+                <input 
+                id="search-box" 
+                ng-model="search" 
+                ng-attr-placeholder="Search" value=""></input>
                 </div>
 
 
@@ -65,7 +70,7 @@
                 <div ng-click="cancelAction();" class="cancel-action danger"
                     ng-show="moveInProgress || mergeInProgress">
                     <div>
-                        <i class="material-icons">close</i>
+                        <span class="material-symbols-outlined">close</span>
                         <div>Cancel Action</div>
                     </div>
                 </div>
@@ -79,7 +84,7 @@
                     <div style="text-align: center;font-size: 85%;">Results found: {{filtered_search.length}}</div>
                     <div ng-repeat="task in filtered_search = (allTasks | filter: search | limitTo: 10)">
                         <div class="task" ng-click="">
-                            <i class="material-icons" ng-bind="task.taskIcon"></i>
+                            <span class="material-symbols-outlined" ng-bind="task.taskIcon"></span>
                             <span ng-bind-html="task.title | sanitize"></span>
                         </div>
                     </div>
@@ -96,7 +101,9 @@
                         ng-mouseup="mouse_up(key)" 
                         ng-mousedown="mouse_down()">
                             <div class="list-panel-item-title">
-                                <i class="material-icons">book</i>
+                                <span
+                                style="color:var(--accent)" 
+                                class="material-symbols-outlined">folder</span>
                                 <article class="selected" ng-bind="value.title"></article>
                                 <span class="list-sub-text" ng-bind="(value.taskArray.length)"></span>
                             </div>
@@ -112,10 +119,14 @@
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
                         <div class="task" ng-class="{completed: value.isTaskCompleted}">
-                            <i class="material-icons" ng-bind="value.taskIcon"
-                                ng-click="toggle_task_complete($event,key);"></i>
-                            <span ng-bind-html="value.title | sanitize"
-                                ng-click="handleClickOnTask($event,key);"></span>
+                            <span 
+                            class="material-symbols-outlined" 
+                            ng-bind="value.taskIcon"
+                            ng-click="toggle_task_complete($event,key);"></span>
+                            <div  
+                            class="task-content-div"
+                            ng-bind-html="value.title | sanitize"
+                            ng-click="handleClickOnTask($event,key);"></div>
                         </div>
                     </div>
                     <!-- empty state empty list-->
@@ -138,6 +149,7 @@
             <!-- bottom panels -->
             <!-- PANEL 1: create new list -->
             <!-- show only when list view is in focus -->
+            
             <div 
                 id="add-new-task-with-new-list" 
                 class="nav-bar-panel visible" 
@@ -149,8 +161,13 @@
                         class="add-new-list-title rounded-2"
                         ng-model="newListName" 
                         ng-attr-placeholder="New NoteBook name..."
-                        placeholder="New NoteBook name...">
-                    <i ng-click="handleCreateList();" class="material-icons add_task_icon">edit_document</i>
+                        placeholder="New NoteBook name..."></input>
+                    
+                    <span 
+                    ng-click="handleCreateList()"
+                    class="material-symbols-outlined add_task_icon">
+                        send
+                        </span>
                 </div>
             </div>
 
@@ -178,16 +195,21 @@
                 align-items: center;
             ">
 
-                    <!-- <i class="material-icons add_task_icon">radio_button_unchecked</i> -->
+                    <!-- <span class="material-symbols-outlined add_task_icon">radio_button_unchecked</span> -->
                     <div 
                         contenteditable="true" 
                         id="newTaskContent"
                         class="new-task-content rounded-2" 
                         placeholder="Create task..."></div>
-                    <i id="add-new-task-ok" ng-click="handleSaveTask();"
-                        class="material-icons add_task_icon">edit_document</i>
-                    <i id="confirm-change-button" style="display: none;" ng-click="updateTask()"
-                        class="material-icons add_task_icon">edit_document</i>
+                    <span 
+                    id="add-new-task-ok" 
+                    ng-click="handleSaveTask();"
+                    class="material-symbols-outlined add_task_icon">send</span>
+                    <span 
+                    id="confirm-change-button" 
+                    style="display: none;" 
+                    ng-click="updateTask()"
+                    class="material-symbols-outlined add_task_icon">span</span>
 
                 </div>
             </div>
@@ -212,18 +234,18 @@
     <div id="list-more-options-container" ng-show="show_list_more_options">
         <div class="list-more-optionas-holder">
             <div id="remove-completed-tasks-button" class="task-more-options-item">
-                <i class="material-icons">cloud</i>
+                <span class="material-symbols-outlined">cloud</span>
                 <span id="total_size" ng-bind="app_size_value"></span>
             </div>
 
             <div id="change-theme-button" class="task-more-options-item" ng-click="toggle_theme()">
-                <i class="material-icons">{{theme_menu_icon}}</i>
+                <span class="material-symbols-outlined">{{theme_menu_icon}}</span>
                 <span>{{theme_menu_text}}</span>
             </div>
 
             <div ng-click="purgeList()" id="remove-all-tasks-button" class="task-more-options-item"
                 ng-show="show_purge_list_option">
-                <i class="material-icons">opacity</i>
+                <span class="material-symbols-outlined">opacity</span>
                 <span>Empty List</span>
             </div>
 
@@ -232,18 +254,21 @@
                 class="task-more-options-item text-red-500" 
                 ng-click="handleDeleteList()"
                 ng-show="show_delete_list_option">
-                <i class="material-icons">delete</i>
+                <span class="material-symbols-outlined">delete</span>
                 <span>Delete List!</span>
             </div>
             <div class="task-more-options-item text-red-500" ng-click="toggle_list_more_options_visibility()">
-                <i class="material-icons">cancel</i>
+                <span class="material-symbols-outlined">cancel</span>
                 <div>Close</div>
             </div>
         </div>
     </div>
 
     <!-- blocking screen  -->
-    <div class="block-screen" ng-show="show_list_more_options || show_task_more_options"></div>
+    <div 
+    class="block-screen" 
+    ng-show="show_list_more_options || show_task_more_options"
+    ng-click="handle_click_on_blockscreen()"></div>
 
     <!-- toast message -->
     <div class="toast" style="z-index: -99; opacity: 0;">
@@ -255,42 +280,42 @@
     <div class="taskMoreOptionsConatiner" ng-show="show_task_more_options">
         <div class="task-more-options-holder">
             <div class="task-more-options-item" id="editTaskButton" ng-click="editTask();">
-                <i class="material-icons ">edit</i>
+                <span class="material-symbols-outlined ">edit</span>
                 <div>Edit note</div>
             </div>
             <div class="task-more-options-item" ng-click="deleteTask();" class="danger">
-                <i class="material-icons">delete</i>
+                <span class="material-symbols-outlined">delete</span>
                 <div>Delete note</div>
             </div>
             <div class="task-more-options-item" ng-click="move_task(-1)">
-                <i class="material-icons">expand_less</i>
+                <span class="material-symbols-outlined">expand_less</span>
                 <div>Move Up</div>
             </div>
             <div class="task-more-options-item" ng-click="move_task(1)">
-                <i class="material-icons">expand_more</i>
+                <span class="material-symbols-outlined">expand_more</span>
                 <div>Move Down</div>
             </div>
 
 
             <div class="task-more-options-item" ng-click="moveTask();">
-                <i class="material-icons">mediation</i>
+                <span class="material-symbols-outlined">mediation</span>
                 <div>Move to another list</div>
             </div>
             <div class="task-more-options-item" ng-click="mergeTask();">
-                <i class="material-icons">architecture</i>
+                <span class="material-symbols-outlined">architecture</span>
                 <div>Merge with another note</div>
             </div>
 
             <div class="task-more-options-item" ng-click="strike_out_task();" ng-show="task_completed_state">
-                <i class="material-icons">done_outline</i>
+                <span class="material-symbols-outlined">done_outline</span>
                 <div>Strike Clear</div>
             </div>
             <div class="task-more-options-item" ng-click="strike_out_task();" ng-show="!task_completed_state">
-                <i class="material-icons">done</i>
+                <span class="material-symbols-outlined">done</span>
                 <div>Strike Out</div>
             </div>
             <div class="task-more-options-item text-red-500" ng-click="close_task_more_options()">
-                <i class="material-icons">cancel</i>
+                <span class="material-symbols-outlined">cancel</span>
                 <div>Close</div>
             </div>
         </div>

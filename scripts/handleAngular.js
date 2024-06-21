@@ -174,6 +174,9 @@ app.controller('myctrl', function ($scope, $sce) {
   $scope.close_task_more_options = function () {
     $scope.show_task_more_options = false
   }
+  $scope.handle_click_on_blockscreen=function(){
+    this.close_task_more_options()
+  }
 
   $scope.deleteTask = function (index) {
     let indexToRemove = -1;
@@ -365,11 +368,13 @@ app.controller('myctrl', function ($scope, $sce) {
       $scope.theme = "dark"
       $scope.theme_menu_text = "Turn On Light Theme"
       $scope.theme_menu_icon = "light_mode"
+      document.querySelector("#theme-color").setAttribute("content","#131417")
     } else {
       //change to light_mode
       $scope.theme = "light"
       $scope.theme_menu_text = "Turn On Dark Theme"
       $scope.theme_menu_icon = "dark_mode"
+      document.querySelector("#theme-color").setAttribute("content","aliceblue")
     }
     $scope.toggle_list_more_options_visibility()
     $scope.saveData()
@@ -382,9 +387,11 @@ app.controller('myctrl', function ($scope, $sce) {
     if ($scope.theme === "light") {
       $scope.theme_menu_text = "Turn On Dark Theme";
       $scope.theme_menu_icon = "dark_mode";
+      document.querySelector("#theme-color").setAttribute("content","aliceblue")
     } else {
       $scope.theme_menu_text = "Turn On Light Theme";
       $scope.theme_menu_icon = "light_mode";
+      document.querySelector("#theme-color").setAttribute("content","#131417")
     }
   };
 
