@@ -375,6 +375,7 @@ app.controller('myctrl', function ($scope, $sce) {
       $scope.theme_menu_text = "Turn On Dark Theme"
       $scope.theme_menu_icon = "dark_mode"
       document.querySelector("#theme-color").setAttribute("content","aliceblue")
+      document.querySelector("#theme-color").setAttribute("content","aliceblue")
     }
     $scope.toggle_list_more_options_visibility()
     $scope.saveData()
