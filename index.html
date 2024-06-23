@@ -85,7 +85,7 @@
                     <div ng-repeat="task in filtered_search = (allTasks | filter: search | limitTo: 10)">
                         <div class="task" ng-click="">
                             <span class="material-symbols-outlined" ng-bind="task.taskIcon"></span>
-                            <span ng-bind-html="task.title | sanitize"></span>
+                            <span ng-bind-html="handle_task_html(task.title) | sanitize"></span>
                         </div>
                     </div>
                 </Div>
@@ -125,7 +125,7 @@
                             ng-click="toggle_task_complete($event,key);"></span>
                             <div  
                             class="task-content-div"
-                            ng-bind-html="value.title | sanitize"
+                            ng-bind-html="handle_task_html(value.title) | sanitize"
                             ng-click="handleClickOnTask($event,key);"></div>
                         </div>
                     </div>
@@ -180,14 +180,28 @@
                 >
                 <div class="add-task-edit-options">
                     <div class="button" onclick="insertList('ol')">
-                        <div class="chip">1. 2. 3.</div>
+                        <div class="chip">
+                            <span class="material-symbols-outlined">
+                                format_list_numbered
+                                </span>
+                        </div>
                     </div>
                     <div class="button" onclick="insertHeading()">
-                        <div class="chip">Heading</div>
+                        <div class="chip">                            <span class="material-symbols-outlined">title</span>
+                        </div>
                     </div>
                     <div class="button" onclick="insertList('ul')">
-                        <div class="chip">#... #...</div>
+                        <div class="chip">
+                            <span class="material-symbols-outlined">
+                            list
+                            </span></div>
                     </div>
+                    <div class="button" onclick="insertProgress()">
+                        <div class="chip">
+                            <span class="material-symbols-outlined">sliders</span>
+                        </div>
+                    </div>
+                    
                 </div>
                 <div style="
                 display: flex;

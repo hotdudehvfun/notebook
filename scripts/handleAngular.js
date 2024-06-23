@@ -8,7 +8,51 @@ app.filter("sanitize", ['$sce', function ($sce) {
   }
 }]);
 
+function extract_percentage(text) {
+  // Create a regex to match #XX% where XX is any number
+  const regex = /#(\d{1,2}|100)%/g;
+  const matches = text.match(regex);
+  // If there are no matches, return an empty array
+  if (!matches) {
+      return [];
+  }
+  // Extract the number from each match
+  return matches.map(match => match.match(/\d+/)[0]);
+}
+
+function replacePercentageWithProgressBar(text) {
+  // Create a regex to match #XX% where XX is any number from 0 to 100
+  const regex = /#(\d{1,2}|100)%/g;
+  
+  // Use replace with a callback to dynamically insert the matched percentage
+  return text.replace(regex, (match, p1) => {
+      return `<div 
+      class="progress_bar" 
+      data-value="${p1}"
+      style="background: linear-gradient(
+        to right, 
+        var(--progress-a),
+        var(--progress-a) ${p1}%,
+        var(--progress-b) ${p1}%,
+        var(--progress-b)
+      );"
+      >
+      </div>`;
+  });
+
+}
+
+
 app.controller('myctrl', function ($scope, $sce) {
+  // handle html for task input
+  $scope.handle_task_html = function(text){
+    //handle progress bar
+    text = replacePercentageWithProgressBar(text)
+
+    return text
+  }
+
+
   //for searching made easy
   $scope.getTasksOnly = function () {
     var allTasks = [];

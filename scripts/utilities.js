@@ -195,6 +195,13 @@ function insertHeading()
   insertHtmlAtCursor('<h1>Heading 1<h1/>')
 }
 
+function insertProgress()
+{
+  document.querySelector("#newTaskContent").focus();
+  insertHtmlAtCursor(`#50%`)
+}
+
+
 function getRandomColor()
 {
   let colors=
