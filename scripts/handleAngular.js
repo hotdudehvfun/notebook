@@ -1,7 +1,17 @@
 let app = angular.module("myapp", []);
 //use this to create new properties on previous version
 let patchApplied = false;
-console.log("app version:3.1.0")
+console.log("app version:3.2.0")
+console.log(`
+Features
+  > Added progress bar code:#20%
+  > Merge tasks
+  > Delete Tasks
+  > Delete Notebooks
+
+`)
+
+
 app.filter("sanitize", ['$sce', function ($sce) {
   return function (htmlCode) {
     return $sce.trustAsHtml(htmlCode);
@@ -521,7 +531,7 @@ app.controller('myctrl', function ($scope, $sce) {
     }
 
     $scope.taskArray = [];
-    console.log($scope.listArray);
+    console.log("Total notebooks found:",$scope.listArray.length);
     $scope.defaultPageTitle = "Notebooks";
     $scope.pageTitle = $scope.defaultPageTitle;
     $scope.taskI = -1;
@@ -568,7 +578,6 @@ function setupDemoList() {
 function borderColorThemePatch(json) {
   json.forEach(item => {
     item.borderColor = item.borderColor || {};
-    console.log(item.borderColor)
     if (item.borderColor.length == undefined) {
       //newly created property
       //assign random color
