@@ -4,7 +4,7 @@ let patchApplied = false;
 console.log("app version:3.2.0")
 console.log(`
 Features
-  > Added progress bar code:#20%
+  > Added progress bar code:@20%
   > Merge tasks
   > Delete Tasks
   > Delete Notebooks
@@ -18,47 +18,12 @@ app.filter("sanitize", ['$sce', function ($sce) {
   }
 }]);
 
-function extract_percentage(text) {
-  // Create a regex to match #XX% where XX is any number
-  const regex = /#(\d{1,2}|100)%/g;
-  const matches = text.match(regex);
-  // If there are no matches, return an empty array
-  if (!matches) {
-      return [];
-  }
-  // Extract the number from each match
-  return matches.map(match => match.match(/\d+/)[0]);
-}
-
-function replacePercentageWithProgressBar(text) {
-  // Create a regex to match #XX% where XX is any number from 0 to 100
-  const regex = /#(\d{1,2}|100)%/g;
-  
-  // Use replace with a callback to dynamically insert the matched percentage
-  return text.replace(regex, (match, p1) => {
-      return `<div 
-      class="progress_bar" 
-      data-value="${p1}"
-      style="background: linear-gradient(
-        to right, 
-        var(--progress-a),
-        var(--progress-a) ${p1}%,
-        var(--progress-b) ${p1}%,
-        var(--progress-b)
-      );"
-      >
-      </div>`;
-  });
-
-}
-
 
 app.controller('myctrl', function ($scope, $sce) {
   // handle html for task input
   $scope.handle_task_html = function(text){
     //handle progress bar
-    text = replacePercentageWithProgressBar(text)
-
+    text = parseWikiTextToHTML(text)
     return text
   }
 
@@ -110,19 +75,24 @@ app.controller('myctrl', function ($scope, $sce) {
   $scope.handleBackButton = function () {
     //on back button show notebooks
     //hide notes
-    $scope.search = "";
-    $scope.pageTitle = $scope.defaultPageTitle;
-    $scope.show_delete_list_option = false
-    $scope.show_purge_list_option = false
-    $scope.selectedListIndex = -1
+    try {
+      // console.log("back button clicked")
+      $scope.search = "";
+      $scope.pageTitle = $scope.defaultPageTitle;
+      $scope.show_delete_list_option = false
+      $scope.show_purge_list_option = false
+      $scope.selectedListIndex = -1
+    } catch (err) {
+      console.log("Error while back button",err)
+    }
   }
 
   $scope.init_hammer_touch_events = function () {
     var hammertime = new Hammer(document.querySelector("body"));
-    //console.log(hammertime)
+    console.log(hammertime)
     hammertime.on('swiperight', function (ev) {
-      //handle back button here
       $scope.handleBackButton()
+      $scope.$apply();
     });
   }
 
@@ -147,18 +117,27 @@ app.controller('myctrl', function ($scope, $sce) {
 
 
   $scope.handleSaveTask = function () {
-    var newTaskContent = document.querySelector("#newTaskContent").innerHTML.trim();
-    if (newTaskContent.length > 1 && $scope.selectedListIndex != undefined) {
-      let newTask = new Task(newTaskContent);
-      $scope.listArray[$scope.selectedListIndex].taskArray.push(newTask)
-      $scope.taskArray = $scope.listArray[$scope.selectedListIndex].taskArray
+    try {
+      if(
+        $scope.newTaskContent.trim().length>0 && 
+        ($scope.selectedListIndex != undefined ||$scope.selectedListIndex>=0) )
+        {
+          let newTask = new Task($scope.newTaskContent.trim())
+          $scope.listArray[$scope.selectedListIndex].taskArray.push(newTask)
+          $scope.taskArray = $scope.listArray[$scope.selectedListIndex].taskArray
+          
 
-      showToast(`Note added`);
-      //close panel and clean up
-      $("#newTaskContent").html("");
-      //at last save to local storage
-      $scope.saveData();
-      console.log($scope.listArray[$scope.selectedListIndex])
+          //reset options
+          $scope.newTaskContent = ""
+          $scope.new_task_content_height = 80
+          $scope.show_add_task_edit_options = false
+
+          $scope.saveData();
+          showToast(`Note added`);
+      }
+    } catch (err) {
+      console.log(err)
+      showToast(`Unable to add note`)
     }
   }
 
@@ -191,8 +170,9 @@ app.controller('myctrl', function ($scope, $sce) {
     }
   }
 
-  $scope.handleClickOnTask = function ($event, key) {
+  $scope.handleClickOnTask = function (event, key) {
 
+    // console.log(event.currentTarget)
     if ($scope.mergeInProgress) {
       //merge in progress no need to show options
       //merger with selected task
@@ -229,8 +209,26 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.show_task_more_options = false
   }
   $scope.handle_click_on_blockscreen=function(){
-    this.close_task_more_options()
+    if($scope.show_list_more_options)
+      $scope.toggle_list_more_options_visibility()
+    
+    if($scope.show_task_more_options)
+      $scope.close_task_more_options()
   }
+
+  $scope.handle_remove_completed_tasks = function()
+  {
+    try {
+      $scope.taskArray = $scope.taskArray.filter(task => !task.isTaskCompleted)
+      $scope.listArray[$scope.selectedListIndex].taskArray = $scope.taskArray
+      $scope.saveData()
+      $scope.toggle_list_more_options_visibility()  
+    } catch (error) {
+      console.log(error)
+    }
+    
+  }
+
 
   $scope.deleteTask = function (index) {
     let indexToRemove = -1;
@@ -249,7 +247,6 @@ app.controller('myctrl', function ($scope, $sce) {
       let removed = $scope.taskArray.splice(indexToRemove, 1);
       $scope.saveData();
       $scope.show_task_more_options = false
-
       showToast("Note deleted!");
     } else {
       showToast("Error while removing note");
@@ -299,11 +296,8 @@ app.controller('myctrl', function ($scope, $sce) {
     //open add box done from event open close nav bar js
     //close more options
     $scope.show_task_more_options = false
-
-
     //set content
-    $("#newTaskContent").html($scope.taskArray[$scope.taskI].title)
-
+    $scope.newTaskContent = $scope.taskArray[$scope.taskI].title
     //change add to edit
     document.querySelector("#confirm-change-button").style.display = "block";
     document.querySelector("#add-new-task-ok").style.display = "none";
@@ -311,12 +305,12 @@ app.controller('myctrl', function ($scope, $sce) {
   }
 
   $scope.updateTask = function () {
-    $scope.taskArray[$scope.taskI].title = document.querySelector("#newTaskContent").innerHTML.trim();
+    $scope.taskArray[$scope.taskI].title = $scope.newTaskContent
 
     //revert back
     document.querySelector("#confirm-change-button").style.display = "none";
     document.querySelector("#add-new-task-ok").style.display = "block";
-    $("#newTaskContent").html("")
+    $scope.newTaskContent = ""
     showToast("Note updated");
     $scope.saveData()
   }
@@ -396,8 +390,8 @@ app.controller('myctrl', function ($scope, $sce) {
   $scope.toggle_list_more_options_visibility = function () {
     $scope.show_list_more_options = !$scope.show_list_more_options
     $scope.nav_more_vert_icon = $scope.show_list_more_options ? "close" : "more_horiz";
+    // console.log($scope.show_list_more_options)
     $scope.app_size()
-    
   }
 
   $scope.app_size = function () {
@@ -496,6 +490,32 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.mouse_up_time = 0
     $scope.mouse_down_time = 0
   }
+
+  $scope.handle_keypress_newtask = function(e){
+    try {
+        //handle height
+        console.log(e.keyCode);
+        (e.keyCode==13 && $scope.new_task_content_height<250) ? $scope.new_task_content_height +=10:0;
+
+        //handle codes
+        if(e.keyCode==32 || e.keyCode==13)
+        {
+          //#today #now #day
+          var codes = {
+            "#today": formatDate(new Date()),
+            "#now": formatTime(new Date()),
+            "#day": formatDay(new Date())
+          };
+          for (var code in codes) {
+            if ($scope.newTaskContent.includes(code)) {
+                $scope.newTaskContent = $scope.newTaskContent.replace(code, codes[code]);
+            }
+          }
+        }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   
 
 
@@ -503,11 +523,10 @@ app.controller('myctrl', function ($scope, $sce) {
 
   //define all funcions above init
   $scope.init = function () {
-    console.log("initializing app...");
+    // console.log("initializing app...");
     
     $scope.mouse_down_time = 0
     $scope.mouse_up_time = 0
-
     $scope.moveInProgress = false
     $scope.mergeInProgress = false
     $scope.show_list_more_options = false
@@ -517,12 +536,13 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.show_delete_list_option = false
     $scope.show_purge_list_option = false
     $scope.selectedListIndex = -1
+    $scope.show_searchbar=false
+    $scope.new_task_content_height = 80
+    //by default edit options are hidden
+    $scope.show_add_task_edit_options = false
 
     //read saved data
     $scope.listArray = readData();
-
-
-
 
     if (patchApplied) {
       //if new property added to previous version
@@ -534,6 +554,7 @@ app.controller('myctrl', function ($scope, $sce) {
     console.log("Total notebooks found:",$scope.listArray.length);
     $scope.defaultPageTitle = "Notebooks";
     $scope.pageTitle = $scope.defaultPageTitle;
+    $scope.newTaskContent = ""
     $scope.taskI = -1;
     $scope.allTasks = $scope.getTasksOnly();
     $scope.init_hammer_touch_events()
@@ -557,9 +578,6 @@ function readData() {
     } else {
       //load
       let json = JSON.parse(appData);
-      // document.querySelector("#back").value=appData;
-      //apply border color theme patch
-      json = borderColorThemePatch(json);
       return json;
     }
   } catch (error) {
@@ -575,16 +593,3 @@ function setupDemoList() {
   return [list];
 }
 
-function borderColorThemePatch(json) {
-  json.forEach(item => {
-    item.borderColor = item.borderColor || {};
-    if (item.borderColor.length == undefined) {
-      //newly created property
-      //assign random color
-      item.borderColor = getRandomColor();
-      patchApplied = true;
-    }
-  })
-
-  return json;
-}

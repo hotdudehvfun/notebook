@@ -29,7 +29,10 @@
 
 </head>
 
-<body ng-app="myapp" ng-controller='myctrl' ng-swipe-right="handleBackButton()" data-theme="{{theme}}">
+<body 
+    ng-app="myapp" 
+    ng-controller='myctrl' 
+    data-theme="{{theme}}">
     <div class="main-container">
         <div class="app-container">
 
@@ -37,14 +40,22 @@
             <div id="selected-list-info">
                 <!-- name and back button -->
                 <div style="display: flex;flex-direction: row;align-items: center;">
-                    <span id="back-button" class="material-symbols-outlined" ng-click="handleBackButton()"
-                        ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</span>
+                    <span 
+                    id="back-button" 
+                    class="material-symbols-outlined" 
+                    ng-click="handleBackButton()"
+                    ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</span>
                     <div 
                         class="list-with-title" 
                         id="selectedList" 
                         style="display: block;"
                         ng-click="show_notification()" 
                         ng-bind="pageTitle"></div>
+                    
+                    <span 
+                    ng-click="show_searchbar=!show_searchbar"
+                    class="material-symbols-outlined text-accent">
+                    search</span>
                         
                     <span 
                         id="open-more-panel" 
@@ -57,7 +68,10 @@
 
 
                 <!-- search button -->
-                <div class="flex-row align-center m-2 bg-list-bg rounded-2 px-2">
+                <div 
+                class="flex-row align-center m-2 bg-list-bg rounded-2 px-2"
+                ng-show="show_searchbar"
+                >
                     <span class="material-symbols-outlined">search</span>
                 <input 
                 id="search-box" 
@@ -94,16 +108,15 @@
                 <!-- lists -->
                 <div 
                 ng-show="defaultPageTitle==pageTitle"
-                class="lists-container m-2 rounded-2 fade_scale_animation">
+                class="lists-container m-2 rounded-2 slide_animation">
                     <div ng-repeat="(key,value) in listArray">
                         <div 
                         class="list-panel-item" 
                         ng-mouseup="mouse_up(key)" 
                         ng-mousedown="mouse_down()">
                             <div class="list-panel-item-title">
-                                <span
-                                style="color:var(--accent)" 
-                                class="material-symbols-outlined">folder</span>
+                                <span 
+                                class="material-symbols-outlined list-icon">folder</span>
                                 <article class="selected" ng-bind="value.title"></article>
                                 <span class="list-sub-text" ng-bind="(value.taskArray.length)"></span>
                             </div>
@@ -115,7 +128,7 @@
                 <Div 
                 id="view-list-items" 
                 ng-show="defaultPageTitle!=pageTitle"
-                class="fade_scale_animation m-2">
+                class="slide_animation m-2">
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
                         <div class="task" ng-class="{completed: value.isTaskCompleted}">
@@ -163,9 +176,11 @@
                         ng-attr-placeholder="New NoteBook name..."
                         placeholder="New NoteBook name..."></input>
                     
+                    <!-- using css animation class with ng-show  -->
                     <span 
                     ng-click="handleCreateList()"
-                    class="material-symbols-outlined add_task_icon">
+                    ng-show="newListName.length>0"
+                    class="material-symbols-outlined add_task_icon visible_pop_animation">
                         send
                         </span>
                 </div>
@@ -178,25 +193,35 @@
                 class="nav-bar-panel visible"
                 ng-show="defaultPageTitle!=pageTitle"
                 >
-                <div class="add-task-edit-options">
-                    <div class="button" onclick="insertList('ol')">
+                <div 
+                ng-show="show_add_task_edit_options"
+                class="add-task-edit-options visible_pop_animation">
+                    <div 
+                    class="button" 
+                    onclick="insertTextAtCursor('newTaskContent','.ol\n * Item \n..ol')">
                         <div class="chip">
                             <span class="material-symbols-outlined">
                                 format_list_numbered
                                 </span>
                         </div>
                     </div>
-                    <div class="button" onclick="insertHeading()">
+                    <div 
+                    class="button" 
+                    onclick="insertTextAtCursor('newTaskContent','#Heading')">
                         <div class="chip">                            <span class="material-symbols-outlined">title</span>
                         </div>
                     </div>
-                    <div class="button" onclick="insertList('ul')">
+                    <div 
+                    class="button" 
+                    onclick="insertTextAtCursor('newTaskContent','* Item')">
                         <div class="chip">
                             <span class="material-symbols-outlined">
                             list
                             </span></div>
                     </div>
-                    <div class="button" onclick="insertProgress()">
+                    <div 
+                    class="button" 
+                    onclick="insertTextAtCursor('newTaskContent','@90%')">
                         <div class="chip">
                             <span class="material-symbols-outlined">sliders</span>
                         </div>
@@ -210,15 +235,19 @@
             ">
 
                     <!-- <span class="material-symbols-outlined add_task_icon">radio_button_unchecked</span> -->
-                    <div 
-                        contenteditable="true" 
+                    <textarea
+                        ng-focus="show_add_task_edit_options=true"
+                        ng-style="{height: new_task_content_height + 'px'}"
+                        ng-model="newTaskContent"
+                        ng-keypress="handle_keypress_newtask($event)"
                         id="newTaskContent"
                         class="new-task-content rounded-2" 
-                        placeholder="Create task..."></div>
+                        placeholder="Create task..."></textarea>
                     <span 
                     id="add-new-task-ok" 
-                    ng-click="handleSaveTask();"
-                    class="material-symbols-outlined add_task_icon">send</span>
+                    ng-click="handleSaveTask()"
+                    ng-show="newTaskContent.length>0"
+                    class="material-symbols-outlined add_task_icon visible_pop_animation">send</span>
                     <span 
                     id="confirm-change-button" 
                     style="display: none;" 
@@ -246,7 +275,7 @@
 
     <!-- more options panel -->
     <div id="list-more-options-container" ng-show="show_list_more_options">
-        <div class="list-more-optionas-holder">
+        <div class="list-more-optionas-holder visible_pop_animation">
             <div id="remove-completed-tasks-button" class="task-more-options-item">
                 <span class="material-symbols-outlined">cloud</span>
                 <span id="total_size" ng-bind="app_size_value"></span>
@@ -262,6 +291,15 @@
                 <span class="material-symbols-outlined">opacity</span>
                 <span>Empty List</span>
             </div>
+
+            <div 
+            ng-click="handle_remove_completed_tasks()" 
+            class="task-more-options-item"
+            ng-show="show_purge_list_option">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>Remove Completed Tasks</span>
+            </div>
+            
 
             <div 
                 id="delete-list-ok" 
@@ -292,14 +330,10 @@
 
     <!-- taskMoreOptiosContainer -->
     <div class="taskMoreOptionsConatiner" ng-show="show_task_more_options">
-        <div class="task-more-options-holder">
+        <div class="task-more-options-holder visible_pop_animation">
             <div class="task-more-options-item" id="editTaskButton" ng-click="editTask();">
                 <span class="material-symbols-outlined ">edit</span>
                 <div>Edit note</div>
-            </div>
-            <div class="task-more-options-item" ng-click="deleteTask();" class="danger">
-                <span class="material-symbols-outlined">delete</span>
-                <div>Delete note</div>
             </div>
             <div class="task-more-options-item" ng-click="move_task(-1)">
                 <span class="material-symbols-outlined">expand_less</span>
@@ -309,8 +343,6 @@
                 <span class="material-symbols-outlined">expand_more</span>
                 <div>Move Down</div>
             </div>
-
-
             <div class="task-more-options-item" ng-click="moveTask();">
                 <span class="material-symbols-outlined">mediation</span>
                 <div>Move to another list</div>
@@ -328,7 +360,11 @@
                 <span class="material-symbols-outlined">done</span>
                 <div>Strike Out</div>
             </div>
-            <div class="task-more-options-item text-red-500" ng-click="close_task_more_options()">
+            <div class="task-more-options-item text-red-500" ng-click="deleteTask()" class="danger">
+                <span class="material-symbols-outlined">delete</span>
+                <div>Delete note</div>
+            </div>
+            <div class="task-more-options-item text-accent" ng-click="close_task_more_options()">
                 <span class="material-symbols-outlined">cancel</span>
                 <div>Close</div>
             </div>
@@ -338,15 +374,14 @@
 
 
 
-
+    <script type="text/javascript" src="scripts/wiki.js"></script>
     <script type="text/javascript" src="scripts/handleAngular.js"></script>
     <script type="text/javascript" src="scripts/htmlGenerator.js"></script>
-    <script type="text/javascript" src="scripts/handleSingleTaskEvents.js"></script>
-    <script type="text/javascript" src="scripts/handleOpenCloseEventOfNavBarPanels.js"></script>
-    <!-- <script type="text/javascript" src="scripts/handleNavBarEvents.js"></script> -->
+    <!-- <script type="text/javascript" src="scripts/handleSingleTaskEvents.js"></script>
+    <script type="text/javascript" src="scripts/handleOpenCloseEventOfNavBarPanels.js"></script> -->
     <script type="text/javascript" src="scripts/utilities.js"></script>
-    <script type="text/javascript" src="scripts/svgAnimation.js"></script>
-    <script type="text/javascript" src="scripts/icon_database.js"></script>
+    <!-- <script type="text/javascript" src="scripts/svgAnimation.js"></script> -->
+    <!-- <script type="text/javascript" src="scripts/icon_database.js"></script> -->
 
 
 

@@ -5,8 +5,8 @@ html{
     --border-color: #fff;
     --list-border:#d1d1d1;
     --list-bg:white;
-    --border-color:mediumpurple;
-    --accent:mediumpurple;
+    --border-color:#2997ff;
+    --accent:#2997ff;
     --chip-bg:whitesmoke;
     --progress-a:#4ade80;
     --progress-b:aliceblue;
@@ -204,7 +204,11 @@ input:focus {
     padding: 0.5rem 1rem;
     border-radius: 1rem;
     width: 100%;
-    transition:0.5s all;
+    transition:0.2s all;
+}
+.list-panel-item:last-child
+{
+    border:none;
 }
 
 .list-panel-item:active
@@ -212,15 +216,7 @@ input:focus {
     transform:scale(0.9)
 }
 
-.list-panel-item i {
-    font-size: 1.2rem;
-    background: mediumpurple;
-    padding: 5px;
-    text-align: center;
-    align-self: center;
-    border-radius: 2rem;
-    color: var(--list-bg);
-}
+
 
 .list-panel-item-title {
     display: flex;
@@ -283,6 +279,8 @@ input:focus {
     background-color: var(--list-bg);
     border-radius: 15px;
     margin-top: 10px;
+    align-items: center;
+    transition: 0.5s all;
 }
 
 .task .dashed {
@@ -545,14 +543,15 @@ search_list_name {
 
 .new-task-content {
     padding: 1.2rem;
-    color: gray;
     margin: 1.5rem 1rem;
-    border-radius: 2px;
     background: #44409b1f;
     overflow-y: auto;
     max-height: 350px;
     width: 100%;
-    /* border-bottom: 2px solid var(--accent); */
+    color: var(--font-color);
+    font-size: 1rem;
+    border: none;
+    resize: none;
 }
 
 .new-task-content:not(:empty) {
@@ -738,6 +737,7 @@ div#list-more-options-container {
     align-self: center;
     margin: .5rem;
     text-align: end;
+    font-weight: bolder;
 }
 
 list-progress {
@@ -877,6 +877,15 @@ div.show-color-palette {
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #d7d7d7;
+    touch-action:auto;
+}
+.task-more-options-item:hover{
+    color:var(--accent);
+}
+
+
+.task-more-options-item:last-child{
+    border:none;
 }
 
 .task-more-options-holder {
@@ -921,11 +930,12 @@ div#close-task-more-options {
 }
 
 #back-button {
-    color: var(--font-color);
+    color: var(--accent);
     font-size: 160%;
     border-radius: 100px;
     text-align: center;
     margin: 0rem 0.5rem;
+    font-weight:bold;
 }
 
 input.add-new-list-title {
@@ -1081,6 +1091,7 @@ input:checked + .slider:before {
     font-size: 1.5rem;
     margin: .5rem;
     color:var(--accent);
+    font-weight: bold;
 }
 
 .text-red-500 {
@@ -1088,7 +1099,7 @@ input:checked + .slider:before {
 }
 
 .add_task_icon {
-    color: mediumpurple;
+    color: var(--accent);
     font-size: 2rem;
 }
 
@@ -1154,18 +1165,22 @@ input:checked + .slider:before {
     transition:0.5s all;
 }
 
-.fade_scale_animation {
-    animation: fade_scale_anim 0.2s;
+.slide_animation {
+    animation: slide_anim 0.2s;
 }
 
-@keyframes fade_scale_anim {
+@keyframes slide_anim {
     0% {
         opacity: 0;
         transform: scale(0.95);
+        transform:translate(10%,0)
+        
     }
     100% {
         opacity: 1;
         transform: scale(1);
+        transform:translate(0%,0)
+        
     }
 }
 
@@ -1202,4 +1217,36 @@ input:checked + .slider:before {
     text-align:center;
     display: block;
     text-shadow: 0px 0px #717171;
+}
+
+.list-icon{
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.text-accent {
+    color: var(--accent);
+}
+.text-center{
+    text-align:center;
+}
+
+.visible_pop_animation
+{
+    animation: pop_anim 0.2s;
+    transform-origin: center;
+}
+
+@keyframes pop_anim {
+    0% {
+        opacity: 0;
+        bottom: 20px;
+        transform: scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        bottom: 0px;
+        transform: scale(1);
+    }
 }

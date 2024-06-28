@@ -216,3 +216,35 @@ function getRandomColor()
   return colors[getRandomInt(0,colors.length-1)]
 
 }
+
+
+
+function insertTextAtCursor(textareaId, text) {
+  var textarea = document.getElementById(textareaId);
+  var startPos = textarea.selectionStart;
+  var endPos = textarea.selectionEnd;
+  var beforeText = textarea.value.substring(0, startPos);
+  var afterText = textarea.value.substring(endPos, textarea.value.length);
+
+  textarea.value = beforeText + text + afterText;
+  textarea.selectionStart = textarea.selectionEnd = startPos + text.length;
+  textarea.focus();
+}
+
+
+//date and time formats
+function formatDate(date) {
+  var options = { day: '2-digit', month: 'long', year: 'numeric' };
+  return date.toLocaleDateString('en-US', options);
+}
+
+function formatTime(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  return (hours < 10 ? '0' : '') + hours + (minutes < 10 ? '0' : '') + minutes + " hours";
+}
+
+function formatDay(date) {
+  var options = { weekday: 'long' };
+  return date.toLocaleDateString('en-US', options);
+}
