@@ -35,39 +35,29 @@
     data-theme="{{theme}}">
     <div class="main-container">
         <div class="app-container">
-
-            <!-- current list selected -->
-            <div id="selected-list-info">
-                <!-- name and back button -->
-                <div style="display: flex;flex-direction: row;align-items: center;">
-                    <span 
-                    id="back-button" 
-                    class="material-symbols-outlined" 
-                    ng-click="handleBackButton()"
-                    ng-show="search.length>0 || selectedListIndex>=0">arrow_back_ios</span>
-                    <div 
+            <div 
                         class="list-with-title" 
                         id="selectedList" 
                         style="display: block;"
                         ng-click="show_notification()" 
                         ng-bind="pageTitle"></div>
-                    
+            <!-- current list selected -->
+            <div id="selected-list-info">
+                <div style="
+                text-align: right;
+                position: relative;
+            ">
                     <span 
                     ng-click="show_searchbar=!show_searchbar"
                     class="material-symbols-outlined text-accent">
                     search</span>
-                        
                     <span 
                         id="open-more-panel" 
                         style="z-index: 999;" 
                         class="material-symbols-outlined"
                         ng-click="toggle_list_more_options_visibility()" 
                         ng-bind="nav_more_vert_icon"></span>
-
                 </div>
-
-
-                <!-- search button -->
                 <div 
                 class="flex-row align-center m-2 bg-list-bg rounded-2 px-2"
                 ng-show="show_searchbar"
@@ -105,9 +95,10 @@
                 </Div>
                 <!-- search results end-->
 
-                <!-- lists -->
+                <div class="list_and_tasks_holder hide-scrollbar">
+
+                    <!-- lists -->
                 <div 
-                ng-show="defaultPageTitle==pageTitle"
                 class="lists-container m-2 rounded-2 slide_animation">
                     <div ng-repeat="(key,value) in listArray">
                         <div 
@@ -116,9 +107,13 @@
                         ng-mousedown="mouse_down()">
                             <div class="list-panel-item-title">
                                 <span 
-                                class="material-symbols-outlined list-icon">folder</span>
+                                class="material-symbols-outlined list-icon"
+                                ng-bind="get_list_icon(value)"
+                                ></span>
                                 <article class="selected" ng-bind="value.title"></article>
-                                <span class="list-sub-text" ng-bind="(value.taskArray.length)"></span>
+                                <span 
+                                class="list-sub-text" 
+                                ng-bind="get_list_info(value.taskArray)"></span>
                             </div>
                         </div>
                     </div>
@@ -127,7 +122,6 @@
                 <!-- view tasks  -->
                 <Div 
                 id="view-list-items" 
-                ng-show="defaultPageTitle!=pageTitle"
                 class="slide_animation m-2">
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
@@ -149,6 +143,8 @@
                                 <span>Nothing to see here.</span>
                     </div>
                 </Div>
+                
+                </div>
                 <!-- empty state no list-->
                 <div style="text-align: center;" ng-show="listArray.length==0">
                     <h1>
@@ -168,9 +164,10 @@
                 class="nav-bar-panel visible" 
                 ng-show="defaultPageTitle==pageTitle"
                 >
-                <div style="display: flex;flex-direction: row;align-items: center;">
+                <div class="flex-row align-center gap-1">
+                    <span class="material-symbols-outlined list-icon" ng-bind="new_notebook_icon"></span>
                     <input 
-                        ng-keypress="checkIfEnterPressed($event)"
+                        ng-keypress="handle_input_on_notebook($event)"
                         class="add-new-list-title rounded-2"
                         ng-model="newListName" 
                         ng-attr-placeholder="New NoteBook name..."
@@ -228,11 +225,7 @@
                     </div>
                     
                 </div>
-                <div style="
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-            ">
+                <div class="flex-row align-center">
 
                     <!-- <span class="material-symbols-outlined add_task_icon">radio_button_unchecked</span> -->
                     <textarea
@@ -377,15 +370,6 @@
     <script type="text/javascript" src="scripts/wiki.js"></script>
     <script type="text/javascript" src="scripts/handleAngular.js"></script>
     <script type="text/javascript" src="scripts/htmlGenerator.js"></script>
-    <!-- <script type="text/javascript" src="scripts/handleSingleTaskEvents.js"></script>
-    <script type="text/javascript" src="scripts/handleOpenCloseEventOfNavBarPanels.js"></script> -->
     <script type="text/javascript" src="scripts/utilities.js"></script>
-    <!-- <script type="text/javascript" src="scripts/svgAnimation.js"></script> -->
-    <!-- <script type="text/javascript" src="scripts/icon_database.js"></script> -->
-
-
-
-
 </body>
-
 </html>

@@ -4,7 +4,7 @@ let patchApplied = false;
 console.log("app version:3.2.0")
 console.log(`
 Features
-  > Added progress bar code:@20%
+  > Added progress bar code:#20%
   > Merge tasks
   > Delete Tasks
   > Delete Notebooks
@@ -57,6 +57,11 @@ app.controller('myctrl', function ($scope, $sce) {
       // console.log($scope.selectedListName)
       //load list info, this function also used by tap and hold event to load list info
       $scope.load_list_info(index)
+      //scroll to tasks
+      var container = document.querySelector(".list_and_tasks_holder")
+      //large to value to move to last
+      container.scrollTo({left:10000,behavior: 'smooth'})
+      
       if ($scope.moveInProgress) {
         //save task to move
         $scope.taskArray.push($scope.noteToMove);
@@ -72,41 +77,52 @@ app.controller('myctrl', function ($scope, $sce) {
   }
 
 
-  $scope.handleBackButton = function () {
-    //on back button show notebooks
-    //hide notes
+  $scope.reset_view = function () {
     try {
-      // console.log("back button clicked")
+      console.log("reset called")
       $scope.search = "";
       $scope.pageTitle = $scope.defaultPageTitle;
       $scope.show_delete_list_option = false
       $scope.show_purge_list_option = false
       $scope.selectedListIndex = -1
+      var holder = document.querySelector(".list_and_tasks_holder")
+      holder.scrollTo({left:0,behavior: 'smooth'})
+      $scope.$apply()
     } catch (err) {
-      console.log("Error while back button",err)
+      console.log("Error while reseting button",err)
     }
   }
 
-  $scope.init_hammer_touch_events = function () {
-    var hammertime = new Hammer(document.querySelector("body"));
-    console.log(hammertime)
-    hammertime.on('swiperight', function (ev) {
-      $scope.handleBackButton()
-      $scope.$apply();
-    });
-  }
 
 
-  $scope.checkIfEnterPressed = function (e) {
+
+  $scope.handle_input_on_notebook = function (e) {
     if (e.keyCode == 13) {
       $scope.handleCreateList()
       e.target.value = "";
+    }else{
+        $scope.new_notebook_icon = getIconForTitle($scope.newListName)
     }
+  }
+
+  $scope.get_list_icon = function (list) {
+    if(list.hasOwnProperty("icon"))
+      return list.icon
+    else
+      return "folder"
+  }
+
+  $scope.get_list_info = function(taskArray)
+  {
+    var completed = taskArray.filter(function (task) { return task.isTaskCompleted == true }).length;
+    if(completed==0)
+      return taskArray.length;
+    return `${completed}/${taskArray.length}`
   }
 
   $scope.handleCreateList = function () {
     if ($scope.newListName.length > 1) {
-      let newList = new List($scope.newListName);
+      let newList = new List($scope.newListName,$scope.new_notebook_icon);
       // $scope.selectedListIndex = 
       $scope.listArray.push(newList)
       showToast(`Notebook create:  ${newList.title}`);
@@ -166,7 +182,7 @@ app.controller('myctrl', function ($scope, $sce) {
       $scope.saveData();
       $scope.toggle_list_more_options_visibility()
       //go back to main screen after delete
-      $scope.handleBackButton();
+      $scope.reset_view();
     }
   }
 
@@ -261,7 +277,7 @@ app.controller('myctrl', function ($scope, $sce) {
     showToast("Tap on List to move note in List");
     $scope.show_task_more_options = false
 
-    $scope.handleBackButton();
+    $scope.reset_view();
 
   }
 
@@ -388,6 +404,7 @@ app.controller('myctrl', function ($scope, $sce) {
 
 
   $scope.toggle_list_more_options_visibility = function () {
+    
     $scope.show_list_more_options = !$scope.show_list_more_options
     $scope.nav_more_vert_icon = $scope.show_list_more_options ? "close" : "more_horiz";
     // console.log($scope.show_list_more_options)
@@ -476,7 +493,7 @@ app.controller('myctrl', function ($scope, $sce) {
   {
     $scope.mouse_up_time = new Date().getTime()
     let diff = $scope.mouse_up_time - $scope.mouse_down_time
-    if(diff<300)
+    if(diff<150)
     {
       console.log("click event")
       $scope.loadList(list_index)
@@ -516,9 +533,29 @@ app.controller('myctrl', function ($scope, $sce) {
       console.log(error)
     }
   }
-  
 
+  $scope.handle_scroll_on_list_and_tasks=function(params) {
+    var holder = document.querySelector(".list_and_tasks_holder");
+    var timeout = null;
 
+    holder.addEventListener("scroll", (event) => {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(() => {
+            var rect = holder.getBoundingClientRect();
+            var perc = holder.scrollLeft / (holder.scrollWidth - rect.width) * 100;
+
+            if (perc < 40) {
+              // holder.scrollTo({left:0,behavior: 'smooth'})
+              $scope.reset_view()
+            } else {
+              holder.scrollTo({left:holder.scrollWidth - holder.clientWidth,behavior: 'smooth'})
+            }
+        }, 100); // Adjust the timeout duration as needed
+    });
+}
 
 
   //define all funcions above init
@@ -538,6 +575,7 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.selectedListIndex = -1
     $scope.show_searchbar=false
     $scope.new_task_content_height = 80
+    $scope.new_notebook_icon = "folder"
     //by default edit options are hidden
     $scope.show_add_task_edit_options = false
 
@@ -555,18 +593,21 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.defaultPageTitle = "Notebooks";
     $scope.pageTitle = $scope.defaultPageTitle;
     $scope.newTaskContent = ""
+    $scope.newListName = ""
     $scope.taskI = -1;
     $scope.allTasks = $scope.getTasksOnly();
-    $scope.init_hammer_touch_events()
-
     //default theme
     $scope.init_theme()
+    $scope.handle_scroll_on_list_and_tasks()
 
   };
 
   $scope.init();
 
 });
+
+
+
 
 
 
@@ -592,4 +633,3 @@ function setupDemoList() {
   list.taskArray.push(task);
   return [list];
 }
-

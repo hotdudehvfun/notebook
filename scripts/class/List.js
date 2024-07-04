@@ -5,7 +5,7 @@ class List {
   static ALL = 3;
   static PENDING = 4;
 
-  constructor(listName)
+  constructor(listName,icon)
   {
     this.title = listName.trim();
     this.taskArray = [];
@@ -13,6 +13,11 @@ class List {
     this.dateCompleted = "";
     //default color
     this.borderColor=getRandomColor();
+    //google font icon default
+    if(icon==undefined)
+      this.icon = "folder"
+    else
+      this.icon = icon
   }
 
   //get task by id from a list

@@ -248,3 +248,65 @@ function formatDay(date) {
   var options = { weekday: 'long' };
   return date.toLocaleDateString('en-US', options);
 }
+
+
+const iconMapping = {
+  'finance': 'savings',
+  'money': 'attach_money',
+  'shopping': 'shopping_cart',
+  'work': 'work',
+  'health': 'health_and_safety',
+  'exercise': 'fitness_center',
+  'food': 'restaurant',
+  'travel': 'flight',
+  'study': 'school',
+  'music': 'music_note',
+  'movies': 'movie',
+  'home': 'home',
+  'family': 'family_restroom',
+  'friends': 'group',
+  'tasks': 'task',
+  'events': 'event',
+  'books': 'book',
+  'technology': 'devices',
+  'games': 'sports_esports',
+  'hobbies': 'palette',
+  'pet': 'pets',
+  'shopping': 'shopping_bag',
+  'groceries': 'local_grocery_store',
+  'car': 'directions_car',
+  'bills': 'receipt_long',
+  'insurance': 'policy',
+  'loan': 'account_balance',
+  'garden': 'local_florist',
+  'repair': 'build',
+  'news': 'article',
+  'communication': 'chat',
+  'meeting': 'meeting_room',
+  'time': 'schedule',
+  'reminder': 'notifications',
+  'map': 'map',
+  'notes': 'note',
+  'wishlist': 'favorite',
+  'food': 'fastfood',
+  'nature': 'nature',
+  'weather': 'wb_sunny',
+  'science': 'science',
+  'crafts': 'handyman',
+  'shopping': 'shopping_basket',
+  'security': 'security',
+  'fitness': 'fitness_center',
+  'kitchen': 'kitchen',
+  'party': 'celebration',
+  'gifts': 'card_giftcard',
+  'todo': 'receipt_long',
+};
+
+function getIconForTitle(title) {
+  for (const [keyword, icon] of Object.entries(iconMapping)) {
+    if (title.toLowerCase().includes(keyword)) {
+        return icon;
+    }
+  }
+  return 'folder'; // Default icon
+}

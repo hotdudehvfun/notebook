@@ -34,33 +34,21 @@ function progress_bar(text) {
         >
         </div>`;
     });
-  
-  }
-
-function flex(text,img)
-{
-    return `
-    <div class="card-text-img">
-        <div class=text>${parseWikiTextToHTML(text)}</div>
-        <div class=img>
-            <img src="${img}" />
-        </div>
-    </div>
-    `
 }
 
-function place_img(img,caption)
-{
-    return `
-    <div class="img-caption">
-        <div class=img>
-            <img src="${img}" />
-        </div>
-        <div class=text>${parseWikiTextToHTML(caption)}</div>
-    </div>
-    `
+function handle_calculations(text) {
+    // Create a regex to match {2+2} and evaluate expression
+    const regex = /{([^}]+)}/g;
+    // Use replace with a callback to dynamically insert the match
+    return text.replace(regex, (match, expression) => {
+        try {
+            return eval(expression);
+        } catch (e) {
+            console.error(`Error evaluating expression: ${expression}`, e);
+            return match; // Return the original match if there's an error
+        }
+    });
 }
-
 
 function handle_list(line)
 {
@@ -76,9 +64,9 @@ function handle_list(line)
     return html
 }
 
-function center_aligned(markdownText) {
+function center_aligned(text) {
     const centerAlignedRegex = /::(.*?)::/g;
-    const htmlText = markdownText.replace(centerAlignedRegex, '<div class="text-center">$1</div>');
+    const htmlText = text.replace(centerAlignedRegex, '<div class="text-center">$1</div>');
     return htmlText;
 }
 
@@ -126,6 +114,8 @@ function parseWikiTextToHTML(wikiText) {
             line = sub(line)
             // progress bar #20%
             line = progress_bar(line)
+            // handle {2+2} eval expression
+            line = handle_calculations(line)
 
             if (line.startsWith('#')) {
                 // Handle headings
