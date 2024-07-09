@@ -1,3 +1,9 @@
+//for swiping tab
+let currentTranslate = 0;
+let translates = [0,0]
+let currentTab = 0;
+
+
 let app = angular.module("myapp", []);
 //use this to create new properties on previous version
 let patchApplied = false;
@@ -54,14 +60,12 @@ app.controller('myctrl', function ($scope, $sce) {
       // when name is changed list view is hided and task view is shown
       $scope.selectedListName = $scope.listArray[index].title;
       $scope.pageTitle = $scope.selectedListName;
-      // console.log($scope.selectedListName)
+      // console.log("List loaded = ",$scope.pageTitle)
       //load list info, this function also used by tap and hold event to load list info
       $scope.load_list_info(index)
-      //scroll to tasks
-      var container = document.querySelector(".list_and_tasks_holder")
-      //large to value to move to last
-      container.scrollTo({left:10000,behavior: 'smooth'})
-      
+      //show tasks, tab=1 shows notes
+      set_tab_position(1)
+
       if ($scope.moveInProgress) {
         //save task to move
         $scope.taskArray.push($scope.noteToMove);
@@ -85,8 +89,6 @@ app.controller('myctrl', function ($scope, $sce) {
       $scope.show_delete_list_option = false
       $scope.show_purge_list_option = false
       $scope.selectedListIndex = -1
-      var holder = document.querySelector(".list_and_tasks_holder")
-      holder.scrollTo({left:0,behavior: 'smooth'})
       $scope.$apply()
     } catch (err) {
       console.log("Error while reseting button",err)
@@ -536,14 +538,11 @@ app.controller('myctrl', function ($scope, $sce) {
 
 //init tabs
 $scope.init_tabs = function(){
-let currentTab = 0;
 let startX = 0;
-let currentTranslate = 0;
 let isDragging = false;
 const tabs = document.querySelector('.tabs');
 const rect = tabs.getBoundingClientRect()
 let progress = 0
-let translates = [0,0]
 
 tabs.addEventListener('touchstart', (e) => {
   if(currentTab<2)
@@ -573,9 +572,10 @@ tabs.addEventListener('touchmove', (e) => {
     progress = 0
     return;
   }
+  //update tabs while swiping
   tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
   tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
-  console.log(progress)
+  // console.log(progress)
 });
 
 tabs.addEventListener('touchend', () => {
@@ -588,7 +588,7 @@ tabs.addEventListener('touchend', () => {
     currentTranslate = 0
     tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
     tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
-    console.log("cancel swip")
+    console.log("cancel swipe")
   }else{
     //complete swipe based on direction
     // console.log("complete swipe",currentTranslate)
@@ -597,24 +597,51 @@ tabs.addEventListener('touchend', () => {
       //show 2nd tab
       currentTab = 1
       console.log("show 2nd tab")
-      currentTranslate = -rect.width;
-      tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
-      tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
+      // currentTranslate = -rect.width;
+      // tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
+      // tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
+      set_tab_position(currentTab)
     }else{
       //show 1st tab
       currentTab = 0
       console.log("show 1st tab")
-      currentTranslate = 0
-      tabs.children[0].style.transform =`translateX(${currentTranslate}px)`
-      tabs.children[1].style.transform =`translateX(${currentTranslate}px)`
+      //currentTranslate = 0
+      set_tab_position(currentTab)
       $scope.reset_view();
     }
   }
   
 });
-
-
 }
+
+function set_tab_position(tab_pos)
+{
+  try {
+    currentTab = tab_pos
+    const tabs = document.querySelector('.tabs');
+    const rect = tabs.getBoundingClientRect()
+    if(currentTab==0)
+    {
+      //show 1st tab
+      tabs.children[0].style.transform =`translateX(0px)`;
+      tabs.children[1].style.transform =`translateX(0px)`;
+      //show notebook add bar
+      
+    }else if (currentTab==1)
+    {
+      //show 2nd tab
+      //current translate is global
+      currentTranslate = -rect.width;
+      //translate is global
+      tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
+      tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
+      //show tasks add bar
+    }
+  } catch (err) {
+    console.log("Error while changing tab position",err)
+  }
+}
+
 
 //define all funcions above init
 $scope.init = function () {
