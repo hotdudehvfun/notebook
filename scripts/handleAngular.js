@@ -534,32 +534,90 @@ app.controller('myctrl', function ($scope, $sce) {
     }
   }
 
-  $scope.handle_scroll_on_list_and_tasks=function(params) {
-    var holder = document.querySelector(".list_and_tasks_holder");
-    var timeout = null;
+//init tabs
+$scope.init_tabs = function(){
+let currentTab = 0;
+let startX = 0;
+let currentTranslate = 0;
+let isDragging = false;
+const tabs = document.querySelector('.tabs');
+const rect = tabs.getBoundingClientRect()
+let progress = 0
+let translates = [0,0]
 
-    holder.addEventListener("scroll", (event) => {
-        if (timeout) {
-            clearTimeout(timeout);
-        }
+tabs.addEventListener('touchstart', (e) => {
+  if(currentTab<2)
+  {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+    translates[0] = getTranslateX(tabs.children[0])
+    translates[1] = getTranslateX(tabs.children[1])
+    //remove transition
+    tabs.children[0].classList.remove("transition")
+    tabs.children[1].classList.remove("transition")
+  }
+});
 
-        timeout = setTimeout(() => {
-            var rect = holder.getBoundingClientRect();
-            var perc = holder.scrollLeft / (holder.scrollWidth - rect.width) * 100;
+tabs.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  const currentX = e.touches[0].clientX;
+  currentTranslate = currentX - startX;
+  progress = Math.abs(currentTranslate/rect.width*100)
+  if(currentTab==0 && currentTranslate>0)
+  {
+    progress = 0
+    return;
+  } 
+  if(currentTab==1 && currentTranslate<0)
+  {
+    progress = 0
+    return;
+  }
+  tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
+  tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
+  console.log(progress)
+});
 
-            if (perc < 40) {
-              // holder.scrollTo({left:0,behavior: 'smooth'})
-              $scope.reset_view()
-            } else {
-              holder.scrollTo({left:holder.scrollWidth - holder.clientWidth,behavior: 'smooth'})
-            }
-        }, 100); // Adjust the timeout duration as needed
-    });
+tabs.addEventListener('touchend', () => {
+  isDragging = false;
+  tabs.children[0].classList.add("transition")
+  tabs.children[1].classList.add("transition")
+  if(progress<30)
+  {
+    //cancel swipe
+    currentTranslate = 0
+    tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
+    tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
+    console.log("cancel swip")
+  }else{
+    //complete swipe based on direction
+    // console.log("complete swipe",currentTranslate)
+    if(currentTranslate<0)
+    {
+      //show 2nd tab
+      currentTab = 1
+      console.log("show 2nd tab")
+      currentTranslate = -rect.width;
+      tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
+      tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
+    }else{
+      //show 1st tab
+      currentTab = 0
+      console.log("show 1st tab")
+      currentTranslate = 0
+      tabs.children[0].style.transform =`translateX(${currentTranslate}px)`
+      tabs.children[1].style.transform =`translateX(${currentTranslate}px)`
+      $scope.reset_view();
+    }
+  }
+  
+});
+
+
 }
 
-
-  //define all funcions above init
-  $scope.init = function () {
+//define all funcions above init
+$scope.init = function () {
     // console.log("initializing app...");
     
     $scope.mouse_down_time = 0
@@ -598,8 +656,7 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.allTasks = $scope.getTasksOnly();
     //default theme
     $scope.init_theme()
-    $scope.handle_scroll_on_list_and_tasks()
-
+    $scope.init_tabs()
   };
 
   $scope.init();

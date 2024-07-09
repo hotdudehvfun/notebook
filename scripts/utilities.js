@@ -310,3 +310,9 @@ function getIconForTitle(title) {
   }
   return 'folder'; // Default icon
 }
+
+function getTranslateX(element) {
+  const style = window.getComputedStyle(element);
+  const matrix = new WebKitCSSMatrix(style.transform);
+  return matrix.m41;
+}

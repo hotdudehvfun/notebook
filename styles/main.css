@@ -1169,7 +1169,7 @@ input:checked + .slider:before {
     flex-shrink: 0;
     flex-grow: 1;
     width: calc(100% - 2rem);
-    margin: 1rem;
+    scroll-snap-align: center;
 }
 
 .slide_animation {
@@ -1258,40 +1258,33 @@ input:checked + .slider:before {
     }
 }
 
-.list_and_tasks_holder {
+.tabs {
     display: flex;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    width: 100%;
+    overflow: hidden;
     height: 100%;
-}
-
-div#view-list-items {
-    flex-grow: 1;
-    flex-shrink: 0;
-    width: calc(100% - 2rem);
-    margin: 1rem;
+    width: 100%;
 }
 
 
-.hide-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-
-  &::-webkit-scrollbar {
-    width: 1px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: transparent;
-  }
+.tab {
+  width: 486px;
+  height: 100vh;
+  display: flex;
+  flex-direction:column;
+  font-size: 24px;
+  box-sizing: border-box;
+  flex: 1 0 100%;
 }
+
+
+
 
 .gap-1
 {
     gap:0.5rem;
+}
+
+.transition{
+    transition:0.5s all;
 }

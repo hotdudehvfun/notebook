@@ -95,11 +95,11 @@
                 </Div>
                 <!-- search results end-->
 
-                <div class="list_and_tasks_holder hide-scrollbar">
+                <div class="tabs">
 
                     <!-- lists -->
                 <div 
-                class="lists-container m-2 rounded-2 slide_animation">
+                class="tab">
                     <div ng-repeat="(key,value) in listArray">
                         <div 
                         class="list-panel-item" 
@@ -121,8 +121,7 @@
 
                 <!-- view tasks  -->
                 <Div 
-                id="view-list-items" 
-                class="slide_animation m-2">
+                class="tab">
                     <div ng-repeat="(key,value) in taskArray">
                         <!-- ng-class= css_class : condition -->
                         <div class="task" ng-class="{completed: value.isTaskCompleted}">
