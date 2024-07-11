@@ -1287,3 +1287,8 @@ input:checked + .slider:before {
 .transition{
     transition:0.5s all;
 }
+
+.overflow-y
+{
+    overflow-y:scroll;
+}

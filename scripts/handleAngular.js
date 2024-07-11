@@ -1,5 +1,6 @@
 //for swiping tab
-let currentTranslate = 0;
+let currentTranslateX = 0;
+let currentTranslateY = 0;
 let translates = [0,0]
 let currentTab = 0;
 
@@ -7,13 +8,16 @@ let currentTab = 0;
 let app = angular.module("myapp", []);
 //use this to create new properties on previous version
 let patchApplied = false;
-console.log("app version:3.2.0")
+console.log("App version:3.2.0")
 console.log(`
 Features
   > Added progress bar code:#20%
   > Merge tasks
   > Delete Tasks
   > Delete Notebooks
+  > {2+2} = 4 Expression evaluation
+  > #Today #now #weekday now works
+  > Swipe back to notebooks
 
 `)
 
@@ -537,110 +541,115 @@ app.controller('myctrl', function ($scope, $sce) {
   }
 
 //init tabs
-$scope.init_tabs = function(){
-let startX = 0;
-let isDragging = false;
-const tabs = document.querySelector('.tabs');
-const rect = tabs.getBoundingClientRect()
-let progress = 0
+$scope.init_tabs = function() {
+  let startX = 0;
+  let startY = 0;
+  let isDragging = false;
+  const tabs = document.querySelector('.tabs');
+  const rect = tabs.getBoundingClientRect();
+  let progress = 0;
+  let translates = [0, 0];
 
-tabs.addEventListener('touchstart', (e) => {
-  if(currentTab<2)
-  {
-    startX = e.touches[0].clientX;
-    isDragging = true;
-    translates[0] = getTranslateX(tabs.children[0])
-    translates[1] = getTranslateX(tabs.children[1])
-    //remove transition
-    tabs.children[0].classList.remove("transition")
-    tabs.children[1].classList.remove("transition")
+  function handleTouchStart(e) {
+    if (currentTab === 1) {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      translates[0] = getTranslateX(tabs.children[0]);
+      translates[1] = getTranslateX(tabs.children[1]);
+      tabs.children[0].classList.remove("transition");
+      tabs.children[1].classList.remove("transition");
+    }
   }
-});
 
-tabs.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
-  const currentX = e.touches[0].clientX;
-  currentTranslate = currentX - startX;
-  progress = Math.abs(currentTranslate/rect.width*100)
-  if(currentTab==0 && currentTranslate>0)
-  {
-    progress = 0
-    return;
-  } 
-  if(currentTab==1 && currentTranslate<0)
-  {
-    progress = 0
-    return;
+  function handleTouchMove(e) {
+    if (!isDragging) return;
+
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    currentTranslateX = currentX - startX;
+    currentTranslateY = currentY - startY;
+
+    if (Math.abs(currentTranslateY) > 20) {
+      isDragging = false;
+      return;
+    }
+
+    progress = Math.abs(currentTranslateX / rect.width * 100);
+
+    if ((currentTab === 0 && currentTranslateX > 0) || (currentTab === 1 && currentTranslateX < 0)) {
+      progress = 0;
+      return;
+    }
+
+    tabs.children[0].style.transform = `translateX(${translates[0] + currentTranslateX}px)`;
+    tabs.children[1].style.transform = `translateX(${translates[1] + currentTranslateX}px)`;
   }
-  //update tabs while swiping
-  tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
-  tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
-  // console.log(progress)
-});
 
-tabs.addEventListener('touchend', () => {
-  isDragging = false;
-  tabs.children[0].classList.add("transition")
-  tabs.children[1].classList.add("transition")
-  if(progress<30)
-  {
-    //cancel swipe
-    currentTranslate = 0
-    tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
-    tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
-    console.log("cancel swipe")
-  }else{
-    //complete swipe based on direction
-    // console.log("complete swipe",currentTranslate)
-    if(currentTranslate<0)
-    {
-      //show 2nd tab
-      currentTab = 1
-      console.log("show 2nd tab")
-      // currentTranslate = -rect.width;
-      // tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
-      // tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
-      set_tab_position(currentTab)
-    }else{
-      //show 1st tab
-      currentTab = 0
-      console.log("show 1st tab")
-      //currentTranslate = 0
-      set_tab_position(currentTab)
+  function handleTouchEnd() {
+    isDragging = false;
+    tabs.children[0].classList.add("transition");
+    tabs.children[1].classList.add("transition");
+
+    if (progress < 30) {
+      resetTabPosition();
+    } else {
+      completeSwipe();
+    }
+  }
+
+  function resetTabPosition() {
+    currentTranslateX = 0;
+    tabs.children[0].style.transform = `translateX(${translates[0] + currentTranslateX}px)`;
+    tabs.children[1].style.transform = `translateX(${translates[1] + currentTranslateX}px)`;
+  }
+
+  function completeSwipe() {
+    if (currentTranslateX < 0) {
+      currentTab = 1;
+    } else {
+      currentTab = 0;
       $scope.reset_view();
     }
+    set_tab_position(currentTab);
   }
-  
-});
+
+  tabs.addEventListener('touchstart', handleTouchStart);
+  tabs.addEventListener('touchmove', handleTouchMove);
+  tabs.addEventListener('touchend', handleTouchEnd);
 }
 
-function set_tab_position(tab_pos)
-{
+
+function set_tab_position(tab_pos) {
   try {
-    currentTab = tab_pos
+    currentTab = tab_pos;
     const tabs = document.querySelector('.tabs');
-    const rect = tabs.getBoundingClientRect()
-    if(currentTab==0)
-    {
-      //show 1st tab
-      tabs.children[0].style.transform =`translateX(0px)`;
-      tabs.children[1].style.transform =`translateX(0px)`;
-      //show notebook add bar
-      
-    }else if (currentTab==1)
-    {
-      //show 2nd tab
-      //current translate is global
-      currentTranslate = -rect.width;
-      //translate is global
-      tabs.children[0].style.transform =`translateX(${translates[0]+currentTranslate}px)`
-      tabs.children[1].style.transform =`translateX(${translates[1]+currentTranslate}px)`
-      //show tasks add bar
+    const tabWidth = tabs.getBoundingClientRect().width;
+    let translateX = 0;
+    switch(currentTab) {
+      case 0:
+        translateX = 0;
+        break;
+      case 1:
+        translateX = -tabWidth;
+        break;
+      default:
+        console.log("Invalid tab position");
+        return;
     }
+
+    for (let i = 0; i < tabs.children.length; i++) {
+      tabs.children[i].style.transform = `translateX(${translateX}px)`;
+    }
+    tabs.scrollTo(0, 0);  // Ensure tabs are scrolled to the top
+    // Reset global translate variables if they exist
+    currentTranslateX = 0;
+    currentTranslateY = 0;
   } catch (err) {
-    console.log("Error while changing tab position",err)
+    console.log("Error while changing tab position", err);
   }
 }
+
 
 
 //define all funcions above init
