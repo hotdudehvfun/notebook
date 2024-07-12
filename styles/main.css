@@ -1264,6 +1264,8 @@ input:checked + .slider:before {
     overflow: hidden;
     height: 100%;
     width: 100%;
+    padding: 0.5rem;
+    gap: 1rem;
 }
 
 

@@ -551,6 +551,7 @@ $scope.init_tabs = function() {
   let translates = [0, 0];
 
   function handleTouchStart(e) {
+    //only swipe back to notebooks
     if (currentTab === 1) {
       isDragging = true;
       startX = e.touches[0].clientX;
@@ -641,7 +642,7 @@ function set_tab_position(tab_pos) {
     for (let i = 0; i < tabs.children.length; i++) {
       tabs.children[i].style.transform = `translateX(${translateX}px)`;
     }
-    tabs.scrollTo(0, 0);  // Ensure tabs are scrolled to the top
+    // tabs.scrollTo(0, 0);  // Ensure tabs are scrolled to the top
     // Reset global translate variables if they exist
     currentTranslateX = 0;
     currentTranslateY = 0;
@@ -668,7 +669,7 @@ $scope.init = function () {
     $scope.show_purge_list_option = false
     $scope.selectedListIndex = -1
     $scope.show_searchbar=false
-    $scope.new_task_content_height = 80
+    $scope.new_task_content_height = 64
     $scope.new_notebook_icon = "folder"
     //by default edit options are hidden
     $scope.show_add_task_edit_options = false
