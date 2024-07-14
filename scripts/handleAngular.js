@@ -51,16 +51,32 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
   }
 
   $scope.open_notebook = function (index) {
-    if (index >= 0) {
-      $scope.swiper.slideTo(1)
-      $scope.taskArray = $scope.listArray[index].taskArray;
-      // when name is changed list view is hided and task view is shown
-      $scope.selectedListName = $scope.listArray[index].title;
-      $scope.pageTitle = $scope.selectedListName;
-      console.log("Opening notebook = ",$scope.pageTitle)
-      //load list info, this function also used by tap and hold event to load list info
-      $scope.load_list_info(index)
+    if($scope.select_notebooks)
+    {
+      //instead of opening notebooks
+      //toggle selection
+      if($scope.is_notebook_selected(index))
+      {
+        //unselect
+        let pos = $scope.selected_notebooks.indexOf(index) 
+        $scope.select_notebooks.splice(pos,1)
+      }else{
+        //select
+        $scope.selected_notebooks.push(index);
+      }
+    }else{
+      if (index >= 0) {
+        $scope.swiper.slideTo(1)
+        $scope.taskArray = $scope.listArray[index].taskArray;
+        // when name is changed list view is hided and task view is shown
+        $scope.selectedListName = $scope.listArray[index].title;
+        $scope.pageTitle = $scope.selectedListName;
+        console.log("Opening notebook = ",$scope.pageTitle)
+        //load list info, this function also used by tap and hold event to load list info
+        $scope.load_list_info(index)
+      }
     }
+    
 
 
   }
@@ -387,11 +403,16 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
     }
   }
 
+  $scope.nav_more_vert_icon = function()
+  {
+    return $scope.show_list_more_options ? "close" : "more_horiz";
+  }
+
+
 
   $scope.toggle_list_more_options_visibility = function () {
     
     $scope.show_list_more_options = !$scope.show_list_more_options
-    $scope.nav_more_vert_icon = $scope.show_list_more_options ? "close" : "more_horiz";
     // console.log($scope.show_list_more_options)
     $scope.app_size()
   }
@@ -513,6 +534,47 @@ $scope.init_notify = function(){
     }
 }
 
+$scope.handle_select_notebooks = function()
+{
+  $scope.select_notebooks = true
+  $scope.show_list_more_options = false
+  $scope.show_task_more_options = false
+}
+
+$scope.notebook_selected_state = function(index)
+{
+  //return checked and unchecked icon based on selection state
+  if($scope.is_notebook_selected(index))
+  {
+    return $scope.icons.checked
+  }
+  return $scope.icons.unchecked
+}
+
+$scope.is_notebook_selected = function(notebook_index)
+{
+  return $scope.selected_notebooks.indexOf(notebook_index)!=-1
+}
+
+$scope.delete_selected_notebooks = function() {
+  // Sort the selected notebooks in descending order to avoid index issues while removing
+  $scope.selected_notebooks.sort((a, b) => b - a);
+  
+  // Remove each selected notebook from listArray
+  $scope.selected_notebooks.forEach((index) => {
+    $scope.listArray.splice(index, 1);
+  });
+
+  // Optionally, clear the selected notebooks array
+  $scope.selected_notebooks = [];
+  $scope.select_notebooks = false
+  $scope.show_task_more_options = false
+  $scope.show_list_more_options = false
+  $scope.saveData();
+};
+
+
+
 //define all funcions above init
 $scope.init = function () {
     // console.log("initializing app...");
@@ -523,7 +585,6 @@ $scope.init = function () {
     $scope.show_list_more_options = false
     $scope.show_task_more_options = false
     
-    $scope.nav_more_vert_icon = "more_horiz"
     $scope.show_nav_more_vert_button = false
     $scope.show_delete_list_option = false
     $scope.show_purge_list_option = false
@@ -531,8 +592,16 @@ $scope.init = function () {
     $scope.show_searchbar=false
     $scope.new_task_content_height = 64
     $scope.new_notebook_icon = "folder"
+    $scope.icons = {
+      checked:"check_circle",
+      unchecked:"radio_button_unchecked"
+    }
     //by default edit options are hidden
     $scope.show_add_task_edit_options = false
+
+    //enable select notebooks
+    $scope.select_notebooks = false
+    $scope.selected_notebooks = []
 
     //handle swiper varible
     $scope.swiper = null
@@ -561,7 +630,7 @@ $scope.init = function () {
     $scope.init_tabs()
 
     //notify
-    $scope.init_notify()
+    // $scope.init_notify()
   };
   $scope.init();
 });

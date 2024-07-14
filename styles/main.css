@@ -10,6 +10,8 @@ html{
     --chip-bg:whitesmoke;
     --progress-a:#4ade80;
     --progress-b:aliceblue;
+    --more-options-border-color:#e6e6e6;
+    --more-options-blur:32px;
     
 }
 
@@ -215,13 +217,6 @@ input:focus {
     border:none;
 }
 
-.list-panel-item:active
-{
-    transform:scale(0.9)
-}
-
-
-
 .list-panel-item-title {
     display: flex;
     margin-top: 10px;
@@ -255,12 +250,13 @@ input:focus {
     transform: translateX(-50%);
     /* z-index: 999; */
     /* opacity: 0; */
-    background: var(--accent);
-    box-shadow: 0px 2px 2px #80808066;
     color: white;
     text-transform: capitalize;
     padding: 10px 20px;
     border-radius: 100px;
+    backdrop-filter:blur(var(--more-options-blur));
+    -webkit-backdrop-filter:blur(var(--more-options-blur));
+    border:1px solid var(--more-options-border-color);
 }
 
 #tasks-container {
@@ -701,21 +697,22 @@ div#list-more-options-container {
 .list-more-optionas-holder {
     display: flex;
     flex-direction: column;
-    background: var(--list-bg);
+    /* background: var(--list-bg); */
     border-radius: 1rem;
     width: 80%;
     padding: .5rem;
+    -webkit-backdrop-filter: blur(var(--more-options-blur));
+    backdrop-filter:blur(var(--more-options-blur));
+    border:1px solid var(--more-options-border-color);
 }
 
 .block-screen {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: #111;
     top: 0px;
     left: 0px;
     z-index: 900;
-    backdrop-filter: blur(4px);opacity: 0.7;
 }
 
 .hide-block-screen {
@@ -896,9 +893,13 @@ div.show-color-palette {
 .task-more-options-holder {
     display: flex;
     flex-direction: column;
-    background: var(--list-bg);
+    /* background: var(--list-bg); */
     border-radius: 1rem;
     width: 80%;
+    backdrop-filter:blur(var(--more-options-blur));
+    -webkit-backdrop-filter:blur(var(--more-options-blur));
+    border:1px solid var(--more-options-border-color);
+    
 }
 
 .taskMoreOptionsConatiner > div > i {
