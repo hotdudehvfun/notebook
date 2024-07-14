@@ -494,6 +494,25 @@ $scope.init_tabs = function(){
   });
 }
 
+$scope.init_notify = function(){
+    // Check if the browser supports notifications
+    if (!('Notification' in window)) {
+        alert('This browser does not support notifications.');
+        return;
+    }
+
+    // Request permission if not already granted
+    if (Notification.permission !== 'granted') {
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+                sendNotification();
+            }
+        });
+    } else {
+        sendNotification();
+    }
+}
+
 //define all funcions above init
 $scope.init = function () {
     // console.log("initializing app...");
@@ -540,6 +559,9 @@ $scope.init = function () {
 
     //init swiper
     $scope.init_tabs()
+
+    //notify
+    $scope.init_notify()
   };
   $scope.init();
 });

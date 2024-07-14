@@ -316,3 +316,16 @@ function getTranslateX(element) {
   const matrix = new WebKitCSSMatrix(style.transform);
   return matrix.m41;
 }
+
+function sendNotification() {
+  var options = {
+      body: 'This is a notification.',
+      icon: '/logo.png' // Optional: Add your icon here
+  };
+  var notification = new Notification('Hello!', options);
+
+  // Optional: Add a click event to the notification
+  notification.onclick = function() {
+      window.open('https://yourwebsite.com'); // Open a URL on notification click
+  };
+}
