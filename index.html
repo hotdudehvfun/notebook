@@ -20,13 +20,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="scripts/hammer.js"></script>
-    <script src="scripts/class/List.js"></script>
-    <script src="scripts/class/Task.js"></script>
+    <script type="text/javascript" src="scripts/class/List.js"></script>
+    <script type="text/javascript" src="scripts/class/Task.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </head>
 
 <body 
@@ -39,7 +39,7 @@
                         class="list-with-title" 
                         id="selectedList" 
                         style="display: block;"
-                        ng-click="show_notification()" 
+                        ng-click="handle_click_on_notebook_title()" 
                         ng-bind="pageTitle"></div>
             <!-- current list selected -->
             <div id="selected-list-info">
@@ -93,67 +93,60 @@
                         </div>
                     </div>
                 </Div>
-                <!-- search results end-->
 
-                <div class="tabs overflow-y">
-
-                    <!-- lists -->
-                <div 
-                class="tab">
-                    <div ng-repeat="(key,value) in listArray">
-                        <div 
-                        class="list-panel-item" 
-                        ng-mouseup="mouse_up(key)" 
-                        ng-mousedown="mouse_down()">
-                            <div class="list-panel-item-title">
-                                <span 
-                                class="material-symbols-outlined list-icon"
-                                ng-bind="get_list_icon(value)"
-                                ></span>
-                                <article class="selected" ng-bind="value.title"></article>
-                                <span 
-                                class="list-sub-text" 
-                                ng-bind="get_list_info(value.taskArray)"></span>
+                <div class="swiper">
+                    <div class="swiper-wrapper">
+                        <!-- notebooks -->
+                        <div class="swiper-slide overflow-y">
+                            <div ng-repeat="(key,value) in listArray">
+                                <div 
+                                class="list-panel-item" 
+                                ng-click="open_notebook(key)"
+                                >
+                                    <div class="list-panel-item-title">
+                                        <span 
+                                        class="material-symbols-outlined list-icon"
+                                        ng-bind="get_list_icon(value)"
+                                        ></span>
+                                        <article class="selected" ng-bind="value.title"></article>
+                                        <span 
+                                        class="list-sub-text" 
+                                        ng-bind="get_list_info(value.taskArray)"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <!-- tasks -->
+                        <div class="swiper-slide overflow-y">
+                            <div ng-repeat="(key,value) in taskArray">
+                                <!-- ng-class= css_class : condition -->
+                                <div class="task" ng-class="{completed: value.isTaskCompleted}">
+                                    <span 
+                                    class="material-symbols-outlined" 
+                                    ng-bind="value.taskIcon"
+                                    ng-click="toggle_task_complete($event,key);"></span>
+                                    <div  
+                                    class="task-content-div"
+                                    ng-bind-html="handle_task_html(value.title) | sanitize"
+                                    ng-click="handleClickOnTask($event,key);"></div>
+                                </div>
+                            </div>
+                            <!-- empty state empty list-->
+                            <div style="text-align: center;" ng-show="taskArray.length==0">
+                                <h1>
+                                    (>_<) </h1>
+                                        <span>Nothing to see here.</span>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- view tasks  -->
-                <Div 
-                class="tab">
-                    <div ng-repeat="(key,value) in taskArray">
-                        <!-- ng-class= css_class : condition -->
-                        <div class="task" ng-class="{completed: value.isTaskCompleted}">
-                            <span 
-                            class="material-symbols-outlined" 
-                            ng-bind="value.taskIcon"
-                            ng-click="toggle_task_complete($event,key);"></span>
-                            <div  
-                            class="task-content-div"
-                            ng-bind-html="handle_task_html(value.title) | sanitize"
-                            ng-click="handleClickOnTask($event,key);"></div>
-                        </div>
-                    </div>
-                    <!-- empty state empty list-->
-                    <div style="text-align: center;" ng-show="taskArray.length==0">
-                        <h1>
-                            (>_<) </h1>
-                                <span>Nothing to see here.</span>
-                    </div>
-                </Div>
-                
-                </div>
                 <!-- empty state no list-->
                 <div style="text-align: center;" ng-show="listArray.length==0">
-                    <h1>
-                        (>_<) </h1>
-                            <span>Nothing to see here.</span>
+                    <h1>(>_<)</h1>
+                    <span>Nothing to see here.</span>
                 </div>
-
             </div>
-
-
             <!-- bottom panels -->
             <!-- PANEL 1: create new list -->
             <!-- show only when list view is in focus -->
@@ -273,6 +266,15 @@
                 <span id="total_size" ng-bind="app_size_value"></span>
             </div>
 
+            <!-- show paste menu if some task is copied -->
+            <div 
+                class="task-more-options-item" 
+                ng-click="paste_task_inside_notebook()"
+                ng-show="copied_task!=null">
+                <span class="material-symbols-outlined">content_paste</span>
+                <span>Paste Task</span>
+            </div>
+
             <div id="change-theme-button" class="task-more-options-item" ng-click="toggle_theme()">
                 <span class="material-symbols-outlined">{{theme_menu_icon}}</span>
                 <span>{{theme_menu_text}}</span>
@@ -291,8 +293,6 @@
                 <span class="material-symbols-outlined">check_circle</span>
                 <span>Remove Completed Tasks</span>
             </div>
-            
-
             <div 
                 id="delete-list-ok" 
                 class="task-more-options-item text-red-500" 
@@ -335,13 +335,13 @@
                 <span class="material-symbols-outlined">expand_more</span>
                 <div>Move Down</div>
             </div>
-            <div class="task-more-options-item" ng-click="moveTask();">
-                <span class="material-symbols-outlined">mediation</span>
-                <div>Move to another list</div>
+            <div class="task-more-options-item" ng-click="copy_task();">
+                <span class="material-symbols-outlined">file_copy</span>
+                <div>Copy</div>
             </div>
-            <div class="task-more-options-item" ng-click="mergeTask();">
-                <span class="material-symbols-outlined">architecture</span>
-                <div>Merge with another note</div>
+            <div class="task-more-options-item" ng-click="paste_task();">
+                <span class="material-symbols-outlined">content_paste</span>
+                <div>Paste</div>
             </div>
 
             <div class="task-more-options-item" ng-click="strike_out_task();" ng-show="task_completed_state">

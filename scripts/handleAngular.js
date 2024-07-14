@@ -1,10 +1,3 @@
-//for swiping tab
-let currentTranslateX = 0;
-let currentTranslateY = 0;
-let translates = [0,0]
-let currentTab = 0;
-
-
 let app = angular.module("myapp", []);
 //use this to create new properties on previous version
 let patchApplied = false;
@@ -29,7 +22,7 @@ app.filter("sanitize", ['$sce', function ($sce) {
 }]);
 
 
-app.controller('myctrl', function ($scope, $sce) {
+app.controller('myctrl', function ($scope, $sce,$timeout) {
   // handle html for task input
   $scope.handle_task_html = function(text){
     //handle progress bar
@@ -57,28 +50,16 @@ app.controller('myctrl', function ($scope, $sce) {
     $scope.show_purge_list_option = true
   }
 
-  $scope.loadList = function (index) {
-    // a valid list is selected
+  $scope.open_notebook = function (index) {
     if (index >= 0) {
+      $scope.swiper.slideTo(1)
       $scope.taskArray = $scope.listArray[index].taskArray;
       // when name is changed list view is hided and task view is shown
       $scope.selectedListName = $scope.listArray[index].title;
       $scope.pageTitle = $scope.selectedListName;
-      // console.log("List loaded = ",$scope.pageTitle)
+      console.log("Opening notebook = ",$scope.pageTitle)
       //load list info, this function also used by tap and hold event to load list info
       $scope.load_list_info(index)
-      //show tasks, tab=1 shows notes
-      set_tab_position(1)
-
-      if ($scope.moveInProgress) {
-        //save task to move
-        $scope.taskArray.push($scope.noteToMove);
-        showToast("Note moved!")
-        $scope.moveInProgress = false
-        $scope.noteToMove = null;
-        $scope.saveData();
-      }
-
     }
 
 
@@ -198,17 +179,17 @@ app.controller('myctrl', function ($scope, $sce) {
     if ($scope.mergeInProgress) {
       //merge in progress no need to show options
       //merger with selected task
-      $scope.taskI = key;
-      if ($scope.taskI == $scope.oldTaskI) {
+      $scope.selected_task_index = key;
+      if ($scope.selected_task_index == $scope.oldselected_task_index) {
         showToast("Cannot merge with same Note");
       } else {
 
         //concat selected content at the end
-        $scope.taskArray[$scope.taskI].title += "\n" + $scope.taskArray[$scope.oldTaskI].title;
+        $scope.taskArray[$scope.selected_task_index].title += "\n" + $scope.taskArray[$scope.oldselected_task_index].title;
 
         //remove old note now
-        $scope.deleteTask($scope.oldTaskI);
-        $scope.oldTaskI = -1;
+        $scope.deleteTask($scope.oldselected_task_index);
+        $scope.oldselected_task_index = -1;
 
         $scope.mergeInProgress = false;
 
@@ -219,11 +200,11 @@ app.controller('myctrl', function ($scope, $sce) {
     } else {
       //key is the index number of note in list
       // console.log(key);
-      //key = taskI will be used perform actions on selected task
-      $scope.taskI = key;
+      //key = selected_task_index will be used perform actions on selected task
+      $scope.selected_task_index = key;
       $scope.show_task_more_options = true
       //also get completed status of task to change value of strike out or not
-      $scope.task_completed_state = $scope.taskArray[$scope.taskI].isTaskCompleted
+      $scope.task_completed_state = $scope.taskArray[$scope.selected_task_index].isTaskCompleted
     }
   }
 
@@ -259,9 +240,9 @@ app.controller('myctrl', function ($scope, $sce) {
       indexToRemove = index;
     } else {
       //no args try getting selected note
-      if ($scope.taskI >= 0) {
-        indexToRemove = $scope.taskI;
-        $scope.taskI = -1;
+      if ($scope.selected_task_index >= 0) {
+        indexToRemove = $scope.selected_task_index;
+        $scope.selected_task_index = -1;
       }
     }
 
@@ -276,42 +257,39 @@ app.controller('myctrl', function ($scope, $sce) {
   }
 
 
-  $scope.moveTask = function () {
+  $scope.copy_task = function () {
     //move to another list
-    $scope.noteToMove = $scope.taskArray[$scope.taskI];
-    $scope.moveInProgress = true;
-    showToast("Tap on List to move note in List");
+    $scope.copied_task = $scope.taskArray[$scope.selected_task_index]
+    showToast("Task Copied");
     $scope.show_task_more_options = false
-
-    $scope.reset_view();
-
+    // $scope.reset_view();
   }
 
 
-  $scope.mergeTask = function () {
-    //save selected note position
-    $scope.oldTaskI = $scope.taskI;
-
-    //close panel
-    $scope.show_task_more_options = false
-
-
-    //show message
-    showToast("Tap on note to merge selected note");
-
-    //active merge task in progress
-    $scope.mergeInProgress = true;
+  $scope.paste_task = function () {
+    try {
+      //append copied task to selected task
+      //save selected note position
+      $scope.taskArray[$scope.selected_task_index].title = $scope.taskArray[$scope.selected_task_index].title.concat(
+        "\n",$scope.copied_task.title
+      )
+      console.log($scope.taskArray)
+      showToast("Task Pasted")
+      $scope.saveData()
+      $scope.show_task_more_options = false
+      
+    } catch (err) {
+      console.log("Cannot paste task",err)
+    }
   }
-
-  $scope.cancelAction = function () {
-    //cancel move or merge
-    $scope.mergeInProgress = false;
-    $scope.oldTaskI = -1
-
-    $scope.moveInProgress = false;
-    $scope.noteToMove = null;
-    console.log("action cancelled")
-    showToast("Action Cancelled")
+  $scope.paste_task_inside_notebook = function(){
+    if ($scope.selectedListIndex>=0) {
+      $scope.taskArray.push($scope.copied_task);
+      showToast("Task Pasted")
+      $scope.copied_task = null;
+      $scope.show_list_more_options = false
+      $scope.saveData();
+    }
   }
 
   $scope.editTask = function () {
@@ -319,7 +297,7 @@ app.controller('myctrl', function ($scope, $sce) {
     //close more options
     $scope.show_task_more_options = false
     //set content
-    $scope.newTaskContent = $scope.taskArray[$scope.taskI].title
+    $scope.newTaskContent = $scope.taskArray[$scope.selected_task_index].title
     //change add to edit
     document.querySelector("#confirm-change-button").style.display = "block";
     document.querySelector("#add-new-task-ok").style.display = "none";
@@ -327,7 +305,7 @@ app.controller('myctrl', function ($scope, $sce) {
   }
 
   $scope.updateTask = function () {
-    $scope.taskArray[$scope.taskI].title = $scope.newTaskContent
+    $scope.taskArray[$scope.selected_task_index].title = $scope.newTaskContent
 
     //revert back
     document.querySelector("#confirm-change-button").style.display = "none";
@@ -344,6 +322,7 @@ app.controller('myctrl', function ($scope, $sce) {
   }
 
   $scope.purgeList = function () {
+    //delete all tasks inside notebook
     if ($scope.selectedListIndex >= 0) {
       $scope.taskArray = []
       $scope.listArray[$scope.selectedListIndex].taskArray = [];
@@ -358,7 +337,7 @@ app.controller('myctrl', function ($scope, $sce) {
     if (key != undefined) {
       let task = $scope.taskArray[key]
       task.isTaskCompleted = !task.isTaskCompleted;
-      task.taskIcon = task.isTaskCompleted ? "radio_button_checked" : "radio_button_unchecked";
+      task.selected_task_indexcon = task.isTaskCompleted ? "radio_button_checked" : "radio_button_unchecked";
       $scope.taskArray[key] = task
       if (task.isTaskCompleted) {
         $scope.taskArray.splice(key, 1);
@@ -372,8 +351,8 @@ app.controller('myctrl', function ($scope, $sce) {
 
   $scope.move_task = function (distance) {
     // move completed tasks at end
-    if ($scope.taskI != undefined) {
-      let key = $scope.taskI
+    if ($scope.selected_task_index != undefined) {
+      let key = $scope.selected_task_index
 
       if (key + distance < 0) {
         showToast("Task already at top")
@@ -394,13 +373,13 @@ app.controller('myctrl', function ($scope, $sce) {
 
   $scope.strike_out_task = function () {
 
-    if ($scope.taskI >= 0) {
-      let task = $scope.taskArray[$scope.taskI]
+    if ($scope.selected_task_index >= 0) {
+      let task = $scope.taskArray[$scope.selected_task_index]
       task.isTaskCompleted = !task.isTaskCompleted;
       //also update icon
-      task.taskIcon = task.isTaskCompleted ? "radio_button_checked" : "radio_button_unchecked";
+      task.selected_task_indexcon = task.isTaskCompleted ? "radio_button_checked" : "radio_button_unchecked";
       //also add strike out class
-      $scope.taskArray[$scope.taskI] = task
+      $scope.taskArray[$scope.selected_task_index] = task
       $scope.saveData();
       $scope.show_task_more_options = false
 
@@ -467,51 +446,12 @@ app.controller('myctrl', function ($scope, $sce) {
     }
   };
 
-  $scope.create_notification = function () {
-    new Notification(
-      "Button Clicked!",
-      { body: "Notification body text.", icon: "/logo.png" })
-  }
-
-  // notification
-  $scope.show_notification = function () {
-    if ("Notification" in window) {
-      if (Notification.permission === "granted") {
-        $scope.create_notification()
-      } else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") {
-            $scope.create_notification()
-          }
-        })
-      }
-    } else {
-      alert("Notification not supported")
-    }
-  }
-
-  $scope.mouse_down = function()
-  {
-    $scope.mouse_down_time = new Date().getTime()
-  }
-  
-  $scope.mouse_up = function(list_index)
-  {
-    $scope.mouse_up_time = new Date().getTime()
-    let diff = $scope.mouse_up_time - $scope.mouse_down_time
-    if(diff<150)
+  $scope.handle_click_on_notebook_title = function(){
+    if($scope.selectedListIndex>=0)
     {
-      console.log("click event")
-      $scope.loadList(list_index)
-    }else
-    {
-      console.log("hold event")
-      //list info is required to show more options 
-      $scope.load_list_info(list_index)
-      $scope.toggle_list_more_options_visibility()
+      $scope.show_task_more_options = false
+      $scope.show_list_more_options = true
     }
-    $scope.mouse_up_time = 0
-    $scope.mouse_down_time = 0
   }
 
   $scope.handle_keypress_newtask = function(e){
@@ -540,129 +480,30 @@ app.controller('myctrl', function ($scope, $sce) {
     }
   }
 
-//init tabs
-$scope.init_tabs = function() {
-  let startX = 0;
-  let startY = 0;
-  let isDragging = false;
-  const tabs = document.querySelector('.tabs');
-  const rect = tabs.getBoundingClientRect();
-  let progress = 0;
-  let translates = [0, 0];
-
-  function handleTouchStart(e) {
-    //only swipe back to notebooks
-    if (currentTab === 1) {
-      isDragging = true;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      translates[0] = getTranslateX(tabs.children[0]);
-      translates[1] = getTranslateX(tabs.children[1]);
-      tabs.children[0].classList.remove("transition");
-      tabs.children[1].classList.remove("transition");
+$scope.init_tabs = function(){
+  $scope.swiper = new Swiper('.swiper', {
+    on:{
+      slideChange:function()
+      {
+        if($scope.swiper.activeIndex==0)
+        {
+          $scope.reset_view()
+        }
+      }
     }
-  }
-
-  function handleTouchMove(e) {
-    if (!isDragging) return;
-
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-    currentTranslateX = currentX - startX;
-    currentTranslateY = currentY - startY;
-
-    if (Math.abs(currentTranslateY) > 20) {
-      isDragging = false;
-      return;
-    }
-
-    progress = Math.abs(currentTranslateX / rect.width * 100);
-
-    if ((currentTab === 0 && currentTranslateX > 0) || (currentTab === 1 && currentTranslateX < 0)) {
-      progress = 0;
-      return;
-    }
-
-    tabs.children[0].style.transform = `translateX(${translates[0] + currentTranslateX}px)`;
-    tabs.children[1].style.transform = `translateX(${translates[1] + currentTranslateX}px)`;
-  }
-
-  function handleTouchEnd() {
-    isDragging = false;
-    tabs.children[0].classList.add("transition");
-    tabs.children[1].classList.add("transition");
-
-    if (progress < 30) {
-      resetTabPosition();
-    } else {
-      completeSwipe();
-    }
-  }
-
-  function resetTabPosition() {
-    currentTranslateX = 0;
-    tabs.children[0].style.transform = `translateX(${translates[0] + currentTranslateX}px)`;
-    tabs.children[1].style.transform = `translateX(${translates[1] + currentTranslateX}px)`;
-  }
-
-  function completeSwipe() {
-    if (currentTranslateX < 0) {
-      currentTab = 1;
-    } else {
-      currentTab = 0;
-      $scope.reset_view();
-    }
-    set_tab_position(currentTab);
-  }
-
-  tabs.addEventListener('touchstart', handleTouchStart);
-  tabs.addEventListener('touchmove', handleTouchMove);
-  tabs.addEventListener('touchend', handleTouchEnd);
+  });
 }
-
-
-function set_tab_position(tab_pos) {
-  try {
-    currentTab = tab_pos;
-    const tabs = document.querySelector('.tabs');
-    const tabWidth = tabs.getBoundingClientRect().width;
-    let translateX = 0;
-    switch(currentTab) {
-      case 0:
-        translateX = 0;
-        break;
-      case 1:
-        translateX = -tabWidth;
-        break;
-      default:
-        console.log("Invalid tab position");
-        return;
-    }
-
-    for (let i = 0; i < tabs.children.length; i++) {
-      tabs.children[i].style.transform = `translateX(${translateX}px)`;
-    }
-    // tabs.scrollTo(0, 0);  // Ensure tabs are scrolled to the top
-    // Reset global translate variables if they exist
-    currentTranslateX = 0;
-    currentTranslateY = 0;
-  } catch (err) {
-    console.log("Error while changing tab position", err);
-  }
-}
-
-
 
 //define all funcions above init
 $scope.init = function () {
     // console.log("initializing app...");
     
-    $scope.mouse_down_time = 0
-    $scope.mouse_up_time = 0
-    $scope.moveInProgress = false
-    $scope.mergeInProgress = false
+    //handle copied task
+    $scope.copied_task = null
+
     $scope.show_list_more_options = false
     $scope.show_task_more_options = false
+    
     $scope.nav_more_vert_icon = "more_horiz"
     $scope.show_nav_more_vert_button = false
     $scope.show_delete_list_option = false
@@ -673,6 +514,9 @@ $scope.init = function () {
     $scope.new_notebook_icon = "folder"
     //by default edit options are hidden
     $scope.show_add_task_edit_options = false
+
+    //handle swiper varible
+    $scope.swiper = null
 
     //read saved data
     $scope.listArray = readData();
@@ -689,15 +533,15 @@ $scope.init = function () {
     $scope.pageTitle = $scope.defaultPageTitle;
     $scope.newTaskContent = ""
     $scope.newListName = ""
-    $scope.taskI = -1;
+    $scope.selected_task_index = -1;
     $scope.allTasks = $scope.getTasksOnly();
     //default theme
     $scope.init_theme()
+
+    //init swiper
     $scope.init_tabs()
   };
-
   $scope.init();
-
 });
 
 
