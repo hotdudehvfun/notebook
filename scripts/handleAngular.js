@@ -15,6 +15,8 @@ Features
 `)
 
 
+
+
 app.filter("sanitize", ['$sce', function ($sce) {
   return function (htmlCode) {
     return $sce.trustAsHtml(htmlCode);
@@ -23,6 +25,11 @@ app.filter("sanitize", ['$sce', function ($sce) {
 
 
 app.controller('myctrl', function ($scope, $sce,$timeout) {
+
+  $scope.handle_update_from_child = function(value) {
+    console.log('Received from child:', value);
+};
+
   // handle html for task input
   $scope.handle_task_html = function(text){
     //handle progress bar
@@ -142,13 +149,14 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
         ($scope.selectedListIndex != undefined ||$scope.selectedListIndex>=0) )
         {
           let newTask = new Task($scope.newTaskContent.trim())
+          newTask.taskIcon = $scope.icons.unchecked;
           $scope.listArray[$scope.selectedListIndex].taskArray.push(newTask)
           $scope.taskArray = $scope.listArray[$scope.selectedListIndex].taskArray
           
 
           //reset options
           $scope.newTaskContent = ""
-          $scope.new_task_content_height = 80
+          $scope.new_task_content_height = 64
           $scope.show_add_task_edit_options = false
 
           $scope.saveData();
@@ -348,22 +356,22 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
     }
   }
 
-  $scope.toggle_task_complete = function ($event, key) {
-    // move completed tasks at end
-    if (key != undefined) {
-      let task = $scope.taskArray[key]
-      task.isTaskCompleted = !task.isTaskCompleted;
-      task.selected_task_indexcon = task.isTaskCompleted ? "radio_button_checked" : "radio_button_unchecked";
-      $scope.taskArray[key] = task
-      if (task.isTaskCompleted) {
-        $scope.taskArray.splice(key, 1);
-        $scope.taskArray.push(task)
-      }
-      $scope.saveData();
-      $scope.show_task_more_options = false
-      //showToast("Note Strike out!");
+$scope.toggle_task_complete = function ($event, key) {
+  // move completed tasks at end
+  if (key != undefined) {
+    let task = $scope.taskArray[key]
+    task.isTaskCompleted = !task.isTaskCompleted;
+    
+    task.taskIcon = task.isTaskCompleted ? $scope.icons.checked : $scope.icons.unchecked;
+    $scope.taskArray[key] = task
+    if (task.isTaskCompleted) {
+      $scope.taskArray.splice(key, 1);
+      $scope.taskArray.push(task)
     }
+    $scope.saveData();
+    $scope.show_task_more_options = false
   }
+}
 
   $scope.move_task = function (distance) {
     // move completed tasks at end
@@ -573,6 +581,19 @@ $scope.delete_selected_notebooks = function() {
   $scope.saveData();
 };
 
+$scope.get_total = function()
+{
+  let total_tasks = 0, total_notebooks = $scope.listArray.length
+  $scope.listArray.forEach((item,index)=>
+  {
+    total_tasks+= item.taskArray.length;
+  })
+  return{
+    "total_tasks":total_tasks,
+    "total_notebooks":total_notebooks
+  }
+}
+
 
 
 //define all funcions above init
@@ -593,8 +614,8 @@ $scope.init = function () {
     $scope.new_task_content_height = 64
     $scope.new_notebook_icon = "folder"
     $scope.icons = {
-      checked:"check_circle",
-      unchecked:"radio_button_unchecked"
+      checked:"check_box",
+      unchecked:"check_box_outline_blank"
     }
     //by default edit options are hidden
     $scope.show_add_task_edit_options = false
@@ -631,6 +652,7 @@ $scope.init = function () {
 
     //notify
     // $scope.init_notify()
+    console.log($scope.listArray)
   };
   $scope.init();
 });

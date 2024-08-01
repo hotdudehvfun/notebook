@@ -36,6 +36,8 @@ body {
     overflow: hidden;
     height: 100%;
     width: 100%;
+    display:flex;
+    flex-direction: column;
     background-color: var(--bg-color);
     color: var(--font-color);
 }
@@ -50,7 +52,7 @@ body {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 1px;
+    height: 100%;
     /*! overflow: hidden; */
     flex-grow: 1;
     /* background: aliceblue; */
@@ -76,17 +78,20 @@ body {
     background: transparent;
 }
 
-.list-with-title {
+.app-title
+{
     color: var(--accent);
-    font-size: 1.5rem;
+    font-size: 2rem;
     text-transform: capitalize;
-    text-align: center;
-    padding: 0.5rem;
     width: -webkit-fill-available;
-    position: absolute;
-    z-index: 1;
     font-weight: bold;
-    text-decoration: underline;
+    padding-left: 0.5rem;
+    background: transparent;
+    border: none;
+    display: block;
+    text-decoration: none;
+    appearance: none;
+    outline: none;
 }
 
 
@@ -259,16 +264,14 @@ input:focus {
     border:1px solid var(--more-options-border-color);
 }
 
-#tasks-container {
+.content-bar {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     height: 100%;
     background-color: transparent;
-    margin: 5px 5px 0px 5px;
-    padding: 0px;
-    padding-bottom: 10px;
-    border-radius: 5px;
+    padding: 0.75rem;
+     flex: 1;
+    overflow-y: auto;
 }
 
 .task {
@@ -292,9 +295,12 @@ input:focus {
     /* transition: 0.5s all; */
 }
 
-.task i {
-    color:var(--font-color);
-    font-size: 1.2rem;
+.task p{
+    margin:0.5rem;
+}
+
+.task li{
+    margin:0.5rem;
 }
 
 .task .task-content-div {
@@ -312,9 +318,7 @@ input:focus {
     animation: 1s blinking infinite;
 }
 
-.task.priority>i {
-    color: #ff5d94;
-}
+
 
 @keyframes blinking {
     0% {
@@ -339,7 +343,7 @@ search_list_name {
 
 .completed {
     box-shadow: none;
-    color: #333;
+    color: #4cd964;
 }
 
 .completed>i {
@@ -1301,5 +1305,17 @@ input:checked + .slider:before {
 
 .swiper{
     width:100%;
-    height:100%;
+}
+
+h1,h2,h3,h4,h5 {
+    margin: 0.5rem;
+}
+.justify-content-end {
+    justify-content: end;
+}
+
+.content {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
 }
