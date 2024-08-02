@@ -20,7 +20,6 @@ handleNoListState=()=>
   document.querySelector("#tasks-container").innerHTML=html;
 }
 
-
 handleNoTasksState=()=>
 {
   let html="";

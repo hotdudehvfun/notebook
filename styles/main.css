@@ -1,4 +1,5 @@
-html{
+html
+{
     /* light theme vars, dark theme vars in dark.css */
     --font-color: #333;
     --bg-color: whitesmoke;
@@ -22,11 +23,6 @@ html{
     }
 }
 
-@font-face {
-    font-family: MyFont;
-    src: url(font.ttf);
-}
-
 body {
     margin: 0;
     position: absolute;
@@ -44,7 +40,7 @@ body {
 
 * {
     box-sizing: border-box;
-    font-family: MyFont;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     user-select: none;
 }
 
@@ -1318,4 +1314,8 @@ h1,h2,h3,h4,h5 {
     width: 100%;
     height: 100%;
     overflow: auto;
+}
+.bottom-bar {
+    padding-bottom: 0.5rem;
+    background: var(--list-bg);
 }
