@@ -97,7 +97,7 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
       $scope.show_delete_list_option = false
       $scope.show_purge_list_option = false
       $scope.selectedListIndex = -1
-      $scope.$apply()
+      // $scope.$apply()
     } catch (err) {
       console.log("Error while reseting button",err)
     }
@@ -141,6 +141,17 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
     }
   }
 
+  $scope.split_into_tasks = function()
+  {
+    try {
+      if($scope.newTaskContent.trim().length>0)
+      {
+        
+      }
+    } catch (error) {
+      
+    }
+  }
 
   $scope.handleSaveTask = function () {
     try {
@@ -148,11 +159,23 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
         $scope.newTaskContent.trim().length>0 && 
         ($scope.selectedListIndex != undefined ||$scope.selectedListIndex>=0) )
         {
-          let newTask = new Task($scope.newTaskContent.trim())
-          newTask.taskIcon = $scope.icons.unchecked;
-          $scope.listArray[$scope.selectedListIndex].taskArray.push(newTask)
+          let multiple_tasks = split_text_into_tasks($scope.newTaskContent,"$")
+          if(multiple_tasks.length>0)
+          {
+            //add multiple tasks
+            multiple_tasks.forEach((item,index)=>
+            {
+              let newTask = new Task(item)
+              newTask.taskIcon = $scope.icons.unchecked;
+              $scope.listArray[$scope.selectedListIndex].taskArray.push(newTask)
+            })
+          }else{
+            //add single task
+            let newTask = new Task($scope.newTaskContent.trim())
+            newTask.taskIcon = $scope.icons.unchecked;
+            $scope.listArray[$scope.selectedListIndex].taskArray.push(newTask)
+          }
           $scope.taskArray = $scope.listArray[$scope.selectedListIndex].taskArray
-          
 
           //reset options
           $scope.newTaskContent = ""
@@ -160,7 +183,10 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
           $scope.show_add_task_edit_options = false
 
           $scope.saveData();
-          showToast(`Note added`);
+          let toast_text = "Note added"
+          if(multiple_tasks.length>0)
+            toast_text = `${multiple_tasks.length} notes added`;
+          showToast(toast_text);
       }
     } catch (err) {
       console.log(err)
@@ -185,15 +211,19 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
 
 
   $scope.handleDeleteList = function () {
-    if ($scope.selectedListIndex >= 0) {
-      //show message removed
-      console.log("List at index removed:", $scope.selectedListIndex)
-      showToast("List Deleted!");
-      let removedList = $scope.listArray.splice($scope.selectedListIndex, 1);
-      $scope.saveData();
-      $scope.toggle_list_more_options_visibility()
-      //go back to main screen after delete
-      $scope.reset_view();
+    if ($scope.selectedListIndex >= 0)
+    {
+      if(confirm("Are you sure?"))
+      {
+        //show message removed
+        console.log("List at index removed:", $scope.selectedListIndex)
+        showToast("Notebook Deleted");
+        let removedList = $scope.listArray.splice($scope.selectedListIndex, 1);
+        $scope.saveData();
+        $scope.toggle_list_more_options_visibility()
+        //go back to main screen after delete
+        $scope.reset_view();  
+      }
     }
   }
 
@@ -259,22 +289,30 @@ app.controller('myctrl', function ($scope, $sce,$timeout) {
 
   $scope.deleteTask = function (index) {
     let indexToRemove = -1;
+    let show_confirm = false
     if (index !== undefined) {
       //use supplied argument
       indexToRemove = index;
     } else {
       //no args try getting selected note
-      if ($scope.selected_task_index >= 0) {
+      //show prompt when deleting single task
+      if ($scope.selected_task_index >= 0)
+      {
+        show_confirm = true
         indexToRemove = $scope.selected_task_index;
         $scope.selected_task_index = -1;
       }
     }
 
-    if (indexToRemove != -1) {
-      let removed = $scope.taskArray.splice(indexToRemove, 1);
-      $scope.saveData();
-      $scope.show_task_more_options = false
-      showToast("Note deleted!");
+    if (indexToRemove != -1)
+    {
+      if(confirm("Are you sure?")==true)
+      {
+        let removed = $scope.taskArray.splice(indexToRemove, 1);
+        $scope.saveData();
+        $scope.show_task_more_options = false
+        showToast("Note deleted!")
+      }
     } else {
       showToast("Error while removing note");
     }
@@ -544,7 +582,8 @@ $scope.init_notify = function(){
 
 $scope.handle_select_notebooks = function()
 {
-  $scope.select_notebooks = true
+  $scope.select_notebooks = !$scope.select_notebooks 
+  $scope.select_notebooks_menu_text = $scope.select_notebooks?"Cancel Selection":"Select Notebooks";
   $scope.show_list_more_options = false
   $scope.show_task_more_options = false
 }
@@ -576,6 +615,7 @@ $scope.delete_selected_notebooks = function() {
   // Optionally, clear the selected notebooks array
   $scope.selected_notebooks = [];
   $scope.select_notebooks = false
+  $scope.select_notebooks_menu_text = "Select Notebooks"
   $scope.show_task_more_options = false
   $scope.show_list_more_options = false
   $scope.saveData();
@@ -623,6 +663,7 @@ $scope.init = function () {
     //enable select notebooks
     $scope.select_notebooks = false
     $scope.selected_notebooks = []
+    $scope.select_notebooks_menu_text = "Select Notebooks"
 
     //handle swiper varible
     $scope.swiper = null

@@ -10,7 +10,6 @@ const urlsToCache = [
     "scripts/handle_angular.js",
     "scripts/html_gen.js",
     "scripts/utilities.js",
-
     '/app.js',
     '/logo.png'
 ];

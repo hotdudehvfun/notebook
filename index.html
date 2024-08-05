@@ -169,13 +169,11 @@
             </div>
             <!-- create new tasks -->
             <div 
-                id="add-task-panel-with-selected-list"
                 class="nav-bar-panel visible"
                 ng-show="defaultPageTitle!=pageTitle"
                 >
                 <div 
-                ng-show="show_add_task_edit_options"
-                class="add-task-edit-options visible_pop_animation">
+                class="add-task-edit-options">
                     <div 
                     class="button" 
                     onclick="insertTextAtCursor('newTaskContent','.ol\n * Item \n..ol')">
@@ -206,6 +204,15 @@
                             <span class="material-symbols-outlined">sliders</span>
                         </div>
                     </div>
+                    <div 
+                    class="button" 
+                    onclick="insertTextAtCursor('newTaskContent','$ Split in to tasks')">
+                        <div class="chip">
+                            <span class="material-symbols-outlined">check_box</span>
+                        </div>
+                    </div>
+                    
+
                     
                 </div>
                 <div class="flex-row align-center">
@@ -258,8 +265,7 @@
                 <span id="total_size" ng-bind="app_size_value"></span>
             </div>
 
-            <!-- show select notebooks menu if notebooks are shown -->
-            <!-- pageTitle==defaultPageTitle  -->
+            <!-- delete selected -->
             <div 
              class="task-more-options-item" 
              ng-click="delete_selected_notebooks()"
@@ -276,7 +282,7 @@
                 ng-click="handle_select_notebooks()"
                 ng-show="pageTitle==defaultPageTitle">
                 <span class="material-symbols-outlined">check_circle</span>
-                <span>Select Notebooks</span>
+                <span ng-bind="select_notebooks_menu_text"></span>
             </div>
 
 
@@ -378,7 +384,7 @@
     </div>
 
 
-    <script type="text/javascript" src="app.js"></script>
+    <!-- <script type="text/javascript" src="app.js"></script> -->
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
     <script type="text/javascript" src="scripts/wiki.js"></script>

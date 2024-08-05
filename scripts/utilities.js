@@ -329,3 +329,21 @@ function sendNotification() {
       window.open('https://yourwebsite.com'); // Open a URL on notification click
   };
 }
+
+
+function split_text_into_tasks(text,delim)
+{
+  let lines = text.trim().split(delim)
+  let multiple_tasks = []
+  lines.forEach((line,index)=>
+  {
+    if(line.trim().length>0)
+    {
+      multiple_tasks.push(line.trim())
+    }
+  })
+  return multiple_tasks;
+}
+
+
+
