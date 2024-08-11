@@ -146,10 +146,9 @@
          <div class="bottom-bar">
             <!-- create new notebook -->
             <div 
-         id="add-new-task-with-new-list" 
-         class="nav-bar-panel visible" 
-         ng-show="defaultPageTitle==pageTitle"
-         >
+                class="nav-bar-panel visible" 
+                ng-show="defaultPageTitle==pageTitle"
+            >
          <div class="flex-row align-center gap-1">
              <span class="material-symbols-outlined list-icon" ng-bind="new_notebook_icon"></span>
              <input 
@@ -161,7 +160,7 @@
              
              <!-- using css animation class with ng-show  -->
              <span 
-             ng-click="handleCreateList()"
+             ng-click="create_notebook()"
              ng-show="newListName.length>0"
              class="material-symbols-outlined add_task_icon visible_pop_animation">
                  send
@@ -173,8 +172,7 @@
                 class="nav-bar-panel visible"
                 ng-show="defaultPageTitle!=pageTitle"
                 >
-                <div 
-                class="add-task-edit-options">
+                <div class="add-task-edit-options">
                     <div 
                     class="button" 
                     onclick="insertTextAtCursor('newTaskContent','.ol\n * Item \n..ol')">
@@ -200,25 +198,42 @@
                     </div>
                     <div 
                     class="button" 
-                    onclick="insertTextAtCursor('newTaskContent','@90%')">
+                    onclick="insertTextAtCursor('newTaskContent','#90%')">
                         <div class="chip">
                             <span class="material-symbols-outlined">sliders</span>
                         </div>
                     </div>
                     <div 
                     class="button" 
-                    onclick="insertTextAtCursor('newTaskContent','$ Split in to tasks')">
+                    onclick="insertTextAtCursor('newTaskContent','$ Lone tasks')">
                         <div class="chip">
                             <span class="material-symbols-outlined">check_box</span>
                         </div>
                     </div>
                     
+                    <div 
+                    class="button" 
+                    >
+                        <div class="chip">
+                            <span class="material-symbols-outlined">keyboard_command_key</span>
+                            <select
+                            class="select" 
+                            ng-model="selected_system_var" 
+                            ng-options="key for (key, value) in get_system_vars()"
+                            ng-change="insert_system_var_at_cursor()"
+                            >
+                                <option value="" disabled selected>System vars</option>
+                            </select>
+                            
+                        </div>
+                    </div>
+                    
+                    
 
                     
                 </div>
                 <div class="flex-row align-center">
-
-                    <!-- <span class="material-symbols-outlined add_task_icon">radio_button_unchecked</span> -->
+                    <span class="material-symbols-outlined add_task_icon">radio_button_unchecked</span>
                     <textarea
                         ng-focus="show_add_task_edit_options=true"
                         ng-style="{height: new_task_content_height + 'px'}"
@@ -226,10 +241,10 @@
                         ng-keypress="handle_keypress_newtask($event)"
                         id="newTaskContent"
                         class="new-task-content rounded-2" 
-                        placeholder="Create task..."></textarea>
+                        placeholder={{new_task_placeholder}}></textarea>
                     <span 
                     id="add-new-task-ok" 
-                    ng-click="handleSaveTask()"
+                    ng-click="create_task()"
                     ng-show="newTaskContent.length>0"
                     class="material-symbols-outlined add_task_icon visible_pop_animation">send</span>
                     <span 

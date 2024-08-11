@@ -300,6 +300,7 @@ const iconMapping = {
   'party': 'celebration',
   'gifts': 'card_giftcard',
   'todo': 'receipt_long',
+  'system':'keyboard_command_key',
 };
 
 function getIconForTitle(title) {

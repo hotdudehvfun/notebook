@@ -11,12 +11,11 @@ Features
 > {2+2} = 4 Expression evaluation
 > #Today #now #weekday now works
 > Swipe back to notebooks
-
 `)
+var system_vars = {}
 
-
-
-
+//contains custom variables
+//add vars from system notebook
 app.filter("sanitize", ['$sce', function ($sce) {
   return function (htmlCode) {
     return $sce.trustAsHtml(htmlCode);
@@ -73,6 +72,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
         console.log("Opening notebook = ", $scope.pageTitle)
         //load list info, this function also used by tap and hold event to load list info
         $scope.load_list_info(index)
+        $scope.new_task_placeholder = `Create task in ${$scope.selectedListName}`
       }
     }
   }
@@ -80,15 +80,13 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
 
   $scope.reset_view = function () {
     try {
-      $scope.$apply(function(){
-        console.log("reset called")
-        $scope.search = "";
-        $scope.pageTitle = $scope.defaultPageTitle;
-        $scope.show_delete_list_option = false
-        $scope.show_purge_list_option = false
-        $scope.selectedListIndex = -1
-      });
-      // $scope.$apply()
+      console.log("reset called")
+      $scope.search = "";
+      $scope.pageTitle = $scope.defaultPageTitle;
+      $scope.show_delete_list_option = false
+      $scope.show_purge_list_option = false
+      $scope.selectedListIndex = -1
+      $scope.$apply()
     } catch (err) {
       console.log("Error while reseting button", err)
     }
@@ -99,7 +97,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
 
   $scope.handle_input_on_notebook = function (e) {
     if (e.keyCode == 13) {
-      $scope.handleCreateList()
+      $scope.create_notebook()
       e.target.value = "";
     } else {
       $scope.new_notebook_icon = getIconForTitle($scope.newListName)
@@ -120,28 +118,33 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
     return `${completed}/${taskArray.length}`
   }
 
-  $scope.handleCreateList = function () {
-    if ($scope.newListName.length > 1) {
-      let newList = new List($scope.newListName, $scope.new_notebook_icon);
-      // $scope.selectedListIndex = 
-      $scope.listArray.push(newList)
-      showToast(`Notebook create:  ${newList.title}`);
-      document.querySelector(".add-new-list-title").value = ""
-      $scope.saveData();
-    }
-  }
-
-  $scope.split_into_tasks = function () {
+  $scope.create_notebook = function () {
     try {
-      if ($scope.newTaskContent.trim().length > 0) {
-
+      if ($scope.newListName.length > 1) {
+          let duplicate = $scope.listArray.some(list => list.title.toLowerCase() === $scope.newListName.toLowerCase());
+  
+          if (duplicate) {
+              showToast(`Notebook "${$scope.newListName}" already exists.`);
+              return; // Exit the function to prevent creating a duplicate
+          }
+  
+          // If no duplicate, create the new notebook
+          let newList = new List($scope.newListName, $scope.new_notebook_icon);
+          $scope.listArray.push(newList);
+          showToast(`Notebook created: ${newList.title}`);
+          document.querySelector(".add-new-list-title").value = "";
+          $scope.saveData();
       }
-    } catch (error) {
-
+    } catch (err) {
+      console.log("Error while creating notebook",err)
+      showToast("Failed to created notebook");
     }
-  }
+}
 
-  $scope.handleSaveTask = function () {
+
+  
+
+  $scope.create_task = function () {
     try {
       if (
         $scope.newTaskContent.trim().length > 0 &&
@@ -165,6 +168,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
         //reset options
         $scope.newTaskContent = ""
         $scope.new_task_content_height = 64
+        document.querySelector("#newTaskContent").style.height = 64
         $scope.show_add_task_edit_options = false
 
         $scope.saveData();
@@ -179,6 +183,47 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
     }
   }
 
+  $scope.get_system_vars = function() {
+    let tasks = [];
+    let _vars = {};
+    const systemItem = $scope.listArray.find(item => item.title.toLocaleLowerCase() === "system");
+
+    if (systemItem) {
+        tasks = systemItem.taskArray;
+    }
+
+    tasks.forEach((item) => {
+        let lines = item.title.trim().split("\n");
+        if (lines.length === 2) {
+            let var_name = lines[0].trim();
+            let value = lines[1].trim();
+
+            // Replace any existing keys within the value
+            value = value.replace(/{(.*?)}/g, (_, expr) => {
+                try {
+                    return eval(expr.replace(/\b(\w+)\b/g, (match) => {
+                        return _vars.hasOwnProperty(match) ? _vars[match] : match;
+                    }));
+                } catch (e) {
+                    console.error(`Error evaluating expression: ${expr}`);
+                    return "";
+                }
+            });
+
+            if (var_name && value !== undefined) {
+                _vars[var_name] = value;
+            }
+        }
+    });
+    return _vars;
+};
+
+$scope.insert_system_var_at_cursor = function()
+{
+  console.log($scope.selected_system_var)
+}
+
+
 
   $scope.saveData = function () {
     //save data about app in local
@@ -190,6 +235,10 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
     //save theme
     localStorage.theme = $scope.theme
     console.log("theme saved = ", localStorage.theme)
+
+    //update system vars
+    system_vars = $scope.get_system_vars()
+    console.log("System vars",system_vars)
   }
 
   $scope.emptyList = handleNoTasksState();
@@ -205,7 +254,8 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
         $scope.saveData();
         $scope.toggle_list_more_options_visibility()
         //go back to main screen after delete
-        $scope.reset_view();
+        //reset is called when we go to slide 0
+        $scope.swiper.slideTo(0)
       }
     }
   }
@@ -501,7 +551,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
   $scope.handle_keypress_newtask = function (e) {
     try {
       //handle height
-      console.log(e.keyCode);
+      // console.log(e.keyCode);
       (e.keyCode == 13 && $scope.new_task_content_height < 250) ? $scope.new_task_content_height += 10 : 0;
 
       //handle codes
@@ -529,7 +579,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
         slideChange: function () {
           if ($scope.swiper.activeIndex == 0)
           {
-            // console.log("notebook view")
+            console.log("notebook view")
             $scope.reset_view()
           }
         }
@@ -624,8 +674,8 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
     $scope.new_task_content_height = 64
     $scope.new_notebook_icon = "folder"
     $scope.icons = {
-      checked: "check_box",
-      unchecked: "check_box_outline_blank"
+      checked: "radio_button_checked",
+      unchecked: "radio_button_unchecked"
     }
     //by default edit options are hidden
     $scope.show_add_task_edit_options = false
@@ -654,16 +704,17 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
     $scope.newTaskContent = ""
     $scope.newListName = ""
     $scope.selected_task_index = -1;
+    $scope.new_task_placeholder = "Create Task"
     $scope.allTasks = $scope.getTasksOnly();
     //default theme
     $scope.init_theme()
 
     //init swiper
     $scope.init_tabs()
-
-    //notify
-    // $scope.init_notify()
-    console.log($scope.listArray)
+    
+    //check for system vars
+    system_vars = $scope.get_system_vars()
+    console.log("System vars",system_vars)
   };
   $scope.init();
 });

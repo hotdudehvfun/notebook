@@ -24,6 +24,6 @@ handleNoTasksState=()=>
 {
   let html="";
   html+="<h1>You have no tasks in this list!</h1>";
-  console.log(html);
+  // console.log(html);
   return html;
 }

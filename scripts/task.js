@@ -1,5 +1,5 @@
+//Task class to handle tasks
 class Task {
-
   constructor(taskName) {
     //text of task to display
     this.title = taskName.trim();
@@ -18,5 +18,4 @@ class Task {
     this.taskIcon = "radio_button_unchecked"
   }
   static NOT_SCHEDULED = "not a time event";
-
 }

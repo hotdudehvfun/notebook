@@ -1200,6 +1200,7 @@ input:checked + .slider:before {
     background: var(--chip-bg);
     border-radius: 1rem;
     padding: 0.5rem;
+    display: flex;
 }
 
 .progress_bar_holder{
@@ -1318,4 +1319,10 @@ h1,h2,h3,h4,h5 {
 .bottom-bar {
     padding-bottom: 0.5rem;
     background: var(--list-bg);
+}
+
+select.select {
+    background: transparent;
+    color: white;
+    border: 0px;
 }

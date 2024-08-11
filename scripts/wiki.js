@@ -17,7 +17,8 @@ function sub(line)
 
 function progress_bar(text) {
     // Create a regex to match #XX% where XX is any number from 0 to 100
-    const regex = /#(\d{1,2}|100)%/g;
+    //const regex = /#(\d{1,2}|100)%/g;
+    const regex = /#((100|0|[1-9]?\d)(\.\d+)?|100(\.0+)?|0(\.0+)?|0)%/g;
     
     // Use replace with a callback to dynamically insert the matched percentage
     return text.replace(regex, (match, p1) => {
@@ -36,13 +37,33 @@ function progress_bar(text) {
     });
 }
 
+function check_for_system_vars(text) {
+    try {
+        for (let var_name in system_vars) {
+            if (system_vars.hasOwnProperty(var_name)) {
+                let regex = new RegExp(var_name, 'g')
+                text = text.replace(regex, system_vars[var_name]);
+            }
+        }
+        return text;
+    } catch (err) {
+        console.log("Error while inserting system vars in expression",err)
+    }
+    return text
+}
+
+
 function handle_calculations(text) {
     // Create a regex to match {2+2} and evaluate expression
     const regex = /{([^}]+)}/g;
     // Use replace with a callback to dynamically insert the match
     return text.replace(regex, (match, expression) => {
         try {
-            return eval(expression);
+            //replace var name with value here.
+            expression = check_for_system_vars(expression)
+            let result = eval(expression)
+            result = result % 1 === 0 ? result : result.toFixed(1)
+            return result 
         } catch (e) {
             console.error(`Error evaluating expression: ${expression}`, e);
             return match; // Return the original match if there's an error
@@ -112,11 +133,12 @@ function parseWikiTextToHTML(wikiText) {
             line = sup(line)
             // x~y~
             line = sub(line)
-            // progress bar #20%
-            line = progress_bar(line)
             // handle {2+2} eval expression
             line = handle_calculations(line)
 
+            // progress bar #20%
+            line = progress_bar(line)
+            
             if (line.startsWith('#')) {
                 // Handle headings
                 const level = line.match(/^(#+)/)[0].length;
