@@ -126,16 +126,15 @@
                             </div>
                         </div>
                         <!-- empty state empty list-->
-                        <div style="text-align: center;" ng-show="taskArray.length==0">
-                            <h1>
-                                (>_<) </h1>
-                                    <span>Nothing to see here.</span>
+                        <div 
+                        style="text-align: center;" 
+                        ng-show="taskArray.length==0">
+                            <h1>Notebook is empty</h1>
                         </div>
                     </div>
                     <!-- console -->
-                    <div class="swiper-slide ">
+                    <div class="swiper-slide">
                         <div id="console-output">
-
                         </div>
                     </div>
                     
@@ -159,7 +158,7 @@
          <div class="flex-row align-center gap-1">
              <span class="material-symbols-outlined list-icon" ng-bind="new_notebook_icon"></span>
              <input 
-                 ng-keypress="handle_input_on_notebook($event)"
+                 ng-keyup="handle_input_on_notebook($event)"
                  class="add-new-list-title rounded-2"
                  ng-model="newListName" 
                  ng-attr-placeholder="New NoteBook name..."
@@ -226,7 +225,7 @@
                             <select
                             class="select" 
                             ng-model="selected_system_var" 
-                            ng-options="key for (key, value) in get_system_vars()"
+                            ng-options="key as (key + '=' + value) for (key, value) in get_system_vars()"
                             ng-change="insert_system_var_at_cursor()"
                             >
                                 <option value="" disabled selected>System vars</option>
@@ -322,6 +321,13 @@
                 <span class="material-symbols-outlined">{{theme_menu_icon}}</span>
                 <span>{{theme_menu_text}}</span>
             </div>
+
+            <!-- show clear console if console is in veiw -->
+            <div ng-click="clear_console()" class="task-more-options-item"
+                ng-show="pageTitle=='Console'">
+                <span class="material-symbols-outlined">contract_delete</span>
+                <span>Clear Console</span>
+            </div> 
 
             <div ng-click="purgeList()" id="remove-all-tasks-button" class="task-more-options-item"
                 ng-show="show_purge_list_option">

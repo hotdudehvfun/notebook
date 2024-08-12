@@ -301,7 +301,6 @@ input:focus {
 
 .task .task-content-div {
     margin-left: 10px;
-    text-transform: capitalize;
     width: 100%;
     color: var(--font-color);
 }
@@ -1334,4 +1333,6 @@ div#console-output {
     font-family: monospace;
     padding: 0.5rem;
     background: #510d51;
+    max-height: 500px;
+    overflow: scroll;
 }

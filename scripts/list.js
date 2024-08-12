@@ -7,12 +7,12 @@ class List {
 
   constructor(listName,icon)
   {
-    this.title = listName.trim();
+    this.title = listName.trim()
     this.taskArray = [];
     this.dateCreated = Date.now();
     this.dateCompleted = "";
     //default color
-    this.borderColor=getRandomColor();
+    this.borderColor = getRandomColor()
     //google font icon default
     if(icon==undefined)
       this.icon = "folder"

@@ -95,8 +95,6 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
   }
 
 
-
-
   $scope.handle_input_on_notebook = function (e) {
     if (e.keyCode == 13) {
       $scope.create_notebook()
@@ -222,7 +220,8 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
 
 $scope.insert_system_var_at_cursor = function()
 {
-  console.log($scope.selected_system_var)
+  //console.log($scope.selected_system_var)
+  insertTextAtCursor('newTaskContent',$scope.selected_system_var)
 }
 
 
@@ -575,18 +574,34 @@ $scope.insert_system_var_at_cursor = function()
     }
   }
 
-  $scope.init_tabs = function () {
+  $scope.init_swiper = function () {
     $scope.swiper = new Swiper('.swiper', {
       on: {
         slideChange: function () {
-          if ($scope.swiper.activeIndex == 0)
+          switch($scope.swiper.activeIndex)
           {
-            console.log("notebook view")
-            $scope.reset_view()
+            case 0:
+              console.log("notebook view")
+              $scope.reset_view()
+              break;
+            case 1:
+                console.log("tasks view")
+                break;
+            case 2:
+                console.log("Console View")
+                $scope.pageTitle = "Console"
+                $scope.$apply()
+
           }
         }
       }
     });
+  }
+
+  $scope.clear_console = function()
+  {
+    document.querySelector("#console-output").innerText = ""
+    $scope.show_list_more_options = false
   }
 
   $scope.init_notify = function () {
@@ -719,7 +734,7 @@ $scope.insert_system_var_at_cursor = function()
     $scope.init_theme()
 
     //init swiper
-    $scope.init_tabs()
+    $scope.init_swiper()
     
     //check for system vars
     system_vars = $scope.get_system_vars()
