@@ -1059,6 +1059,9 @@ input:checked + .slider:before {
     display: flex;
     flex-direction: row;
     gap: 1rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0rem 0.5rem;
 }
 
 #open-add-new-list-panel>div {
@@ -1325,4 +1328,10 @@ select.select {
     background: transparent;
     color: white;
     border: 0px;
+}
+
+div#console-output {
+    font-family: monospace;
+    padding: 0.5rem;
+    background: #510d51;
 }

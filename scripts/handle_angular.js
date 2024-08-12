@@ -1,6 +1,8 @@
 let app = angular.module("myapp", []);
 //use this to create new properties on previous version
 let patchApplied = false;
+const original_console = console.log
+
 console.log("App version:3.2.0")
 console.log(`
 Features
@@ -238,7 +240,7 @@ $scope.insert_system_var_at_cursor = function()
 
     //update system vars
     system_vars = $scope.get_system_vars()
-    console.log("System vars",system_vars)
+    console.log("System vars",JSON.stringify(system_vars))
   }
 
   $scope.emptyList = handleNoTasksState();
@@ -655,10 +657,17 @@ $scope.insert_system_var_at_cursor = function()
   }
 
 
-
+  $scope.override_console = function(){
+     console.log = function(...args) {
+      original_console.apply(console, args);
+      // Convert arguments to a string and append to the div
+      const outputDiv = document.getElementById("console-output");
+      outputDiv.innerText += args.join(' ') + '\n';
+  };
+  }
   //define all funcions above init
   $scope.init = function () {
-    // console.log("initializing app...");
+    $scope.override_console()
 
     //handle copied task
     $scope.copied_task = null
@@ -714,7 +723,8 @@ $scope.insert_system_var_at_cursor = function()
     
     //check for system vars
     system_vars = $scope.get_system_vars()
-    console.log("System vars",system_vars)
+    console.log("System vars",JSON.stringify(system_vars))
+    
   };
   $scope.init();
 });
