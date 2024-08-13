@@ -1,3 +1,26 @@
+function readData() {
+    try {
+      let appData = localStorage.appData;
+      if (appData == undefined || appData == "[]") {
+        return setupDemoList();
+      } else {
+        //load
+        let json = JSON.parse(appData);
+        return json;
+      }
+    } catch (error) {
+      return setupDemoList();
+    }
+  }
+  
+  // if no data is found create demo files
+  function setupDemoList() {
+    let list = new List("Your First Notebook");
+    let task = new Task("We have added first note!");
+    list.taskArray.push(task);
+    return [list];
+  }
+
 function bold(line)
 {
     return line.replace(/:(.*?)(:)/g, '<b>$1</b>')
@@ -128,7 +151,7 @@ function parseWikiTextToHTML(wikiText) {
             //:bold:
             line = bold(line)
             // _italic_
-            line = italic(line)
+            //line = italic(line)
             // x^y^
             line = sup(line)
             // x~y~

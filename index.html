@@ -33,17 +33,34 @@
     data-theme="{{theme}}">
     <div class="main-container">
         <!-- top bar -->
-        <div class="flex-row align-center justify-content-end">
-            <span 
+        <div class="topbar">
+            <!-- app title -->
+             <div>
+                <span class="material-symbols-outlined">{{default_app_icon}}</span>
+             </div>
+            <div class="flex-col">
+                <div 
+                    class="app-title"
+                    ng-click="handle_click_on_notebook_title()" 
+                    ng-bind="pageTitle">
+                </div>
+            <div class="app-subtitle">
+                {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
+            </div>
+            </div>
+            <div>
+                <span 
                 ng-click="show_searchbar=!show_searchbar"
                 class="material-symbols-outlined text-accent">search
-            </span>
-        <span 
-            id="open-more-panel" 
-            style="z-index: 999;" 
-            class="material-symbols-outlined"
-            ng-click="toggle_list_more_options_visibility()" 
-            ng-bind="nav_more_vert_icon()"></span>
+                </span>
+                <span 
+                    id="open-more-panel" 
+                    style="z-index: 999;" 
+                    class="material-symbols-outlined"
+                    ng-click="toggle_list_more_options_visibility()" 
+                    ng-bind="nav_more_vert_icon()"></span>
+            </div>
+                
         </div>
 
         <!-- content bar -->
@@ -59,15 +76,7 @@
             ng-model="search" 
             ng-attr-placeholder="Search" value=""></input>
             </div>
-            <!-- app title before notebooks list -->
-            <div 
-                class="app-title"
-                ng-click="handle_click_on_notebook_title()" 
-                ng-bind="pageTitle">
-            </div>
-            <div class="px-2">
-                {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
-            </div>
+            
             <!-- search results start-->
             <Div id="search-results" style="display: block;" ng-show="search.length>0">
                 <div style="text-align: center;font-size: 125%;">Search Results</div>
@@ -150,118 +159,15 @@
 
         <!-- bottom bar -->
          <div class="bottom-bar">
-            <!-- create new notebook -->
-            <div 
-                class="nav-bar-panel visible" 
-                ng-show="defaultPageTitle==pageTitle"
-            >
-         <div class="flex-row align-center gap-1">
-             <span class="material-symbols-outlined list-icon" ng-bind="new_notebook_icon"></span>
-             <input 
-                 ng-keyup="handle_input_on_notebook($event)"
-                 class="add-new-list-title rounded-2"
-                 ng-model="newListName" 
-                 ng-attr-placeholder="New NoteBook name..."
-                 placeholder="New NoteBook name..."></input>
-             
-             <!-- using css animation class with ng-show  -->
-             <span 
-             ng-click="create_notebook()"
-             ng-show="newListName.length>0"
-             class="material-symbols-outlined add_task_icon visible_pop_animation">
-                 send
-                 </span>
-         </div>
-            </div>
-            <!-- create new tasks -->
-            <div 
-                class="nav-bar-panel visible"
-                ng-show="defaultPageTitle!=pageTitle"
-                >
-                <div class="add-task-edit-options">
-                    <div 
-                    class="button" 
-                    onclick="insertTextAtCursor('newTaskContent','.ol\n * Item \n..ol')">
-                        <div class="chip">
-                            <span class="material-symbols-outlined">
-                                format_list_numbered
-                                </span>
-                        </div>
-                    </div>
-                    <div 
-                    class="button" 
-                    onclick="insertTextAtCursor('newTaskContent','#Heading')">
-                        <div class="chip">                            <span class="material-symbols-outlined">title</span>
-                        </div>
-                    </div>
-                    <div 
-                    class="button" 
-                    onclick="insertTextAtCursor('newTaskContent','* Item')">
-                        <div class="chip">
-                            <span class="material-symbols-outlined">
-                            list
-                            </span></div>
-                    </div>
-                    <div 
-                    class="button" 
-                    onclick="insertTextAtCursor('newTaskContent','#90%')">
-                        <div class="chip">
-                            <span class="material-symbols-outlined">sliders</span>
-                        </div>
-                    </div>
-                    <div 
-                    class="button" 
-                    onclick="insertTextAtCursor('newTaskContent','$ Lone tasks')">
-                        <div class="chip">
-                            <span class="material-symbols-outlined">check_box</span>
-                        </div>
-                    </div>
-                    
-                    <div 
-                    class="button" 
-                    >
-                        <div class="chip">
-                            <span class="material-symbols-outlined">keyboard_command_key</span>
-                            <select
-                            class="select" 
-                            ng-model="selected_system_var" 
-                            ng-options="key as (key + '=' + value) for (key, value) in get_system_vars()"
-                            ng-change="insert_system_var_at_cursor()"
-                            >
-                                <option value="" disabled selected>System vars</option>
-                            </select>
-                            
-                        </div>
-                    </div>
-                    
-                    
-
-                    
-                </div>
-                <div class="flex-row align-center">
-                    <span class="material-symbols-outlined add_task_icon">radio_button_unchecked</span>
-                    <textarea
-                        ng-focus="show_add_task_edit_options=true"
-                        ng-style="{height: new_task_content_height + 'px'}"
-                        ng-model="newTaskContent"
-                        ng-keypress="handle_keypress_newtask($event)"
-                        id="newTaskContent"
-                        class="new-task-content rounded-2" 
-                        placeholder={{new_task_placeholder}}></textarea>
-                    <span 
-                    id="add-new-task-ok" 
-                    ng-click="create_task()"
-                    ng-show="newTaskContent.length>0"
-                    class="material-symbols-outlined add_task_icon visible_pop_animation">send</span>
-                    <span 
-                    id="confirm-change-button" 
-                    style="display: none;" 
-                    ng-click="updateTask()"
-                    class="material-symbols-outlined add_task_icon">edit_note</span>
-
-                </div>
-            </div>
-         </div>
+            <div class="flex-row button align-center gap-2 space-between" ng-click="show_create_notebook_popup=true">
+                <span class="material-symbols-outlined">contract_edit</span>
+                <span class="">Create NoteBook</span>
+             </div>
+             <div class="flex-row button align-center gap-2" ng-click="open_create_new_note_popup()">
+                <span class="material-symbols-outlined">draw</span>
+                <span class="">Create note</span>
+             </div> 
+        </div>
          
     </div>
 
@@ -276,6 +182,117 @@
 
 
 
+    <!-- new notebook dialog pop up-->
+     <div id="new_notebook_popup" ng-show="show_create_notebook_popup" class="visible_pop_animation">
+        <div class="new_notebook_popup_child">
+         <div class="flex-col align-center gap-1">
+            <div class="flex-row align-center gap-1 m-2">
+             <span class="material-symbols-outlined list-icon" ng-bind="new_notebook_icon"></span>
+             <div>Create new notebook</div>
+            </div>
+             <input 
+                 ng-keyup="handle_input_on_notebook($event)"
+                 class="add-new-list-title rounded-2"
+                 ng-model="new_list_name" 
+                 ng-attr-placeholder="New NoteBook name..."
+                 placeholder="New NoteBook name..."></input>
+             <!-- using css animation class with ng-show  -->
+                    <div class="flex-row space-between m-2">
+                        <span ng-click="show_create_notebook_popup=false" class="button text-red-500">Cancel</span>
+                        <span ng-click="create_notebook()" class="button">Create</span>                
+                    </div>
+         </div>
+            </div>
+     </div>
+
+     <!-- new task dialog pop up -->
+      <div id="new_task_popup" class="visible_pop_animation" ng-show="show_create_task_popup">
+        <div class="new_task_popup_child">
+            <div class="flex-row align-center gap-1 m-2">
+                <span class="material-symbols-outlined list-icon">draw</span>
+                <!-- show which notebook is open -->
+                 <!-- show_select_notebooks_dropdown set to false when any notebook is opened -->
+                 <span ng-hide="show_select_notebooks_dropdown">
+                    Create note in 
+                    <span class="text-accent capitalize">{{selectedListName}}</span>
+                 </span>
+                <!-- show dropdown list if notebook is not selected -->
+                <select
+                ng-show="show_select_notebooks_dropdown"
+                class="select text-accent capitalize bold text-2"
+                ng-model="create_task_select_list_index"
+                ng-change="update_selected_list_index(create_task_select_list_index)"
+                ng-options="key as (value) for (key, value) in get_notebooks_list()">
+                <option value="" selected disabled>Tap to select</option>
+                </select>
+            </div>
+            <div class="add-task-edit-options" ng-show="show_add_task_edit_options">
+                <div 
+                class="chip" 
+                onclick="insertTextAtCursor('newTaskContent','.ol\n * Item \n..ol')">
+                    <div class="chip">
+                        <span class="material-symbols-outlined">
+                            format_list_numbered
+                            </span>
+                    </div>
+                </div>
+                <div 
+                class="chip" 
+                onclick="insertTextAtCursor('newTaskContent','#Heading')">
+                    <div class="chip">                            <span class="material-symbols-outlined">title</span>
+                    </div>
+                </div>
+                <div 
+                class="chip" 
+                onclick="insertTextAtCursor('newTaskContent','* Item')">
+                    <div class="chip">
+                        <span class="material-symbols-outlined">
+                        list
+                        </span></div>
+                </div>
+                <div 
+                class="chip" 
+                onclick="insertTextAtCursor('newTaskContent','#90%')">
+                    <div class="chip">
+                        <span class="material-symbols-outlined">sliders</span>
+                    </div>
+                </div>
+                <div 
+                class="chip" 
+                onclick="insertTextAtCursor('newTaskContent','$ Lone tasks')">
+                    <div class="chip">
+                        <span class="material-symbols-outlined">check_box</span>
+                    </div>
+                </div>
+                <div class="chip">
+                    <span class="material-symbols-outlined">keyboard_command_key</span>
+                    <select
+                    class="select" 
+                    ng-model="selected_system_var" 
+                    ng-options="key as (key + '=' + value) for (key, value) in get_system_vars()"
+                    ng-change="insert_system_var_at_cursor()"
+                    >
+                        <option value="" disabled selected>System vars</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex-col align-center">
+                <div class="flex-row align-center">
+                    <span class="material-symbols-outlined add_task_icon" ng-click="show_add_task_edit_options=true">add</span>
+                    <textarea
+                        ng-style="{height: new_task_content_height + 'px'}"
+                        ng-model="newTaskContent"
+                        ng-keypress="handle_keypress_newtask($event)"
+                        id="newTaskContent"
+                        class="new-task-content rounded-2" 
+                        placeholder={{new_task_placeholder}}></textarea>
+                </div>
+                <span ng-click="show_create_task_popup=false" class="button text-red-500">Cancel</span>
+                <span ng-click="create_task()" class="button" ng-hide="show_update_task_button">Create note</span>
+                <span ng-click="updateTask()" class="button" ng-show="show_update_task_button">Update Note</span>
+            </div>
+        </div>
+      </div>
 
 
 
@@ -360,7 +377,7 @@
     <!-- blocking screen  -->
     <div 
     class="block-screen" 
-    ng-show="show_list_more_options || show_task_more_options"
+    ng-show="show_list_more_options || show_task_more_options || show_create_notebook_popup || show_create_task_popup"
     ng-click="handle_click_on_blockscreen()"></div>
 
     <!-- toast message -->
@@ -372,7 +389,7 @@
     <!-- taskMoreOptiosContainer -->
     <div class="taskMoreOptionsConatiner" ng-show="show_task_more_options">
         <div class="task-more-options-holder visible_pop_animation">
-            <div class="task-more-options-item" id="editTaskButton" ng-click="editTask();">
+            <div class="task-more-options-item" ng-click="editTask();">
                 <span class="material-symbols-outlined ">edit</span>
                 <div>Edit note</div>
             </div>

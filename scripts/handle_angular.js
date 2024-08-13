@@ -25,7 +25,7 @@ app.filter("sanitize", ['$sce', function ($sce) {
 }]);
 
 
-app.controller('myctrl', function ($scope, $sce, $timeout) {
+app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
 
   // output  of task content
   $scope.handle_task_html = function(text){
@@ -50,6 +50,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
     $scope.list_index_for_hold_event = index
     $scope.show_delete_list_option = true
     $scope.show_purge_list_option = true
+    $scope.default_app_icon = $scope.listArray[$scope.selectedListIndex].icon
   }
 
   $scope.open_notebook = function (index) {
@@ -75,6 +76,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
         //load list info, this function also used by tap and hold event to load list info
         $scope.load_list_info(index)
         $scope.new_task_placeholder = `Create task in ${$scope.selectedListName}`
+        // $scope.show_select_notebooks_dropdown = false
       }
     }
   }
@@ -88,7 +90,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
       $scope.show_delete_list_option = false
       $scope.show_purge_list_option = false
       $scope.selectedListIndex = -1
-      $scope.$apply()
+      $scope.selectedListName = null
     } catch (err) {
       console.log("Error while reseting button", err)
     }
@@ -100,7 +102,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
       $scope.create_notebook()
       e.target.value = "";
     } else {
-      $scope.new_notebook_icon = getIconForTitle($scope.newListName)
+      $scope.new_notebook_icon = getIconForTitle($scope.new_list_name)
     }
   }
 
@@ -120,19 +122,17 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
 
   $scope.create_notebook = function () {
     try {
-      if ($scope.newListName.length > 1) {
-          let duplicate = $scope.listArray.some(list => list.title.toLowerCase() === $scope.newListName.toLowerCase());
-  
+      if ($scope.new_list_name.length > 1) {
+          let duplicate = $scope.listArray.some(list => list.title.toLowerCase() === $scope.new_list_name.toLowerCase())
           if (duplicate) {
-              showToast(`Notebook "${$scope.newListName}" already exists.`);
-              return; // Exit the function to prevent creating a duplicate
+              alert(`Notebook "${$scope.new_list_name}" already exists.`);
+              return; 
           }
-  
-          // If no duplicate, create the new notebook
-          let newList = new List($scope.newListName, $scope.new_notebook_icon);
-          $scope.listArray.push(newList);
-          showToast(`Notebook created: ${newList.title}`);
-          document.querySelector(".add-new-list-title").value = "";
+          let new_list = new List($scope.new_list_name, $scope.new_notebook_icon);
+          $scope.listArray.push(new_list)
+          showToast(`Notebook created: ${new_list.title}`);
+          $scope.new_list_name = ""
+          $scope.show_create_notebook_popup = false
           $scope.saveData();
       }
     } catch (err) {
@@ -170,10 +170,11 @@ app.controller('myctrl', function ($scope, $sce, $timeout) {
         $scope.new_task_content_height = 64
         document.querySelector("#newTaskContent").style.height = 64
         $scope.show_add_task_edit_options = false
+        $scope.show_create_task_popup =false
 
         $scope.saveData();
         let toast_text = "Note added"
-        if (multiple_tasks.length > 0)
+        if (multiple_tasks.length > 1)
           toast_text = `${multiple_tasks.length} notes added`;
         showToast(toast_text);
       }
@@ -385,23 +386,16 @@ $scope.insert_system_var_at_cursor = function()
   }
 
   $scope.editTask = function () {
-    //open add box done from event open close nav bar js
-    //close more options
-    $scope.show_task_more_options = false
-    //set content
     $scope.newTaskContent = $scope.taskArray[$scope.selected_task_index].title
-    //change add to edit
-    document.querySelector("#confirm-change-button").style.display = "block";
-    document.querySelector("#add-new-task-ok").style.display = "none";
-
+    $scope.show_update_task_button = true
+    $scope.open_create_new_note_popup()
   }
 
   $scope.updateTask = function () {
     $scope.taskArray[$scope.selected_task_index].title = $scope.newTaskContent
-
     //revert back
-    document.querySelector("#confirm-change-button").style.display = "none";
-    document.querySelector("#add-new-task-ok").style.display = "block";
+    $scope.show_update_task_button = false
+    $scope.show_create_task_popup = false
     $scope.newTaskContent = ""
     showToast("Note updated");
     $scope.saveData()
@@ -671,6 +665,22 @@ $scope.insert_system_var_at_cursor = function()
     }
   }
 
+  $scope.get_notebooks_list = function() {
+    //map function returns 
+    let notebooks =  $scope.listArray.map(function(listItem) {
+        return listItem.title;
+    });
+    // console.log(notebooks)
+    return notebooks
+};
+
+  $scope.update_selected_list_index = function(key)
+  {
+    $scope.selectedListIndex=key
+    console.log($scope.selectedListIndex)
+  }
+
+
 
   $scope.override_console = function(){
      console.log = function(...args) {
@@ -680,20 +690,38 @@ $scope.insert_system_var_at_cursor = function()
       outputDiv.innerText += args.join(' ') + '\n';
   };
   }
+
+  $scope.open_create_new_note_popup = function()
+  {
+    $scope.show_task_more_options = false
+    $scope.show_list_more_options = false
+    
+    $scope.show_create_task_popup = true
+    //check slide index and show drop down
+    if($scope.selectedListIndex==-1)
+      $scope.show_select_notebooks_dropdown = true
+    else
+      $scope.show_select_notebooks_dropdown = false
+
+  }
+
+
+
   //define all funcions above init
   $scope.init = function () {
     $scope.override_console()
-
     //handle copied task
     $scope.copied_task = null
 
     $scope.show_list_more_options = false
     $scope.show_task_more_options = false
+    $scope.show_create_notebook_popup = false
+    $scope.show_create_task_popup = false
+    
 
     $scope.show_nav_more_vert_button = false
     $scope.show_delete_list_option = false
     $scope.show_purge_list_option = false
-    $scope.selectedListIndex = -1
     $scope.show_searchbar = false
     $scope.new_task_content_height = 64
     $scope.new_notebook_icon = "folder"
@@ -723,13 +751,21 @@ $scope.insert_system_var_at_cursor = function()
 
     $scope.taskArray = [];
     console.log("Total notebooks found:", $scope.listArray.length);
+    $scope.selectedListIndex = -1
+    $scope.selectedListName = null
+
     $scope.defaultPageTitle = "Notebooks";
+    $scope.default_app_icon = "eco"
     $scope.pageTitle = $scope.defaultPageTitle;
+    $scope.show_select_notebooks_dropdown = true
+
+    
     $scope.newTaskContent = ""
-    $scope.newListName = ""
+    $scope.new_list_name = ""
     $scope.selected_task_index = -1;
     $scope.new_task_placeholder = "Create Task"
     $scope.allTasks = $scope.getTasksOnly();
+    $scope.show_update_task_button = false
     //default theme
     $scope.init_theme()
 
@@ -743,31 +779,3 @@ $scope.insert_system_var_at_cursor = function()
   };
   $scope.init();
 });
-
-
-
-
-
-
-function readData() {
-  try {
-    let appData = localStorage.appData;
-    if (appData == undefined || appData == "[]") {
-      return setupDemoList();
-    } else {
-      //load
-      let json = JSON.parse(appData);
-      return json;
-    }
-  } catch (error) {
-    return setupDemoList();
-  }
-}
-
-// if no data is found create demo files
-function setupDemoList() {
-  let list = new List("Your First Notebook");
-  let task = new Task("We have added first note!");
-  list.taskArray.push(task);
-  return [list];
-}

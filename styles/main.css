@@ -13,14 +13,7 @@ html
     --progress-b:aliceblue;
     --more-options-border-color:#e6e6e6;
     --more-options-blur:32px;
-    
-}
-
-/* apply when less than 375px */
-@media (max-width: 375px) {
-    body {
-        font-size: 14px;
-    }
+    --create-notebook-bg:white;
 }
 
 body {
@@ -77,17 +70,16 @@ body {
 .app-title
 {
     color: var(--accent);
-    font-size: 2rem;
+    font-size: 1.4rem;
     text-transform: capitalize;
-    width: -webkit-fill-available;
     font-weight: bold;
-    padding-left: 0.5rem;
     background: transparent;
     border: none;
     display: block;
     text-decoration: none;
     appearance: none;
     outline: none;
+    text-align: center;
 }
 
 
@@ -945,7 +937,7 @@ div#close-task-more-options {
 
 input.add-new-list-title {
     width: 100%;
-    background: #44409b1f;
+    background: var(--create-notebook-bg);
     color: var(--font-color);
     padding: 1.5rem;
 }
@@ -1103,13 +1095,12 @@ input:checked + .slider:before {
     position: relative;
 }
 
-.text-red-500 {
-    color: #ef4444;
-}
+
 
 .add_task_icon {
     color: var(--accent);
-    font-size: 2rem;
+    border-radius: 100px;
+    background: var(--list-bg);
 }
 
 .flex-row {
@@ -1238,12 +1229,6 @@ input:checked + .slider:before {
     font-weight: bold;
 }
 
-.text-accent {
-    color: var(--accent);
-}
-.text-center{
-    text-align:center;
-}
 
 .visible_pop_animation
 {
@@ -1292,6 +1277,11 @@ input:checked + .slider:before {
 {
     gap:0.5rem;
 }
+.gap-2
+{
+    gap:1rem;
+}
+
 
 .transition{
     transition:0.5s all;
@@ -1308,6 +1298,7 @@ input:checked + .slider:before {
 
 h1,h2,h3,h4,h5 {
     margin: 0.5rem;
+    text-transform:capitalize;
 }
 .justify-content-end {
     justify-content: end;
@@ -1323,11 +1314,17 @@ h1,h2,h3,h4,h5 {
     background: var(--list-bg);
 }
 
-select.select {
+.select {
     background: transparent;
     color: white;
     border: 0px;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
 }
+
+
 
 div#console-output {
     font-family: monospace;
@@ -1335,4 +1332,100 @@ div#console-output {
     background: #510d51;
     max-height: 500px;
     overflow: scroll;
+    width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.app-subtitle {
+    font-size: 0.8rem;
+}
+
+
+
+#new_notebook_popup {
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 25%;
+    align-items: center;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.new_notebook_popup_child {
+    display: flex;
+    flex-direction: column;
+    /* background: var(--list-bg); */
+    border-radius: 1rem;
+    width: 80%;
+    padding: .5rem;
+    -webkit-backdrop-filter: blur(var(--more-options-blur));
+    backdrop-filter:blur(var(--more-options-blur));
+    border:1px solid var(--more-options-border-color);
+}
+
+#new_task_popup {
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 25%;
+    align-items: center;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.new_task_popup_child {
+    display: flex;
+    flex-direction: column;
+    /* background: var(--list-bg); */
+    border-radius: 1rem;
+    width: 80%;
+    padding: .5rem;
+    -webkit-backdrop-filter: blur(var(--more-options-blur));
+    backdrop-filter:blur(var(--more-options-blur));
+    border:1px solid var(--more-options-border-color);
+}
+
+.button {
+    background: var(--chip-bg);
+    border-radius: 1rem;
+    padding: 0.75rem;
+    display: inline-flex;
+    color:var(--accent);
+    margin:0.5em;
+}
+.space-between {
+    justify-content:space-between;
+}
+
+/* utilities classes must come after general class */
+.text-red-500 {
+    color: #ef4444;
+}
+
+.capitalize
+{
+    text-transform:capitalize;
+}
+
+.text-accent {
+    color: var(--accent);
+}
+.text-center{
+    text-align:center;
+}
+
+.bold{
+    font-weight:bold;
+}
+.text-2
+{
+    font-size: 1rem;
 }
