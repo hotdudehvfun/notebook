@@ -113,11 +113,10 @@
                                     <article class="selected" ng-bind="value.title"></article>
                                     <span 
                                     class="list-sub-text" 
-                                    ng-bind="get_list_info(value.taskArray)"></span>
+                                    ng-bind="get_list_info(key,value.taskArray)"></span>
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
                     <!-- tasks -->
                     <div class="swiper-slide ">
@@ -137,17 +136,27 @@
                         <!-- empty state empty list-->
                         <div 
                         style="text-align: center;" 
-                        ng-show="taskArray.length==0">
+                        ng-show="taskArray.length==0 && pageTitle!='System'">
                             <h1>Notebook is empty</h1>
                         </div>
+                        <!-- show system vars here -->
+                         <div
+                         ng-show="pageTitle=='System'">
+                         System Vars
+                         <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
+                            <div class="system_var_item">
+                                <span class="var_icon">x</span>
+                                <div class="var_chip">{{key}}</div>
+                                <div class="var_chip">{{evaluate_exp(value)}}</div>
+                            </div>
+                         </div>
+                         </div>
                     </div>
                     <!-- console -->
                     <div class="swiper-slide">
                         <div id="console-output">
                         </div>
                     </div>
-                    
-                    
                 </div>
             </div>
             <!-- empty state no list-->
@@ -159,14 +168,19 @@
 
         <!-- bottom bar -->
          <div class="bottom-bar">
-            <div class="flex-row button align-center gap-2 space-between" ng-click="show_create_notebook_popup=true">
+            <div class="bottom-bar-button button" ng-click="show_create_notebook_popup=true">
                 <span class="material-symbols-outlined">contract_edit</span>
                 <span class="">Create NoteBook</span>
              </div>
-             <div class="flex-row button align-center gap-2" ng-click="open_create_new_note_popup()">
+             <div class="bottom-bar-button button" ng-click="open_create_new_note_popup()">
                 <span class="material-symbols-outlined">draw</span>
                 <span class="">Create note</span>
              </div> 
+             <div class="bottom-bar-button button" ng-click="open_create_system_var_popup()">
+                <span class="material-symbols-outlined">keyboard_command_key</span>
+                <span class="">System Var</span>
+             </div> 
+             
         </div>
          
     </div>
@@ -266,21 +280,17 @@
                 </div>
                 <div class="chip">
                     <span class="material-symbols-outlined">keyboard_command_key</span>
-                    <select
-                    class="select" 
-                    ng-model="selected_system_var" 
-                    ng-options="key as (key + '=' + value) for (key, value) in get_system_vars()"
-                    ng-change="insert_system_var_at_cursor()"
-                    >
-                        <option value="" disabled selected>System vars</option>
-                    </select>
+                    <span>Insert System Vars</span>
                 </div>
+                <div class="chip" ng-repeat="(key,value) in get_system_vars()">
+                    <span ng-click="insertTextAtCursor('newTaskContent',key)">{{key}}={{value}}</span>
+                </div>
+                
             </div>
             <div class="flex-col align-center">
                 <div class="flex-row align-center">
                     <span class="material-symbols-outlined add_task_icon" ng-click="show_add_task_edit_options=true">add</span>
                     <textarea
-                        ng-style="{height: new_task_content_height + 'px'}"
                         ng-model="newTaskContent"
                         ng-keypress="handle_keypress_newtask($event)"
                         id="newTaskContent"
@@ -293,6 +303,34 @@
             </div>
         </div>
       </div>
+
+
+
+
+      <!-- create system var pop up-->
+     <div id="new_system_var_popup" ng-show="show_create_system_var_popup" class="popup visible_pop_animation">
+        <div class="new_notebook_popup_child">
+         <div class="flex-col align-center gap-1">
+            <div class="flex-row align-center gap-1 m-2">
+             <span class="var_icon">x</span>
+             <div>{{system_var_popup_title}}</div>
+            </div>
+                <input 
+                class="add-new-list-title rounded-2"
+                ng-model="new_var_name" 
+                placeholder="Variable name"></input>
+                <input
+                 class="add-new-list-title rounded-2 mt-2"
+                 ng-model="new_var_value" 
+                 placeholder="Variable value"></input>
+                 
+                <div class="flex-row space-between m-2">
+                    <span ng-click="show_create_system_var_popup=false" class="button text-red-500">Cancel</span>
+                    <span ng-click="create_system_var()" class="button">{{system_var_popup_create_button_text}}</span>
+                </div>
+         </div>
+            </div>
+     </div>
 
 
 

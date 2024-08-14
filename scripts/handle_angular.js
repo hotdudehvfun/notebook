@@ -28,8 +28,8 @@ app.filter("sanitize", ['$sce', function ($sce) {
 app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
 
   // output  of task content
-  $scope.handle_task_html = function(text){
-    //handle progress bar
+  $scope.handle_task_html = function(text)
+  {
     text = parseWikiTextToHTML(text)
     return text
   }
@@ -113,7 +113,17 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
       return "folder"
   }
 
-  $scope.get_list_info = function (taskArray) {
+  $scope.insertTextAtCursor = function(id,value)
+  {
+    insertTextAtCursor(id,value)
+  }
+
+  $scope.get_list_info = function (key,taskArray) {
+    let title = $scope.listArray[key].title
+    if(title.toLowerCase()=="system")
+    {
+      return Object.keys(system_vars).length
+    }
     var completed = taskArray.filter(function (task) { return task.isTaskCompleted == true }).length;
     if (completed == 0)
       return taskArray.length;
@@ -184,40 +194,19 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
     }
   }
 
-  $scope.get_system_vars = function() {
-    let tasks = [];
-    let _vars = {};
-    const systemItem = $scope.listArray.find(item => item.title.toLocaleLowerCase() === "system");
-
-    if (systemItem) {
-        tasks = systemItem.taskArray;
-    }
-
-    tasks.forEach((item) => {
-        let lines = item.title.trim().split("\n");
-        if (lines.length === 2) {
-            let var_name = lines[0].trim();
-            let value = lines[1].trim();
-
-            // Replace any existing keys within the value
-            value = value.replace(/{(.*?)}/g, (_, expr) => {
-                try {
-                    return eval(expr.replace(/\b(\w+)\b/g, (match) => {
-                        return _vars.hasOwnProperty(match) ? _vars[match] : match;
-                    }));
-                } catch (e) {
-                    console.error(`Error evaluating expression: ${expr}`);
-                    return "";
-                }
-            });
-
-            if (var_name && value !== undefined) {
-                _vars[var_name] = value;
-            }
-        }
-    });
-    return _vars;
-};
+  $scope.get_system_vars = function()
+  {
+    return system_vars
+  }
+  $scope.edit_var = function(key,value)
+  {
+    console.log(key,value)
+    $scope.system_var_popup_title = "Edit Variable"
+    $scope.system_var_popup_create_button_text = "Update Variable"
+    $scope.show_create_system_var_popup = true
+    $scope.new_var_name = key
+    $scope.new_var_value = system_vars[key]
+  }
 
 $scope.insert_system_var_at_cursor = function()
 {
@@ -236,11 +225,31 @@ $scope.insert_system_var_at_cursor = function()
 
     //save theme
     localStorage.theme = $scope.theme
-    console.log("theme saved = ", localStorage.theme)
 
-    //update system vars
-    system_vars = $scope.get_system_vars()
+    //save system vars
+    localStorage.system_vars = JSON.stringify(system_vars) 
     console.log("System vars",JSON.stringify(system_vars))
+  }
+
+  $scope.readData = function()
+  {
+    try {
+      //read system vars
+      if (localStorage.system_vars != undefined)
+      {
+        system_vars = JSON.parse(localStorage.system_vars)
+      }
+      let appData = localStorage.appData
+      if (appData == undefined || appData == "[]") {
+        return setupDemoList();
+      } else
+      {
+        let json = JSON.parse(appData);
+        return json;
+      }
+    } catch (error) {
+      return setupDemoList();
+    }
   }
 
   $scope.emptyList = handleNoTasksState();
@@ -384,11 +393,13 @@ $scope.insert_system_var_at_cursor = function()
       $scope.saveData();
     }
   }
-
+  
   $scope.editTask = function () {
+    $scope.open_create_new_note_popup()
     $scope.newTaskContent = $scope.taskArray[$scope.selected_task_index].title
     $scope.show_update_task_button = true
-    $scope.open_create_new_note_popup()
+    var textarea = document.querySelector('#newTaskContent');
+    textarea.style.height = '250px';
   }
 
   $scope.updateTask = function () {
@@ -545,11 +556,13 @@ $scope.insert_system_var_at_cursor = function()
 
   $scope.handle_keypress_newtask = function (e) {
     try {
-      //handle height
-      // console.log(e.keyCode);
-      (e.keyCode == 13 && $scope.new_task_content_height < 250) ? $scope.new_task_content_height += 10 : 0;
-
-      //handle codes
+      let textarea = document.querySelector("#newTaskContent")
+      // if(e.keyCode==13)
+      let h = textarea.scrollHeight
+      // if(h>400)
+      //   h=400
+      textarea.style.height = `${h}px`
+      
       if (e.keyCode == 32 || e.keyCode == 13) {
         //#today #now #day
         var codes = {
@@ -577,6 +590,7 @@ $scope.insert_system_var_at_cursor = function()
             case 0:
               console.log("notebook view")
               $scope.reset_view()
+              $scope.$apply()
               break;
             case 1:
                 console.log("tasks view")
@@ -691,12 +705,82 @@ $scope.insert_system_var_at_cursor = function()
   };
   }
 
+  $scope.open_create_system_var_popup = function()
+  {
+    $scope.show_create_system_var_popup = true
+    $scope.new_var_name = ""
+    $scope.new_var_value = ""
+    $scope.system_var_popup_title = "Create Variable"
+    $scope.system_var_popup_create_button_text = "Create"
+  }
+
+  $scope.evaluate_exp = function(value) {
+    // Recursive function to evaluate expressions
+    function evaluate(value) {
+        return value.replace(/\b[a-zA-Z_]\w*\b/g, function(match) {
+            if (system_vars.hasOwnProperty(match)) {
+                // If the match is an expression, evaluate it recursively
+                let expr = system_vars[match];
+                if (typeof expr === 'string') {
+                    return evaluate(expr);
+                } else {
+                    return expr;
+                }
+            }
+            return match;
+        });
+    }
+
+    try {
+        // Evaluate the expression and return the result
+        return eval(evaluate(value));
+    } catch (error) {
+        console.error("Invalid expression: ", error);
+        return "Invalid expression";
+    }
+}
+
+  $scope.create_system_var = function()
+  {
+    //reset options
+    let error = ""
+    if($scope.new_var_name.length>0 && $scope.new_var_value.length>0)
+    {
+      //clean vars
+      $scope.new_var_name = $scope.new_var_name.trim().toLocaleLowerCase()
+      $scope.new_var_value = $scope.new_var_value.trim().toLocaleLowerCase()
+
+      //check if var does not exists
+      // if(system_vars[$scope.new_var_name]!=undefined)
+      // {
+      //   error = "Variable already exists"
+      // }
+    }else
+    {
+      error = "Empty variables cannot be created"
+    }
+    if(error=="")
+    {
+      system_vars[$scope.new_var_name] = $scope.new_var_value
+      $scope.saveData();
+      $scope.new_var_name = ""
+      $scope.new_var_value = ""
+      $scope.show_create_system_var_popup = false;
+      showToast("Variable created");
+    }else{
+      showToast(error)
+    }
+    
+  }
+
   $scope.open_create_new_note_popup = function()
   {
     $scope.show_task_more_options = false
     $scope.show_list_more_options = false
-    
+
     $scope.show_create_task_popup = true
+    $scope.newTaskContent = ""
+    document.querySelector("#newTaskContent").value = ""
     //check slide index and show drop down
     if($scope.selectedListIndex==-1)
       $scope.show_select_notebooks_dropdown = true
@@ -741,7 +825,7 @@ $scope.insert_system_var_at_cursor = function()
     $scope.swiper = null
 
     //read saved data
-    $scope.listArray = readData();
+    $scope.listArray = $scope.readData();
 
     if (patchApplied) {
       //if new property added to previous version
@@ -766,16 +850,13 @@ $scope.insert_system_var_at_cursor = function()
     $scope.new_task_placeholder = "Create Task"
     $scope.allTasks = $scope.getTasksOnly();
     $scope.show_update_task_button = false
+    $scope.show_create_system_var_popup = false
     //default theme
     $scope.init_theme()
 
     //init swiper
     $scope.init_swiper()
-    
-    //check for system vars
-    system_vars = $scope.get_system_vars()
-    console.log("System vars",JSON.stringify(system_vars))
-    
+
   };
   $scope.init();
 });

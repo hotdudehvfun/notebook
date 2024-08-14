@@ -1,17 +1,4 @@
-function readData() {
-    try {
-      let appData = localStorage.appData;
-      if (appData == undefined || appData == "[]") {
-        return setupDemoList();
-      } else {
-        //load
-        let json = JSON.parse(appData);
-        return json;
-      }
-    } catch (error) {
-      return setupDemoList();
-    }
-  }
+
   
   // if no data is found create demo files
   function setupDemoList() {
@@ -60,19 +47,31 @@ function progress_bar(text) {
     });
 }
 
-function check_for_system_vars(text) {
-    try {
-        for (let var_name in system_vars) {
-            if (system_vars.hasOwnProperty(var_name)) {
-                let regex = new RegExp(var_name, 'g')
-                text = text.replace(regex, system_vars[var_name]);
+function check_for_system_vars(value)
+{
+    // Recursive function to evaluate expressions
+    function evaluate(value) {
+        return value.replace(/\b[a-zA-Z_]\w*\b/g, function(match) {
+            if (system_vars.hasOwnProperty(match)) {
+                // If the match is an expression, evaluate it recursively
+                let expr = system_vars[match];
+                if (typeof expr === 'string') {
+                    return evaluate(expr);
+                } else {
+                    return expr;
+                }
             }
-        }
-        return text;
-    } catch (err) {
-        console.log("Error while inserting system vars in expression",err)
+            return match;
+        });
     }
-    return text
+
+    try {
+        // Evaluate the expression and return the result
+        return eval(evaluate(value));
+    } catch (error) {
+        console.error("Invalid expression: ", error);
+        return "Invalid expression";
+    }
 }
 
 
