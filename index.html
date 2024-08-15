@@ -142,7 +142,7 @@
                         <!-- show system vars here -->
                          <div
                          ng-show="pageTitle=='System'">
-                         System Vars
+                         <div class="system_var_title">System Vars</div>
                          <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
                             <div class="system_var_item">
                                 <span class="var_icon">x</span>
@@ -326,7 +326,10 @@
                  
                 <div class="flex-row space-between m-2">
                     <span ng-click="show_create_system_var_popup=false" class="button text-red-500">Cancel</span>
+                    <span ng-click="delete_system_var()" class="button text-red-500" ng-show="show_delete_system_var_button">Delete Variable</span>
+                    
                     <span ng-click="create_system_var()" class="button">{{system_var_popup_create_button_text}}</span>
+
                 </div>
          </div>
             </div>

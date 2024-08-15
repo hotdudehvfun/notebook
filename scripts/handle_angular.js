@@ -51,6 +51,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
     $scope.show_delete_list_option = true
     $scope.show_purge_list_option = true
     $scope.default_app_icon = $scope.listArray[$scope.selectedListIndex].icon
+    console.log($scope.default_app_icon)
   }
 
   $scope.open_notebook = function (index) {
@@ -200,10 +201,10 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
   }
   $scope.edit_var = function(key,value)
   {
-    console.log(key,value)
     $scope.system_var_popup_title = "Edit Variable"
     $scope.system_var_popup_create_button_text = "Update Variable"
     $scope.show_create_system_var_popup = true
+    $scope.show_delete_system_var_button = true
     $scope.new_var_name = key
     $scope.new_var_value = system_vars[key]
   }
@@ -397,6 +398,7 @@ $scope.insert_system_var_at_cursor = function()
   $scope.editTask = function () {
     $scope.open_create_new_note_popup()
     $scope.newTaskContent = $scope.taskArray[$scope.selected_task_index].title
+    console.log($scope.newTaskContent)
     $scope.show_update_task_button = true
     var textarea = document.querySelector('#newTaskContent');
     textarea.style.height = '250px';
@@ -712,6 +714,7 @@ $scope.insert_system_var_at_cursor = function()
     $scope.new_var_value = ""
     $scope.system_var_popup_title = "Create Variable"
     $scope.system_var_popup_create_button_text = "Create"
+    $scope.show_delete_system_var_button = false
   }
 
   $scope.evaluate_exp = function(value) {
@@ -738,6 +741,17 @@ $scope.insert_system_var_at_cursor = function()
         console.error("Invalid expression: ", error);
         return "Invalid expression";
     }
+}
+
+$scope.delete_system_var = function()
+{
+  if (confirm("Are you sure?")) {
+    delete system_vars[$scope.new_var_name]
+    $scope.show_create_system_var_popup = false
+    $scope.show_delete_system_var_button = false
+    $scope.saveData()
+    showToast("System var removed")
+  }
 }
 
   $scope.create_system_var = function()
@@ -777,10 +791,11 @@ $scope.insert_system_var_at_cursor = function()
   {
     $scope.show_task_more_options = false
     $scope.show_list_more_options = false
+    $scope.show_update_task_button = false
 
     $scope.show_create_task_popup = true
+    // document.querySelector("#newTaskContent").value = ""
     $scope.newTaskContent = ""
-    document.querySelector("#newTaskContent").value = ""
     //check slide index and show drop down
     if($scope.selectedListIndex==-1)
       $scope.show_select_notebooks_dropdown = true
@@ -851,6 +866,7 @@ $scope.insert_system_var_at_cursor = function()
     $scope.allTasks = $scope.getTasksOnly();
     $scope.show_update_task_button = false
     $scope.show_create_system_var_popup = false
+    $scope.show_delete_system_var_button = false
     //default theme
     $scope.init_theme()
 
