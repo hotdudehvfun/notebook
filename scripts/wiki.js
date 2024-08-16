@@ -138,6 +138,11 @@ function insert_tag(line)
     return html
 }
 
+function handle_insert_class(input) {
+    // Regular expression to match lines starting with _className followed by text
+    return input.replace(/^_(\w+)\s(.+)/gm, '<span class="$1">$2</span>');
+}
+
 function parseWikiTextToHTML(wikiText) {
     var lines = wikiText.trim().split('\n');
     let html = '';
@@ -160,6 +165,9 @@ function parseWikiTextToHTML(wikiText) {
 
             // progress bar #20%
             line = progress_bar(line)
+
+            //handle custom class
+            line = handle_insert_class(line)
             
             if (line.startsWith('#')) {
                 // Handle headings

@@ -493,25 +493,17 @@ $scope.insert_system_var_at_cursor = function()
 
 
   $scope.toggle_list_more_options_visibility = function () {
-
     $scope.show_list_more_options = !$scope.show_list_more_options
-    // console.log($scope.show_list_more_options)
-    $scope.app_size()
   }
 
   $scope.app_size = function () {
-    var _lsTotal = 0, _xLen, _x;
-    for (_x in localStorage) {
-
-      if (!localStorage.hasOwnProperty(_x)) {
-        continue;
-      }
-      _xLen = ((localStorage[_x].length + _x.length) * 2);
-      _lsTotal += _xLen;
-      //console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB")
-    };
-    //console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
-    $scope.app_size_value = "Total Size: " + (_lsTotal / 1024).toFixed(2) + " KB"
+    let totalSize = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        let value = localStorage.getItem(key);
+        totalSize += key.length + value.length;
+    }
+    return `App storage is ${(totalSize / 1024).toFixed(2)} kb`
   }
 
 
@@ -841,6 +833,7 @@ $scope.delete_system_var = function()
 
     //read saved data
     $scope.listArray = $scope.readData();
+    console.log($scope.listArray)
 
     if (patchApplied) {
       //if new property added to previous version

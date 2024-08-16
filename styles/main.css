@@ -17,6 +17,7 @@ html
 
     --system-var-bg:#ffffff;
     --system-var-border:#cfcfcf;
+    --block-screen-blur:4px;
 }
 
 body {
@@ -710,6 +711,8 @@ div#list-more-options-container {
     top: 0px;
     left: 0px;
     z-index: 900;
+    -webkit-backdrop-filter: blur(var(--block-screen-blur));
+    backdrop-filter:blur(var(--block-screen-blur));
 }
 
 .hide-block-screen {
@@ -1199,7 +1202,7 @@ input:checked + .slider:before {
 .chip {
     background: var(--chip-bg);
     border-radius: 1rem;
-    padding: 0.125rem 0.75rem;
+    padding: 0.1rem 0.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -1499,9 +1502,73 @@ div#console-output {
     flex-direction:column;
     align-items: center;
     flex: 1 1 auto;
+    font-size: .65rem;
+}
+.bottom-bar-button .material-symbols-outlined
+{
+    font-size:1.2rem;
 }
 
 .system_var_title {
     font-size: 1rem;
     margin: 1rem;
+}
+
+.new-list-icon
+{
+    background: var(--accent);
+    font-size: 1.3rem;
+    border-radius: 4px;
+    color: white;
+}
+
+/* Existing classes */
+.red {
+    color: #ff4967;
+}
+
+.green {
+    color: #49dc6b;
+}
+
+.blue {
+    color: var(--accent);
+}
+
+/* New classes with font-size: 24px */
+.red1 {
+    color: #ff4967;
+    font-size: 24px;
+    font-weight:bold;
+}
+
+.green1 {
+    color: #49dc6b;
+    font-size: 24px;
+    font-weight:bold;
+}
+
+.blue1 {
+    color: var(--accent);
+    font-size: 24px;
+    font-weight:bold;
+}
+
+/* New classes with font-size: 18px */
+.red2 {
+    color: #ff4967;
+    font-size: 18px;
+    font-weight:bold;
+}
+
+.green2 {
+    color: #49dc6b;
+    font-size: 18px;
+    font-weight:bold;
+}
+
+.blue2 {
+    color: var(--accent);
+    font-size: 18px;
+    font-weight:bold;
 }
