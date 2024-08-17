@@ -728,7 +728,9 @@ $scope.insert_system_var_at_cursor = function()
 
     try {
         // Evaluate the expression and return the result
-        return eval(evaluate(value));
+        let result = eval(evaluate(value))
+        result = result%1==0?result:result.toFixed(2);
+        return result;
     } catch (error) {
         console.error("Invalid expression: ", error);
         return "Invalid expression";
