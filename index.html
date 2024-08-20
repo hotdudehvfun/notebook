@@ -45,7 +45,10 @@
                     ng-bind="pageTitle">
                 </div>
             <div class="app-subtitle">
-                {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
+                <span class="material-symbols-outlined">draw</span>
+                {{get_total().total_tasks}},
+                <span class="material-symbols-outlined">contract_edit</span>
+                {{get_total().total_notebooks}}
             </div>
             </div>
             <div>
@@ -130,9 +133,10 @@
                             </div>
                         </div>
                         <!-- empty state empty list-->
-                        <div 
-                        style="text-align: center;" 
+                        <div
+                        class="empty-notebook"
                         ng-show="taskArray.length==0 && pageTitle!='System'">
+                        <span class="material-symbols-outlined">emoji_objects</span>
                             <h1>Notebook is empty</h1>
                         </div>
                         <!-- show system vars here -->

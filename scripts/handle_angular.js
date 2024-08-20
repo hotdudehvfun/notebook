@@ -674,10 +674,11 @@ $scope.insert_system_var_at_cursor = function()
   }
 
   $scope.get_notebooks_list = function() {
-    //map function returns 
-    let notebooks =  $scope.listArray.map(function(listItem) {
-        return listItem.title;
+    let notebooks =  $scope.listArray.map(function(listItem)
+    {
+      return listItem.title;
     });
+    notebooks = notebooks.filter((list)=>list.toLocaleLowerCase()!="system")
     // console.log(notebooks)
     return notebooks
 };
