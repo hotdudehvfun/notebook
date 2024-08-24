@@ -1593,3 +1593,14 @@ div#console-output {
     align-items: center;
     justify-content: center;
 }
+
+
+.sidebar-menu-container {
+    position: absolute;
+    z-index: 901;
+    background: var(--list-bg);
+    width: 75vw;
+    height: 100%;
+    transition: 0.5s all;
+    left: -75vw;
+}

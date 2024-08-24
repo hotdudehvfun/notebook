@@ -36,7 +36,7 @@
         <div class="topbar">
             <!-- app title -->
              <div>
-                <span class="material-symbols-outlined">contract_edit</span>
+                <span ng-click="open_sidebar(true)" class="material-symbols-outlined text-accent">menu</span>
              </div>
             <div class="flex-col">
                 <div 
@@ -44,12 +44,6 @@
                     ng-click="handle_click_on_notebook_title()" 
                     ng-bind="pageTitle">
                 </div>
-            <div class="app-subtitle">
-                <span class="material-symbols-outlined">draw</span>
-                {{get_total().total_tasks}},
-                <span class="material-symbols-outlined">contract_edit</span>
-                {{get_total().total_notebooks}}
-            </div>
             </div>
             <div>
                 <span 
@@ -94,29 +88,6 @@
 
             <div class="swiper">
                 <div class="swiper-wrapper">
-                    <!-- notebooks -->
-                    <div class="swiper-slide">
-                        <div ng-repeat="(key,value) in listArray">
-                            <div class="list-panel-item" >
-                                <div class="list-panel-item-title">
-                                    <!-- show when selected -->
-                                    <span
-                                    ng-show="select_notebooks"
-                                    class="material-symbols-outlined list-icon"
-                                    ng-bind="notebook_selected_state(key)"></span>
-                                    <span 
-                                    class="material-symbols-outlined list-icon"
-                                    ng-bind="get_list_icon(value)"
-                                    ng-hide="select_notebooks"
-                                    ></span>
-                                    <article ng-click="open_notebook(key)" class="selected" ng-bind="value.title"></article>
-                                    <span 
-                                    class="list-sub-text" 
-                                    ng-bind="get_list_info(key,value.taskArray)"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <!-- tasks -->
                     <div class="swiper-slide ">
                         <div ng-repeat="(key,value) in taskArray">
@@ -187,6 +158,46 @@
 
 
 
+
+    <!-- sidebar menu -->
+     <div 
+     class="sidebar-menu-container" 
+     ng-style="sidebar_left"
+     >
+        <div>
+            <span 
+            ng-click="open_sidebar(false)" 
+            class="material-symbols-outlined text-accent">close</span>
+        </div>
+        <h2>Good Evening, Arun</h2>
+        <h3 class="text-center mt-2">Your notebooks</h3>
+        <div class="app-subtitle">
+            {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
+        </div>
+        <!-- notebooks -->
+        <div class="scroll">
+            <div ng-repeat="(key,value) in listArray">
+                <div class="list-panel-item" >
+                    <div class="list-panel-item-title">
+                        <!-- show when selected -->
+                        <span
+                        ng-show="select_notebooks"
+                        class="material-symbols-outlined list-icon"
+                        ng-bind="notebook_selected_state(key)"></span>
+                        <span 
+                        class="material-symbols-outlined list-icon"
+                        ng-bind="get_list_icon(value)"
+                        ng-hide="select_notebooks"
+                        ></span>
+                        <article ng-click="open_notebook(key)" class="selected" ng-bind="value.title"></article>
+                        <span 
+                        class="list-sub-text" 
+                        ng-bind="get_list_info(key,value.taskArray)"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
 
 
 
@@ -447,7 +458,7 @@
     <!-- blocking screen  -->
     <div 
     class="block-screen" 
-    ng-show="show_list_more_options || show_task_more_options || show_create_notebook_popup || show_create_task_popup || show_create_system_var_popup"
+    ng-show="show_list_more_options || show_task_more_options || show_create_notebook_popup || show_create_task_popup || show_create_system_var_popup || is_sidebar_menu_open"
     ng-click="handle_click_on_blockscreen()"></div>
 
     <!-- toast message -->

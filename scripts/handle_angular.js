@@ -68,7 +68,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
       }
     } else {
       if (index >= 0) {
-        $scope.swiper.slideTo(1)
+        // $scope.swiper.slideTo(1)
         $scope.taskArray = $scope.listArray[index].taskArray;
         // when name is changed list view is hided and task view is shown
         $scope.selectedListName = $scope.listArray[index].title;
@@ -78,10 +78,17 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
         $scope.load_list_info(index)
         $scope.new_task_placeholder = `Create task in ${$scope.selectedListName}`
         // $scope.show_select_notebooks_dropdown = false
+        $scope.open_sidebar(false)
       }
     }
   }
 
+  $scope.open_sidebar = function(state)
+  {
+    let left_val = state?"0px":"-75vw";
+    $scope.sidebar_left = {left:left_val}
+    $scope.is_sidebar_menu_open = state
+  }
 
   $scope.reset_view = function () {
     try {
@@ -316,6 +323,8 @@ $scope.insert_system_var_at_cursor = function()
 
     if ($scope.show_task_more_options)
       $scope.close_task_more_options()
+
+    $scope.open_sidebar(false)
   }
 
   $scope.handle_remove_completed_tasks = function () {
@@ -863,6 +872,7 @@ $scope.delete_system_var = function()
     $scope.show_update_task_button = false
     $scope.show_create_system_var_popup = false
     $scope.show_delete_system_var_button = false
+    $scope.show_sidebar = false
     //default theme
     $scope.init_theme()
 
