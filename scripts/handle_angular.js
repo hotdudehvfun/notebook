@@ -68,7 +68,6 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
       }
     } else {
       if (index >= 0) {
-        // $scope.swiper.slideTo(1)
         $scope.taskArray = $scope.listArray[index].taskArray;
         // when name is changed list view is hided and task view is shown
         $scope.selectedListName = $scope.listArray[index].title;
@@ -189,6 +188,8 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
         document.querySelector("#newTaskContent").style.height = 64
         $scope.show_add_task_edit_options = false
         $scope.show_create_task_popup =false
+        //if we are creating without opening the notebook
+        $scope.pageTitle = $scope.selectedListName
 
         $scope.saveData();
         let toast_text = "Note added"
@@ -272,9 +273,6 @@ $scope.insert_system_var_at_cursor = function()
         let removedList = $scope.listArray.splice($scope.selectedListIndex, 1);
         $scope.saveData();
         $scope.toggle_list_more_options_visibility()
-        //go back to main screen after delete
-        //reset is called when we go to slide 0
-        $scope.swiper.slideTo(0)
       }
     }
   }
@@ -336,8 +334,9 @@ $scope.insert_system_var_at_cursor = function()
     } catch (error) {
       console.log(error)
     }
-
   }
+
+
 
 
   $scope.deleteTask = function (index) {
@@ -578,36 +577,25 @@ $scope.insert_system_var_at_cursor = function()
             $scope.newTaskContent = $scope.newTaskContent.replace(code, codes[code]);
           }
         }
+      if(e.keyCode==13)
+      {
+        let value = textarea.value;
+        let lines = value.split('\n');
+        let lastLine = lines[lines.length - 1];
+        let match = lastLine.match(/^(\d+)\.\s/);
+        if (match) {
+            let currentNumber = parseInt(match[1]);
+            textarea.value += `\n${currentNumber + 1}. `;
+            e.preventDefault();
+        }
+      }
       }
     } catch (error) {
       console.log(error)
     }
   }
 
-  $scope.init_swiper = function () {
-    $scope.swiper = new Swiper('.swiper', {
-      on: {
-        slideChange: function () {
-          switch($scope.swiper.activeIndex)
-          {
-            case 0:
-              console.log("notebook view")
-              $scope.reset_view()
-              $scope.$apply()
-              break;
-            case 1:
-                console.log("tasks view")
-                break;
-            case 2:
-                console.log("Console View")
-                $scope.pageTitle = "Console"
-                $scope.$apply()
 
-          }
-        }
-      }
-    });
-  }
 
   $scope.clear_console = function()
   {
@@ -694,19 +682,20 @@ $scope.insert_system_var_at_cursor = function()
 
   $scope.update_selected_list_index = function(key)
   {
-    $scope.selectedListIndex=key
+    $scope.selectedListIndex = key
+    $scope.selectedListName = $scope.listArray[$scope.selectedListIndex].title;
     console.log($scope.selectedListIndex)
   }
 
 
 
   $scope.override_console = function(){
-     console.log = function(...args) {
-      original_console.apply(console, args);
-      // Convert arguments to a string and append to the div
-      const outputDiv = document.getElementById("console-output");
-      outputDiv.innerText += args.join(' ') + '\n';
-  };
+  //    console.log = function(...args) {
+  //     original_console.apply(console, args);
+  //     // Convert arguments to a string and append to the div
+  //     const outputDiv = document.getElementById("console-output");
+  //     outputDiv.innerText += args.join(' ') + '\n';
+  // };
   }
 
   $scope.open_create_system_var_popup = function()
@@ -840,8 +829,6 @@ $scope.delete_system_var = function()
     $scope.selected_notebooks = []
     $scope.select_notebooks_menu_text = "Select Notebooks"
 
-    //handle swiper varible
-    $scope.swiper = null
 
     //read saved data
     $scope.listArray = $scope.readData();
@@ -873,11 +860,17 @@ $scope.delete_system_var = function()
     $scope.show_create_system_var_popup = false
     $scope.show_delete_system_var_button = false
     $scope.show_sidebar = false
+
+    $scope.edit_options = [
+      {icon:"title",insert_text:"#H1"},
+      {icon:"list",insert_text:"* Item"},
+      {icon:"sliders",insert_text:"#50%"},
+      {icon:"check_box",insert_text:"$ Task"},
+  ]
+
     //default theme
     $scope.init_theme()
 
-    //init swiper
-    $scope.init_swiper()
 
   };
   $scope.init();

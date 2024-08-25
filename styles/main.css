@@ -1208,6 +1208,7 @@ input:checked + .slider:before {
     display: flex;
     align-items: center;
     gap: 1rem;
+    width: fit-content;
 }
 
 .progress_bar_holder{
@@ -1327,9 +1328,11 @@ h1,h2,h3,h4,h5 {
 }
 .bottom-bar {
     padding-bottom: 0.5rem;
-    background: var(--list-bg);
     display: flex;
     justify-content: space-between;
+    backdrop-filter:blur(var(--more-options-blur));
+    -webkit-backdrop-filter:blur(var(--more-options-blur));
+    
 }
 
 .select {
@@ -1407,6 +1410,7 @@ div#console-output {
     align-items: center;
     width: 100%;
     border-radius: 5px;
+    padding: 0.5rem;
 }
 
 .new_task_popup_child {
@@ -1592,15 +1596,32 @@ div#console-output {
     height: 100%;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    margin-top: 5rem;
 }
 
 
 .sidebar-menu-container {
+    display: flex;
+    flex-direction: column;
     position: absolute;
     z-index: 901;
-    background: var(--list-bg);
+    background: transparent;
     width: 75vw;
     height: 100%;
     transition: 0.5s all;
     left: -75vw;
+    backdrop-filter:blur(var(--more-options-blur));
+    -webkit-backdrop-filter:blur(var(--more-options-blur));
+}
+
+.scroll-y
+{
+    overflow-y:scroll;
+}
+img.empty_svg {
+    height: 100px;
+    width: 100px;
+    background: var(--accent);
+    border-radius: 1rem;
 }
