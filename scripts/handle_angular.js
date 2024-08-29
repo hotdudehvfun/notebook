@@ -50,6 +50,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
     $scope.list_index_for_hold_event = index
     $scope.show_delete_list_option = true
     $scope.show_purge_list_option = true
+    $scope.show_rename_list_option = true
     $scope.default_app_icon = $scope.listArray[$scope.selectedListIndex].icon
     console.log($scope.default_app_icon)
   }
@@ -80,6 +81,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
         $scope.open_sidebar(false)
       }
     }
+    $scope.saveData()
   }
 
   $scope.open_sidebar = function(state)
@@ -96,10 +98,19 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
       $scope.pageTitle = $scope.defaultPageTitle;
       $scope.show_delete_list_option = false
       $scope.show_purge_list_option = false
+      $scope.show_rename_list_option = false
       $scope.selectedListIndex = -1
       $scope.selectedListName = null
     } catch (err) {
       console.log("Error while reseting button", err)
+    }
+  }
+
+  $scope.handle_input_on_rename_notebook = function (e) {
+    if (e.keyCode == 13) {
+      $scope.rename_notebook()
+    } else {
+      $scope.new_notebook_icon = getIconForTitle($scope.new_list_name)
     }
   }
 
@@ -112,6 +123,8 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
       $scope.new_notebook_icon = getIconForTitle($scope.new_list_name)
     }
   }
+
+
 
   $scope.get_list_icon = function (list) {
     if (list.hasOwnProperty("icon"))
@@ -267,11 +280,18 @@ $scope.insert_system_var_at_cursor = function()
   $scope.handleDeleteList = function () {
     if ($scope.selectedListIndex >= 0) {
       if (confirm("Are you sure?")) {
-        //show message removed
         console.log("List at index removed:", $scope.selectedListIndex)
         showToast("Notebook Deleted");
         let removedList = $scope.listArray.splice($scope.selectedListIndex, 1);
-        $scope.saveData();
+        $scope.selectedListIndex = 0
+        if($scope.listArray.length!=0)
+        {
+          $scope.open_notebook($scope.selectedListIndex)
+        }else{
+          //all notebooks removed
+          $scope.taskArray = []
+          $scope.pageTitle = $scope.defaultPageTitle
+        }
         $scope.toggle_list_more_options_visibility()
       }
     }
@@ -430,12 +450,14 @@ $scope.insert_system_var_at_cursor = function()
 
   $scope.purgeList = function () {
     //delete all tasks inside notebook
-    if ($scope.selectedListIndex >= 0) {
-      $scope.taskArray = []
-      $scope.listArray[$scope.selectedListIndex].taskArray = [];
-      $scope.saveData();
-      $scope.toggle_list_more_options_visibility()
-      showToast("List is empty now")
+    if (confirm("Are you sure?") == true) {
+      if ($scope.selectedListIndex >= 0) {
+        $scope.taskArray = []
+        $scope.listArray[$scope.selectedListIndex].taskArray = [];
+        $scope.saveData();
+        $scope.toggle_list_more_options_visibility()
+        showToast("List is empty now")
+      }
     }
   }
 
@@ -548,6 +570,72 @@ $scope.insert_system_var_at_cursor = function()
       document.querySelector("#theme-color").setAttribute("content", "#131417")
     }
   };
+
+  $scope.init_notification = function(){
+    //temp notification
+    if (Notification.permission === 'denied' || Notification.permission === 'default') {
+      console.log("notification false")
+      $scope.askNotificationPermission()
+    } else {
+      console.log("notification true")
+
+    }
+
+    if (Notification.permission === 'granted') {
+      $scope.createNotification("hello world")
+    }
+  }
+
+
+  $scope.askNotificationPermission = function() {
+    function handlePermission(permission) {
+      if (!Reflect.has(Notification, 'permission')) {
+        Notification.permission = permission;
+      }
+      // Set the button to shown or hidden, depending on what the user answers
+      // if (Notification.permission === 'denied' || Notification.permission === 'default') {
+      //   notificationBtn.style.display = 'block';
+      // } else {
+      //   notificationBtn.style.display = 'none';
+      // }
+    };
+
+    // Check if the browser supports notifications
+    if (!Reflect.has(window, 'Notification')) {
+      console.log('This browser does not support notifications.');
+    } else {
+      if ($scope.checkNotificationPromise()) {
+        Notification.requestPermission().then(handlePermission);
+      } else {
+        Notification.requestPermission(handlePermission);
+      }
+    }
+  };
+
+  $scope.checkNotificationPromise = function() {
+    try {
+      Notification.requestPermission().then();
+    } catch(e) {
+      return false;
+    }
+    return true;
+  };
+
+  $scope.createNotification=function(title) {
+    // Create and show the notification
+    const img = 'img/ios/128.png';
+    const text = `Hello notebooks`;
+    const notification = new Notification('Notebook', { body: text, icon: img });
+  };
+
+
+  $scope.load_last_notebook = function () {
+    //check number of notebooks
+    const old_list_index = localStorage.selectedListIndex || 0;
+
+    $scope.open_notebook(old_list_index)
+  };
+
 
   $scope.handle_click_on_notebook_title = function () {
     if ($scope.selectedListIndex >= 0) {
@@ -798,6 +886,53 @@ $scope.delete_system_var = function()
   }
 
 
+  $scope.handle_rename_notebook = function()
+  {
+    $scope.show_task_more_options = false
+    $scope.show_list_more_options = false
+    $scope.show_rename_notebook_popup = true
+  }
+
+  $scope.rename_notebook = function() {
+    try {
+        if (!$scope.new_list_name) {
+            return showToast("Error: Input required");
+        }
+
+        if ($scope.new_list_name.toLocaleLowerCase() === "system") {
+            return showToast("Error: System title is reserved");
+        }
+
+        if ($scope.selectedListIndex < 0) {
+            return showToast("Error: No list is selected");
+        }
+
+        // Update title and icon
+        let selectedList = $scope.listArray[$scope.selectedListIndex];
+        selectedList.title = $scope.new_list_name;
+        selectedList.icon = $scope.new_notebook_icon;
+        $scope.listArray[$scope.selectedListIndex] = selectedList
+
+        // Save data and close popup
+        $scope.saveData();
+        $scope.show_rename_notebook_popup = false;
+
+        // Update selected list and page title
+        $scope.selectedListName = $scope.new_list_name;
+        $scope.pageTitle = $scope.new_list_name;
+
+        // Clean up
+        $scope.new_list_name = "";
+        showToast("Notebook has been renamed");
+    } catch (err) {
+        showToast("Exception occurred while renaming notebook");
+        console.error("Error while renaming notebook", err);
+    }
+}
+
+
+
+
 
   //define all funcions above init
   $scope.init = function () {
@@ -860,6 +995,7 @@ $scope.delete_system_var = function()
     $scope.show_create_system_var_popup = false
     $scope.show_delete_system_var_button = false
     $scope.show_sidebar = false
+    $scope.max_notebook_title_len = 20
 
     $scope.edit_options = [
       {icon:"title",insert_text:"#H1"},
@@ -871,6 +1007,8 @@ $scope.delete_system_var = function()
     //default theme
     $scope.init_theme()
 
+    //try to load first or last notebook
+    $scope.load_last_notebook()
 
   };
   $scope.init();

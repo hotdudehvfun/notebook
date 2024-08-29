@@ -1,17 +1,16 @@
 [data-theme='dark']
 {
     --font-color: white;
-    --bg-color:#000;
+    --bg-color: #111;
     --list-bg:#222423;
     --border-color:#2997ff;
     --accent:#2997ff;
     --list-border:#494949;
-    --chip-bg:#121212;
+    --chip-bg: #191919;
     --progress-a:#2997ff;
     --progress-b:#121212;
     --more-options-border-color:#363636;
     --create-notebook-bg:#44409b54;
-
     --system-var-bg:#171717;
     --system-var-border:#333;
 }

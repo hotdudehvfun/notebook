@@ -37,17 +37,17 @@
         <!-- top bar -->
         <div class="topbar">
             <!-- app title -->
-             <div>
+             <div class="flex">
                 <span ng-click="open_sidebar(true)" class="material-symbols-outlined text-accent">menu</span>
              </div>
-            <div class="flex-col">
+            <div class="flex-col flex">
                 <div 
                     class="app-title"
                     ng-click="handle_click_on_notebook_title()" 
                     ng-bind="pageTitle">
                 </div>
             </div>
-            <div>
+            <div class="flex-row flex align-center justify-end">
                 <span 
                 ng-click="show_searchbar=!show_searchbar"
                 class="material-symbols-outlined text-accent">search
@@ -89,7 +89,7 @@
             </Div>
 
             <!-- tasks -->
-            <div>
+            <div ng-hide="listArray.length==0">
                 <div ng-repeat="(key,value) in taskArray">
                     <!-- ng-class= css_class : condition -->
                     <div class="task" ng-class="{completed: value.isTaskCompleted}">
@@ -108,7 +108,7 @@
                 class="empty-notebook"
                 ng-show="taskArray.length==0 && pageTitle!='System'">
                     <div>
-                        <img src="/img/empty.svg" class="empty_svg"/>
+                        <img src="img/empty.svg" class="empty_svg"/>
                     </div>
                     <h1>Notebook is empty</h1>
                 </div>
@@ -166,12 +166,13 @@
             class="material-symbols-outlined text-accent">close</span>
         </div>
         <h2>Hello Arun</h2>
+        <button class="button" ng-click="init_notification()">Notification test</button>
         <h3 class="text-center mt-2">Your notebooks</h3>
         <div class="app-subtitle">
             {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
         </div>
         <!-- show all notebooks -->
-        <div class="scroll-y">
+        <div class="scroll-y flex-col p-3/4 gap-2">
             <div ng-repeat="(key,value) in listArray">
                 <div class="list-panel-item" >
                     <div class="list-panel-item-title">
@@ -201,10 +202,30 @@
 
 
 
-
+     <!-- rename notebook dialog pop up-->
+     <div ng-show="show_rename_notebook_popup" class="input_popup visible_pop_animation">
+        <div class="new_notebook_popup_child">
+         <div class="flex-col align-center gap-1">
+            <div class="flex-row align-center gap-1 m-2">
+             <span class="material-symbols-outlined new-list-icon" ng-bind="new_notebook_icon"></span>
+             <div>Rename: <span>{{selectedListName}}</span></div>
+            </div>
+             <input 
+                 class="add-new-list-title rounded-2"
+                 ng-model="new_list_name" 
+                 ng-attr-placeholder="Enter new name"
+                 ng-keypress="handle_input_on_notebook($event)"
+                 ></input>
+                    <div class="flex-row space-between m-2">
+                        <span ng-click="show_rename_notebook_popup=false;new_list_name=''; " class="button text-red-500">Cancel</span>
+                        <span ng-click="rename_notebook()" class="button">Rename</span>                
+                    </div>
+         </div>
+            </div>
+     </div>
 
     <!-- new notebook dialog pop up-->
-     <div id="new_notebook_popup" ng-show="show_create_notebook_popup" class="visible_pop_animation">
+     <div ng-show="show_create_notebook_popup" class="input_popup visible_pop_animation">
         <div class="new_notebook_popup_child">
          <div class="flex-col align-center gap-1">
             <div class="flex-row align-center gap-1 m-2">
@@ -227,7 +248,7 @@
      </div>
 
      <!-- new task dialog pop up -->
-      <div id="new_task_popup" class="visible_pop_animation" ng-show="show_create_task_popup">
+      <div class="input_popup visible_pop_animation" ng-show="show_create_task_popup">
         <div class="new_task_popup_child">
             <div class="flex-row align-center gap-1 m-2">
                 <span class="material-symbols-outlined list-icon">draw</span>
@@ -266,7 +287,7 @@
             </div>
 
             <div class="flex-col align-center">
-                <div class="flex-row align-center">
+                <div class="flex-row align-center w-full gap-1 mt-2">
                     <span class="material-symbols-outlined add_task_icon" ng-click="show_add_task_edit_options=true">add</span>
                     <textarea
                         ng-model="newTaskContent"
@@ -275,9 +296,12 @@
                         class="new-task-content rounded-2" 
                         placeholder={{new_task_placeholder}}></textarea>
                 </div>
-                <span ng-click="show_create_task_popup=false" class="button text-red-500">Cancel</span>
-                <span ng-click="create_task()" class="button" ng-hide="show_update_task_button">Create note</span>
-                <span ng-click="updateTask()" class="button" ng-show="show_update_task_button">Update Note</span>
+                <div class="flex-row">
+                    <span ng-click="show_create_task_popup=false" class="button text-red-500">Cancel</span>
+                    <span ng-click="create_task()" class="button" ng-hide="show_update_task_button">Create note</span>
+                    <span ng-click="updateTask()" class="button" ng-show="show_update_task_button">Update Note</span>
+                </div>
+                
             </div>
         </div>
       </div>
@@ -358,12 +382,13 @@
                 <span>{{theme_menu_text}}</span>
             </div>
 
-            <!-- show clear console if console is in veiw -->
-            <div ng-click="clear_console()" class="task-more-options-item"
-                ng-show="pageTitle=='Console'">
-                <span class="material-symbols-outlined">contract_delete</span>
-                <span>Clear Console</span>
-            </div> 
+            
+            <div ng-click="handle_rename_notebook()" class="task-more-options-item"
+                ng-show="show_rename_list_option">
+                <span class="material-symbols-outlined">opacity</span>
+                <span>Rename Notebook</span>
+            </div>
+            
 
             <div ng-click="purgeList()" id="remove-all-tasks-button" class="task-more-options-item"
                 ng-show="show_purge_list_option">
@@ -449,7 +474,7 @@
     </div>
 
 
-    <!-- <script type="text/javascript" src="app.js"></script> -->
+    <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
     <script type="text/javascript" src="scripts/wiki.js"></script>
