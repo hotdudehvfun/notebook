@@ -106,7 +106,7 @@
                 <!-- empty state empty list-->
                 <div
                 class="empty-notebook"
-                ng-show="taskArray.length==0 && pageTitle!='System'">
+                ng-show="taskArray.length==0 && pageTitle.toLocaleLowerCase()!='system'">
                     <div>
                         <img src="img/empty.svg" class="empty_svg"/>
                     </div>
@@ -114,8 +114,8 @@
                 </div>
                 <!-- show system vars here -->
                  <div
-                 ng-show="pageTitle=='System'">
-                 <div class="system_var_title">System Vars</div>
+                 ng-show="pageTitle.toLocaleLowerCase()=='system'"
+                 >
                  <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
                     <div class="system_var_item">
                         <span class="var_icon">x</span>

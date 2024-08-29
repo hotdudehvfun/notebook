@@ -1339,7 +1339,6 @@ h1,h2,h3,h4,h5 {
     justify-content: space-between;
     backdrop-filter:blur(var(--more-options-blur));
     -webkit-backdrop-filter:blur(var(--more-options-blur));
-    
 }
 
 .select {
@@ -1527,6 +1526,7 @@ div#console-output {
     align-items: center;
     flex: 1 1 auto;
     font-size: .65rem;
+    background: none;
 }
 .bottom-bar-button .material-symbols-outlined
 {

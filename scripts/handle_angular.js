@@ -220,6 +220,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
   {
     return system_vars
   }
+
   $scope.edit_var = function(key,value)
   {
     $scope.system_var_popup_title = "Edit Variable"
@@ -837,7 +838,6 @@ $scope.delete_system_var = function()
 
   $scope.create_system_var = function()
   {
-    //reset options
     let error = ""
     if($scope.new_var_name.length>0 && $scope.new_var_value.length>0)
     {
@@ -845,15 +845,11 @@ $scope.delete_system_var = function()
       $scope.new_var_name = $scope.new_var_name.trim().toLocaleLowerCase()
       $scope.new_var_value = $scope.new_var_value.trim().toLocaleLowerCase()
 
-      //check if var does not exists
-      // if(system_vars[$scope.new_var_name]!=undefined)
-      // {
-      //   error = "Variable already exists"
-      // }
     }else
     {
       error = "Empty variables cannot be created"
     }
+    
     if(error=="")
     {
       system_vars[$scope.new_var_name] = $scope.new_var_value
