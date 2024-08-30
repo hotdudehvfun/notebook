@@ -342,78 +342,13 @@
     <!-- more options panel -->
     <div id="list-more-options-container" ng-show="show_list_more_options">
         <div class="list-more-optionas-holder visible_pop_animation">
-            <div id="remove-completed-tasks-button" class="task-more-options-item">
-                <span class="material-symbols-outlined">cloud</span>
-                <span id="total_size" ng-bind="app_size()"></span>
-            </div>
-
-            <!-- delete selected -->
             <div 
-             class="task-more-options-item" 
-             ng-click="delete_selected_notebooks()"
-             ng-show="selected_notebooks.length>0">
-             <span class="material-symbols-outlined">delete</span>
-             <span>Delete Selected</span>
-            </div>
-         
-
-            <!-- show select notebooks menu if notebooks are shown -->
-             <!-- pageTitle==defaultPageTitle  -->
-            <div 
-                class="task-more-options-item" 
-                ng-click="handle_select_notebooks()"
-                ng-show="pageTitle==defaultPageTitle">
-                <span class="material-symbols-outlined">check_circle</span>
-                <span ng-bind="select_notebooks_menu_text"></span>
-            </div>
-
-
-            <!-- show paste menu if some task is copied -->
-            <div 
-                class="task-more-options-item" 
-                ng-click="paste_task_inside_notebook()"
-                ng-show="copied_task!=null">
-                <span class="material-symbols-outlined">content_paste</span>
-                <span>Paste Task</span>
-            </div>
-
-            <div id="change-theme-button" class="task-more-options-item" ng-click="toggle_theme()">
-                <span class="material-symbols-outlined">{{theme_menu_icon}}</span>
-                <span>{{theme_menu_text}}</span>
-            </div>
-
-            
-            <div ng-click="handle_rename_notebook()" class="task-more-options-item"
-                ng-show="show_rename_list_option">
-                <span class="material-symbols-outlined">opacity</span>
-                <span>Rename Notebook</span>
-            </div>
-            
-
-            <div ng-click="purgeList()" id="remove-all-tasks-button" class="task-more-options-item"
-                ng-show="show_purge_list_option">
-                <span class="material-symbols-outlined">opacity</span>
-                <span>Empty List</span>
-            </div>
-
-            <div 
-            ng-click="handle_remove_completed_tasks()" 
-            class="task-more-options-item"
-            ng-show="show_purge_list_option">
-                <span class="material-symbols-outlined">check_circle</span>
-                <span>Remove Completed Tasks</span>
-            </div>
-            <div 
-                id="delete-list-ok" 
-                class="task-more-options-item text-red-500" 
-                ng-click="handleDeleteList()"
-                ng-show="show_delete_list_option">
-                <span class="material-symbols-outlined">delete</span>
-                <span>Delete List!</span>
-            </div>
-            <div class="task-more-options-item text-red-500" ng-click="toggle_list_more_options_visibility()">
-                <span class="material-symbols-outlined">cancel</span>
-                <div>Close</div>
+            ng-repeat="option in notebook_more_options"
+            ng-class="option.class"
+            ng-click="option.action()"
+            ng-show="option.show">
+                <span class="material-symbols-outlined">{{option.icon}}</span>
+                <div>{{option.text}}</div>
             </div>
         </div>
     </div>
@@ -474,7 +409,7 @@
     </div>
 
 
-    <script type="text/javascript" src="app.js"></script>
+    <!-- <script type="text/javascript" src="app.js"></script> -->
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
     <script type="text/javascript" src="scripts/wiki.js"></script>

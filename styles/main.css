@@ -878,11 +878,12 @@ div.show-color-palette {
     margin: 0.25rem;
     font-size: 110%;
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     border-bottom: 1px solid #d7d7d7;
     touch-action:auto;
+    gap: 1rem;
 }
 .task-more-options-item:hover{
     color:var(--accent);

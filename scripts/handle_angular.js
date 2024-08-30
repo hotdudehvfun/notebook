@@ -642,6 +642,8 @@ $scope.insert_system_var_at_cursor = function()
     if ($scope.selectedListIndex >= 0) {
       $scope.show_task_more_options = false
       $scope.show_list_more_options = true
+      //update texts when opening more options 
+      $scope.init_notebook_more_options()
     }
   }
 
@@ -849,7 +851,7 @@ $scope.delete_system_var = function()
     {
       error = "Empty variables cannot be created"
     }
-    
+
     if(error=="")
     {
       system_vars[$scope.new_var_name] = $scope.new_var_value
@@ -926,6 +928,75 @@ $scope.delete_system_var = function()
     }
 }
 
+$scope.notebook_has_completed_tasks = function() {
+  if ($scope.selectedListIndex >= 0 && $scope.taskArray.length > 0) {
+      const hasCompletedTasks = $scope.taskArray.some(task => task.isTaskCompleted === true);
+      return hasCompletedTasks;
+  }
+  return false;
+}
+
+
+
+$scope.init_notebook_more_options = function()
+{
+  $scope.notebook_more_options = [
+    {
+      text:$scope.app_size(),
+      icon:"cloud",
+      class:"task-more-options-item",
+      show:true,
+      action:function(){}
+    },{
+      text:"Paste Task",
+      icon:"content_paste",
+      class:"task-more-options-item",
+      show:$scope.copied_task!=null,
+      action:function(){$scope.paste_task_inside_notebook()}
+    },{
+      text:$scope.theme_menu_text,
+      icon:$scope.theme_menu_icon,
+      class:"task-more-options-item",
+      show:true,
+      action:function(){$scope.toggle_theme()}
+    },{
+      text:"Rename notebook",
+      icon:"format_color_text",
+      class:"task-more-options-item",
+      show:true,
+      action:function(){$scope.handle_rename_notebook()}
+    },{
+      text:"Remove completed tasks",
+      icon:"check_circle",
+      class:"task-more-options-item",
+      show:$scope.notebook_has_completed_tasks(),
+      action:function(){$scope.handle_remove_completed_tasks()}
+    },{
+      text:"Delete all tasks",
+      icon:"warning",
+      class:"task-more-options-item text-red-500",
+      show:true,
+      action:function(){$scope.purgeList()}
+    },
+    {
+      text:"Delete notebook",
+      icon:"delete",
+      class:"task-more-options-item text-red-500",
+      show:true,
+      action:function(){$scope.handleDeleteList()}
+    },
+    {
+      text:"Close",
+      icon:"cancel",
+      class:"task-more-options-item text-red-500",
+      show:true,
+      action:function(){$scope.toggle_list_more_options_visibility()}
+    }
+  ]
+}
+
+
+
 
 
 
@@ -1000,9 +1071,15 @@ $scope.delete_system_var = function()
       {icon:"check_box",insert_text:"$ Task"},
   ]
 
-    //default theme
-    $scope.init_theme()
+  //default theme
+  $scope.init_theme()
 
+
+    //notebook more options
+    $scope.notebook_more_options = []
+    $scope.init_notebook_more_options()
+
+    
     //try to load first or last notebook
     $scope.load_last_notebook()
 
