@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="img/ios/180.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/ios/32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/ios/16.png">
-    <link rel="icon" href="/img/logo.png">
+    <link rel="icon" href="/img/ios/180.png">
     
     <link rel="manifest" href="manifest.json">
     <meta id="theme-color" name="theme-color" content="aliceblue" />
@@ -90,19 +90,39 @@
 
             <!-- tasks -->
             <div ng-hide="listArray.length==0">
-                <div ng-repeat="(key,value) in taskArray">
-                    <!-- ng-class= css_class : condition -->
-                    <div class="task" ng-class="{completed: value.isTaskCompleted}">
+                <!-- normal tasks -->
+                <div class="notebook_age">{{notebook_age()}}</div>
+                <div class="group_by_text">{{taskArray.length}} tasks</div>
+                <div ng-repeat="task in taskArray | filter:{isTaskCompleted:false}">
+                    <div class="task" ng-class="{completed: task.isTaskCompleted}">
                         <span 
                         class="material-symbols-outlined" 
-                        ng-bind="value.taskIcon"
-                        ng-click="toggle_task_complete($event,key);"></span>
+                        ng-bind="task.taskIcon"
+                        ng-click="toggle_task_complete(task);"></span>
                         <div  
                         class="task-content-div"
-                        ng-bind-html="handle_task_html(value.title) | sanitize"
-                        ng-click="handleClickOnTask($event,key);"></div>
+                        ng-bind-html="handle_task_html(task.title) | sanitize"
+                        ng-click="handle_tap_on_task(task);"></div>
                     </div>
                 </div>
+                <!-- show completed tasks if any -->
+                <div 
+                ng-show="notebook_has_completed_tasks()"
+                class="group_by_text"
+                >{{completed_tasks_len()}} completed tasks</div>
+                <div ng-repeat="task in taskArray | filter:{isTaskCompleted:true}">
+                    <div class="task" ng-class="{completed: task.isTaskCompleted}">
+                        <span 
+                        class="material-symbols-outlined" 
+                        ng-bind="task.taskIcon"
+                        ng-click="toggle_task_complete(task);"></span>
+                        <div  
+                        class="task-content-div"
+                        ng-bind-html="handle_task_html(task.title) | sanitize"
+                        ng-click="handle_tap_on_task(task);"></div>
+                    </div>
+                </div>
+
                 <!-- empty state empty list-->
                 <div
                 class="empty-notebook"
@@ -166,7 +186,15 @@
             class="material-symbols-outlined text-accent">close</span>
         </div>
         <h2>Hello Arun</h2>
-        <button class="button" ng-click="init_notification()">Notification test</button>
+        <div ng-click="toggle_theme()" class="theme_container">
+            {{theme_menu_text}}
+            <div class="theme_button">
+                <span 
+                class="material-symbols-outlined theme_button_span"
+                ng-class="{theme_button_span_right:theme=='light'}"
+                >{{theme_menu_icon}}</span>
+            </div>
+        </div>
         <h3 class="text-center mt-2">Your notebooks</h3>
         <div class="app-subtitle">
             {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
@@ -372,7 +400,7 @@
                 <span class="material-symbols-outlined ">edit</span>
                 <div>Edit note</div>
             </div>
-            <div class="task-more-options-item" ng-click="move_task(-1)">
+            <!-- <div class="task-more-options-item" ng-click="move_task(-1)">
                 <span class="material-symbols-outlined">expand_less</span>
                 <div>Move Up</div>
             </div>
@@ -380,22 +408,14 @@
                 <span class="material-symbols-outlined">expand_more</span>
                 <div>Move Down</div>
             </div>
+             -->
             <div class="task-more-options-item" ng-click="copy_task();">
                 <span class="material-symbols-outlined">file_copy</span>
                 <div>Copy</div>
             </div>
-            <div class="task-more-options-item" ng-click="paste_task();">
+            <div ng-show="copied_task!=null" class="task-more-options-item" ng-click="paste_task();">
                 <span class="material-symbols-outlined">content_paste</span>
                 <div>Paste</div>
-            </div>
-
-            <div class="task-more-options-item" ng-click="strike_out_task();" ng-show="task_completed_state">
-                <span class="material-symbols-outlined">done_outline</span>
-                <div>Strike Clear</div>
-            </div>
-            <div class="task-more-options-item" ng-click="strike_out_task();" ng-show="!task_completed_state">
-                <span class="material-symbols-outlined">done</span>
-                <div>Strike Out</div>
             </div>
             <div class="task-more-options-item text-red-500" ng-click="deleteTask()" class="danger">
                 <span class="material-symbols-outlined">delete</span>

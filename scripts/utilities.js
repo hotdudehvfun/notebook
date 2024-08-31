@@ -8,8 +8,8 @@ let dialogStates =
 }
 
 
-//@date: milliseconds
-timeSince = (date) => {
+//date argument in milliseconds
+function timeSince(date){
   let minute = 60;
   let hour = minute * 60;
   let day = hour * 24;

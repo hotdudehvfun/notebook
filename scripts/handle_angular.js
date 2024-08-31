@@ -44,7 +44,17 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
     return allTasks;
   };
 
-
+ 
+  $scope.notebook_age = function()
+  {
+    if($scope.selectedListIndex>=0)
+    {
+      let ms = $scope.listArray[$scope.selectedListIndex].dateCreated
+      return `Created: ${timeSince(ms)}`
+    }
+    return "Notebook is very old"
+  }
+  
   $scope.load_list_info = function (index) {
     $scope.selectedListIndex = index;
     $scope.list_index_for_hold_event = index
@@ -52,7 +62,7 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
     $scope.show_purge_list_option = true
     $scope.show_rename_list_option = true
     $scope.default_app_icon = $scope.listArray[$scope.selectedListIndex].icon
-    console.log($scope.default_app_icon)
+    // console.log($scope.default_app_icon)
   }
 
   $scope.open_notebook = function (index) {
@@ -148,6 +158,11 @@ app.controller('myctrl', function ($scope, $sce, $timeout,$compile) {
     if (completed == 0)
       return taskArray.length;
     return `${completed}/${taskArray.length}`
+  }
+
+  $scope.completed_tasks_len = function () {
+    var completed = $scope.taskArray.filter(function (task) { return task.isTaskCompleted == true }).length;
+    return completed
   }
 
   $scope.create_notebook = function () {
@@ -298,38 +313,31 @@ $scope.insert_system_var_at_cursor = function()
     }
   }
 
-  $scope.handleClickOnTask = function (event, key) {
-
-    // console.log(event.currentTarget)
+  $scope.handle_tap_on_task = function (task) {
+    console.log(task)
     if ($scope.mergeInProgress) {
-      //merge in progress no need to show options
-      //merger with selected task
-      $scope.selected_task_index = key;
-      if ($scope.selected_task_index == $scope.oldselected_task_index) {
-        showToast("Cannot merge with same Note");
-      } else {
+      // $scope.selected_task = task;
+      // if ($scope.selected_task == $scope.oldselected_task) {
+      //   showToast("Cannot merge with same Note");
+      // } else {
 
-        //concat selected content at the end
-        $scope.taskArray[$scope.selected_task_index].title += "\n" + $scope.taskArray[$scope.oldselected_task_index].title;
+      //   //concat selected content at the end
+      //   $scope.taskArray[$scope.selected_task].title += "\n" + $scope.taskArray[$scope.oldselected_task].title;
 
-        //remove old note now
-        $scope.deleteTask($scope.oldselected_task_index);
-        $scope.oldselected_task_index = -1;
+      //   //remove old note now
+      //   $scope.deleteTask($scope.oldselected_task);
+      //   $scope.oldselected_task = -1;
 
-        $scope.mergeInProgress = false;
+      //   $scope.mergeInProgress = false;
 
-        showToast("Merge complete");
-        $scope.saveData();
-      }
+      //   showToast("Merge complete");
+      //   $scope.saveData();
+      // }
 
     } else {
-      //key is the index number of note in list
-      // console.log(key);
-      //key = selected_task_index will be used perform actions on selected task
-      $scope.selected_task_index = key;
+      $scope.selected_task = task;
       $scope.show_task_more_options = true
-      //also get completed status of task to change value of strike out or not
-      $scope.task_completed_state = $scope.taskArray[$scope.selected_task_index].isTaskCompleted
+      $scope.task_completed_state = task.isTaskCompleted
     }
   }
 
@@ -369,10 +377,10 @@ $scope.insert_system_var_at_cursor = function()
     } else {
       //no args try getting selected note
       //show prompt when deleting single task
-      if ($scope.selected_task_index >= 0) {
+      if ($scope.selected_task >= 0) {
         show_confirm = true
-        indexToRemove = $scope.selected_task_index;
-        $scope.selected_task_index = -1;
+        indexToRemove = $scope.selected_task;
+        $scope.selected_task = -1;
       }
     }
 
@@ -391,10 +399,13 @@ $scope.insert_system_var_at_cursor = function()
 
   $scope.copy_task = function () {
     //move to another list
-    $scope.copied_task = $scope.taskArray[$scope.selected_task_index]
-    showToast("Task Copied");
-    $scope.show_task_more_options = false
-    // $scope.reset_view();
+    if($scope.selected_task!=undefined)
+    {
+      $scope.copied_task = $scope.selected_task
+      showToast("Task Copied");
+      $scope.show_task_more_options = false
+    }else
+      showToast("Failed to copy");
   }
 
 
@@ -402,15 +413,15 @@ $scope.insert_system_var_at_cursor = function()
     try {
       //append copied task to selected task
       //save selected note position
-      $scope.taskArray[$scope.selected_task_index].title = $scope.taskArray[$scope.selected_task_index].title.concat(
+      $scope.selected_task.title = $scope.selected_task.title.concat(
         "\n", $scope.copied_task.title
       )
-      console.log($scope.taskArray)
       showToast("Task Pasted")
       $scope.saveData()
       $scope.show_task_more_options = false
-
+      $scope.copied_task = null;
     } catch (err) {
+      showToast("Fail to paste")
       console.log("Cannot paste task", err)
     }
   }
@@ -426,16 +437,14 @@ $scope.insert_system_var_at_cursor = function()
   
   $scope.editTask = function () {
     $scope.open_create_new_note_popup()
-    $scope.newTaskContent = $scope.taskArray[$scope.selected_task_index].title
-    console.log($scope.newTaskContent)
+    $scope.newTaskContent = $scope.selected_task.title
     $scope.show_update_task_button = true
     var textarea = document.querySelector('#newTaskContent');
-    textarea.style.height = '250px';
+    textarea.style.height = '180px';
   }
 
   $scope.updateTask = function () {
-    $scope.taskArray[$scope.selected_task_index].title = $scope.newTaskContent
-    //revert back
+    $scope.selected_task.title = $scope.newTaskContent
     $scope.show_update_task_button = false
     $scope.show_create_task_popup = false
     $scope.newTaskContent = ""
@@ -462,18 +471,11 @@ $scope.insert_system_var_at_cursor = function()
     }
   }
 
-  $scope.toggle_task_complete = function ($event, key) {
-    // move completed tasks at end
-    if (key != undefined) {
-      let task = $scope.taskArray[key]
+  $scope.toggle_task_complete = function (task) {
+    if (task != undefined) {
+      console.log(task)
       task.isTaskCompleted = !task.isTaskCompleted;
-
       task.taskIcon = task.isTaskCompleted ? $scope.icons.checked : $scope.icons.unchecked;
-      $scope.taskArray[key] = task
-      if (task.isTaskCompleted) {
-        $scope.taskArray.splice(key, 1);
-        $scope.taskArray.push(task)
-      }
       $scope.saveData();
       $scope.show_task_more_options = false
     }
@@ -481,41 +483,28 @@ $scope.insert_system_var_at_cursor = function()
 
   $scope.move_task = function (distance) {
     // move completed tasks at end
-    if ($scope.selected_task_index != undefined) {
-      let key = $scope.selected_task_index
+    if ($scope.selected_task != undefined) {
+      let key = $scope.taskArray.indexOf($scope.selected_task)
+      console.log($scope.selected_task,key)
 
-      if (key + distance < 0) {
-        showToast("Task already at top")
-      } else if (key + distance >= $scope.taskArray.length) {
-        showToast("Task already at bottom")
-      } else {
-        let temp = $scope.taskArray[key + distance]
-        $scope.taskArray[key + distance] = $scope.taskArray[key]
-        $scope.taskArray[key] = temp
-        let str = distance < 0 ? "Task moved up" : "Task moved down";
-        showToast(str)
-      }
-      $scope.saveData();
-      $scope.show_task_more_options = false
+      // if (key + distance < 0) {
+      //   showToast("Task already at top")
+      // } else if (key + distance >= $scope.taskArray.length) {
+      //   showToast("Task already at bottom")
+      // } else {
+      //   let temp = $scope.taskArray[key + distance]
+      //   $scope.taskArray[key + distance] = $scope.taskArray[key]
+      //   $scope.taskArray[key] = temp
+      //   let str = distance < 0 ? "Task moved up" : "Task moved down";
+      //   showToast(str)
+      // }
+      // $scope.saveData();
+      // $scope.show_task_more_options = false
     }
   }
 
 
-  $scope.strike_out_task = function () {
 
-    if ($scope.selected_task_index >= 0) {
-      let task = $scope.taskArray[$scope.selected_task_index]
-      task.isTaskCompleted = !task.isTaskCompleted;
-      //also update icon
-      task.selected_task_indexcon = task.isTaskCompleted ? "radio_button_checked" : "radio_button_unchecked";
-      //also add strike out class
-      $scope.taskArray[$scope.selected_task_index] = task
-      $scope.saveData();
-      $scope.show_task_more_options = false
-
-      //showToast("Note Strike out!");
-    }
-  }
 
   $scope.nav_more_vert_icon = function () {
     return $scope.show_list_more_options ? "close" : "more_horiz";
@@ -542,18 +531,18 @@ $scope.insert_system_var_at_cursor = function()
     if ($scope.theme == "light") {
       //change to dark dark_mode
       $scope.theme = "dark"
-      $scope.theme_menu_text = "Turn On Light Theme"
+      $scope.theme_menu_text = "Light Theme"
       $scope.theme_menu_icon = "light_mode"
       document.querySelector("#theme-color").setAttribute("content", "#131417")
     } else {
       //change to light_mode
       $scope.theme = "light"
-      $scope.theme_menu_text = "Turn On Dark Theme"
+      $scope.theme_menu_text = "Dark Theme"
       $scope.theme_menu_icon = "dark_mode"
       document.querySelector("#theme-color").setAttribute("content", "aliceblue")
       document.querySelector("#theme-color").setAttribute("content", "aliceblue")
     }
-    $scope.toggle_list_more_options_visibility()
+    // $scope.toggle_list_more_options_visibility()
     $scope.saveData()
   }
 
@@ -562,11 +551,11 @@ $scope.insert_system_var_at_cursor = function()
     $scope.theme = old_theme;
 
     if ($scope.theme === "light") {
-      $scope.theme_menu_text = "Turn On Dark Theme";
+      $scope.theme_menu_text = "Dark Theme";
       $scope.theme_menu_icon = "dark_mode";
       document.querySelector("#theme-color").setAttribute("content", "aliceblue")
     } else {
-      $scope.theme_menu_text = "Turn On Light Theme";
+      $scope.theme_menu_text = "Light Theme";
       $scope.theme_menu_icon = "light_mode";
       document.querySelector("#theme-color").setAttribute("content", "#131417")
     }
@@ -966,8 +955,14 @@ $scope.init_notebook_more_options = function()
       show:true,
       action:function(){$scope.handle_rename_notebook()}
     },{
+      text:"Complete all tasks",
+      icon:"priority",
+      class:"task-more-options-item",
+      show:$scope.notebook_has_completed_tasks(),
+      action:function(){$scope.handle_remove_completed_tasks()}
+    },{
       text:"Remove completed tasks",
-      icon:"check_circle",
+      icon:"delete_sweep",
       class:"task-more-options-item",
       show:$scope.notebook_has_completed_tasks(),
       action:function(){$scope.handle_remove_completed_tasks()}
@@ -1055,7 +1050,7 @@ $scope.init_notebook_more_options = function()
     
     $scope.newTaskContent = ""
     $scope.new_list_name = ""
-    $scope.selected_task_index = -1;
+    $scope.selected_task = -1;
     $scope.new_task_placeholder = "Create Task"
     $scope.allTasks = $scope.getTasksOnly();
     $scope.show_update_task_button = false
