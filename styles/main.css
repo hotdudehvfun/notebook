@@ -293,10 +293,12 @@ input:focus {
     user-select: all;
     /* background-color: var(--list-bg); */
     /* border-radius: 0.5rem; */
-    align-items: center;
+    /* align-items: center; */
     transition: 0.5s all;
     margin: 0.75rem;
     border-bottom: 1px solid var(--list-border);
+    max-height: 60px;
+    overflow:hidden;
 }
 
 .task .dashed {
@@ -1715,3 +1717,13 @@ img.empty_svg {
     transform: translate(100%, 0px);
     color: var(--accent);
 }
+
+.self-end{
+    align-self: flex-end;
+}
+
+.collapsed
+{
+    max-height: 60px;
+}
+

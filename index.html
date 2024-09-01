@@ -94,7 +94,10 @@
                 <div class="notebook_age">{{notebook_age()}}</div>
                 <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{taskArray.length}} tasks</div>
                 <div ng-repeat="task in taskArray | filter:{isTaskCompleted:false}">
-                    <div class="task" ng-class="{completed: task.isTaskCompleted}">
+                    <div
+                    id="task-{{$index}}"
+                    class="task collapsed" 
+                    ng-class="{completed: task.isTaskCompleted}">
                         <span 
                         class="material-symbols-outlined" 
                         ng-bind="task.taskIcon"
@@ -103,6 +106,7 @@
                         class="task-content-div"
                         ng-bind-html="handle_task_html(task.title) | sanitize"
                         ng-click="handle_tap_on_task(task);"></div>
+                        <span ng-click="toggle_view_more($index,$event)" class="material-symbols-outlined self-end">keyboard_arrow_down</span>
                     </div>
                 </div>
                 <!-- show completed tasks if any -->
@@ -413,7 +417,7 @@
 
     <!-- blocking screen  -->
     <div 
-    class="block_screen" 
+    class="block_screen"
     ng-if="is_any_dialog_open()"
     ng-click="close_all_dialogs()"></div>
 
@@ -460,6 +464,7 @@
 
 
     <!-- <script type="text/javascript" src="app.js"></script> -->
+    <script type="text/javascript" src="scripts/controller.js"></script>
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
     <script type="text/javascript" src="scripts/wiki.js"></script>
