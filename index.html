@@ -155,7 +155,7 @@
 
         <!-- bottom bar -->
          <div class="bottom-bar">
-            <div class="bottom-bar-button button" ng-click="show_create_notebook_popup=true">
+            <div class="bottom-bar-button button" ng-click="dialog_flags.show_create_notebook_popup=true">
                 <span class="material-symbols-outlined">contract_edit</span>
                 <span class="">NoteBook</span>
              </div>
@@ -229,9 +229,8 @@
 
 
 
-
      <!-- rename notebook dialog pop up-->
-     <div ng-show="show_rename_notebook_popup" class="input_popup visible_pop_animation">
+     <div ng-show="dialog_flags.show_rename_notebook_popup" class="input_popup visible_pop_animation">
         <div class="new_notebook_popup_child">
          <div class="flex-col align-center gap-1">
             <div class="flex-row align-center gap-1 m-2">
@@ -242,10 +241,10 @@
                  class="add-new-list-title rounded-2"
                  ng-model="new_list_name" 
                  ng-attr-placeholder="Enter new name"
-                 ng-keypress="handle_input_on_notebook($event)"
+                 ng-keypress="handle_input_on_rename_notebook($event)"
                  ></input>
                     <div class="flex-row space-between m-2">
-                        <span ng-click="show_rename_notebook_popup=false;new_list_name=''; " class="button text-red-500">Cancel</span>
+                        <span ng-click="dialog_flags.show_rename_notebook_popup=false;new_list_name=''; " class="button text-red-500">Cancel</span>
                         <span ng-click="rename_notebook()" class="button">Rename</span>                
                     </div>
          </div>
@@ -253,7 +252,7 @@
      </div>
 
     <!-- new notebook dialog pop up-->
-     <div ng-show="show_create_notebook_popup" class="input_popup visible_pop_animation">
+     <div ng-show="dialog_flags.show_create_notebook_popup" class="input_popup visible_pop_animation">
         <div class="new_notebook_popup_child">
          <div class="flex-col align-center gap-1">
             <div class="flex-row align-center gap-1 m-2">
@@ -268,7 +267,7 @@
                  placeholder="New NoteBook name..."></input>
              <!-- using css animation class with ng-show  -->
                     <div class="flex-row space-between m-2">
-                        <span ng-click="show_create_notebook_popup=false" class="button text-red-500">Cancel</span>
+                        <span ng-click="dialog_flags.show_create_notebook_popup=false" class="button text-red-500">Cancel</span>
                         <span ng-click="create_notebook()" class="button">Create</span>                
                     </div>
          </div>
@@ -276,7 +275,7 @@
      </div>
 
      <!-- new task dialog pop up -->
-      <div class="input_popup visible_pop_animation" ng-show="show_create_task_popup">
+      <div class="input_popup visible_pop_animation" ng-show="dialog_flags.show_create_task_popup">
         <div class="new_task_popup_child">
             <div class="flex-row align-center gap-1 m-2">
                 <span class="material-symbols-outlined list-icon">draw</span>
@@ -325,7 +324,7 @@
                         placeholder={{new_task_placeholder}}></textarea>
                 </div>
                 <div class="flex-row">
-                    <span ng-click="show_create_task_popup=false" class="button text-red-500">Cancel</span>
+                    <span ng-click="dialog_flags.show_create_task_popup=false;show_update_task_button=false; " class="button text-red-500">Cancel</span>
                     <span ng-click="create_task()" class="button" ng-hide="show_update_task_button">Create note</span>
                     <span ng-click="updateTask()" class="button" ng-show="show_update_task_button">Update Note</span>
                 </div>
@@ -335,10 +334,8 @@
       </div>
 
 
-
-
       <!-- create system var pop up-->
-     <div id="new_system_var_popup" ng-show="show_create_system_var_popup" class="popup visible_pop_animation">
+     <div id="new_system_var_popup" ng-show="dialog_flags.show_create_system_var_popup" class="popup visible_pop_animation">
         <div class="new_notebook_popup_child">
          <div class="flex-col align-center gap-1">
             <div class="flex-row align-center gap-1 m-2">
@@ -355,7 +352,7 @@
                  placeholder="Variable value"></input>
                  
                 <div class="flex-row space-between m-2">
-                    <span ng-click="show_create_system_var_popup=false" class="button text-red-500">Cancel</span>
+                    <span ng-click="dialog_flags.show_create_system_var_popup=false" class="button text-red-500">Cancel</span>
                     <span ng-click="delete_system_var()" class="button text-red-500" ng-show="show_delete_system_var_button">Delete Variable</span>
                     
                     <span ng-click="create_system_var()" class="button">{{system_var_popup_create_button_text}}</span>
@@ -365,10 +362,43 @@
             </div>
      </div>
 
+     <!-- import popup -->
+     <div class="input_popup visible_pop_animation" ng-show="dialog_flags.show_db_popup">
+        <div class="new_task_popup_child">
+            <div class="flex-row align-center gap-1 m-2">
+                <span class="material-symbols-outlined list-icon">database</span>
+                <span>Choose operation</span>
+                <select
+                class="select text-accent capitalize bold text-2"
+                ng-model="db_operation"
+                ng-change="handle_db_operation_change()">
+                    <option value="" selected disabled>Tap to select</option>
+                    <option value="import">Import Data</option>
+                    <option value="export">Export Data</option>
+                </select>
+            </div>
+            <div class="flex-col align-center">
+                <div class="flex-row align-center w-full gap-1 mt-2">
+                    <textarea
+                        ng-model="db_textarea"
+                        id="db_textarea"
+                        class="new-task-content rounded-2" ></textarea>
+                </div>
+                <div class="flex-row">
+                    <span ng-click="dialog_flags.show_db_popup=false" class="button text-red-500">Cancel</span>
+                    <span ng-if="db_operation=='export'" ng-click="copy_to_clipboard(db_textarea)" class="button">Copy data</span>
+                    <span ng-if="db_operation=='import'" ng-click="import_data()" class="button">Import data</span>
+                </div>
+                
+            </div>
+        </div>
+      </div>
+      
+
 
 
     <!-- more options panel -->
-    <div id="list-more-options-container" ng-show="show_list_more_options">
+    <div id="list-more-options-container" ng-show="dialog_flags.show_list_more_options">
         <div class="list-more-optionas-holder visible_pop_animation">
             <div 
             ng-repeat="option in notebook_more_options"
@@ -383,9 +413,9 @@
 
     <!-- blocking screen  -->
     <div 
-    class="block-screen" 
-    ng-show="show_list_more_options || show_task_more_options || show_create_notebook_popup || show_create_task_popup || show_create_system_var_popup || is_sidebar_menu_open"
-    ng-click="handle_click_on_blockscreen()"></div>
+    class="block_screen" 
+    ng-if="is_any_dialog_open()"
+    ng-click="close_all_dialogs()"></div>
 
     <!-- toast message -->
     <div class="toast" style="z-index: -99; opacity: 0;">
@@ -394,11 +424,11 @@
 
 
     <!-- taskMoreOptiosContainer -->
-    <div class="taskMoreOptionsConatiner" ng-show="show_task_more_options">
+    <div class="taskMoreOptionsConatiner" ng-show="dialog_flags.show_task_more_options">
         <div class="task-more-options-holder visible_pop_animation">
-            <div class="task-more-options-item" ng-click="editTask();">
+            <div class="task-more-options-item" ng-click="open_update_task_popup();">
                 <span class="material-symbols-outlined ">edit</span>
-                <div>Edit note</div>
+                <div>Update note</div>
             </div>
             <!-- <div class="task-more-options-item" ng-click="move_task(-1)">
                 <span class="material-symbols-outlined">expand_less</span>

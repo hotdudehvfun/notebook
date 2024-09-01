@@ -346,5 +346,19 @@ function split_text_into_tasks(text,delim)
   return multiple_tasks;
 }
 
+function is_valid_json(json_string) {
+  try {
+      JSON.parse(json_string);
+      return true;  // JSON is valid
+  } catch (e) {
+      return false; // JSON is invalid
+  }
+}
 
-
+// Function to calculate height based on number of lines
+function calculate_height_based_on_lines(text,max_height) {
+  const lineHeight = 20; 
+  const lines = text.split('\n').length;
+  const h = lines * lineHeight;
+  return Math.min(h,max_height);
+}
