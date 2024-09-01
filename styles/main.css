@@ -1510,7 +1510,7 @@ div#console-output {
 
 .var_icon {
     background: #ffdf2b;
-    border:1px solid #e4c200;
+    border: 2px solid #bca000;
     border-radius: 100px;
     padding:0.125rem 1rem;
     font-style:italic;
@@ -1545,10 +1545,12 @@ div#console-output {
 
 .new-list-icon
 {
-    background: var(--accent);
+    background: #ffdf2b;
+    border: 2px solid #bca000;
     font-size: 1.3rem;
-    border-radius: 4px;
-    color: white;
+    border-radius: 99px;
+    color: black;
+    padding: 0px 8px;
 }
 
 /* Existing classes */

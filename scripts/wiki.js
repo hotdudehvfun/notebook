@@ -2,7 +2,8 @@
   
   // if no data is found create demo files
   function setupDemoList() {
-    let list = new List("Your First Notebook");
+    //demo list
+    let list = new List("First Notebook");
     let task = new Task("We have added first note!");
     list.taskArray.push(task);
     return [list];

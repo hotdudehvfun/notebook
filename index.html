@@ -92,7 +92,7 @@
             <div ng-hide="listArray.length==0">
                 <!-- normal tasks -->
                 <div class="notebook_age">{{notebook_age()}}</div>
-                <div class="group_by_text">{{taskArray.length}} tasks</div>
+                <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{taskArray.length}} tasks</div>
                 <div ng-repeat="task in taskArray | filter:{isTaskCompleted:false}">
                     <div class="task" ng-class="{completed: task.isTaskCompleted}">
                         <span 
@@ -230,7 +230,7 @@
 
 
      <!-- rename notebook dialog pop up-->
-     <div ng-show="dialog_flags.show_rename_notebook_popup" class="input_popup visible_pop_animation">
+     <div ng-show="dialog_flags.show_rename_notebook_popup" class="popup visible_pop_animation">
         <div class="new_notebook_popup_child">
          <div class="flex-col align-center gap-1">
             <div class="flex-row align-center gap-1 m-2">
@@ -252,7 +252,7 @@
      </div>
 
     <!-- new notebook dialog pop up-->
-     <div ng-show="dialog_flags.show_create_notebook_popup" class="input_popup visible_pop_animation">
+     <div ng-show="dialog_flags.show_create_notebook_popup" class="popup visible_pop_animation">
         <div class="new_notebook_popup_child">
          <div class="flex-col align-center gap-1">
             <div class="flex-row align-center gap-1 m-2">
@@ -275,7 +275,7 @@
      </div>
 
      <!-- new task dialog pop up -->
-      <div class="input_popup visible_pop_animation" ng-show="dialog_flags.show_create_task_popup">
+      <div class="popup visible_pop_animation" ng-show="dialog_flags.show_create_task_popup">
         <div class="new_task_popup_child">
             <div class="flex-row align-center gap-1 m-2">
                 <span class="material-symbols-outlined list-icon">draw</span>
@@ -363,7 +363,7 @@
      </div>
 
      <!-- import popup -->
-     <div class="input_popup visible_pop_animation" ng-show="dialog_flags.show_db_popup">
+     <div class="popup visible_pop_animation" ng-show="dialog_flags.show_db_popup">
         <div class="new_task_popup_child">
             <div class="flex-row align-center gap-1 m-2">
                 <span class="material-symbols-outlined list-icon">database</span>
@@ -447,11 +447,11 @@
                 <span class="material-symbols-outlined">content_paste</span>
                 <div>Paste</div>
             </div>
-            <div class="task-more-options-item text-red-500" ng-click="deleteTask()" class="danger">
+            <div class="task-more-options-item text-red-500" ng-click="delete_task()" class="danger">
                 <span class="material-symbols-outlined">delete</span>
                 <div>Delete note</div>
             </div>
-            <div class="task-more-options-item text-accent" ng-click="close_task_more_options()">
+            <div class="task-more-options-item text-accent" ng-click="close_all_dialogs()">
                 <span class="material-symbols-outlined">cancel</span>
                 <div>Close</div>
             </div>

@@ -266,15 +266,21 @@ app.controller('myctrl', function ($scope, $sce, $timeout, $compile) {
       if (localStorage.system_vars != undefined) {
         system_vars = JSON.parse(localStorage.system_vars)
       }
+
       let appData = localStorage.appData
-      if (appData == undefined || appData == "[]") {
-        return setupDemoList();
+      if (appData == undefined || appData == "[]" || is_valid_json(appData) == false) {
+        $scope.listArray = setupDemoList();
       } else {
         let json = JSON.parse(appData);
-        return json;
+        $scope.listArray = json;
       }
+      //check for system and trash notebooks
+      // and create if do not exist
+      //$scope.init_system_notebooks()
     } catch (error) {
-      return setupDemoList();
+      //anything happens return demo list
+      showToast("Error while reading data. Creating default notebooks", error)
+      $scope.listArray = setupDemoList();
     }
   }
 
@@ -342,33 +348,28 @@ app.controller('myctrl', function ($scope, $sce, $timeout, $compile) {
   }
 
 
+  $scope.delete_task = function () {
 
-
-  $scope.deleteTask = function (index) {
-    let indexToRemove = -1;
-    let show_confirm = false
-    if (index !== undefined) {
-      //use supplied argument
-      indexToRemove = index;
-    } else {
-      //no args try getting selected note
-      //show prompt when deleting single task
-      if ($scope.selected_task >= 0) {
-        show_confirm = true
-        indexToRemove = $scope.selected_task;
-        $scope.selected_task = -1;
-      }
+    if ($scope.selected_task == undefined || $scope.selected_task == null) {
+      showToast("No task selected")
+      return ""
     }
+    if (confirm("Are you sure?")) {
+      // let removed = $scope.taskArray.splice(indexToRemove, 1);
+      $scope.taskArray = $scope.taskArray.filter(function (task) {
+        return task !== $scope.selected_task;
+      });
+      $scope.listArray[$scope.selectedListIndex].taskArray = $scope.taskArray
 
-    if (indexToRemove != -1) {
-      if (confirm("Are you sure?") == true) {
-        let removed = $scope.taskArray.splice(indexToRemove, 1);
-        $scope.saveData();
-        $scope.close_all_dialogs()
-        showToast("Note deleted!")
-      }
-    } else {
-      showToast("Error while removing note");
+      //add task to trash notebook
+      $scope.listArray.forEach((item, index) => {
+        if (item.title.toLowerCase() == "trash") {
+          item.taskArray.push($scope.selected_task)
+        }
+      })
+      $scope.saveData();
+      $scope.close_all_dialogs()
+      showToast("Note deleted!")
     }
   }
 
@@ -811,6 +812,13 @@ app.controller('myctrl', function ($scope, $sce, $timeout, $compile) {
   }
 
   $scope.open_create_new_note_popup = function () {
+    if ($scope.selectedListName.toLowerCase() == "trash") {
+      return showToast("Cannot create note inside Trash");
+    }
+    if ($scope.selectedListName.toLowerCase() == "system") {
+      return showToast("Cannot create note inside System");
+    }
+
     $scope.close_all_dialogs()
     $scope.dialog_flags.show_create_task_popup = true
     $scope.newTaskContent = ""
@@ -958,7 +966,6 @@ app.controller('myctrl', function ($scope, $sce, $timeout, $compile) {
 
 
   $scope.import_data = function () {
-
     try {
       if ($scope.db_operation != "import") {
         showToast("Operation not selected")
@@ -1022,6 +1029,18 @@ app.controller('myctrl', function ($scope, $sce, $timeout, $compile) {
     }
   };
 
+  $scope.init_system_notebooks = function () {
+    //listArray must contain System and Trash notebooks
+    let has_sys = $scope.listArray.some(list => list.title.toLowerCase() === "system")
+    let has_trash = $scope.listArray.some(list => list.title.toLowerCase() === "trash")
+    if (!has_sys) {
+      $scope.listArray.push(new List("System", "keyboard_command_key"))
+    }
+    if (!has_trash) {
+      $scope.listArray.push(new List("Trash", "recycling"))
+    }
+  }
+
   //define all funcions above init
   $scope.init = function () {
     //dialog flags
@@ -1062,9 +1081,11 @@ app.controller('myctrl', function ($scope, $sce, $timeout, $compile) {
     $scope.select_notebooks_menu_text = "Select Notebooks"
 
     //read saved data
-    $scope.listArray = $scope.readData();
+    $scope.listArray = [];
     $scope.taskArray = [];
-    console.log("All notebooks", $scope.listArray)
+    $scope.readData();
+    console.log("Read Data", $scope.listArray)
+    $scope.init_system_notebooks()
 
     if (patchApplied) {
       //if new property added to previous version
