@@ -1,4 +1,4 @@
-function my_controller($scope) {
+function my_controller($scope,db_service) {
 
     // output  of task content
     $scope.handle_task_html = function (text) {
@@ -206,7 +206,7 @@ function my_controller($scope) {
         $scope.system_var_popup_title = "Edit Variable"
         $scope.system_var_popup_create_button_text = "Update Variable"
         $scope.dialog_flags.show_create_system_var_popup = true
-        $scope.dialog_flags.show_delete_system_var_button = true
+        $scope.show_delete_system_var_button = true
         $scope.new_var_name = key
         $scope.new_var_value = system_vars[key]
     }
@@ -219,43 +219,38 @@ function my_controller($scope) {
 
 
     $scope.saveData = function () {
-        //save data about app in local
-        let json = angular.toJson($scope.listArray);
-        localStorage.appData = json;
-        //save selectedListIndex
-        localStorage.selectedListIndex = $scope.selectedListIndex;
+        db_service.write(
+            {
+                notebooks:$scope.listArray,
+                selectedListIndex:$scope.selectedListIndex,
+                theme:$scope.theme,
+                system_vars:system_vars
+            },angular
+        )
 
-        //save theme
-        localStorage.theme = $scope.theme
 
-        //save system vars
-        localStorage.system_vars = JSON.stringify(system_vars)
-        // console.log("System vars",JSON.stringify(system_vars))
+        // //save data about app in local
+        // let json = angular.toJson($scope.listArray);
+        // localStorage.appData = json;
+        // //save selectedListIndex
+        // localStorage.selectedListIndex = $scope.selectedListIndex;
+
+        // //save theme
+        // localStorage.theme = $scope.theme
+
+        // //save system vars
+        // localStorage.system_vars = JSON.stringify(system_vars)
+        // // console.log("System vars",JSON.stringify(system_vars))
     }
 
     $scope.readData = function () {
-        try {
-            //read system vars
-            if (localStorage.system_vars != undefined) {
-                system_vars = JSON.parse(localStorage.system_vars)
-            }
-
-            let appData = localStorage.appData
-            if (appData == undefined || appData == "[]" || is_valid_json(appData) == false) {
-                $scope.listArray = setupDemoList();
-            } else {
-                let json = JSON.parse(appData);
-                $scope.listArray = json;
-            }
-            //check for system and trash notebooks
-            // and create if do not exist
-            //$scope.init_system_notebooks()
-        } catch (error) {
-            //anything happens return demo list
-            showToast("Error while reading data. Creating default notebooks", error)
-            $scope.listArray = setupDemoList();
-        }
+        let data = db_service.read()
+        $scope.listArray = data.notebooks;
+        $scope.selectedListIndex = data.selectedListIndex;
+        system_vars = data.system_vars;
+        $scope.theme = data.theme
     }
+
 
     $scope.emptyList = handleNoTasksState();
 
@@ -878,12 +873,6 @@ function my_controller($scope) {
                 show: $scope.copied_task != null,
                 action: function () { $scope.paste_task_inside_notebook() }
             }, {
-                text: $scope.theme_menu_text,
-                icon: $scope.theme_menu_icon,
-                class: "task-more-options-item",
-                show: true,
-                action: function () { $scope.toggle_theme() }
-            }, {
                 text: "Rename notebook",
                 icon: "format_color_text",
                 class: "task-more-options-item",
@@ -993,8 +982,9 @@ function my_controller($scope) {
     };
 
     $scope.close_all_dialogs = function () {
-        if ($scope.dialog_flags.is_sidebar_menu_open)
-            $scope.open_sidebar(false)
+        //hide delete button on system var
+        $scope.show_delete_system_var_button = false
+        $scope.open_sidebar(false)
         for (let key in $scope.dialog_flags) {
             if ($scope.dialog_flags.hasOwnProperty(key)) {
                 $scope.dialog_flags[key] = false;
@@ -1014,21 +1004,6 @@ function my_controller($scope) {
         }
     }
 
-    $scope.toggle_view_more = function(index,event) {
-        var contentElement = document.getElementById('task-' + index);
-        var buttonElement = contentElement.children[2]
-    
-        if (contentElement.classList.contains("collapsed")) {
-            contentElement.style.maxHeight = contentElement.scrollHeight + 'px';
-            buttonElement.innerHTML = 'keyboard_arrow_up';
-            contentElement.classList.toggle("collapsed")
-        } else {
-            contentElement.classList.toggle("collapsed")
-            buttonElement.innerHTML = 'keyboard_arrow_down';
-            contentElement.style.maxHeight = "60px"
-
-        }
-    };
     
 
     //define all funcions above init
@@ -1118,3 +1093,5 @@ function my_controller($scope) {
     };
     $scope.init();
 }
+
+let x = 99;

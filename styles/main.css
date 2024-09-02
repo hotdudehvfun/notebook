@@ -20,8 +20,6 @@ html
     --block-screen-blur:4px;
     --age_text_color:var(--accent);
     --theme_button_border:gray;
-    width:100%;
-    height:100%:
 }
 
 body {
@@ -62,8 +60,7 @@ body {
 .app-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100%;
+
     /*! overflow: hidden; */
     flex-grow: 1;
     /* background: aliceblue; */
@@ -291,13 +288,13 @@ input:focus {
     display: flex;
     word-break: break-word;
     user-select: all;
-    /* background-color: var(--list-bg); */
-    /* border-radius: 0.5rem; */
-    /* align-items: center; */
+    background-color: var(--system-var-bg);
+    border-radius: 8px;
+    align-items: center;
     transition: 0.5s all;
     margin: 0.75rem;
-    border-bottom: 1px solid var(--list-border);
-    max-height: 60px;
+    /* border-bottom: 1px solid var(--list-border); */
+    border:1px solid var(--system-var-border);
     overflow:hidden;
 }
 
@@ -1232,6 +1229,11 @@ input:checked + .slider:before {
     align-items: center;
     gap: 1rem;
     width: fit-content;
+    
+}
+.chip > .material-symbols-outlined
+{
+    font-size:1.2rem
 }
 
 .progress_bar_holder{
@@ -1525,6 +1527,8 @@ div#console-output {
     padding:0.125rem 1rem;
     border-radius:100px;
     border:1px solid #35c759;
+    font-family: math;
+    font-style: italic;
 }
 
 .bottom-bar-button.button {

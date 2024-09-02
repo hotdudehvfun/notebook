@@ -24,4 +24,5 @@ app.filter("sanitize", ['$sce', function ($sce) {
   }
 }]);
 
+app.service('db_service',db_service)
 app.controller('myctrl',my_controller);

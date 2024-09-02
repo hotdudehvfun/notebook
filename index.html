@@ -8,22 +8,18 @@
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <meta content="todo app" name="keywords">
     <meta name="description" content="Author: Arun, a todo app">
-    <meta http-equiv="cache-control" content="max-age=800" />
+    <meta http-equiv="cache-control" content="max-age=8000" />
     <meta http-equiv="cache-control" content="Private" />
     
     <link rel="apple-touch-icon" sizes="180x180" href="img/ios/180.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/ios/32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/ios/16.png">
     <link rel="icon" href="/img/ios/180.png">
-    
     <link rel="manifest" href="manifest.json">
     <meta id="theme-color" name="theme-color" content="aliceblue" />
     <meta name="mobile-web-app-capable" content="yes">
-    
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
@@ -56,7 +52,7 @@
                     id="open-more-panel" 
                     style="z-index: 999;" 
                     class="material-symbols-outlined"
-                    ng-click="toggle_list_more_options_visibility()" 
+                    ng-click="handle_click_on_notebook_title()" 
                     ng-bind="nav_more_vert_icon()"></span>
             </div>
                 
@@ -95,8 +91,7 @@
                 <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{taskArray.length}} tasks</div>
                 <div ng-repeat="task in taskArray | filter:{isTaskCompleted:false}">
                     <div
-                    id="task-{{$index}}"
-                    class="task collapsed" 
+                    class="task" 
                     ng-class="{completed: task.isTaskCompleted}">
                         <span 
                         class="material-symbols-outlined" 
@@ -106,7 +101,6 @@
                         class="task-content-div"
                         ng-bind-html="handle_task_html(task.title) | sanitize"
                         ng-click="handle_tap_on_task(task);"></div>
-                        <span ng-click="toggle_view_more($index,$event)" class="material-symbols-outlined self-end">keyboard_arrow_down</span>
                     </div>
                 </div>
                 <!-- show completed tasks if any -->
@@ -143,8 +137,8 @@
                  <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
                     <div class="system_var_item">
                         <span class="var_icon">x</span>
-                        <div class="var_chip">{{key}}</div>
-                        <div class="var_chip">{{evaluate_exp(value)}}</div>
+                        <div class="var_chip">{{key}} = {{evaluate_exp(value)}}</div>
+                        <!-- <div class="var_chip">{{evaluate_exp(value)}}</div> -->
                     </div>
                  </div>
                  </div>
@@ -299,7 +293,7 @@
                 <option value="" selected disabled>Tap to select</option>
                 </select>
             </div>
-            <div class="add-task-edit-options" ng-show="show_add_task_edit_options">
+            <div class="add-task-edit-options visible_pop_animation" ng-show="show_add_task_edit_options">
                 <div
                 ng-repeat="item in edit_options"
                 ng-click="insertTextAtCursor('newTaskContent',item.insert_text)"
@@ -311,7 +305,7 @@
                     <span class="material-symbols-outlined">keyboard_command_key</span>
                     System Vars
                 </div>
-                <div class="chip" ng-repeat="(key,value) in get_system_vars()">
+                <div class="align-center flex-row var_chip" ng-repeat="(key,value) in get_system_vars()">
                     <span ng-click="insertTextAtCursor('newTaskContent',key)">{{key}}={{value}}</span>
                 </div>
                 
@@ -319,7 +313,11 @@
 
             <div class="flex-col align-center">
                 <div class="flex-row align-center w-full gap-1 mt-2">
-                    <span class="material-symbols-outlined add_task_icon" ng-click="show_add_task_edit_options=true">add</span>
+                    <span 
+                    class="material-symbols-outlined add_task_icon" ng-click="show_add_task_edit_options=!show_add_task_edit_options"
+                    >
+                    {{ show_add_task_edit_options ? 'close' : 'add' }}
+                    </span>
                     <textarea
                         ng-model="newTaskContent"
                         ng-keypress="handle_keypress_newtask($event)"
@@ -356,7 +354,7 @@
                  placeholder="Variable value"></input>
                  
                 <div class="flex-row space-between m-2">
-                    <span ng-click="dialog_flags.show_create_system_var_popup=false" class="button text-red-500">Cancel</span>
+                    <span ng-click="close_all_dialogs()" class="button text-red-500">Cancel</span>
                     <span ng-click="delete_system_var()" class="button text-red-500" ng-show="show_delete_system_var_button">Delete Variable</span>
                     
                     <span ng-click="create_system_var()" class="button">{{system_var_popup_create_button_text}}</span>
@@ -464,11 +462,15 @@
 
 
     <!-- <script type="text/javascript" src="app.js"></script> -->
+    <script type="text/javascript" src="scripts/db_service.js"></script>
     <script type="text/javascript" src="scripts/controller.js"></script>
+    <script type="text/javascript" src="scripts/handle_angular.js"></script>
+
+    
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
     <script type="text/javascript" src="scripts/wiki.js"></script>
-    <script type="text/javascript" src="scripts/handle_angular.js"></script>
+    
     <script type="text/javascript" src="scripts/html_gen.js"></script>
     <script type="text/javascript" src="scripts/utilities.js"></script>
 </body>
