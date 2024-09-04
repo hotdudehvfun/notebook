@@ -65,7 +65,7 @@ function my_controller($scope,db_service) {
     }
 
     $scope.open_sidebar = function (state) {
-        let left_val = state ? "0px" : "-75vw";
+        let left_val = state ? "0px" : "-80vw";
         $scope.sidebar_left = { left: left_val }
         $scope.dialog_flags.is_sidebar_menu_open = state
     }

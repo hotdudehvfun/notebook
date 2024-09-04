@@ -1,8 +1,8 @@
 [data-theme='dark']
 {
     --font-color: white;
-    --bg-color: #111;
-    --list-bg:#222423;
+    --bg-color: #272727;
+    --list-bg:#272727;
     --border-color:#2997ff;
     --accent:#2997ff;
     --list-border:#494949;
@@ -11,7 +11,7 @@
     --progress-b:#121212;
     --more-options-border-color:#363636;
     --create-notebook-bg:#44409b54;
-    --system-var-bg:#171717;
+    --system-var-bg:rgb(30 30 30);
     --system-var-border:#333;
     --age_text_color:gray;
     --theme_button_border:var(--accent);
