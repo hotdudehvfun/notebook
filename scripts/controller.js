@@ -843,6 +843,15 @@ function my_controller($scope,db_service) {
                 class: "task-more-options-item",
                 show: true,
                 action: function () { $scope.dialog_flags.show_db_popup = true; $scope.dialog_flags.show_list_more_options = false; }
+            },{
+                text: $scope.is_sortable?"Disable Sorting":"Enable Sorting",
+                icon: "swap_vert",
+                class: "task-more-options-item",
+                show: true,
+                action: function () { 
+                    $scope.is_sortable = !$scope.is_sortable;
+                    $scope.close_all_dialogs();
+                 }
             }, {
                 text: "Paste Task",
                 icon: "content_paste",
@@ -987,9 +996,10 @@ function my_controller($scope,db_service) {
 
     $scope.init_sortable_list = function(selector,array_name){
         //lets sort
-        let sortable = Sortable.create(document.querySelector(selector),{
+        $scope.sortable = Sortable.create(document.querySelector(selector),{
             animation:250,
             dragClass: "sortable-drag",
+            handle:".handle",
             onEnd:function(evt)
             {
                 if(evt.newIndex!=evt.oldIndex)
@@ -1041,8 +1051,7 @@ function my_controller($scope,db_service) {
         $scope.show_purge_list_option = false
         $scope.show_select_notebooks_dropdown = true
         $scope.show_update_task_button = false
-
-
+        $scope.is_sortable = false
 
         $scope.show_searchbar = false
         $scope.textarea_default_height = 64
@@ -1108,7 +1117,7 @@ function my_controller($scope,db_service) {
         //try to load first or last notebook
         $scope.load_last_notebook()
         $scope.init_sortable_list(".tasks","taskArray");
-        $scope.init_sortable_list(".notebooks","listArray");
+        // $scope.init_sortable_list(".notebooks","listArray");
     };
     $scope.init();
 }

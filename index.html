@@ -103,6 +103,7 @@
                             class="task-content-div"
                             ng-bind-html="handle_task_html(task.title) | sanitize"
                             ng-click="handle_tap_on_task(task);"></div>
+                            <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                         </div>
                     </li>
                 </ul>
