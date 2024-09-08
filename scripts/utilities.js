@@ -107,36 +107,9 @@ getRandomPlaceHolderForNewTask = () => {
 
 showToast = (msg) => {
 
-  document.querySelector(".toast").innerHTML = msg.trim();
-  $(".toast").css("z-index", 1000);
-  let durationToShow = 500;
-  let durationToStay = 1500;
-  let durationToHide = 1500;
-  $(".toast").animate(
-    {
-      //first show toast
-      opacity: 1
-    }, durationToShow, "swing",
-    function () {
-      //do something when toast is shown
-      $(".toast").animate(
-        {
-          opacity: 1
-        }, durationToStay, "swing",
-        function () {
-          //do something when toast have stayed
-          $(".toast").animate(
-            {
-              opacity: 0
-            }, durationToHide, "swing",
-            function () {
-              //do something when opcaity is 0
-              $(".toast").css("z-index", -99);
-            }
-          );
-        });
-    }
-  );
+  let toast = document.querySelector(".toast")
+  toast.innerHTML = msg.trim();
+  toast.classList.add("show")
 }
 
 
@@ -361,4 +334,22 @@ function calculate_height_based_on_lines(text,max_height) {
   const lines = text.split('\n').length;
   const h = lines * lineHeight;
   return Math.min(h,max_height);
+}
+
+let proverbs = [
+  "An empty vessel can hold anything.",
+  "An empty mind makes progress.",
+  "Emptiness is the beginning of all things.",
+  "An empty mind is a clear mind.",
+  "The empty pot makes the loudest noise.",
+  "The less you carry, the farther you go.",
+  "Only when the cup is empty can it be filled.",
+  "In the void, possibilities are endless.",
+  "Silence is a source of great strength.",
+  "Emptiness is the path to wisdom.",
+  "A full cup cannot accept more water.",
+  "True understanding comes from nothingness.",
+]
+function get_empty_proverbs(){
+  return proverbs[0]
 }

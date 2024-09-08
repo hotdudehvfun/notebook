@@ -18,6 +18,7 @@
     <link rel="manifest" href="manifest.json">
     <meta id="theme-color" name="theme-color" content="aliceblue" />
     <meta name="mobile-web-app-capable" content="yes">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js" integrity="sha512-8AwTn2Tax8NWI+SqsYAXiKT8jO11WUBzTEWRoilYgr5GWnF4fNqBRD+hCr4JRSA1eZ/qwbI+FPsM3X/PQeHgpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -28,10 +29,10 @@
 <body 
     ng-app="myapp" 
     ng-controller='myctrl' 
-    data-theme="{{theme}}">
+    data-theme="{{is_dark?'dark':'light';}}">
     <div class="main-container">
         <!-- top bar -->
-        <div class="topbar">
+        <div class="topbar shadow">
             <!-- app title -->
              <div class="flex">
                 <span ng-click="open_sidebar(true)" class="material-symbols-outlined">menu</span>
@@ -49,10 +50,9 @@
                 class="material-symbols-outlined">search
                 </span>
                 <span 
-                    id="open-more-panel" 
                     style="z-index: 999;" 
                     class="material-symbols-outlined"
-                    ng-click="handle_click_on_notebook_title()" 
+                    ng-click="handle_click_on_more_vert()" 
                     ng-bind="nav_more_vert_icon()"></span>
             </div>
                 
@@ -62,18 +62,19 @@
         <div class="content">
             <!-- search bar -->
             <div 
-            class="flex-row align-center bg-list-bg rounded-2 px-2"
+            class="flex-row align-center bg-list-bg rounded-full px-2 m-2 border"
             ng-show="show_searchbar"
             >
                 <span class="material-symbols-outlined">search</span>
-            <input 
+            <input
+            name="search" 
             id="search-box" 
             ng-model="search" 
             ng-attr-placeholder="Search" value=""></input>
             </div>
             
             <!-- search results start-->
-            <Div id="search-results" style="display: block;" ng-show="search.length>0">
+            <div id="search-results" ng-show="search.length>0">
                 <div style="text-align: center;font-size: 125%;">Search Results</div>
                 <div style="text-align: center;font-size: 85%;">Results found: {{filtered_search.length}}</div>
                 <div ng-repeat="task in filtered_search = (allTasks | filter: search | limitTo: 10)">
@@ -82,27 +83,30 @@
                         <span ng-bind-html="handle_task_html(task.title) | sanitize"></span>
                     </div>
                 </div>
-            </Div>
+            </div>
 
             <!-- tasks -->
             <div ng-hide="listArray.length==0">
                 <!-- normal tasks -->
                 <div class="notebook_age">{{notebook_age()}}</div>
                 <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{taskArray.length}} tasks</div>
-                <div ng-repeat="task in taskArray | filter:{isTaskCompleted:false}">
-                    <div
-                    class="task" 
-                    ng-class="{completed: task.isTaskCompleted}">
-                        <span 
-                        class="material-symbols-outlined" 
-                        ng-bind="task.taskIcon"
-                        ng-click="toggle_task_complete(task);"></span>
-                        <div  
-                        class="task-content-div"
-                        ng-bind-html="handle_task_html(task.title) | sanitize"
-                        ng-click="handle_tap_on_task(task);"></div>
-                    </div>
-                </div>
+                <ul class="tasks reset_ul">
+                    <li data-index="{{$index}}" ng-repeat="task in taskArray | filter:{isTaskCompleted:false}">
+                        <div
+                        class="task" 
+                        ng-class="{completed: task.isTaskCompleted}">
+                            <span 
+                            class="material-symbols-outlined" 
+                            ng-bind="task.taskIcon"
+                            ng-click="toggle_task_complete(task);"></span>
+                            <div  
+                            class="task-content-div"
+                            ng-bind-html="handle_task_html(task.title) | sanitize"
+                            ng-click="handle_tap_on_task(task);"></div>
+                        </div>
+                    </li>
+                </ul>
+             
                 <!-- show completed tasks if any -->
                 <div 
                 ng-show="notebook_has_completed_tasks()"
@@ -128,7 +132,7 @@
                     <div>
                         <img src="img/empty.svg" class="empty_svg"/>
                     </div>
-                    <h1>Notebook is empty</h1>
+                    <h2 class="text-center">{{empty_notebook_msg()}}</h2>
                 </div>
                 <!-- show system vars here -->
                  <div
@@ -165,7 +169,10 @@
                 <span class="material-symbols-outlined">keyboard_command_key</span>
                 <span class="">System Var</span>
              </div> 
-             
+             <div class="bottom-bar-button button" ng-click="open_sidebar(true)">
+                <span class="material-symbols-outlined">apps</span>
+                <span class="">View Notebooks</span>
+             </div> 
         </div>
          
     </div>
@@ -184,14 +191,17 @@
             class="material-symbols-outlined text-accent">close</span>
         </div>
         <div class="flex-row">
-            <h1>Hello Arun</h1>
-            <div ng-click="toggle_theme()" class="theme_container">
-                <div class="theme_button">
-                    <span 
-                    class="material-symbols-outlined theme_button_span"
-                    ng-class="{theme_button_span_right:theme=='light'}"
-                    >{{theme_menu_icon}}</span>
-                </div>
+            <h2>Hello Arun</h2>
+        </div>
+        <div class="flex-row align-center">
+            <h3>Dark theme</h3>
+            <div style="transform: scale(.8);">
+                <input
+                ng-model="is_dark"
+                ng-change="save_theme()" type="checkbox" id="type2" class="toggle_checkbox"/>
+                <label for="type2" class="toggle_label">
+                    <span class="toggle_span"></span>
+                </label>
             </div>
         </div>
         
@@ -202,28 +212,32 @@
         </div>
         <!-- show all notebooks -->
         <div class="scroll-y flex-col m-1/2 rounded-3/4 border">
-            <div ng-repeat="(key,value) in listArray">
-                <div class="list-panel-item" >
-                    <div class="list-panel-item-title">
-                        <!-- show when selected -->
-                        <span
-                        ng-show="select_notebooks"
-                        class="material-symbols-outlined list-icon"
-                        ng-bind="notebook_selected_state(key)"></span>
-                        <span
-                        ng-class="{yellow:value.title.toLowerCase()=='system',crimson:value.title.toLowerCase()=='trash'}"
-                        class="material-symbols-outlined list-icon"
-                        ng-bind="get_list_icon(value)"
-                        ng-hide="select_notebooks"
-                        ></span>
-                        <article ng-click="open_notebook(key)" class="selected" ng-bind="value.title"></article>
-                        <span 
-                        ng-class="{yellow:value.title.toLowerCase()=='system',crimson:value.title.toLowerCase()=='trash'}"
-                        class="list-sub-text" 
-                        ng-bind="get_list_info(key,value.taskArray)"></span>
+            <ul class="notebooks reset_ul">
+                <li ng-repeat="(key,value) in listArray">
+                    <div class="list-panel-item" >
+                        <div 
+                        class="list-panel-item-title"
+                        ng-class="{system:value.title.toLowerCase()=='system',trash_color:value.title.toLowerCase()=='trash'}"
+                        >
+                            <!-- show when selected -->
+                            <span
+                            ng-show="select_notebooks"
+                            class="material-symbols-outlined notebook_icon"
+                            ng-bind="notebook_selected_state(key)"></span>
+                            <span
+                            class="material-symbols-outlined notebook_icon"
+                            ng-bind="get_list_icon(value)"
+                            ng-hide="select_notebooks"
+                            ></span>
+                            <article ng-click="open_notebook(key)" class="selected" ng-bind="value.title"></article>
+                            <span 
+                            class="list-sub-text" 
+                            ng-bind="get_list_info(key,value.taskArray)"></span>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </li>
+                
+            </ul>
         </div>
      </div>
 
@@ -240,13 +254,13 @@
              <span class="material-symbols-outlined new-list-icon" ng-bind="new_notebook_icon"></span>
              <div>Rename: <span>{{selectedListName}}</span></div>
             </div>
-             <input 
-                 class="add-new-list-title rounded-2"
-                 ng-model="new_list_name" 
-                 ng-attr-placeholder="Enter new name"
-                 ng-keypress="handle_input_on_rename_notebook($event)"
-                 autofocus
-                 ></input>
+             <input
+                name="notebook_name" 
+                class="add-new-list-title rounded-2"
+                ng-model="new_list_name" 
+                ng-attr-placeholder="Enter new name"
+                ng-keypress="handle_input_on_rename_notebook($event)"
+                autofocus></input>
                     <div class="flex-row space-between m-2">
                         <span ng-click="dialog_flags.show_rename_notebook_popup=false;new_list_name=''; " class="button text-red-500">Cancel</span>
                         <span ng-click="rename_notebook()" class="button">Rename</span>                
@@ -259,17 +273,18 @@
      <div ng-show="dialog_flags.show_create_notebook_popup" class="popup visible_pop_animation">
         <div class="new_notebook_popup_child">
          <div class="flex-col align-center gap-1">
-            <div class="flex-row align-center gap-1 m-2">
+            <div class="flex-row align-center gap-1 m-2 w-full">
              <span class="material-symbols-outlined new-list-icon" ng-bind="new_notebook_icon"></span>
-             <div>Create new notebook</div>
+             <div class="text-120">Create new notebook</div>
             </div>
-             <input 
-                 ng-keyup="handle_input_on_notebook($event)"
-                 class="add-new-list-title rounded-2"
-                 ng-model="new_list_name" 
-                 ng-attr-placeholder="New NoteBook name..."
-                 placeholder="New NoteBook name..."
-                 autofocus
+             <input
+                name="notebook_name"
+                ng-keyup="handle_input_on_notebook($event)"
+                class="add-new-list-title rounded-2"
+                ng-model="new_list_name" 
+                ng-attr-placeholder="New NoteBook name..."
+                placeholder="New NoteBook name..."
+                autofocus
                  ></input>
              <!-- using css animation class with ng-show  -->
                     <div class="flex-row space-between m-2">
@@ -287,12 +302,13 @@
                 <span class="material-symbols-outlined list-icon">draw</span>
                 <!-- show which notebook is open -->
                  <!-- show_select_notebooks_dropdown set to false when any notebook is opened -->
-                 <span ng-hide="show_select_notebooks_dropdown">
+                 <span ng-hide="show_select_notebooks_dropdown" class="text-120">
                     Create note in 
-                    <span class="text-accent capitalize">{{selectedListName}}</span>
+                    <span class="text-accent capitalize underline">{{selectedListName}}</span>
                  </span>
                 <!-- show dropdown list if notebook is not selected -->
                 <select
+                name="select_notebooks"
                 ng-show="show_select_notebooks_dropdown"
                 class="select text-accent capitalize bold text-2"
                 ng-model="create_task_select_list_index"
@@ -335,7 +351,7 @@
                         autofocus
                         ></textarea>
                 </div>
-                <div class="flex-row">
+                <div class="flex-row mt-2">
                     <span ng-click="dialog_flags.show_create_task_popup=false;show_update_task_button=false; " class="button text-red-500">Cancel</span>
                     <span ng-click="create_task()" class="button" ng-hide="show_update_task_button">Create note</span>
                     <span ng-click="updateTask()" class="button" ng-show="show_update_task_button">Update Note</span>
@@ -350,20 +366,25 @@
      <div id="new_system_var_popup" ng-show="dialog_flags.show_create_system_var_popup" class="popup visible_pop_animation">
         <div class="new_notebook_popup_child">
          <div class="flex-col align-center gap-1">
-            <div class="flex-row align-center gap-1 m-2">
+            <div class="flex-row align-center gap-1 m-2 w-full">
              <span class="var_icon">x</span>
-             <div>{{system_var_popup_title}}</div>
+             <div class="text-120">{{system_var_popup_title}}</div>
             </div>
-                <input 
-                class="add-new-list-title rounded-2"
-                ng-model="new_var_name" 
-                placeholder="Variable name"
-                autofocus
+                <input
+                    name="system_var_name" 
+                    class="add-new-list-title rounded-2"
+                    ng-model="new_var_name" 
+                    placeholder="Variable name"
+                    autofocus
                 ></input>
                 <input
-                 class="add-new-list-title rounded-2 mt-2"
-                 ng-model="new_var_value" 
-                 placeholder="Variable value"></input>
+                    name="system_var_value"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    class="add-new-list-title rounded-2 mt-2"
+                    ng-model="new_var_value" 
+                    placeholder="Variable value">
+                </input>
                  
                 <div class="flex-row space-between m-2">
                     <span ng-click="close_all_dialogs()" class="button text-red-500">Cancel</span>
@@ -383,6 +404,7 @@
                 <span class="material-symbols-outlined list-icon">database</span>
                 <span>Choose operation</span>
                 <select
+                name="db_operation"
                 class="select text-accent capitalize bold text-2"
                 ng-model="db_operation"
                 ng-change="handle_db_operation_change()">
@@ -434,7 +456,7 @@
     ng-click="close_all_dialogs()"></div>
 
     <!-- toast message -->
-    <div class="toast" style="z-index: -99; opacity: 0;">
+    <div class="toast tranistion">
     </div>
 
 
@@ -478,13 +500,10 @@
     <!-- <script type="text/javascript" src="app.js"></script> -->
     <script type="text/javascript" src="scripts/db_service.js"></script>
     <script type="text/javascript" src="scripts/controller.js"></script>
-    <script type="text/javascript" src="scripts/handle_angular.js"></script>
-
-    
+    <script type="text/javascript" src="scripts/angular_module.js"></script>
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
     <script type="text/javascript" src="scripts/wiki.js"></script>
-    
     <script type="text/javascript" src="scripts/html_gen.js"></script>
     <script type="text/javascript" src="scripts/utilities.js"></script>
 </body>

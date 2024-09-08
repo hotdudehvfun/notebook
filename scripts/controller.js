@@ -65,7 +65,7 @@ function my_controller($scope,db_service) {
     }
 
     $scope.open_sidebar = function (state) {
-        let left_val = state ? "0px" : "-80vw";
+        let left_val = state ? "0px" : "-90vw";
         $scope.sidebar_left = { left: left_val }
         $scope.dialog_flags.is_sidebar_menu_open = state
     }
@@ -219,28 +219,15 @@ function my_controller($scope,db_service) {
 
 
     $scope.saveData = function () {
+        const _theme = $scope.is_dark?"dark":"light";
         db_service.write(
             {
                 notebooks:$scope.listArray,
                 selectedListIndex:$scope.selectedListIndex,
-                theme:$scope.theme,
+                theme:_theme,
                 system_vars:system_vars
             },angular
         )
-
-
-        // //save data about app in local
-        // let json = angular.toJson($scope.listArray);
-        // localStorage.appData = json;
-        // //save selectedListIndex
-        // localStorage.selectedListIndex = $scope.selectedListIndex;
-
-        // //save theme
-        // localStorage.theme = $scope.theme
-
-        // //save system vars
-        // localStorage.system_vars = JSON.stringify(system_vars)
-        // // console.log("System vars",JSON.stringify(system_vars))
     }
 
     $scope.readData = function () {
@@ -474,39 +461,20 @@ function my_controller($scope,db_service) {
     }
 
 
-    $scope.toggle_theme = function () {
-        if ($scope.theme == "light") {
-            //change to dark dark_mode
-            $scope.theme = "dark"
-            $scope.theme_menu_text = "Light Theme"
-            $scope.theme_menu_icon = "light_mode"
-            document.querySelector("#theme-color").setAttribute("content", "#131417")
+    $scope.save_theme = function () {
+        // console.log($scope.is_dark)
+        if ($scope.is_dark) {
+            document.querySelector("#theme-color").setAttribute("content", "#272727")
         } else {
-            //change to light_mode
-            $scope.theme = "light"
-            $scope.theme_menu_text = "Dark Theme"
-            $scope.theme_menu_icon = "dark_mode"
-            document.querySelector("#theme-color").setAttribute("content", "aliceblue")
-            document.querySelector("#theme-color").setAttribute("content", "aliceblue")
+            document.querySelector("#theme-color").setAttribute("content", "#ffffff")
         }
-        // $scope.toggle_list_more_options_visibility()
         $scope.saveData()
     }
 
     $scope.init_theme = function () {
         const old_theme = localStorage.theme || "light";
-        $scope.theme = old_theme;
-
-        if ($scope.theme === "light") {
-            $scope.theme_menu_text = "Dark Theme";
-            $scope.theme_menu_icon = "dark_mode";
-            document.querySelector("#theme-color").setAttribute("content", "aliceblue")
-        } else {
-            $scope.theme_menu_text = "Light Theme";
-            $scope.theme_menu_icon = "light_mode";
-            document.querySelector("#theme-color").setAttribute("content", "#131417")
-        }
-    };
+        $scope.is_dark = old_theme=="dark";
+    }
 
     $scope.init_notification = function () {
         //temp notification
@@ -582,6 +550,15 @@ function my_controller($scope,db_service) {
             $scope.dialog_flags.show_list_more_options = true
             //update texts when opening more options 
             $scope.init_notebook_more_options()
+        }
+    }
+
+    $scope.handle_click_on_more_vert = function () {
+        if($scope.is_any_dialog_open())
+        {
+            $scope.close_all_dialogs();
+        }else{
+            $scope.handle_click_on_notebook_title()
         }
     }
 
@@ -971,13 +948,8 @@ function my_controller($scope,db_service) {
         }
     }
 
-
-
-
-
-
     $scope.is_any_dialog_open = function () {
-        console.log($scope.dialog_flags)
+        // console.log($scope.dialog_flags)
         return Object.values($scope.dialog_flags).some(flag => flag);
     };
 
@@ -1004,7 +976,51 @@ function my_controller($scope,db_service) {
         }
     }
 
-    
+    $scope.empty_notebook_msg = function(){
+        //show text when notebook is empty
+        try {
+            return get_empty_proverbs()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    $scope.init_sortable_list = function(selector,array_name){
+        //lets sort
+        let sortable = Sortable.create(document.querySelector(selector),{
+            animation:250,
+            dragClass: "sortable-drag",
+            onEnd:function(evt)
+            {
+                if(evt.newIndex!=evt.oldIndex)
+                {
+                    //swap items
+                    const [movedItem] = $scope[array_name].splice(evt.oldIndex, 1);
+                    $scope[array_name].splice(evt.newIndex, 0, movedItem);
+                    $scope.saveData()
+                }
+            }
+        })
+    }
+
+
+    // $scope.init_sortable_tasks = function(){
+    //     //lets sort
+    //     let sortable = Sortable.create(document.querySelector(".tasks"),{
+    //         animation:250,
+    //         onEnd:function(evt)
+    //         {
+    //             // console.log("new index = ",evt.newIndex,"old index",evt.oldIndex)
+    //             if(evt.newIndex!=evt.oldIndex)
+    //             {
+    //                 //swap items
+    //                 const [movedItem] = $scope.taskArray.splice(evt.oldIndex, 1);
+    //                 $scope.taskArray.splice(evt.newIndex, 0, movedItem);
+    //                 $scope.saveData()
+    //             }
+    //         }
+    //     })
+    // }
 
     //define all funcions above init
     $scope.init = function () {
@@ -1080,6 +1096,7 @@ function my_controller($scope,db_service) {
             { icon: "sliders", insert_text: "#50%" },
             { icon: "check_box", insert_text: "$ Task" }
         ]
+        
 
         //default theme
         $scope.init_theme()
@@ -1090,8 +1107,8 @@ function my_controller($scope,db_service) {
 
         //try to load first or last notebook
         $scope.load_last_notebook()
+        $scope.init_sortable_list(".tasks","taskArray");
+        $scope.init_sortable_list(".notebooks","listArray");
     };
     $scope.init();
 }
-
-let x = 99;
