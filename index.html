@@ -21,6 +21,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js" integrity="sha512-8AwTn2Tax8NWI+SqsYAXiKT8jO11WUBzTEWRoilYgr5GWnF4fNqBRD+hCr4JRSA1eZ/qwbI+FPsM3X/PQeHgpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/aes.min.js" integrity="sha512-UOtWWEXoMk1WLeC873Gmrkb2/dZMwvN1ViM9C1mNvNmQSeXpEr8sRzXLmUSha1X4x5V892uFmEjiZzUsYiHYiw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
@@ -28,7 +32,8 @@
 
 <body 
     ng-app="myapp" 
-    ng-controller='myctrl' 
+    ng-controller='myctrl'
+    ng-init="init()"
     data-theme="{{is_dark?'dark':'light';}}">
     <div class="main-container">
         <!-- top bar -->
@@ -44,12 +49,17 @@
                     ng-bind="pageTitle">
                 </div>
             </div>
-            <div class="flex-row flex align-center justify-end">
+            <div class="flex-row flex align-center justify-end gap-1">
                 <span 
                 ng-click="show_searchbar=!show_searchbar"
                 class="material-symbols-outlined">search
                 </span>
-                <span 
+                <!-- <span 
+                ng-click="toggle_data_lock()"
+                class="material-symbols-outlined">{{is_data_locked?'lock':'lock_open';}}
+                </span> -->
+                
+                <span
                     style="z-index: 999;" 
                     class="material-symbols-outlined"
                     ng-click="handle_click_on_more_vert()" 
@@ -75,34 +85,36 @@
             
             <!-- search results start-->
             <div id="search-results" ng-show="search.length>0">
-                <div style="text-align: center;font-size: 125%;">Search Results</div>
-                <div style="text-align: center;font-size: 85%;">Results found: {{filtered_search.length}}</div>
+                <div style="text-align: center;font-size: 125%;">Search Results: Under Construction</div>
+                <!-- <div style="text-align: center;font-size: 85%;">Results found: {{filtered_search.length}}</div>
                 <div ng-repeat="task in filtered_search = (allTasks | filter: search | limitTo: 10)">
                     <div class="task" ng-click="">
                         <span class="material-symbols-outlined" ng-bind="task.taskIcon"></span>
                         <span ng-bind-html="handle_task_html(task.title) | sanitize"></span>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <!-- tasks -->
-            <div ng-hide="listArray.length==0">
+            <div ng-hide="notebooks.length==0">
                 <!-- normal tasks -->
                 <div class="notebook_age">{{notebook_age()}}</div>
-                <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{taskArray.length}} tasks</div>
+                <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{notes.length}} tasks</div>
                 <ul class="tasks reset_ul">
-                    <li data-index="{{$index}}" ng-repeat="task in taskArray | filter:{isTaskCompleted:false}">
+                    <li 
+                    data-index="{{$index}}" 
+                    ng-repeat="note in notes | filter:{isTaskCompleted:false}">
                         <div
                         class="task" 
-                        ng-class="{completed: task.isTaskCompleted}">
+                        ng-class="{completed: note.isTaskCompleted}">
                             <span 
-                            class="material-symbols-outlined" 
-                            ng-bind="task.taskIcon"
-                            ng-click="toggle_task_complete(task);"></span>
+                                class="material-symbols-outlined" 
+                                ng-bind="note.taskIcon"
+                                ng-click="toggle_task_complete(note);"></span>
                             <div  
-                            class="task-content-div"
-                            ng-bind-html="handle_task_html(task.title) | sanitize"
-                            ng-click="handle_tap_on_task(task);"></div>
+                                class="task-content-div"
+                                ng-bind-html="handle_task_html(note.title) | sanitize"
+                                ng-click="handle_tap_on_task(note);"></div>
                             <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                         </div>
                     </li>
@@ -150,7 +162,7 @@
             </div>
             
             <!-- empty state no list-->
-            <div style="text-align: center;" ng-show="listArray.length==0">
+            <div style="text-align: center;" ng-show="notebooks.length==0">
                 <h1>(>_<)</h1>
                 <span>Nothing to see here.</span>
             </div>
@@ -214,7 +226,7 @@
         <!-- show all notebooks -->
         <div class="scroll-y flex-col m-1/2 rounded-3/4 border">
             <ul class="notebooks reset_ul">
-                <li ng-repeat="(key,value) in listArray">
+                <li ng-repeat="(key,value) in notebooks">
                     <div class="list-panel-item" >
                         <div 
                         class="list-panel-item-title"
@@ -457,8 +469,9 @@
     ng-click="close_all_dialogs()"></div>
 
     <!-- toast message -->
-    <div class="toast tranistion">
-    </div>
+    <div
+    ng-class="{show:is_toast_visible}"
+    class="toast transition text-center capitalize">{{toast_msg}}</div>
 
 
 

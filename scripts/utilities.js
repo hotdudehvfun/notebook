@@ -67,7 +67,7 @@ timeToGo = (date) => {
 }
 
 
-function groupBy(list, keyGetter) {
+groupBy = (list, keyGetter)=> {
   const map = new Map();
   list.forEach((item) => {
     const key = keyGetter(item);
@@ -104,13 +104,6 @@ getRandomPlaceHolderForNewTask = () => {
   return randomPlaceHolders.getRandomItem();
 }
 
-
-showToast = (msg) => {
-
-  let toast = document.querySelector(".toast")
-  toast.innerHTML = msg.trim();
-  toast.classList.add("show")
-}
 
 
 parseBool = (str) => {
@@ -352,4 +345,25 @@ let proverbs = [
 ]
 function get_empty_proverbs(){
   return proverbs[0]
+}
+
+
+
+
+
+
+
+
+
+
+
+encrypt_data = (plain_text,key) => {
+  let encrypted_text = CryptoJS.AES.encrypt(plain_text, key).toString();
+  return encrypted_text;  
+}
+
+decrypt_data = (encrypted_text,key) => {
+  let bytes = CryptoJS.AES.decrypt(encrypted_text, key);
+  let decrypted_text = bytes.toString(CryptoJS.enc.Utf8);  
+  return decrypted_text;  
 }

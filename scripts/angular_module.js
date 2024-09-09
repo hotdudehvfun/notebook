@@ -1,6 +1,7 @@
 let app = angular.module("myapp", []);
 //use this to create new properties on previous version
 let patchApplied = false;
+let toast_timer_id = null;
 
 console.log("App version:3.3.0")
 console.log(`

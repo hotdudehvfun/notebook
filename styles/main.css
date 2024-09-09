@@ -107,7 +107,7 @@ input:focus {
 .list-panel-item {
     display: inline-flex;
     flex-direction: column;
-    padding: 0.75rem;
+    padding: 0.5rem 0.25rem;
     width: 100%;
     transition:0.2s all;
     border-bottom: 1px solid var(--list-border);
@@ -122,21 +122,18 @@ input:focus {
 
 .toast {
     position: absolute;
-    text-align: center;
-    top: 80%;
+    bottom: 20%;
     left: 50%;
+    transform: translateX(-50%);
     width: max-content;
     max-width: 90%;
-    transform: translateX(-50%);
-    z-index: 999;
+    z-index: -1;
     opacity: 0;
-    color: var(--accent);
-    text-transform: capitalize;
     padding: 10px 20px;
     border-radius: 100px;
-    backdrop-filter:blur(var(--more-options-blur));
-    -webkit-backdrop-filter:blur(var(--more-options-blur));
-    border: 1px solid var(--accent);
+    color: var(--font-color);
+    background:var(--white_black);
+    border: 1px solid var(--font-color);
 }
 
 .toast.show {
@@ -270,7 +267,7 @@ div#list-more-options-container {
 
 .list-panel-item>div>article {
     text-transform: capitalize;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     margin-left: 0.5rem;
     width: -webkit-fill-available;
     padding: 0.5rem .25rem;
@@ -519,14 +516,13 @@ input.add-new-list-title {
     padding: 0px 8px;
 }
 
-
 .notebook_icon {
     background: transparent;
-    border: 2px solid currentColor;
-    font-size: 1.3rem;
+    border: 1px solid currentColor;
+    font-size: 1rem;
     border-radius: 1rem;
     color: currentColor;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
 }
 
 
@@ -563,7 +559,8 @@ input.add-new-list-title {
 }
 
 
-.transition{
+.transition
+{
     transition:0.5s all;
 }
 

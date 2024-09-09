@@ -1,4 +1,4 @@
-function my_controller($scope,db_service) {
+function my_controller($scope, $timeout, db_service) {
 
     // output  of task content
     $scope.handle_task_html = function (text) {
@@ -7,19 +7,19 @@ function my_controller($scope,db_service) {
     }
 
     //for searching made easy
-    $scope.getTasksOnly = function () {
-        var allTasks = [];
-        $scope.listArray.forEach(list => {
-            allTasks = allTasks.concat(list.taskArray)
-        });
-        //console.log(allTasks);
-        return allTasks;
-    };
+    // $scope.getTasksOnly = ()=> {
+    //     var allTasks = [];
+    //     $scope.notebooks.forEach(list => {
+    //         allTasks = allTasks.concat(list.notes)
+    //     });
+    //     //console.log(allTasks);
+    //     return allTasks;
+    // };
 
 
-    $scope.notebook_age = function () {
+    $scope.notebook_age = () => {
         if ($scope.selectedListIndex >= 0) {
-            let ms = $scope.listArray[$scope.selectedListIndex].dateCreated
+            let ms = $scope.notebooks[$scope.selectedListIndex].dateCreated
             return `Created: ${timeSince(ms)}`
         }
         return "Notebook is very old"
@@ -31,7 +31,7 @@ function my_controller($scope,db_service) {
         $scope.show_delete_list_option = true
         $scope.show_purge_list_option = true
         $scope.show_rename_list_option = true
-        $scope.default_app_icon = $scope.listArray[$scope.selectedListIndex].icon
+        $scope.default_app_icon = $scope.notebooks[$scope.selectedListIndex].icon
         // console.log($scope.default_app_icon)
     }
 
@@ -49,9 +49,10 @@ function my_controller($scope,db_service) {
             }
         } else {
             if (index >= 0) {
-                $scope.taskArray = $scope.listArray[index].taskArray;
+                $scope.notes = $scope.notebooks[index].taskArray;
+                console.log($scope.notebooks[index].taskArray)
                 // when name is changed list view is hided and task view is shown
-                $scope.selectedListName = $scope.listArray[index].title;
+                $scope.selectedListName = $scope.notebooks[index].title;
                 $scope.pageTitle = $scope.selectedListName;
                 console.log("Opening notebook = ", $scope.pageTitle)
                 //load list info, this function also used by tap and hold event to load list info
@@ -61,7 +62,7 @@ function my_controller($scope,db_service) {
                 $scope.open_sidebar(false)
             }
         }
-        $scope.saveData()
+        $scope.save_data()
     }
 
     $scope.open_sidebar = function (state) {
@@ -70,7 +71,7 @@ function my_controller($scope,db_service) {
         $scope.dialog_flags.is_sidebar_menu_open = state
     }
 
-    $scope.reset_view = function () {
+    $scope.reset_view = () => {
         try {
             console.log("reset called")
             $scope.search = "";
@@ -116,47 +117,47 @@ function my_controller($scope,db_service) {
         insertTextAtCursor(id, value)
     }
 
-    $scope.get_list_info = function (key, taskArray) {
-        let title = $scope.listArray[key].title
+    $scope.get_list_info = function (key, notes) {
+        let title = $scope.notebooks[key].title
         if (title.toLowerCase() == "system") {
             return Object.keys(system_vars).length
         }
-        var completed = taskArray.filter(function (task) { return task.isTaskCompleted == true }).length;
+        var completed = notes.filter(function (note) { return note.isTaskCompleted == true }).length;
         if (completed == 0)
-            return taskArray.length;
-        return `${completed}/${taskArray.length}`
+            return notes.length;
+        return `${completed}/${notes.length}`
     }
 
-    $scope.completed_tasks_len = function () {
-        var completed = $scope.taskArray.filter(function (task) { return task.isTaskCompleted == true }).length;
+    $scope.completed_tasks_len = () => {
+        var completed = $scope.notes.filter(function (note) { return note.isTaskCompleted == true }).length;
         return completed
     }
 
-    $scope.create_notebook = function () {
+    $scope.create_notebook = () => {
         try {
             if ($scope.new_list_name.length > 1) {
-                let duplicate = $scope.listArray.some(list => list.title.toLowerCase() === $scope.new_list_name.toLowerCase())
+                let duplicate = $scope.notebooks.some(list => list.title.toLowerCase() === $scope.new_list_name.toLowerCase())
                 if (duplicate) {
                     alert(`Notebook "${$scope.new_list_name}" already exists.`);
                     return;
                 }
                 let new_list = new List($scope.new_list_name, $scope.new_notebook_icon);
-                $scope.listArray.push(new_list)
-                showToast(`Notebook created: ${new_list.title}`);
+                $scope.notebooks.push(new_list)
+                $scope.show_toast(`Notebook created: ${new_list.title}`);
                 $scope.new_list_name = ""
                 $scope.dialog_flags.show_create_notebook_popup = false
-                $scope.saveData();
+                $scope.save_data();
             }
         } catch (err) {
             console.log("Error while creating notebook", err)
-            showToast("Failed to created notebook");
+            $scope.show_toast("Failed to created notebook");
         }
     }
 
 
 
 
-    $scope.create_task = function () {
+    $scope.create_task = () => {
         try {
             if (
                 $scope.newTaskContent.trim().length > 0 &&
@@ -165,17 +166,17 @@ function my_controller($scope,db_service) {
                 if (multiple_tasks.length > 0) {
                     //add multiple tasks
                     multiple_tasks.forEach((item, index) => {
-                        let newTask = new Task(item)
-                        newTask.taskIcon = $scope.icons.unchecked;
-                        $scope.listArray[$scope.selectedListIndex].taskArray.push(newTask)
+                        let new_note = new Task(item)
+                        new_note.taskIcon = $scope.icons.unchecked;
+                        $scope.notebooks[$scope.selectedListIndex].taskArray.push(new_note)
                     })
                 } else {
                     //add single task
-                    let newTask = new Task($scope.newTaskContent.trim())
+                    let new_note = new Task($scope.newTaskContent.trim())
                     newTask.taskIcon = $scope.icons.unchecked;
-                    $scope.listArray[$scope.selectedListIndex].taskArray.push(newTask)
+                    $scope.notebooks[$scope.selectedListIndex].taskArray.push(newTask)
                 }
-                $scope.taskArray = $scope.listArray[$scope.selectedListIndex].taskArray
+                $scope.notes = $scope.notebooks[$scope.selectedListIndex].taskArray
 
                 //reset options
                 $scope.newTaskContent = ""
@@ -186,19 +187,19 @@ function my_controller($scope,db_service) {
                 //if we are creating without opening the notebook
                 $scope.pageTitle = $scope.selectedListName
 
-                $scope.saveData();
+                $scope.save_data();
                 let toast_text = "Note added"
                 if (multiple_tasks.length > 1)
                     toast_text = `${multiple_tasks.length} notes added`;
-                showToast(toast_text);
+                $scope.show_toast(toast_text);
             }
         } catch (err) {
             console.log(err)
-            showToast(`Unable to add note`)
+            $scope.show_toast(`Unable to add note`)
         }
     }
 
-    $scope.get_system_vars = function () {
+    $scope.get_system_vars = () => {
         return system_vars
     }
 
@@ -211,28 +212,28 @@ function my_controller($scope,db_service) {
         $scope.new_var_value = system_vars[key]
     }
 
-    $scope.insert_system_var_at_cursor = function () {
+    $scope.insert_system_var_at_cursor = () => {
         //console.log($scope.selected_system_var)
         insertTextAtCursor('newTaskContent', $scope.selected_system_var)
     }
 
 
 
-    $scope.saveData = function () {
-        const _theme = $scope.is_dark?"dark":"light";
+    $scope.save_data = () => {
+        const _theme = $scope.is_dark ? "dark" : "light";
         db_service.write(
             {
-                notebooks:$scope.listArray,
-                selectedListIndex:$scope.selectedListIndex,
-                theme:_theme,
-                system_vars:system_vars
-            },angular
+                notebooks: $scope.notebooks,
+                selectedListIndex: $scope.selectedListIndex,
+                theme: _theme,
+                system_vars: system_vars
+            }, angular
         )
     }
 
-    $scope.readData = function () {
+    $scope.read_data = () => {
         let data = db_service.read()
-        $scope.listArray = data.notebooks;
+        $scope.notebooks = data.notebooks;
         $scope.selectedListIndex = data.selectedListIndex;
         system_vars = data.system_vars;
         $scope.theme = data.theme
@@ -242,18 +243,18 @@ function my_controller($scope,db_service) {
     $scope.emptyList = handleNoTasksState();
 
 
-    $scope.handleDeleteList = function () {
+    $scope.handleDeleteList = () => {
         if ($scope.selectedListIndex >= 0) {
             if (confirm("Are you sure?")) {
                 console.log("List at index removed:", $scope.selectedListIndex)
-                showToast("Notebook Deleted");
-                let removedList = $scope.listArray.splice($scope.selectedListIndex, 1);
+                $scope.show_toast("Notebook Deleted");
+                let removedList = $scope.notebooks.splice($scope.selectedListIndex, 1);
                 $scope.selectedListIndex = 0
-                if ($scope.listArray.length != 0) {
+                if ($scope.notebooks.length != 0) {
                     $scope.open_notebook($scope.selectedListIndex)
                 } else {
                     //all notebooks removed
-                    $scope.taskArray = []
+                    $scope.notes = []
                     $scope.pageTitle = $scope.defaultPageTitle
                 }
                 $scope.close_all_dialogs()
@@ -266,11 +267,11 @@ function my_controller($scope,db_service) {
         if ($scope.mergeInProgress) {
             // $scope.selected_task = task;
             // if ($scope.selected_task == $scope.oldselected_task) {
-            //   showToast("Cannot merge with same Note");
+            //   $scope.show_toast("Cannot merge with same Note");
             // } else {
 
             //   //concat selected content at the end
-            //   $scope.taskArray[$scope.selected_task].title += "\n" + $scope.taskArray[$scope.oldselected_task].title;
+            //   $scope.notes[$scope.selected_task].title += "\n" + $scope.notes[$scope.oldselected_task].title;
 
             //   //remove old note now
             //   $scope.deleteTask($scope.oldselected_task);
@@ -278,8 +279,8 @@ function my_controller($scope,db_service) {
 
             //   $scope.mergeInProgress = false;
 
-            //   showToast("Merge complete");
-            //   $scope.saveData();
+            //   $scope.show_toast("Merge complete");
+            //   $scope.save_data();
             // }
 
         } else {
@@ -291,11 +292,11 @@ function my_controller($scope,db_service) {
 
 
 
-    $scope.handle_remove_completed_tasks = function () {
+    $scope.handle_remove_completed_tasks = () => {
         try {
-            $scope.taskArray = $scope.taskArray.filter(task => !task.isTaskCompleted)
-            $scope.listArray[$scope.selectedListIndex].taskArray = $scope.taskArray
-            $scope.saveData()
+            $scope.notes = $scope.notes.filter(task => !task.isTaskCompleted)
+            $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes
+            $scope.save_data()
             $scope.close_all_dialogs()
         } catch (error) {
             console.log(error)
@@ -303,73 +304,73 @@ function my_controller($scope,db_service) {
     }
 
 
-    $scope.delete_task = function () {
+    $scope.delete_task = () => {
 
         if ($scope.selected_task == undefined || $scope.selected_task == null) {
-            showToast("No task selected")
+            $scope.show_toast("No task selected")
             return ""
         }
         if (confirm("Are you sure?")) {
-            // let removed = $scope.taskArray.splice(indexToRemove, 1);
-            $scope.taskArray = $scope.taskArray.filter(function (task) {
+            // let removed = $scope.notes.splice(indexToRemove, 1);
+            $scope.notes = $scope.notes.filter(function (task) {
                 return task !== $scope.selected_task;
             });
-            $scope.listArray[$scope.selectedListIndex].taskArray = $scope.taskArray
+            $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes
 
             //add task to trash notebook
-            $scope.listArray.forEach((item, index) => {
+            $scope.notebooks.forEach((item, index) => {
                 if (item.title.toLowerCase() == "trash") {
-                    item.taskArray.push($scope.selected_task)
+                    item.notes.push($scope.selected_task)
                 }
             })
-            $scope.saveData();
+            $scope.save_data();
             $scope.close_all_dialogs()
-            showToast("Note deleted!")
+            $scope.show_toast("Note deleted!")
         }
     }
 
 
-    $scope.copy_task = function () {
+    $scope.copy_task = () => {
         //move to another list
         if ($scope.selected_task != undefined) {
             $scope.copied_task = $scope.selected_task
-            showToast("Task Copied");
+            $scope.show_toast("Task Copied");
             $scope.close_all_dialogs()
         } else
-            showToast("Failed to copy");
+            $scope.show_toast("Failed to copy");
     }
 
 
-    $scope.paste_task = function () {
+    $scope.paste_task = () => {
         try {
             //append copied task to selected task
             //save selected note position
             $scope.selected_task.title = $scope.selected_task.title.concat(
                 "\n", $scope.copied_task.title
             )
-            showToast("Task Pasted")
-            $scope.saveData()
+            $scope.show_toast("Task Pasted")
+            $scope.save_data()
             $scope.close_all_dialogs()
 
             $scope.copied_task = null;
         } catch (err) {
-            showToast("Fail to paste")
+            $scope.show_toast("Fail to paste")
             console.log("Cannot paste task", err)
         }
     }
-    $scope.paste_task_inside_notebook = function () {
+    $scope.paste_task_inside_notebook = () => {
         if ($scope.selectedListIndex >= 0) {
-            $scope.taskArray.push($scope.copied_task);
-            showToast("Task Pasted")
+            $scope.notes.push($scope.copied_task);
+            $scope.show_toast("Task Pasted")
             $scope.copied_task = null;
             $scope.close_all_dialogs()
 
-            $scope.saveData();
+            $scope.save_data();
         }
     }
 
     //show dialog to update
-    $scope.open_update_task_popup = function () {
+    $scope.open_update_task_popup = () => {
         $scope.open_create_new_note_popup()
         $scope.newTaskContent = $scope.selected_task.title
         $scope.show_update_task_button = true
@@ -379,32 +380,32 @@ function my_controller($scope,db_service) {
     }
 
     // update task in popup
-    $scope.updateTask = function () {
+    $scope.updateTask = () => {
         $scope.selected_task.title = $scope.newTaskContent
         $scope.show_update_task_button = false
         $scope.close_all_dialogs()
 
         $scope.newTaskContent = ""
-        showToast("Note updated");
-        $scope.saveData()
+        $scope.show_toast("Note updated");
+        $scope.save_data()
     }
 
-    $scope.cancelNewTask = function () {
+    $scope.cancelNewTask = () => {
         document.querySelector("#confirm-change-button").style.display = "none";
         document.querySelector("#add-new-task-ok").style.display = "block";
         $("#newTaskContent").html("")
     }
 
-    $scope.purgeList = function () {
+    $scope.purgeList = () => {
         //delete all tasks inside notebook
         if (confirm("Are you sure?") == true) {
             if ($scope.selectedListIndex >= 0) {
-                $scope.taskArray = []
-                $scope.listArray[$scope.selectedListIndex].taskArray = [];
-                $scope.saveData();
+                $scope.notes = []
+                $scope.notebooks[$scope.selectedListIndex].taskArray = [];
+                $scope.save_data();
                 $scope.close_all_dialogs()
 
-                showToast("All tasks removed")
+                $scope.show_toast("All tasks removed")
             }
         }
     }
@@ -414,30 +415,29 @@ function my_controller($scope,db_service) {
             console.log(task)
             task.isTaskCompleted = !task.isTaskCompleted;
             task.taskIcon = task.isTaskCompleted ? $scope.icons.checked : $scope.icons.unchecked;
-            $scope.saveData();
+            $scope.save_data();
             $scope.close_all_dialogs()
-
         }
     }
 
     $scope.move_task = function (distance) {
         // move completed tasks at end
         if ($scope.selected_task != undefined) {
-            let key = $scope.taskArray.indexOf($scope.selected_task)
+            let key = $scope.notes.indexOf($scope.selected_task)
             console.log($scope.selected_task, key)
 
             // if (key + distance < 0) {
-            //   showToast("Task already at top")
-            // } else if (key + distance >= $scope.taskArray.length) {
-            //   showToast("Task already at bottom")
+            //   $scope.show_toast("Task already at top")
+            // } else if (key + distance >= $scope.notes.length) {
+            //   $scope.show_toast("Task already at bottom")
             // } else {
-            //   let temp = $scope.taskArray[key + distance]
-            //   $scope.taskArray[key + distance] = $scope.taskArray[key]
-            //   $scope.taskArray[key] = temp
+            //   let temp = $scope.notes[key + distance]
+            //   $scope.notes[key + distance] = $scope.notes[key]
+            //   $scope.notes[key] = temp
             //   let str = distance < 0 ? "Task moved up" : "Task moved down";
-            //   showToast(str)
+            //   $scope.show_toast(str)
             // }
-            // $scope.saveData();
+            // $scope.save_data();
             // $scope.dialog_flags.show_task_more_options = false
         }
     }
@@ -445,12 +445,12 @@ function my_controller($scope,db_service) {
 
 
 
-    $scope.nav_more_vert_icon = function () {
+    $scope.nav_more_vert_icon = () => {
         return $scope.dialog_flags.show_list_more_options ? "close" : "more_horiz";
     }
 
 
-    $scope.app_size = function () {
+    $scope.app_size = () => {
         let totalSize = 0;
         for (let i = 0; i < localStorage.length; i++) {
             let key = localStorage.key(i);
@@ -461,22 +461,22 @@ function my_controller($scope,db_service) {
     }
 
 
-    $scope.save_theme = function () {
-        // console.log($scope.is_dark)
+    $scope.save_theme = () => {
         if ($scope.is_dark) {
             document.querySelector("#theme-color").setAttribute("content", "#272727")
         } else {
             document.querySelector("#theme-color").setAttribute("content", "#ffffff")
         }
-        $scope.saveData()
+        $scope.save_data()
     }
 
-    $scope.init_theme = function () {
+    $scope.init_theme = () => {
         const old_theme = localStorage.theme || "light";
-        $scope.is_dark = old_theme=="dark";
+        $scope.is_dark = old_theme == "dark";
+        $scope.save_theme()
     }
 
-    $scope.init_notification = function () {
+    $scope.init_notification = () => {
         //temp notification
         if (Notification.permission === 'denied' || Notification.permission === 'default') {
             console.log("notification false")
@@ -492,7 +492,7 @@ function my_controller($scope,db_service) {
     }
 
 
-    $scope.askNotificationPermission = function () {
+    $scope.askNotificationPermission = () => {
         function handlePermission(permission) {
             if (!Reflect.has(Notification, 'permission')) {
                 Notification.permission = permission;
@@ -517,7 +517,7 @@ function my_controller($scope,db_service) {
         }
     };
 
-    $scope.checkNotificationPromise = function () {
+    $scope.checkNotificationPromise = () => {
         try {
             Notification.requestPermission().then();
         } catch (e) {
@@ -534,15 +534,16 @@ function my_controller($scope,db_service) {
     };
 
 
-    $scope.load_last_notebook = function () {
+    $scope.load_last_notebook = () => {
         //check number of notebooks
-        const old_list_index = localStorage.selectedListIndex || 0;
-
+        let old_list_index = localStorage.selectedListIndex || 0;
+        if (old_list_index < 0)
+            old_list_index = 0
         $scope.open_notebook(old_list_index)
     };
 
 
-    $scope.handle_click_on_notebook_title = function () {
+    $scope.handle_click_on_notebook_title = () => {
         if ($scope.selectedListIndex >= 0) {
             //close all dialogs
             $scope.close_all_dialogs()
@@ -553,11 +554,10 @@ function my_controller($scope,db_service) {
         }
     }
 
-    $scope.handle_click_on_more_vert = function () {
-        if($scope.is_any_dialog_open())
-        {
+    $scope.handle_click_on_more_vert = () => {
+        if ($scope.is_any_dialog_open()) {
             $scope.close_all_dialogs();
-        }else{
+        } else {
             $scope.handle_click_on_notebook_title()
         }
     }
@@ -602,7 +602,7 @@ function my_controller($scope,db_service) {
 
 
 
-    $scope.init_notify = function () {
+    $scope.init_notify = () => {
         // Check if the browser supports notifications
         if (!('Notification' in window)) {
             alert('This browser does not support notifications.');
@@ -621,7 +621,7 @@ function my_controller($scope,db_service) {
         }
     }
 
-    $scope.handle_select_notebooks = function () {
+    $scope.handle_select_notebooks = () => {
         $scope.select_notebooks = !$scope.select_notebooks
         $scope.select_notebooks_menu_text = $scope.select_notebooks ? "Cancel Selection" : "Select Notebooks";
         $scope.dialog_flags.show_list_more_options = false
@@ -640,13 +640,13 @@ function my_controller($scope,db_service) {
         return $scope.selected_notebooks.indexOf(notebook_index) != -1
     }
 
-    $scope.delete_selected_notebooks = function () {
+    $scope.delete_selected_notebooks = () => {
         // Sort the selected notebooks in descending order to avoid index issues while removing
         $scope.selected_notebooks.sort((a, b) => b - a);
 
-        // Remove each selected notebook from listArray
+        // Remove each selected notebook from notebooks
         $scope.selected_notebooks.forEach((index) => {
-            $scope.listArray.splice(index, 1);
+            $scope.notebooks.splice(index, 1);
         });
 
         // Optionally, clear the selected notebooks array
@@ -655,13 +655,14 @@ function my_controller($scope,db_service) {
         $scope.select_notebooks_menu_text = "Select Notebooks"
         $scope.dialog_flags.show_task_more_options = false
         $scope.dialog_flags.show_list_more_options = false
-        $scope.saveData();
+        $scope.save_data();
     };
 
-    $scope.get_total = function () {
-        let total_tasks = 0, total_notebooks = $scope.listArray.length
-        $scope.listArray.forEach((item, index) => {
-            total_tasks += item.taskArray.length;
+    $scope.get_total = () => {
+        let total_tasks = 0, total_notebooks = $scope.notebooks.length
+        // console.log($scope.notebooks)
+        $scope.notebooks.forEach((item, index) => {
+            total_tasks += item["taskArray"].length;
         })
         return {
             "total_tasks": total_tasks,
@@ -669,8 +670,8 @@ function my_controller($scope,db_service) {
         }
     }
 
-    $scope.get_notebooks_list = function () {
-        let notebooks = $scope.listArray.map(function (listItem) {
+    $scope.get_notebooks_list = () => {
+        let notebooks = $scope.notebooks.map(function (listItem) {
             return listItem.title;
         });
         notebooks = notebooks.filter((list) => list.toLocaleLowerCase() != "system")
@@ -680,12 +681,12 @@ function my_controller($scope,db_service) {
 
     $scope.update_selected_list_index = function (key) {
         $scope.selectedListIndex = key
-        $scope.selectedListName = $scope.listArray[$scope.selectedListIndex].title;
+        $scope.selectedListName = $scope.notebooks[$scope.selectedListIndex].title;
         console.log("Selected notebook", $scope.selectedListIndex)
     }
 
 
-    $scope.open_create_system_var_popup = function () {
+    $scope.open_create_system_var_popup = () => {
         $scope.dialog_flags.show_create_system_var_popup = true
         $scope.new_var_name = ""
         $scope.new_var_value = ""
@@ -722,17 +723,17 @@ function my_controller($scope,db_service) {
         }
     }
 
-    $scope.delete_system_var = function () {
+    $scope.delete_system_var = () => {
         if (confirm("Are you sure?")) {
             delete system_vars[$scope.new_var_name]
             $scope.close_all_dialogs()
             $scope.dialog_flags.show_delete_system_var_button = false
-            $scope.saveData()
-            showToast("System var removed")
+            $scope.save_data()
+            $scope.show_toast("System var removed")
         }
     }
 
-    $scope.create_system_var = function () {
+    $scope.create_system_var = () => {
         let error = ""
         if ($scope.new_var_name.length > 0 && $scope.new_var_value.length > 0) {
             //clean vars
@@ -745,23 +746,23 @@ function my_controller($scope,db_service) {
 
         if (error == "") {
             system_vars[$scope.new_var_name] = $scope.new_var_value
-            $scope.saveData();
+            $scope.save_data();
             $scope.new_var_name = ""
             $scope.new_var_value = ""
             $scope.close_all_dialogs()
-            showToast("Variable created");
+            $scope.show_toast("Variable created");
         } else {
-            showToast(error)
+            $scope.show_toast(error)
         }
 
     }
 
-    $scope.open_create_new_note_popup = function () {
+    $scope.open_create_new_note_popup = () => {
         if ($scope.selectedListName.toLowerCase() == "trash") {
-            return showToast("Cannot create note inside Trash");
+            return $scope.show_toast("Cannot create note inside Trash");
         }
         if ($scope.selectedListName.toLowerCase() == "system") {
-            return showToast("Cannot create note inside System");
+            return $scope.show_toast("Cannot create note inside System");
         }
 
         $scope.close_all_dialogs()
@@ -776,33 +777,33 @@ function my_controller($scope,db_service) {
     }
 
 
-    $scope.handle_rename_notebook = function () {
+    $scope.handle_rename_notebook = () => {
         $scope.close_all_dialogs()
         $scope.dialog_flags.show_rename_notebook_popup = true
     }
 
-    $scope.rename_notebook = function () {
+    $scope.rename_notebook = () => {
         try {
             if (!$scope.new_list_name) {
-                return showToast("Error: Input required");
+                return $scope.show_toast("Error: Input required");
             }
 
             if ($scope.new_list_name.toLocaleLowerCase() === "system") {
-                return showToast("Error: System title is reserved");
+                return $scope.show_toast("Error: System title is reserved");
             }
 
             if ($scope.selectedListIndex < 0) {
-                return showToast("Error: No list is selected");
+                return $scope.show_toast("Error: No list is selected");
             }
 
             // Update title and icon
-            let selectedList = $scope.listArray[$scope.selectedListIndex];
+            let selectedList = $scope.notebooks[$scope.selectedListIndex];
             selectedList.title = $scope.new_list_name;
             selectedList.icon = $scope.new_notebook_icon;
-            $scope.listArray[$scope.selectedListIndex] = selectedList
+            $scope.notebooks[$scope.selectedListIndex] = selectedList
 
             // Save data and close popup
-            $scope.saveData();
+            $scope.save_data();
             $scope.close_all_dialogs()
 
 
@@ -812,16 +813,16 @@ function my_controller($scope,db_service) {
 
             // Clean up
             $scope.new_list_name = "";
-            showToast("Notebook renamed");
+            $scope.show_toast("Notebook renamed");
         } catch (err) {
-            showToast("Exception occurred while renaming notebook");
+            $scope.show_toast("Exception occurred while renaming notebook");
             console.error("Error while renaming notebook", err);
         }
     }
 
-    $scope.notebook_has_completed_tasks = function () {
-        if ($scope.selectedListIndex >= 0 && $scope.taskArray.length > 0) {
-            const hasCompletedTasks = $scope.taskArray.some(task => task.isTaskCompleted === true);
+    $scope.notebook_has_completed_tasks = () => {
+        if ($scope.selectedListIndex >= 0 && $scope.notes.length > 0) {
+            const hasCompletedTasks = $scope.notes.some(task => task.isTaskCompleted === true);
             return hasCompletedTasks;
         }
         return false;
@@ -829,83 +830,83 @@ function my_controller($scope,db_service) {
 
 
 
-    $scope.init_notebook_more_options = function () {
+    $scope.init_notebook_more_options = () => {
         $scope.notebook_more_options = [
             {
                 text: $scope.app_size(),
                 icon: "cloud",
                 class: "task-more-options-item",
                 show: true,
-                action: function () { }
+                action: () => { }
             }, {
                 text: "Database",
                 icon: "database",
                 class: "task-more-options-item",
                 show: true,
-                action: function () { $scope.dialog_flags.show_db_popup = true; $scope.dialog_flags.show_list_more_options = false; }
-            },{
-                text: $scope.is_sortable?"Disable Sorting":"Enable Sorting",
+                action: () => { $scope.dialog_flags.show_db_popup = true; $scope.dialog_flags.show_list_more_options = false; }
+            }, {
+                text: $scope.is_sortable ? "Disable Sorting" : "Enable Sorting",
                 icon: "swap_vert",
                 class: "task-more-options-item",
                 show: true,
-                action: function () { 
+                action: () => {
                     $scope.is_sortable = !$scope.is_sortable;
                     $scope.close_all_dialogs();
-                 }
+                }
             }, {
                 text: "Paste Task",
                 icon: "content_paste",
                 class: "task-more-options-item",
                 show: $scope.copied_task != null,
-                action: function () { $scope.paste_task_inside_notebook() }
+                action: () => { $scope.paste_task_inside_notebook() }
             }, {
                 text: "Rename notebook",
                 icon: "format_color_text",
                 class: "task-more-options-item",
                 show: true,
-                action: function () { $scope.handle_rename_notebook() }
+                action: () => { $scope.handle_rename_notebook() }
             }, {
                 text: "Complete all tasks",
                 icon: "priority",
                 class: "task-more-options-item",
                 show: $scope.notebook_has_completed_tasks(),
-                action: function () { $scope.handle_remove_completed_tasks() }
+                action: () => { $scope.handle_remove_completed_tasks() }
             }, {
                 text: "Remove completed tasks",
                 icon: "delete_sweep",
                 class: "task-more-options-item",
                 show: $scope.notebook_has_completed_tasks(),
-                action: function () { $scope.handle_remove_completed_tasks() }
+                action: () => { $scope.handle_remove_completed_tasks() }
             }, {
                 text: "Delete all tasks",
                 icon: "warning",
                 class: "task-more-options-item text-red-500",
                 show: true,
-                action: function () { $scope.purgeList() }
+                action: () => { $scope.purgeList() }
             },
             {
                 text: "Delete notebook",
                 icon: "delete",
                 class: "task-more-options-item text-red-500",
                 show: true,
-                action: function () { $scope.handleDeleteList() }
+                action: () => { $scope.handleDeleteList() }
             },
             {
                 text: "Close",
                 icon: "cancel",
                 class: "task-more-options-item text-red-500",
                 show: true,
-                action: function () { $scope.close_all_dialogs() }
+                action: () => { $scope.close_all_dialogs() }
             }
         ]
     }
 
     $scope.copy_to_clipboard = function (textToCopy) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(textToCopy).then(function () {
-                showToast("Copied to clipboard!");
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                $scope.show_toast("Copied to clipboard!");
             }).catch(function (err) {
-                showToast("Failed to copy text to clipboard.");
+                $scope.show_toast("Failed to copy text to clipboard.");
                 console.error("Could not copy text: ", err);
             });
         }
@@ -913,18 +914,18 @@ function my_controller($scope,db_service) {
 
 
 
-    $scope.import_data = function () {
+    $scope.import_data = () => {
         try {
             if ($scope.db_operation != "import") {
-                showToast("Operation not selected")
+                $scope.show_toast("Operation not selected")
                 return ""
             }
             if ($scope.db_textarea.length == 0) {
-                showToast("Missing JSON code")
+                $scope.show_toast("Missing JSON code")
                 return ""
             }
             if (!is_valid_json($scope.db_textarea)) {
-                showToast("Invalid JSON code")
+                $scope.show_toast("Invalid JSON code")
                 return ""
             }
 
@@ -933,21 +934,21 @@ function my_controller($scope,db_service) {
                 Object.keys(data).forEach(key => {
                     localStorage.setItem(key, data[key]);
                 });
-                showToast("Import Successful");
+                $scope.show_toast("Import Successful");
                 $scope.db_textarea = "";
                 $scope.db_operation = "";
                 $scope.close_all_dialogs()
                 //read data from storage
-                $scope.listArray = $scope.readData()
+                $scope.notebooks = $scope.read_data()
             }
         }
         catch (err) {
-            showToast("Failed to import data.");
+            $scope.show_toast("Failed to import data.");
             console.error("Failed to import data.", err);
         }
     }
 
-    $scope.handle_db_operation_change = function () {
+    $scope.handle_db_operation_change = () => {
 
         if ($scope.db_operation == "export") {
             let data = JSON.stringify(localStorage)
@@ -957,12 +958,12 @@ function my_controller($scope,db_service) {
         }
     }
 
-    $scope.is_any_dialog_open = function () {
+    $scope.is_any_dialog_open = () => {
         // console.log($scope.dialog_flags)
         return Object.values($scope.dialog_flags).some(flag => flag);
     };
 
-    $scope.close_all_dialogs = function () {
+    $scope.close_all_dialogs = () => {
         //hide delete button on system var
         $scope.show_delete_system_var_button = false
         $scope.open_sidebar(false)
@@ -973,19 +974,19 @@ function my_controller($scope,db_service) {
         }
     };
 
-    $scope.init_system_notebooks = function () {
-        //listArray must contain System and Trash notebooks
-        let has_sys = $scope.listArray.some(list => list.title.toLowerCase() === "system")
-        let has_trash = $scope.listArray.some(list => list.title.toLowerCase() === "trash")
+    $scope.init_system_notebooks = () => {
+        //notebooks must contain System and Trash notebooks
+        let has_sys = $scope.notebooks.some(list => list.title.toLowerCase() === "system")
+        let has_trash = $scope.notebooks.some(list => list.title.toLowerCase() === "trash")
         if (!has_sys) {
-            $scope.listArray.push(new List("System", "keyboard_command_key"))
+            $scope.notebooks.push(new List("System", "keyboard_command_key"))
         }
         if (!has_trash) {
-            $scope.listArray.push(new List("Trash", "recycling"))
+            $scope.notebooks.push(new List("Trash", "recycling"))
         }
     }
 
-    $scope.empty_notebook_msg = function(){
+    $scope.empty_notebook_msg = () => {
         //show text when notebook is empty
         try {
             return get_empty_proverbs()
@@ -994,20 +995,18 @@ function my_controller($scope,db_service) {
         }
     }
 
-    $scope.init_sortable_list = function(selector,array_name){
+    $scope.init_sortable_list = function (selector, array_name) {
         //lets sort
-        $scope.sortable = Sortable.create(document.querySelector(selector),{
-            animation:250,
+        $scope.sortable = Sortable.create(document.querySelector(selector), {
+            animation: 250,
             dragClass: "sortable-drag",
-            handle:".handle",
-            onEnd:function(evt)
-            {
-                if(evt.newIndex!=evt.oldIndex)
-                {
+            handle: ".handle",
+            onEnd: function (evt) {
+                if (evt.newIndex != evt.oldIndex) {
                     //swap items
                     const [movedItem] = $scope[array_name].splice(evt.oldIndex, 1);
                     $scope[array_name].splice(evt.newIndex, 0, movedItem);
-                    $scope.saveData()
+                    $scope.save_data()
                 }
             }
         })
@@ -1024,16 +1023,63 @@ function my_controller($scope,db_service) {
     //             if(evt.newIndex!=evt.oldIndex)
     //             {
     //                 //swap items
-    //                 const [movedItem] = $scope.taskArray.splice(evt.oldIndex, 1);
-    //                 $scope.taskArray.splice(evt.newIndex, 0, movedItem);
-    //                 $scope.saveData()
+    //                 const [movedItem] = $scope.notes.splice(evt.oldIndex, 1);
+    //                 $scope.notes.splice(evt.newIndex, 0, movedItem);
+    //                 $scope.save_data()
     //             }
     //         }
     //     })
     // }
 
     //define all funcions above init
-    $scope.init = function () {
+
+    $scope.show_toast = (msg) => {
+        if (msg) {
+            msg = msg.trim();
+            $scope.is_toast_visible = true
+            $scope.toast_msg = msg
+            if (toast_timer_id)
+                clearTimeout(toast_timer_id)
+            toast_timer_id = $timeout(() => {
+                $scope.is_toast_visible = false
+                console.log("clear toast")
+            }, 2000)
+        }
+    }
+
+
+    $scope.lock_data = (key) =>
+    {
+        //let lock only content of note
+        key = "0000"
+        $scope.notes.forEach((data,index)=>{
+            data.title = encrypt_data(data.title,key)
+        })
+        console.log($scope.notes)
+    }
+
+    $scope.unlock_data = (key) => {
+        key = "0000"
+        $scope.notes.forEach((data,index)=>{
+            data.title = decrypt_data(data.title,key)
+        })
+        console.log($scope.notes)
+    }
+
+    $scope.toggle_data_lock = ()=>{
+        if(!$scope.is_data_locked)
+        {
+            $scope.lock_data()
+        }else{
+            $scope.unlock_data()
+        }
+        $scope.is_data_locked = !$scope.is_data_locked;
+    }
+
+
+
+
+    $scope.init = () => {
         //dialog flags
         $scope.dialog_flags = {
             is_sidebar_menu_open: false,
@@ -1052,6 +1098,9 @@ function my_controller($scope,db_service) {
         $scope.show_select_notebooks_dropdown = true
         $scope.show_update_task_button = false
         $scope.is_sortable = false
+        $scope.is_toast_visible = false
+        $scope.is_data_locked = false
+        $scope.toast_msg = ""
 
         $scope.show_searchbar = false
         $scope.textarea_default_height = 64
@@ -1071,16 +1120,16 @@ function my_controller($scope,db_service) {
         $scope.select_notebooks_menu_text = "Select Notebooks"
 
         //read saved data
-        $scope.listArray = [];
-        $scope.taskArray = [];
-        $scope.readData();
-        console.log("Read Data", $scope.listArray)
+        $scope.notebooks = [];
+        $scope.notes = [];
+        $scope.read_data();
+        console.log("Read Data", $scope.notebooks, $scope.notes)
         $scope.init_system_notebooks()
 
         if (patchApplied) {
             //if new property added to previous version
             //save these properties now
-            $scope.saveData();
+            $scope.save_data();
         }
 
         //default values notebooks
@@ -1096,7 +1145,7 @@ function my_controller($scope,db_service) {
         $scope.new_list_name = ""
         $scope.selected_task = -1;
         $scope.new_task_placeholder = "Create Task"
-        $scope.allTasks = $scope.getTasksOnly();
+        // $scope.allTasks = $scope.getTasksOnly();
         $scope.max_notebook_title_len = 20
 
         $scope.edit_options = [
@@ -1105,7 +1154,7 @@ function my_controller($scope,db_service) {
             { icon: "sliders", insert_text: "#50%" },
             { icon: "check_box", insert_text: "$ Task" }
         ]
-        
+
 
         //default theme
         $scope.init_theme()
@@ -1116,8 +1165,7 @@ function my_controller($scope,db_service) {
 
         //try to load first or last notebook
         $scope.load_last_notebook()
-        $scope.init_sortable_list(".tasks","taskArray");
-        // $scope.init_sortable_list(".notebooks","listArray");
+        $scope.init_sortable_list(".tasks", "notes");
+        // $scope.init_sortable_list(".notebooks","notebooks");
     };
-    $scope.init();
 }
