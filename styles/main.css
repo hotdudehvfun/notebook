@@ -366,11 +366,11 @@ input.add-new-list-title {
 
 .add-task-edit-options {
     display: flex;
-    flex-direction: row;
     gap: 1rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    overflow-y: auto;
     padding: 0rem 0.5rem;
+    max-height: 150px;
 }
 
 
@@ -467,12 +467,10 @@ input.add-new-list-title {
 .chip {
     background: var(--chip-bg);
     border-radius: 1rem;
-    padding: 0.1rem 0.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    width: fit-content;
-    
+    padding: 0.25rem .75rem;
 }
 .chip > .material-symbols-outlined
 {
@@ -719,14 +717,13 @@ h1,h2,h3,h4,h5 {
 
 .var_icon {
     background: #ffdf2b;
-    border: 2px solid #bca000;
+    border: 1px solid #bca000;
     border-radius: 100px;
     padding:0.125rem 1rem;
     font-style:italic;
     font-family:math;
     color: black;
-    font-size: 130%;
-    font-weight: bold;
+    font-size: 110%;
 }
 
 .var_chip{

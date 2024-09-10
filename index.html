@@ -90,7 +90,7 @@
                 <div ng-repeat="task in filtered_search = (allTasks | filter: search | limitTo: 10)">
                     <div class="task" ng-click="">
                         <span class="material-symbols-outlined" ng-bind="task.taskIcon"></span>
-                        <span ng-bind-html="handle_task_html(task.title) | sanitize"></span>
+                        <span ng-bind-html="parse_markdown_to_html(task.title) | sanitize"></span>
                     </div>
                 </div> -->
             </div>
@@ -110,11 +110,11 @@
                             <span 
                                 class="material-symbols-outlined" 
                                 ng-bind="note.taskIcon"
-                                ng-click="toggle_task_complete(note);"></span>
+                                ng-click="toggle_note_completed_state(note)"></span>
                             <div  
                                 class="task-content-div"
-                                ng-bind-html="handle_task_html(note.title) | sanitize"
-                                ng-click="handle_tap_on_task(note);"></div>
+                                ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
+                                ng-click="handle_tap_on_note(note);"></div>
                             <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                         </div>
                     </li>
@@ -124,17 +124,18 @@
                 <div 
                 ng-show="notebook_has_completed_tasks()"
                 class="group_by_text"
-                >{{completed_tasks_len()}} completed tasks</div>
-                <div ng-repeat="task in taskArray | filter:{isTaskCompleted:true}">
-                    <div class="task" ng-class="{completed: task.isTaskCompleted}">
+                >{{count_completed_notes()}} completed notes</div>
+                <div ng-repeat="note in notes | filter:{isTaskCompleted:true}">
+                    <div class="task" ng-class="{completed: note.isTaskCompleted}">
                         <span 
-                        class="material-symbols-outlined" 
-                        ng-bind="task.taskIcon"
-                        ng-click="toggle_task_complete(task);"></span>
+                            class="material-symbols-outlined" 
+                            ng-bind="note.taskIcon"
+                            ng-click="toggle_note_completed_state(note)"></span>
                         <div  
-                        class="task-content-div"
-                        ng-bind-html="handle_task_html(task.title) | sanitize"
-                        ng-click="handle_tap_on_task(task);"></div>
+                            class="task-content-div"
+                            ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
+                            ng-click="handle_tap_on_note(note);">
+                        </div>
                     </div>
                 </div>
 
@@ -332,10 +333,11 @@
             </div>
             <div class="add-task-edit-options visible_pop_animation" ng-show="show_add_task_edit_options">
                 <div
-                ng-repeat="item in edit_options"
-                ng-click="insertTextAtCursor('newTaskContent',item.insert_text)"
-                class="chip">
-                <span class="material-symbols-outlined">{{item.icon}}</span>
+                    ng-repeat="item in edit_options"
+                    ng-click="insertTextAtCursor('newTaskContent',item.insert_text)"
+                    class="chip">
+                    <span class="material-symbols-outlined">{{item.icon}}</span>
+                    <span class="">{{item.title}}</span>
                 </div
                 >
                 <div class="chip">
@@ -392,8 +394,7 @@
                 ></input>
                 <input
                     name="system_var_value"
-                    inputmode="numeric"
-                    pattern="[0-9]*"
+                    type="text"
                     class="add-new-list-title rounded-2 mt-2"
                     ng-model="new_var_value" 
                     placeholder="Variable value">

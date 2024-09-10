@@ -1,9 +1,8 @@
 function my_controller($scope, $timeout, db_service) {
 
-    // output  of task content
-    $scope.handle_task_html = function (text) {
-        text = parseWikiTextToHTML(text)
-        return text
+    // custom code of note is parsed to output html content
+    $scope.parse_markdown_to_html = function (text) {
+        return parseWikiTextToHTML(text)
     }
 
     //for searching made easy
@@ -128,7 +127,7 @@ function my_controller($scope, $timeout, db_service) {
         return `${completed}/${notes.length}`
     }
 
-    $scope.completed_tasks_len = () => {
+    $scope.count_completed_notes = () => {
         var completed = $scope.notes.filter(function (note) { return note.isTaskCompleted == true }).length;
         return completed
     }
@@ -262,8 +261,7 @@ function my_controller($scope, $timeout, db_service) {
         }
     }
 
-    $scope.handle_tap_on_task = function (task) {
-        console.log(task)
+    $scope.handle_tap_on_note = function (note) {
         if ($scope.mergeInProgress) {
             // $scope.selected_task = task;
             // if ($scope.selected_task == $scope.oldselected_task) {
@@ -284,9 +282,9 @@ function my_controller($scope, $timeout, db_service) {
             // }
 
         } else {
-            $scope.selected_task = task;
+            $scope.selected_task = note;
             $scope.dialog_flags.show_task_more_options = true
-            $scope.task_completed_state = task.isTaskCompleted
+            $scope.task_completed_state = note.isTaskCompleted
         }
     }
 
@@ -410,11 +408,10 @@ function my_controller($scope, $timeout, db_service) {
         }
     }
 
-    $scope.toggle_task_complete = function (task) {
-        if (task != undefined) {
-            console.log(task)
-            task.isTaskCompleted = !task.isTaskCompleted;
-            task.taskIcon = task.isTaskCompleted ? $scope.icons.checked : $scope.icons.unchecked;
+    $scope.toggle_note_completed_state = function (note) {
+        if (note) {
+            note.isTaskCompleted = !note.isTaskCompleted;
+            note.taskIcon = note.isTaskCompleted ? $scope.icons.checked : $scope.icons.unchecked;
             $scope.save_data();
             $scope.close_all_dialogs()
         }
@@ -536,10 +533,10 @@ function my_controller($scope, $timeout, db_service) {
 
     $scope.load_last_notebook = () => {
         //check number of notebooks
-        let old_list_index = localStorage.selectedListIndex || 0;
-        if (old_list_index < 0)
-            old_list_index = 0
-        $scope.open_notebook(old_list_index)
+        // let old_list_index = localStorage.selectedListIndex || 0;
+        // if (old_list_index < 0)
+        //     old_list_index = 0
+        $scope.open_notebook(0)
     };
 
 
@@ -735,6 +732,7 @@ function my_controller($scope, $timeout, db_service) {
 
     $scope.create_system_var = () => {
         let error = ""
+        console.log($scope.new_var_value)
         if ($scope.new_var_name.length > 0 && $scope.new_var_value.length > 0) {
             //clean vars
             $scope.new_var_name = $scope.new_var_name.trim().toLocaleLowerCase()
@@ -822,7 +820,7 @@ function my_controller($scope, $timeout, db_service) {
 
     $scope.notebook_has_completed_tasks = () => {
         if ($scope.selectedListIndex >= 0 && $scope.notes.length > 0) {
-            const hasCompletedTasks = $scope.notes.some(task => task.isTaskCompleted === true);
+            const hasCompletedTasks = $scope.notes.some(note => note.isTaskCompleted === true);
             return hasCompletedTasks;
         }
         return false;
@@ -1145,14 +1143,17 @@ function my_controller($scope, $timeout, db_service) {
         $scope.new_list_name = ""
         $scope.selected_task = -1;
         $scope.new_task_placeholder = "Create Task"
+        $scope.new_var_name = ""
+        $scope.new_var_value = ""
+            
         // $scope.allTasks = $scope.getTasksOnly();
         $scope.max_notebook_title_len = 20
 
         $scope.edit_options = [
-            { icon: "title", insert_text: "#H1" },
-            { icon: "list", insert_text: "* Item" },
-            { icon: "sliders", insert_text: "#50%" },
-            { icon: "check_box", insert_text: "$ Task" }
+            { icon: "title", insert_text: "#H1" , title:"Heading"},
+            { icon: "list", insert_text: "* Item" , title:"List"},
+            { icon: "sliders", insert_text: "#50%" , title:"Progress bar"},
+            { icon: "check_box", insert_text: "$ " , title:"Split notes"}
         ]
 
 

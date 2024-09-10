@@ -17,7 +17,6 @@ function db_service() {
             }
             data.selectedListIndex = localStorage.selectedListIndex || -1;
             data.theme = localStorage.theme || "dark";
-            
             return data;
         } catch (err) {
             showToast("Error while reading data")
