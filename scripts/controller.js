@@ -886,7 +886,14 @@ function my_controller($scope, $timeout, db_service) {
                 class: "task-more-options-item",
                 show: $scope.notebook_has_completed_tasks(),
                 action: () => { $scope.handle_remove_completed_tasks() }
-            }, {
+            },
+            {
+                text: "Refresh",
+                icon: "autorenew",
+                class: "task-more-options-item",
+                show: true,
+                action: () => { location.reload(); }
+            },{
                 text: "Delete all tasks",
                 icon: "warning",
                 class: "task-more-options-item text-red-500",
@@ -1181,6 +1188,6 @@ function my_controller($scope, $timeout, db_service) {
         $scope.init_notebook_more_options()
 
         $scope.init_sortable_list(".tasks", "notes");
-        // $scope.init_sortable_list(".notebooks","notebooks");
+        $scope.init_sortable_list(".notebooks","notebooks");
     };
 }

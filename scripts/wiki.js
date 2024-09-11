@@ -75,24 +75,43 @@ function check_for_system_vars(value)
     }
 }
 
+function format_currency(result) {
+    let formattedResult = new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR'
+    }).format(result);
+    return formattedResult;
+}
+
 
 function handle_calculations(text) {
-    // Create a regex to match {2+2} and evaluate expression
-    const regex = /{([^}]+)}/g;
+    // Create a regex to match {expression} and optionally detect the ":c" flag
+    const regex = /{([^}:]+)(:c)?}/g;
+
     // Use replace with a callback to dynamically insert the match
-    return text.replace(regex, (match, expression) => {
+    return text.replace(regex, (match, expression, isCurrency) => {
         try {
-            //replace var name with value here.
-            expression = check_for_system_vars(expression)
-            let result = eval(expression)
-            result = result % 1 === 0 ? result : result.toFixed(1)
-            return result 
+            // Replace variable names with values if needed
+            expression = check_for_system_vars(expression);
+            
+            // Evaluate the expression
+            let result = eval(expression);
+            
+            // If result is a floating-point number, round it to 1 decimal place
+            result = result % 1 === 0 ? result : result.toFixed(1);
+
+            // If ":c" flag is present, format the result as currency
+            if (isCurrency) {
+                result = format_currency(result)
+            }
+            return result;
         } catch (e) {
             console.error(`Error evaluating expression: ${expression}`, e);
             return match; // Return the original match if there's an error
         }
     });
 }
+
 
 function handle_list(line)
 {
@@ -139,6 +158,7 @@ function insert_tag(line)
     return html
 }
 
+//_class1_class2_class3
 function handle_insert_class(input) {
     // Regular expression to match lines starting with _class1_class2_... followed by text
     return input.replace(/^_([\w_]+)\s(.+)/gm, function(match, classes, text) {
