@@ -233,7 +233,8 @@ function my_controller($scope, $timeout, db_service) {
     $scope.read_data = () => {
         let data = db_service.read()
         $scope.notebooks = data.notebooks;
-        $scope.selectedListIndex = data.selectedListIndex;
+        $scope.selectedListIndex = parseInt(data.selectedListIndex);
+        console.log($scope.selectedListIndex)
         system_vars = data.system_vars;
         $scope.theme = data.theme
     }
@@ -318,7 +319,7 @@ function my_controller($scope, $timeout, db_service) {
             //add task to trash notebook
             $scope.notebooks.forEach((item, index) => {
                 if (item.title.toLowerCase() == "trash") {
-                    item.notes.push($scope.selected_task)
+                    item.taskArray.push($scope.selected_task)
                 }
             })
             $scope.save_data();
@@ -329,13 +330,18 @@ function my_controller($scope, $timeout, db_service) {
 
 
     $scope.copy_task = () => {
-        //move to another list
-        if ($scope.selected_task != undefined) {
-            $scope.copied_task = $scope.selected_task
-            $scope.show_toast("Task Copied");
-            $scope.close_all_dialogs()
-        } else
+        try {
+            if ($scope.selected_task) {
+                //create new task to make a copy
+                $scope.copied_task = new Task($scope.selected_task.title)
+                $scope.show_toast("Task Copied");
+                $scope.close_all_dialogs()
+            }
+        } catch (err) {
             $scope.show_toast("Failed to copy");
+            console.log("Error while copying note", err)
+        }
+
     }
 
 
@@ -357,13 +363,17 @@ function my_controller($scope, $timeout, db_service) {
         }
     }
     $scope.paste_task_inside_notebook = () => {
-        if ($scope.selectedListIndex >= 0) {
-            $scope.notes.push($scope.copied_task);
-            $scope.show_toast("Task Pasted")
-            $scope.copied_task = null;
-            $scope.close_all_dialogs()
-
-            $scope.save_data();
+        try {
+            if ($scope.selectedListIndex >= 0) {
+                $scope.notes.push($scope.copied_task);
+                $scope.show_toast("Task Pasted")
+                $scope.copied_task = null;
+                $scope.close_all_dialogs()
+                $scope.save_data();
+            }
+        } catch (err) {
+            $scope.show_toast("Error while pasting inside notebook")
+            console.log("Error while pasting inside notebook", err)
         }
     }
 
@@ -536,7 +546,8 @@ function my_controller($scope, $timeout, db_service) {
         // let old_list_index = localStorage.selectedListIndex || 0;
         // if (old_list_index < 0)
         //     old_list_index = 0
-        $scope.open_notebook(0)
+        // console.log($scope.selectedListIndex)
+        // $scope.open_notebook($scope.selectedListIndex)
     };
 
 
@@ -974,12 +985,18 @@ function my_controller($scope, $timeout, db_service) {
 
     $scope.init_system_notebooks = () => {
         //notebooks must contain System and Trash notebooks
-        let has_sys = $scope.notebooks.some(list => list.title.toLowerCase() === "system")
-        let has_trash = $scope.notebooks.some(list => list.title.toLowerCase() === "trash")
-        if (!has_sys) {
+        //System 2nd last, Trash at last
+        let sys_i = -1, trash_i = -1
+        $scope.notebooks.forEach((notebook,index)=>{
+            if(notebook.title.toLowerCase()=="system")
+                sys_i=index;
+            if(notebook.title.toLowerCase()=="trash")
+                trash_i=index;
+        })
+        if (sys_i==-1) {
             $scope.notebooks.push(new List("System", "keyboard_command_key"))
         }
-        if (!has_trash) {
+        if (trash_i==-1) {
             $scope.notebooks.push(new List("Trash", "recycling"))
         }
     }
@@ -1046,29 +1063,27 @@ function my_controller($scope, $timeout, db_service) {
     }
 
 
-    $scope.lock_data = (key) =>
-    {
+    $scope.lock_data = (key) => {
         //let lock only content of note
         key = "0000"
-        $scope.notes.forEach((data,index)=>{
-            data.title = encrypt_data(data.title,key)
+        $scope.notes.forEach((data, index) => {
+            data.title = encrypt_data(data.title, key)
         })
         console.log($scope.notes)
     }
 
     $scope.unlock_data = (key) => {
         key = "0000"
-        $scope.notes.forEach((data,index)=>{
-            data.title = decrypt_data(data.title,key)
+        $scope.notes.forEach((data, index) => {
+            data.title = decrypt_data(data.title, key)
         })
         console.log($scope.notes)
     }
 
-    $scope.toggle_data_lock = ()=>{
-        if(!$scope.is_data_locked)
-        {
+    $scope.toggle_data_lock = () => {
+        if (!$scope.is_data_locked) {
             $scope.lock_data()
-        }else{
+        } else {
             $scope.unlock_data()
         }
         $scope.is_data_locked = !$scope.is_data_locked;
@@ -1119,8 +1134,8 @@ function my_controller($scope, $timeout, db_service) {
 
         //read saved data
         $scope.notebooks = [];
-        $scope.notes = [];
         $scope.read_data();
+        $scope.notes = $scope.notebooks[0].taskArray
         console.log("Read Data", $scope.notebooks, $scope.notes)
         $scope.init_system_notebooks()
 
@@ -1129,14 +1144,17 @@ function my_controller($scope, $timeout, db_service) {
             //save these properties now
             $scope.save_data();
         }
+        //default theme
+        $scope.init_theme()
 
         //default values notebooks
-        $scope.selectedListIndex = -1
-        $scope.selectedListName = null
+        $scope.selectedListIndex = 0
+        $scope.selectedListName = $scope.notebooks[0].title
         $scope.defaultPageTitle = "Notebooks";
         $scope.default_app_icon = "eco"
         $scope.pageTitle = $scope.defaultPageTitle;
         $scope.copied_task = null
+        $scope.open_notebook(0)
 
         // input values
         $scope.newTaskContent = ""
@@ -1145,27 +1163,23 @@ function my_controller($scope, $timeout, db_service) {
         $scope.new_task_placeholder = "Create Task"
         $scope.new_var_name = ""
         $scope.new_var_value = ""
-            
+
         // $scope.allTasks = $scope.getTasksOnly();
         $scope.max_notebook_title_len = 20
 
         $scope.edit_options = [
-            { icon: "title", insert_text: "#H1" , title:"Heading"},
-            { icon: "list", insert_text: "* Item" , title:"List"},
-            { icon: "sliders", insert_text: "#50%" , title:"Progress bar"},
-            { icon: "check_box", insert_text: "$ " , title:"Split notes"}
+            { icon: "title", insert_text: "#H1", title: "Heading" },
+            { icon: "list", insert_text: "* Item", title: "List" },
+            { icon: "sliders", insert_text: "#50%", title: "Progress bar" },
+            { icon: "check_box", insert_text: "$ ", title: "Split notes" }
         ]
 
 
-        //default theme
-        $scope.init_theme()
-
+        
         //notebook more options
         $scope.notebook_more_options = []
         $scope.init_notebook_more_options()
 
-        //try to load first or last notebook
-        $scope.load_last_notebook()
         $scope.init_sortable_list(".tasks", "notes");
         // $scope.init_sortable_list(".notebooks","notebooks");
     };

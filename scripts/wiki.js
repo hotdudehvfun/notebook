@@ -140,9 +140,14 @@ function insert_tag(line)
 }
 
 function handle_insert_class(input) {
-    // Regular expression to match lines starting with _className followed by text
-    return input.replace(/^_(\w+)\s(.+)/gm, '<span class="$1">$2</span>');
+    // Regular expression to match lines starting with _class1_class2_... followed by text
+    return input.replace(/^_([\w_]+)\s(.+)/gm, function(match, classes, text) {
+        // Replace underscores with spaces to separate class names
+        const classList = classes.replace(/_/g, ' ');
+        return `<span class="${classList}">${text}</span>`;
+    });
 }
+
 
 function parseWikiTextToHTML(wikiText) {
     var lines = wikiText.trim().split('\n');

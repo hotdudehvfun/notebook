@@ -1,0 +1,30 @@
+/* formatting classes for notes */
+.red {
+    color: #ff4967;
+}
+
+.green {
+    color: #49dc6b;
+}
+
+.blue {
+    color: var(--accent);
+}
+
+.center
+{
+    text-align:center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.italic
+{
+    font-style:italic;
+}
