@@ -1,4 +1,4 @@
-function my_controller($scope, $timeout, db_service) {
+function main_controller($scope, $timeout, db_service) {
 
     // custom code of note is parsed to output html content
     $scope.parse_markdown_to_html = function (text) {
@@ -383,9 +383,11 @@ function my_controller($scope, $timeout, db_service) {
         if (confirm("Are you sure?") == true) {
             if ($scope.selectedListIndex >= 0) {
                 $scope.notes = []
-                $scope.notebooks[$scope.selectedListIndex].taskArray = [];
-                $scope.save_data();
+                $scope.notebooks[$scope.selectedListIndex].taskArray = []
+                $scope.empty_notebook_msg = $scope.proverbs[getRandomInt(0,$scope.length-1)]
+                console.log($scope.empty_notebook_msg)
                 $scope.close_all_dialogs()
+                $scope.save_data();
                 $scope.show_toast("All tasks removed")
             }
         }
@@ -712,6 +714,7 @@ function my_controller($scope, $timeout, db_service) {
 
 
 
+    //options shown when notebook is clicked
     $scope.init_notebook_more_options = () => {
         $scope.notebook_more_options = [
             {
@@ -779,6 +782,48 @@ function my_controller($scope, $timeout, db_service) {
                 class: "task-more-options-item text-red-500",
                 show: true,
                 action: () => { $scope.delete_notebook() }
+            },
+            {
+                text: "Close",
+                icon: "cancel",
+                class: "task-more-options-item text-red-500",
+                show: true,
+                action: () => { $scope.close_all_dialogs() }
+            }
+        ]
+    }
+
+
+
+    //options shown when note is clicked
+    $scope.init_note_more_options = () => {
+        $scope.note_more_options = [
+            {
+                text: "Update note",
+                icon: "edit",
+                class: "task-more-options-item",
+                show: true,
+                action: () => { $scope.open_update_task_popup() }
+            }, {
+                text: "Copy note",
+                icon: "file_copy",
+                class: "task-more-options-item",
+                show: true,
+                action: () => {$scope.copy_task()}
+            }, {
+                text:"Paste inside note",
+                icon: "content_paste",
+                class: "task-more-options-item",
+                show: $scope.copied_task!=null,
+                action: () => {
+                    $scope.paste_task()
+                }
+            }, {
+                text: "Delete note",
+                icon: "delete",
+                class: "task-more-options-item",
+                show: true,
+                action: () => { $scope.delete_task() }
             },
             {
                 text: "Close",
@@ -885,17 +930,8 @@ function my_controller($scope, $timeout, db_service) {
         $scope.system_and_trash_notebooks.push($scope.notebooks[trash_i])
     }
 
-    $scope.empty_notebook_msg = () => {
-        //show text when notebook is empty
-        try {
-            return get_empty_proverbs()
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
+    // sort notes and notebooks: Optimized
     $scope.init_sortable_list = function (selector, array_name) {
-        //lets sort
         $scope.sortable = Sortable.create(document.querySelector(selector), {
             animation: 250,
             dragClass: "sortable-drag",
@@ -911,27 +947,7 @@ function my_controller($scope, $timeout, db_service) {
         })
     }
 
-
-    // $scope.init_sortable_tasks = function(){
-    //     //lets sort
-    //     let sortable = Sortable.create(document.querySelector(".tasks"),{
-    //         animation:250,
-    //         onEnd:function(evt)
-    //         {
-    //             // console.log("new index = ",evt.newIndex,"old index",evt.oldIndex)
-    //             if(evt.newIndex!=evt.oldIndex)
-    //             {
-    //                 //swap items
-    //                 const [movedItem] = $scope.notes.splice(evt.oldIndex, 1);
-    //                 $scope.notes.splice(evt.newIndex, 0, movedItem);
-    //                 $scope.save_data()
-    //             }
-    //         }
-    //     })
-    // }
-
-    //define all funcions above init
-
+    // show toast: Optimized
     $scope.show_toast = (msg) => {
         if (msg) {
             msg = msg.trim();
@@ -974,10 +990,12 @@ function my_controller($scope, $timeout, db_service) {
     }
 
 
+    // filter to show all but system and trash notebook: Optimized
     $scope.exclude_sys_trash = function(notebook) {
         return notebook.title.toLowerCase() !== 'system' && notebook.title.toLowerCase() !== 'trash';
     }
     
+    // filter to show only system and trash notebook: Optimized
     $scope.only_sys_trash = function(notebook) {
         return notebook.title.toLowerCase() == 'system' || notebook.title.toLowerCase() == 'trash';
     }
@@ -1065,11 +1083,25 @@ function my_controller($scope, $timeout, db_service) {
             { icon: "check_box", insert_text: "$ ", title: "Split notes" }
         ]
 
-
+        $scope.proverbs = [
+            "An empty vessel can hold anything.",
+            "An empty mind makes progress.",
+            "Emptiness is the beginning of all things.",
+            "An empty mind is a clear mind.",
+            "The empty pot makes the loudest noise.",
+            "The less you carry, the farther you go.",
+            "Only when the cup is empty can it be filled.",
+            "In the void, possibilities are endless.",
+            "Silence is a source of great strength.",
+            "Emptiness is the path to wisdom.",
+            "A full cup cannot accept more water.",
+            "True understanding comes from nothingness.",
+        ]
+        $scope.empty_notebook_msg = $scope.proverbs[0]
         
         //notebook more options
-        $scope.notebook_more_options = []
         $scope.init_notebook_more_options()
+        $scope.init_note_more_options()
 
         $scope.init_sortable_list(".tasks", "notes");
         $scope.init_sortable_list(".notebooks","notebooks");

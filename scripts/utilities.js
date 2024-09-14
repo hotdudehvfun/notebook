@@ -344,7 +344,13 @@ let proverbs = [
   "True understanding comes from nothingness.",
 ]
 function get_empty_proverbs(){
-  return proverbs[0]
+  try {
+    const proverb  = proverbs.getRandomItem()
+    console.log(proverb)
+    return proverb;
+  } catch (err) {
+   console.log(err) 
+  }
 }
 
 

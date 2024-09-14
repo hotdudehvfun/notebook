@@ -30,286 +30,27 @@
     <link rel="stylesheet" href="styles/dark.css">
     <link rel="stylesheet" href="styles/custom_styles.css">
 </head>
-
 <body 
-    ng-app="myapp" 
-    ng-controller='myctrl'
+    ng-app="notebook_app"
+    ng-controller='main_controller'
     ng-init="init()"
     data-theme="{{is_dark?'dark':'light';}}">
     <div class="main-container">
         <!-- top bar -->
-        <div class="topbar shadow">
-            <!-- app title -->
-             <div class="flex">
-                <span ng-click="open_sidebar(true)" class="material-symbols-outlined">menu</span>
-             </div>
-            <div class="flex-row flex gap-1">
-                <span class="material-symbols-outlined">
-                    {{default_app_icon}}
-                </span>
-                <div 
-                    class="app-title"
-                    ng-click="handle_click_on_notebook_title()" 
-                    ng-bind="pageTitle">
-                </div>
-            </div>
-            <div class="flex-row flex align-center justify-end gap-1">
-                <span 
-                ng-click="show_searchbar=!show_searchbar"
-                class="material-symbols-outlined">search
-                </span>
-                <!-- <span 
-                ng-click="toggle_data_lock()"
-                class="material-symbols-outlined">{{is_data_locked?'lock':'lock_open';}}
-                </span> -->
-                
-                <span
-                    style="z-index: 999;" 
-                    class="material-symbols-outlined"
-                    ng-click="handle_click_on_more_vert()" 
-                    ng-bind="nav_more_vert_icon()"></span>
-            </div>
-                
-        </div>
-
+        <top-bar class="topbar shadow"></top-bar>
         <!-- content bar -->
-        <div class="content">
-            <!-- search bar -->
-            <div 
-            class="flex-row align-center bg-list-bg rounded-full px-2 m-2 border"
-            ng-show="show_searchbar"
-            >
-                <span class="material-symbols-outlined">search</span>
-            <input
-            name="search" 
-            id="search-box" 
-            ng-model="search" 
-            ng-attr-placeholder="Search" value=""></input>
-            </div>
-            
-            <!-- search results start-->
-            <div id="search-results" ng-show="search.length>0">
-                <div style="text-align: center;font-size: 125%;">Search Results: Under Construction</div>
-                <!-- <div style="text-align: center;font-size: 85%;">Results found: {{filtered_search.length}}</div>
-                <div ng-repeat="task in filtered_search = (allTasks | filter: search | limitTo: 10)">
-                    <div class="task" ng-click="">
-                        <span class="material-symbols-outlined" ng-bind="task.taskIcon"></span>
-                        <span ng-bind-html="parse_markdown_to_html(task.title) | sanitize"></span>
-                    </div>
-                </div> -->
-            </div>
-
-            <!-- tasks -->
-            <div ng-hide="notebooks.length==0">
-                <!-- normal tasks -->
-                <div class="notebook_age">{{notebook_age()}}</div>
-                <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{notes.length}} tasks</div>
-                <ul class="tasks reset_ul">
-                    <li 
-                    data-index="{{$index}}" 
-                    ng-repeat="note in notes | filter:{isTaskCompleted:false}">
-                        <div
-                        class="task" 
-                        ng-class="{completed: note.isTaskCompleted}">
-                            <span 
-                                class="material-symbols-outlined" 
-                                ng-bind="note.taskIcon"
-                                ng-click="toggle_note_completed_state(note)"></span>
-                            <div  
-                                class="task-content-div"
-                                ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
-                                ng-click="handle_tap_on_note(note);"></div>
-                            <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
-                        </div>
-                    </li>
-                </ul>
-             
-                <!-- show completed tasks if any -->
-                <div 
-                ng-show="notebook_has_completed_tasks()"
-                class="group_by_text"
-                >{{count_completed_notes()}} completed notes</div>
-                <div ng-repeat="note in notes | filter:{isTaskCompleted:true}">
-                    <div class="task" ng-class="{completed: note.isTaskCompleted}">
-                        <span 
-                            class="material-symbols-outlined" 
-                            ng-bind="note.taskIcon"
-                            ng-click="toggle_note_completed_state(note)"></span>
-                        <div  
-                            class="task-content-div"
-                            ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
-                            ng-click="handle_tap_on_note(note);">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- empty state empty list-->
-                <div
-                class="empty-notebook"
-                ng-show="taskArray.length==0 && pageTitle.toLocaleLowerCase()!='system'">
-                    <div>
-                        <img src="img/empty.svg" class="empty_svg"/>
-                    </div>
-                    <h2 class="text-center">{{empty_notebook_msg()}}</h2>
-                </div>
-                <!-- show system vars here -->
-                 <div
-                 ng-show="pageTitle.toLocaleLowerCase()=='system'"
-                 >
-                 <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
-                    <div class="system_var_item">
-                        <span class="var_icon">x</span>
-                        <div class="var_chip">{{key}} = {{evaluate_exp(value)}}</div>
-                        <!-- <div class="var_chip">{{evaluate_exp(value)}}</div> -->
-                    </div>
-                 </div>
-                 </div>
-            </div>
-            
-            <!-- empty state no list-->
-            <div style="text-align: center;" ng-show="notebooks.length==0">
-                <h1>(>_<)</h1>
-                <span>Nothing to see here.</span>
-            </div>
-        </div>
-
+        <main-content class="content"></main-content>
         <!-- bottom bar -->
-         <div class="bottom-bar">
-            <div class="bottom-bar-button button" ng-click="dialog_flags.show_create_notebook_popup=true">
-                <span class="material-symbols-outlined">contract_edit</span>
-                <span class="">NoteBook</span>
-             </div>
-             <div class="bottom-bar-button button" ng-click="open_create_new_note_popup()">
-                <span class="material-symbols-outlined">draw</span>
-                <span class="">Note</span>
-             </div> 
-             <div class="bottom-bar-button button" ng-click="open_create_system_var_popup()">
-                <span class="material-symbols-outlined">keyboard_command_key</span>
-                <span class="">System Var</span>
-             </div> 
-             <div class="bottom-bar-button button" ng-click="open_sidebar(true)">
-                <span class="material-symbols-outlined">apps</span>
-                <span class="">View Notebooks</span>
-             </div> 
-        </div>
-         
+         <bottom-bar class="bottom-bar"></bottom-bar>
     </div>
-
-
-
-
     <!-- sidebar menu -->
-     <div 
-     class="sidebar-menu-container" 
-     ng-style="sidebar_left"
-     >
-        <div>
-            <span 
-            ng-click="open_sidebar(false)" 
-            class="material-symbols-outlined text-accent">close</span>
-        </div>
-        <div class="flex-row">
-            <h2>Hello Arun</h2>
-        </div>
-        <div class="flex-row align-center">
-            <h3>Dark theme</h3>
-            <div style="transform: scale(.8);">
-                <input
-                ng-model="is_dark"
-                ng-change="save_theme()" type="checkbox" id="type2" class="toggle_checkbox"/>
-                <label for="type2" class="toggle_label">
-                    <span class="toggle_span"></span>
-                </label>
-            </div>
-        </div>
-        
-        
-        <h3 class="mt-2">Your notebooks</h3>
-        <div class="notebook_age">
-            {{get_total().total_tasks}} tasks {{get_total().total_notebooks}} notebooks
-        </div>
-        <!-- show all notebooks -->
-        <div class="scroll-y flex-col m-1/2 rounded-3/4 border">
-            <ul class="notebooks reset_ul">
-                <li ng-repeat="(key, value) in notebooks | filter:exclude_sys_trash">
-                    <div class="list-panel-item" >
-                        <div 
-                        class="list-panel-item-title"
-                        ng-class="{system:value.title.toLowerCase()=='system',trash_color:value.title.toLowerCase()=='trash'}"
-                        >
-                            <!-- show when selected -->
-                            <span
-                            ng-show="select_notebooks"
-                            class="material-symbols-outlined notebook_icon"
-                            ng-bind="notebook_selected_state(key)"></span>
-                            <span
-                            class="material-symbols-outlined notebook_icon"
-                            ng-bind="get_notebook_icon(value)"
-                            ng-hide="select_notebooks"
-                            ></span>
-                            <article ng-click="open_notebook(value)" class="selected" ng-bind="value.title"></article>
-                            <span 
-                            class="list-sub-text"
-                            ng-bind="get_notebook_info(value)"></span>
-                            <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
-                        </div>
-                    </div>
-                </li>
-                <!-- show system and trash notebook -->
-                <li ng-repeat="(key, value) in notebooks | filter:only_sys_trash">
-                    <div class="list-panel-item" >
-                        <div class="list-panel-item-title">
-                            <!-- show when selected -->
-                            <span
-                                class="material-symbols-outlined notebook_icon"
-                                ng-bind="get_notebook_icon(value)">
-                            </span>
-                            <article ng-click="open_notebook(value)" class="selected" ng-bind="value.title">
-                            </article>
-                            <span 
-                                class="list-sub-text" 
-                                ng-bind="get_notebook_info(value)">
-                            </span>
-                            <span 
-                                ng-show="is_sortable" 
-                                class="material-symbols-outlined handle p-1/2">
-                                drag_handle
-                            </span>
-                        </div>
-                    </div>
-                </li>
-
-            </ul>
-        </div>
-     </div>
-
-
-
-
-
+     <side-bar class="sidebar-menu-container" ng-style="sidebar_left"></side-bar>
 
      <!-- rename notebook dialog pop up-->
-     <div ng-show="dialog_flags.show_rename_notebook_popup" class="popup visible_pop_animation">
-        <div class="new_notebook_popup_child">
-         <div class="flex-col align-center gap-1">
-            <div class="flex-row align-center gap-1 m-2">
-             <span class="material-symbols-outlined new-list-icon" ng-bind="new_notebook_icon"></span>
-             <div>Rename: <span>{{selectedListName}}</span></div>
-            </div>
-             <input
-                name="notebook_name" 
-                class="add-new-list-title rounded-2"
-                ng-model="new_list_name" 
-                ng-attr-placeholder="Enter new name"
-                ng-keypress="handle_input_on_rename_notebook($event)"
-                autofocus></input>
-                    <div class="flex-row space-between m-2">
-                        <span ng-click="dialog_flags.show_rename_notebook_popup=false;new_list_name=''; " class="button text-red-500">Cancel</span>
-                        <span ng-click="rename_notebook()" class="button">Rename</span>                
-                    </div>
-         </div>
-            </div>
-     </div>
+     <popup-rename-notebook
+        ng-show="dialog_flags.show_rename_notebook_popup" 
+        class="popup visible_pop_animation">
+     </popup-rename-notebook>
 
     <!-- new notebook dialog pop up-->
      <div ng-show="dialog_flags.show_create_notebook_popup" class="popup visible_pop_animation">
@@ -500,57 +241,35 @@
     </div>
 
     <!-- blocking screen  -->
-    <div 
-    class="block_screen"
-    ng-if="is_any_dialog_open()"
-    ng-click="close_all_dialogs()"></div>
+    <div class="block_screen" ng-if="is_any_dialog_open()" ng-click="close_all_dialogs()"></div>
 
     <!-- toast message -->
-    <div
-    ng-class="{show:is_toast_visible}"
-    class="toast transition text-center capitalize">{{toast_msg}}</div>
-
-
+    <div ng-class="{show:is_toast_visible}" class="toast transition text-center capitalize">{{toast_msg}}
+    </div>
 
     <!-- taskMoreOptiosContainer -->
     <div class="taskMoreOptionsConatiner" ng-show="dialog_flags.show_task_more_options">
         <div class="task-more-options-holder visible_pop_animation">
-            <div class="task-more-options-item" ng-click="open_update_task_popup();">
-                <span class="material-symbols-outlined ">edit</span>
-                <div>Update note</div>
-            </div>
-            <!-- <div class="task-more-options-item" ng-click="move_task(-1)">
-                <span class="material-symbols-outlined">expand_less</span>
-                <div>Move Up</div>
-            </div>
-            <div class="task-more-options-item" ng-click="move_task(1)">
-                <span class="material-symbols-outlined">expand_more</span>
-                <div>Move Down</div>
-            </div>
-             -->
-            <div class="task-more-options-item" ng-click="copy_task();">
-                <span class="material-symbols-outlined">file_copy</span>
-                <div>Copy</div>
-            </div>
-            <div ng-show="copied_task!=null" class="task-more-options-item" ng-click="paste_task();">
-                <span class="material-symbols-outlined">content_paste</span>
-                <div>Paste</div>
-            </div>
-            <div class="task-more-options-item text-red-500" ng-click="delete_task()" class="danger">
-                <span class="material-symbols-outlined">delete</span>
-                <div>Delete note</div>
-            </div>
-            <div class="task-more-options-item text-accent" ng-click="close_all_dialogs()">
-                <span class="material-symbols-outlined">cancel</span>
-                <div>Close</div>
+            <div 
+            ng-repeat="option in note_more_options"
+            class="task-more-options-item"
+            ng-show="option.show"
+            ng-click="option.action()">
+                <span class="material-symbols-outlined ">{{option.icon}}</span>
+                <div>{{option.text}}</div>
             </div>
         </div>
     </div>
 
 
     <!-- <script type="text/javascript" src="app.js"></script> -->
+    <script type="text/javascript" src="scripts/directive_main_content.js"></script>
+    <script type="text/javascript" src="scripts/directive_rename_notebook_popup.js"></script>
+    <script type="text/javascript" src="scripts/directive_top_bar.js"></script>
+    <script type="text/javascript" src="scripts/directive_bottom_bar.js"></script>
+    <script type="text/javascript" src="scripts/directive_sidebar.js"></script>
     <script type="text/javascript" src="scripts/db_service.js"></script>
-    <script type="text/javascript" src="scripts/controller.js"></script>
+    <script type="text/javascript" src="scripts/main_controller.js"></script>
     <script type="text/javascript" src="scripts/angular_module.js"></script>
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>

@@ -165,7 +165,6 @@ input:focus {
 .task .task-content-div {
     margin-left: 10px;
     width: 100%;
-    color: var(--font-color);
 }
 
 .task.completed > .task-content-div {
@@ -875,3 +874,16 @@ input#type2:checked + label.toggle_label > span.toggle_span {
 
 .handle {
 }
+
+
+.yellow_note
+{
+    background: #ffed58;
+    color:#222;
+}
+
+.chat_bubble
+{
+    border-radius: 0rem 4rem 4rem 4rem;
+}
+

@@ -1,23 +1,20 @@
-let app = angular.module("myapp", []);
+let app = angular.module("notebook_app", []);
 //use this to create new properties on previous version
 let patchApplied = false;
 let toast_timer_id = null;
 
-console.log("App version:3.3.0")
 console.log(`
-Features
+> App version: 3.9.0
 > Added progress bar code:#20%
 > Copy and Paste Tasks
 > Delete Tasks
 > Delete and Rename Notebooks
 > {2+2} = 4 Expression evaluation
-> System vars
+> Define custom variables
 > Trash notebook
-> #Today #now #weekday now works
+> #Today #now #weekday
 `)
 var system_vars = {}
-
-
 
 app.filter("sanitize", ['$sce', function ($sce) {
   return function (htmlCode) {
@@ -26,4 +23,12 @@ app.filter("sanitize", ['$sce', function ($sce) {
 }]);
 
 app.service('db_service',db_service)
-app.controller('myctrl',my_controller);
+app.controller('main_controller',main_controller);
+
+// directives
+app.directive("mainContent",directive_main_content);
+app.directive("sideBar",directive_sidebar);
+app.directive("bottomBar",directive_bottom_bar);
+app.directive("topBar",directive_top_bar);
+app.directive("popupRenameNotebook",directive_rename_notebook_popup);
+
