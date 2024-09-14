@@ -1,29 +1,23 @@
-[data-theme='dark']
-{
-    --accent:#bb86fc;
+[data-theme='dark'] {
+    --accent: #bb86fc;
     --font-color: white;
     --bg-color: #272727;
-    --list-bg:#2a2a2a61;
-    --border-color:#2997ff;
-    --list-border:#494949;
+    --list-bg: #2a2a2a61;
+    --border-color: #2997ff;
+    --list-border: #494949;
     --chip-bg: #191919;
-    --progress-a:#2997ff;
-    --progress-b:#121212;
-    --more-options-border-color:#363636;
-    --create-notebook-bg:#44409b54;
-    --system-var-bg:rgb(30 30 30);
-    --system-var-border:#333;
-    --age_text_color:gray;
+    --progress-a: #2997ff;
+    --progress-b: #121212;
+    --more-options-border-color: #363636;
+    --create-notebook-bg: #44409b54;
+    --system-var-bg: rgb(30 30 30);
+    --system-var-border: #333;
+    --age_text_color: gray;
     --theme_button_border: #444444;
     /* white in light theme and black in dark mode  */
     --white_black: #222;
     --bottom-bar-bg: rgb(45 45 45);
-
-    
-
-.system
-{
-    color: #FFEB3B;
+    .system {
+        color: #FFEB3B;
+    }
 }
-}
-

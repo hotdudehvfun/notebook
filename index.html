@@ -43,7 +43,10 @@
              <div class="flex">
                 <span ng-click="open_sidebar(true)" class="material-symbols-outlined">menu</span>
              </div>
-            <div class="flex-col flex">
+            <div class="flex-row flex gap-1">
+                <span class="material-symbols-outlined">
+                    {{default_app_icon}}
+                </span>
                 <div 
                     class="app-title"
                     ng-click="handle_click_on_notebook_title()" 
@@ -228,7 +231,7 @@
         <!-- show all notebooks -->
         <div class="scroll-y flex-col m-1/2 rounded-3/4 border">
             <ul class="notebooks reset_ul">
-                <li ng-repeat="(key,value) in notebooks">
+                <li ng-repeat="(key, value) in notebooks | filter:exclude_sys_trash">
                     <div class="list-panel-item" >
                         <div 
                         class="list-panel-item-title"
@@ -241,18 +244,41 @@
                             ng-bind="notebook_selected_state(key)"></span>
                             <span
                             class="material-symbols-outlined notebook_icon"
-                            ng-bind="get_list_icon(value)"
+                            ng-bind="get_notebook_icon(value)"
                             ng-hide="select_notebooks"
                             ></span>
-                            <article ng-click="open_notebook(key)" class="selected" ng-bind="value.title"></article>
+                            <article ng-click="open_notebook(value)" class="selected" ng-bind="value.title"></article>
                             <span 
-                            class="list-sub-text" 
-                            ng-bind="get_list_info(key,value.taskArray)"></span>
+                            class="list-sub-text"
+                            ng-bind="get_notebook_info(value)"></span>
                             <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                         </div>
                     </div>
                 </li>
-                
+                <!-- show system and trash notebook -->
+                <li ng-repeat="(key, value) in notebooks | filter:only_sys_trash">
+                    <div class="list-panel-item" >
+                        <div class="list-panel-item-title">
+                            <!-- show when selected -->
+                            <span
+                                class="material-symbols-outlined notebook_icon"
+                                ng-bind="get_notebook_icon(value)">
+                            </span>
+                            <article ng-click="open_notebook(value)" class="selected" ng-bind="value.title">
+                            </article>
+                            <span 
+                                class="list-sub-text" 
+                                ng-bind="get_notebook_info(value)">
+                            </span>
+                            <span 
+                                ng-show="is_sortable" 
+                                class="material-symbols-outlined handle p-1/2">
+                                drag_handle
+                            </span>
+                        </div>
+                    </div>
+                </li>
+
             </ul>
         </div>
      </div>
@@ -314,7 +340,7 @@
      <!-- new task dialog pop up -->
       <div class="popup visible_pop_animation" ng-show="dialog_flags.show_create_task_popup">
         <div class="new_task_popup_child">
-            <div class="flex-row align-center gap-1 m-2">
+            <div class="flex-row align-center gap-1 m-2 space-between">
                 <span class="material-symbols-outlined list-icon">draw</span>
                 <!-- show which notebook is open -->
                  <!-- show_select_notebooks_dropdown set to false when any notebook is opened -->
@@ -332,6 +358,12 @@
                 ng-options="key as (value) for (key, value) in get_notebooks_list()">
                 <option value="" selected disabled>Tap to select</option>
                 </select>
+                <!-- insert options buttons-->
+                <span 
+                    class="material-symbols-outlined add_task_icon" 
+                    ng-click="show_add_task_edit_options=!show_add_task_edit_options">
+                    {{ show_add_task_edit_options ? 'close' : 'menu' }}
+                </span>
             </div>
             <div class="add-task-edit-options visible_pop_animation" ng-show="show_add_task_edit_options">
                 <div
@@ -352,28 +384,30 @@
                 
             </div>
 
-            <div class="flex-col align-center">
-                <div class="flex-row align-center w-full gap-1 mt-2">
-                    <span 
-                    class="material-symbols-outlined add_task_icon" ng-click="show_add_task_edit_options=!show_add_task_edit_options"
-                    >
-                    {{ show_add_task_edit_options ? 'close' : 'add' }}
-                    </span>
-                    <textarea
-                        ng-model="newTaskContent"
-                        ng-keypress="handle_keypress_newtask($event)"
-                        id="newTaskContent"
-                        class="new-task-content rounded-2" 
-                        placeholder={{new_task_placeholder}}
-                        autofocus
-                        ></textarea>
-                </div>
-                <div class="flex-row mt-2">
-                    <span ng-click="dialog_flags.show_create_task_popup=false;show_update_task_button=false; " class="button text-red-500">Cancel</span>
-                    <span ng-click="create_task()" class="button" ng-hide="show_update_task_button">Create note</span>
-                    <span ng-click="updateTask()" class="button" ng-show="show_update_task_button">Update Note</span>
-                </div>
-                
+            <!-- <div class="flex-col align-center"></div> -->
+            <div class="flex-row align-center w-full gap-1 mt-2 flex-grow">
+                <textarea
+                    ng-model="newTaskContent"
+                    ng-keypress="handle_keypress_newtask($event)"
+                    id="newTaskContent"
+                    class="new-task-content rounded-2" 
+                    placeholder={{new_task_placeholder}}
+                    autofocus
+                    ></textarea>
+            </div>
+            <div class="flex-row mt-2 space-between">
+                <span 
+                    ng-click="dialog_flags.show_create_task_popup=false;show_update_task_button=false;" class="button text-red-500">
+                    Cancel
+                </span>
+                <span 
+                    ng-click="create_note()" class="button" ng-hide="show_update_task_button">
+                    Create note
+                </span>
+                <span 
+                    ng-click="updateTask()" class="button" ng-show="show_update_task_button">
+                    Update Note
+                </span>
             </div>
         </div>
       </div>
