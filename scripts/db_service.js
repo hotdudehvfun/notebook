@@ -12,6 +12,7 @@ function db_service() {
             if (is_valid_json(localStorage.system_vars)) {
                 data.system_vars = JSON.parse(localStorage.system_vars)
             }
+            
             if (is_valid_json(localStorage.appData)) {
                 data.notebooks = JSON.parse(localStorage.appData)
             }

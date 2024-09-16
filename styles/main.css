@@ -22,6 +22,7 @@ html {
     --white_black: white;
     --bottom-bar-bg: white;
     --green: #4cd964;
+    --task-complete-color:#222;
 }
 
 body {
@@ -169,6 +170,7 @@ input:focus {
 
 .task.completed > .task-content-div {
     text-decoration: line-through;
+    font-weight: bold;
 }
 
 .task-content-div span {
@@ -178,7 +180,7 @@ input:focus {
 
 .completed {
     box-shadow: none;
-    color: #4cd964;
+    color: var(--task-complete-color);
 }
 
 .completed > i {
@@ -229,13 +231,13 @@ div#list-more-options-container {
 .list-more-optionas-holder {
     display: flex;
     flex-direction: column;
-    /* background: var(--list-bg); */
     border-radius: 1rem;
     width: 80%;
-    padding: 0.5rem;
+    height: 60vh;
     -webkit-backdrop-filter: blur(var(--more-options-blur));
     backdrop-filter: blur(var(--more-options-blur));
     border: 1px solid var(--more-options-border-color);
+    overflow: auto;
 }
 
 .block_screen {
@@ -385,7 +387,10 @@ input.add-new-list-title {
 .m-1\/2 {
     margin: 0.5rem;
 }
-
+.m-1
+{
+    margin:0.5rem;
+}
 .m-2 {
     margin: 1rem;
 }
@@ -680,10 +685,16 @@ h1, h2, h3, h4, h5 {
     color: inherit;
     margin: 0.25rem;
     gap: 0.25rem;
+    transition: 0.5s all;
 }
 
 .bottom-bar-button .material-symbols-outlined {
     font-size: 1.2rem;
+}
+
+.bottom-bar-button.button.active {
+    background: var(--accent);
+    font-weight: bold;
 }
 
 .new-list-icon {

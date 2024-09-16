@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="styles/dark.css">
     <link rel="stylesheet" href="styles/custom_styles.css">
 </head>
-<body 
+<body
     ng-app="notebook_app"
     ng-controller='main_controller'
     ng-init="init()"
@@ -52,36 +52,15 @@
         class="popup visible_pop_animation">
      </popup-rename-notebook>
 
-    <!-- new notebook dialog pop up-->
-     <div ng-show="dialog_flags.show_create_notebook_popup" class="popup visible_pop_animation">
-        <div class="new_notebook_popup_child">
-         <div class="flex-col align-center gap-1">
-            <div class="flex-row align-center gap-1 m-2 w-full">
-             <span class="material-symbols-outlined new-list-icon" ng-bind="new_notebook_icon"></span>
-             <div class="text-120">Create new notebook</div>
-            </div>
-             <input
-                name="notebook_name"
-                ng-keyup="handle_input_on_notebook($event)"
-                class="add-new-list-title rounded-2"
-                ng-model="new_list_name" 
-                ng-attr-placeholder="New NoteBook name..."
-                placeholder="New NoteBook name..."
-                autofocus
-                 ></input>
-             <!-- using css animation class with ng-show  -->
-                    <div class="flex-row space-between m-2">
-                        <span ng-click="dialog_flags.show_create_notebook_popup=false" class="button text-red-500">Cancel</span>
-                        <span ng-click="create_notebook()" class="button">Create</span>                
-                    </div>
-         </div>
-            </div>
-     </div>
 
-     <!-- new task dialog pop up -->
+     <popup-create-notebook ng-show="dialog_flags.show_create_notebook_popup" class="popup visible_pop_animation"></popup-create-notebook>
+
+
+
+     <!-- new note dialog pop up -->
       <div class="popup visible_pop_animation" ng-show="dialog_flags.show_create_task_popup">
         <div class="new_task_popup_child">
-            <div class="flex-row align-center gap-1 m-2 space-between">
+            <div class="flex-row align-center gap-1 m-1 space-between">
                 <span class="material-symbols-outlined list-icon">draw</span>
                 <!-- show which notebook is open -->
                  <!-- show_select_notebooks_dropdown set to false when any notebook is opened -->
@@ -99,33 +78,26 @@
                 ng-options="key as (value) for (key, value) in get_notebooks_list()">
                 <option value="" selected disabled>Tap to select</option>
                 </select>
-                <!-- insert options buttons-->
-                <span 
-                    class="material-symbols-outlined add_task_icon" 
-                    ng-click="show_add_task_edit_options=!show_add_task_edit_options">
-                    {{ show_add_task_edit_options ? 'close' : 'menu' }}
-                </span>
+                <select
+                    ng-change="handle_note_edit_option_change()"
+                    ng-model="note_edit_selected_option"
+                    name="notes_edit_options"
+                    class="select text-accent capitalize text-120 text-right">
+                    <option value="">Edit</option>
+                    <optgroup label="Edit options">
+                        <option
+                            ng-repeat="option in edit_options"
+                            ng-value="option.insert_text"
+                            >{{option.title}}</option>
+                    </optgroup>
+                    <optgroup label="System Variables">
+                        <option 
+                        ng-repeat="(key,value) in get_system_vars()"
+                        ng-value="key"
+                        >{{key}} = {{value}}</option>
+                    </optgroup>
+                </select>
             </div>
-            <div class="add-task-edit-options visible_pop_animation" ng-show="show_add_task_edit_options">
-                <div
-                    ng-repeat="item in edit_options"
-                    ng-click="insertTextAtCursor('newTaskContent',item.insert_text)"
-                    class="chip">
-                    <span class="material-symbols-outlined">{{item.icon}}</span>
-                    <span class="">{{item.title}}</span>
-                </div
-                >
-                <div class="chip">
-                    <span class="material-symbols-outlined">keyboard_command_key</span>
-                    System Vars
-                </div>
-                <div class="align-center flex-row var_chip" ng-repeat="(key,value) in get_system_vars()">
-                    <span ng-click="insertTextAtCursor('newTaskContent',key)">{{key}}={{value}}</span>
-                </div>
-                
-            </div>
-
-            <!-- <div class="flex-col align-center"></div> -->
             <div class="flex-row align-center w-full gap-1 mt-2 flex-grow">
                 <textarea
                     ng-model="newTaskContent"
@@ -261,8 +233,14 @@
         </div>
     </div>
 
+    <!-- passwrord popup -->
+    <popup-password ng-show="dialog_flags.show_password_popup" class="popup visible_pop_animation"></popup-password>
+
+
 
     <!-- <script type="text/javascript" src="app.js"></script> -->
+    <script type="text/javascript" src="scripts/directive_password_popup.js"></script>
+    <script type="text/javascript" src="scripts/directive_new_notebook_popup.js"></script>
     <script type="text/javascript" src="scripts/directive_main_content.js"></script>
     <script type="text/javascript" src="scripts/directive_rename_notebook_popup.js"></script>
     <script type="text/javascript" src="scripts/directive_top_bar.js"></script>

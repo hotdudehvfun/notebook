@@ -4,16 +4,17 @@ function directive_main_content(){
         /*html*/ 
         template:`
             <!-- search bar -->
-            <div 
-            class="flex-row align-center bg-list-bg rounded-full px-2 m-2 border"
-            ng-show="show_searchbar"
-            >
+            <div
+                class="flex-row align-center bg-list-bg rounded-full px-2 m-2 border"
+                ng-show="show_searchbar">
                 <span class="material-symbols-outlined">search</span>
-            <input
-            name="search" 
-            id="search-box" 
-            ng-model="search" 
-            ng-attr-placeholder="Search" value=""></input>
+                <input
+                    name="search" 
+                    id="search-box" 
+                    ng-model="search" 
+                    ng-attr-placeholder="Search"
+                    value="">
+                </input>
             </div>
             
             <!-- search results start-->

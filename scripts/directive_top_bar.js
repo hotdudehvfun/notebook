@@ -13,8 +13,8 @@ function directive_top_bar() {
             </span>
             <div 
                 class="app-title"
-                ng-click="handle_click_on_notebook_title()" 
-                ng-bind="pageTitle">
+                ng-click="handle_click_on_notebook_title()">
+                {{pageTitle}}
             </div>
         </div>
         <div class="flex-row flex align-center justify-end gap-1">

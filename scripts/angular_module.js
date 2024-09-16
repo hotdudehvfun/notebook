@@ -31,4 +31,6 @@ app.directive("sideBar",directive_sidebar);
 app.directive("bottomBar",directive_bottom_bar);
 app.directive("topBar",directive_top_bar);
 app.directive("popupRenameNotebook",directive_rename_notebook_popup);
+app.directive("popupCreateNotebook",directive_new_notebook_popup);
+app.directive("popupPassword",directive_password_popup);
 

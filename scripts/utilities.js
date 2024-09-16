@@ -83,10 +83,7 @@ groupBy = (list, keyGetter)=> {
 
 
 
-Array.prototype.getRandomItem = function () {
-
-  return this[getRandomInt(0, this.length - 1)];
-}
+const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 getRandomInt = (min, max) => {
   return Math.round((Math.random() * (max - min)) + min);
