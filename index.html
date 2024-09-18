@@ -58,7 +58,7 @@
 
 
      <!-- new note dialog pop up -->
-      <div class="popup visible_pop_animation new_note" ng-show="dialog_flags.show_create_task_popup">
+      <div class="new_note visible_pop_animation " ng-show="dialog_flags.show_create_task_popup">
         <div class="flex-row align-center gap-1 m-1 space-between">
             <span class="material-symbols-outlined list-icon">draw</span>
             <!-- show which notebook is open -->
@@ -97,7 +97,7 @@
                 </optgroup>
             </select>
         </div>
-        <div class="flex-row align-center w-full gap-1 mt-2 flex-grow">
+        <div class="flex-row align-center w-full h-full gap-1 mt-2 flex-grow">
             <textarea
                 ng-model="newTaskContent"
                 ng-keypress="handle_keypress_newtask($event)"
