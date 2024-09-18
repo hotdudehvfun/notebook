@@ -278,7 +278,6 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.read_data = () => {
         try {
-            //enter password to read data
             let data = db_service.read()
             $scope.notebooks = data.notebooks;
             $scope.selectedListIndex = parseInt(data.selectedListIndex);
@@ -286,10 +285,12 @@ function main_controller($scope, $timeout, db_service) {
             system_vars = data.system_vars;
             $scope.theme = data.theme;
             $scope.is_dark = $scope.theme == "dark";
+            $scope.init_theme()
             
             //load last notebook
             $scope.selectedListName = $scope.notebooks[$scope.selectedListIndex].title
             $scope.open_notebook($scope.notebooks[$scope.selectedListIndex])
+            
             //set up system notebooks
             $scope.init_system_notebooks()
         } catch (err) {
@@ -484,13 +485,12 @@ function main_controller($scope, $timeout, db_service) {
     }
 
 
-    $scope.save_theme = () => {
+    $scope.init_theme = () => {
         if ($scope.is_dark) {
             document.querySelector("#theme-color").setAttribute("content", "#272727")
         } else {
             document.querySelector("#theme-color").setAttribute("content", "#ffffff")
         }
-        $scope.save_data()
     }
 
 

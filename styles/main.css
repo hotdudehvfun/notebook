@@ -584,7 +584,7 @@ h1, h2, h3, h4, h5 {
     border: 1px solid var(--more-options-border-color);
 }
 
-.new_task_popup_child {
+.new_note {
     font-size: 0.8rem;
     display: flex;
     flex-direction: column;
