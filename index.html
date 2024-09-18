@@ -58,71 +58,72 @@
 
 
      <!-- new note dialog pop up -->
-      <div class="new_note visible_pop_animation " ng-show="dialog_flags.show_create_task_popup">
-        <div class="flex-row align-center gap-1 m-1 space-between">
-            <span class="material-symbols-outlined list-icon">draw</span>
-            <!-- show which notebook is open -->
-             <!-- show_select_notebooks_dropdown set to false when any notebook is opened -->
-             <span ng-hide="show_select_notebooks_dropdown" class="text-120">
-                Create note in 
-                <span class="text-accent capitalize underline">{{selectedListName}}</span>
-             </span>
-            <!-- show dropdown list if notebook is not selected -->
-            <select
-            name="select_notebooks"
-            ng-show="show_select_notebooks_dropdown"
-            class="select text-accent capitalize bold text-2"
-            ng-model="create_task_select_list_index"
-            ng-change="update_selected_list_index(create_task_select_list_index)"
-            ng-options="key as (value) for (key, value) in get_notebooks_list()">
-            <option value="" selected disabled>Tap to select</option>
-            </select>
-            <select
-                ng-change="handle_note_edit_option_change()"
-                ng-model="note_edit_selected_option"
-                name="notes_edit_options"
-                class="select text-accent capitalize text-120 text-right">
-                <option value="">Edit</option>
-                <optgroup label="Edit options">
-                    <option
-                        ng-repeat="option in edit_options"
-                        ng-value="option.insert_text"
-                        >{{option.title}}</option>
-                </optgroup>
-                <optgroup label="System Variables">
-                    <option 
-                    ng-repeat="(key,value) in get_system_vars()"
-                    ng-value="key"
-                    >{{key}} = {{value}}</option>
-                </optgroup>
-            </select>
-        </div>
-        <div class="flex-row align-center w-full h-full gap-1 mt-2 flex-grow">
-            <textarea
-                ng-model="newTaskContent"
-                ng-keypress="handle_keypress_newtask($event)"
-                id="newTaskContent"
-                class="new-task-content rounded-2" 
-                placeholder={{new_task_placeholder}}
-                autofocus
-                ></textarea>
-        </div>
-        <div class="flex-row mt-2 space-between">
-            <span 
-                ng-click="dialog_flags.show_create_task_popup=false;show_update_task_button=false;" class="button text-red-500">
-                Cancel
-            </span>
-            <span 
-                ng-click="create_note()" class="button" ng-hide="show_update_task_button">
-                Create note
-            </span>
-            <span 
-                ng-click="updateTask()" class="button" ng-show="show_update_task_button">
-                Update Note
-            </span>
+     <div class="popup visible_pop_animation" ng-show="dialog_flags.show_create_task_popup">
+        <div class="new_task_popup_child">
+            <div class="flex-row align-center gap-1 m-1 space-between">
+                <span class="material-symbols-outlined list-icon">draw</span>
+                <!-- show which notebook is open -->
+                 <!-- show_select_notebooks_dropdown set to false when any notebook is opened -->
+                 <span ng-hide="show_select_notebooks_dropdown" class="text-120">
+                    Create note in 
+                    <span class="text-accent capitalize underline">{{selectedListName}}</span>
+                 </span>
+                <!-- show dropdown list if notebook is not selected -->
+                <select
+                name="select_notebooks"
+                ng-show="show_select_notebooks_dropdown"
+                class="select text-accent capitalize bold text-2"
+                ng-model="create_task_select_list_index"
+                ng-change="update_selected_list_index(create_task_select_list_index)"
+                ng-options="key as (value) for (key, value) in get_notebooks_list()">
+                <option value="" selected disabled>Tap to select</option>
+                </select>
+                <select
+                    ng-change="handle_note_edit_option_change()"
+                    ng-model="note_edit_selected_option"
+                    name="notes_edit_options"
+                    class="select text-accent capitalize text-120 text-right">
+                    <option value="">Edit</option>
+                    <optgroup label="Edit options">
+                        <option
+                            ng-repeat="option in edit_options"
+                            ng-value="option.insert_text"
+                            >{{option.title}}</option>
+                    </optgroup>
+                    <optgroup label="System Variables">
+                        <option 
+                        ng-repeat="(key,value) in get_system_vars()"
+                        ng-value="key"
+                        >{{key}} = {{value}}</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="flex-row align-center w-full gap-1 mt-2 flex-grow">
+                <textarea
+                    ng-model="newTaskContent"
+                    ng-keypress="handle_keypress_newtask($event)"
+                    id="newTaskContent"
+                    class="new-task-content rounded-2" 
+                    placeholder={{new_task_placeholder}}
+                    autofocus
+                    ></textarea>
+            </div>
+            <div class="flex-row mt-2 space-between">
+                <span 
+                    ng-click="dialog_flags.show_create_task_popup=false;show_update_task_button=false;" class="button text-red-500">
+                    Cancel
+                </span>
+                <span 
+                    ng-click="create_note()" class="button" ng-hide="show_update_task_button">
+                    Create note
+                </span>
+                <span 
+                    ng-click="updateTask()" class="button" ng-show="show_update_task_button">
+                    Update Note
+                </span>
+            </div>
         </div>
       </div>
-
 
       <!-- create system var pop up-->
      <div id="new_system_var_popup" ng-show="dialog_flags.show_create_system_var_popup" class="popup visible_pop_animation">

@@ -584,9 +584,9 @@ h1, h2, h3, h4, h5 {
     border: 1px solid var(--more-options-border-color);
 }
 
-.new_note {
-    display: grid;
-    grid-template-rows: 10% 80% 10%;
+.new_task_popup_child {
+    display:flex;
+    flex-direction:column;
     font-size: 0.8rem;
     /* background: var(--list-bg); */
     padding: 0.5rem;
@@ -601,6 +601,7 @@ h1, h2, h3, h4, h5 {
     width: 95vw;
     left: 2.5vw;
     border-radius: 12px;
+    overflow: scroll;
 }
 
 .popup {
@@ -613,6 +614,8 @@ h1, h2, h3, h4, h5 {
     width: 100%;
     border-radius: 5px;
 }
+
+
 
 .space-between {
     justify-content: space-between;
