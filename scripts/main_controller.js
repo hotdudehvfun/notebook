@@ -46,7 +46,7 @@ function main_controller($scope, $timeout, db_service) {
                 else
                     $scope.default_app_icon = "eco"
                 
-                $scope.new_task_placeholder = `Create task in ${$scope.selectedListName}`
+                $scope.note_content_placeholder = `Create task in ${$scope.selectedListName}`
                 $scope.open_sidebar(false)
                 $scope.save_data()
             }
@@ -153,15 +153,14 @@ function main_controller($scope, $timeout, db_service) {
 
 
 
+    // create note: Optimized
     $scope.create_note = () => {
         try {
-            const taskContent = $scope.newTaskContent.trim();
-            if (taskContent.length > 0) {
+            const taskContent = $scope.note_content.trim();
+            if (taskContent.length > 0 && $scope.selectedListIndex>=0) {
                 let tasks = split_text_into_tasks(taskContent, "$");
-    
                 // Determine if adding single or multiple tasks
                 tasks = tasks.length > 0 ? tasks : [taskContent];
-    
                 // Add tasks to the selected notebook
                 tasks.forEach(item => {
                     let newTask = new Task(item);
@@ -172,11 +171,9 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.notes = $scope.notebooks[$scope.selectedListIndex].taskArray;
     
                 // Reset input and dialog states
-                $scope.newTaskContent = "";
-                $scope.textarea_default_height = 64;
-                $scope.dialog_flags.show_create_task_popup = false;
+                $scope.note_content = "";
+                $scope.note_textarea_container_height = 45;
                 $scope.pageTitle = $scope.selectedListName;
-    
                 // Save data and show toast notification
                 $scope.save_data();
                 const toastText = tasks.length > 1 ? `${tasks.length} Notes added` : "Note added";
@@ -204,7 +201,7 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.insert_system_var_at_cursor = () => {
         //console.log($scope.selected_system_var)
-        insertTextAtCursor('newTaskContent', $scope.selected_system_var)
+        insertTextAtCursor('note_content', $scope.selected_system_var)
     }
 
     $scope.lock_data = () => {
@@ -419,22 +416,29 @@ function main_controller($scope, $timeout, db_service) {
     }
 
     $scope.open_update_task_popup = () => {
-        $scope.open_create_new_note_popup()
-        $scope.newTaskContent = $scope.selected_note.title
+        $scope.note_content = $scope.selected_note.title.trim()
         $scope.show_update_task_button = true
-        // var textarea = document.querySelector('#newTaskContent');
-        // const h = calculate_height_based_on_lines($scope.newTaskContent, $scope.textarea_max_height)
+        $scope.close_all_dialogs()
+        $scope.note_textarea_container_height = 300
+
+        // var textarea = document.querySelector('#note_content');
+        // const h = calculate_height_based_on_lines($scope.note_content, $scope.textarea_max_height)
         // textarea.style.height = `${h + 40}px`;
     }
 
     // update task in popup
-    $scope.updateTask = () => {
-        $scope.selected_note.title = $scope.newTaskContent
-        $scope.show_update_task_button = false
-        $scope.close_all_dialogs()
-        $scope.newTaskContent = ""
-        $scope.save_data()
-        $scope.show_toast("Note updated");
+    $scope.update_note = () => {
+        try {
+            $scope.selected_note.title = $scope.note_content.trim()
+            $scope.show_update_task_button = false
+            $scope.note_content = ""
+            $scope.note_textarea_container_height = 45
+            $scope.save_data()
+            $scope.show_toast("Note updated");
+        } catch (err) {
+            $scope.show_toast("Error while updating note")
+            console.log("Error while updating note", err)
+        }
     }
 
 
@@ -524,15 +528,9 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
-    $scope.handle_keypress_newtask = function (e) {
+    $scope.handle_keypress_note_input = function (e) {
         try {
-            let textarea = document.querySelector("#newTaskContent")
-            // if(e.keyCode==13)
-            //let h = textarea.scrollHeight
-            // if(h>400)
-            //   h=400
-            // textarea.style.height = `${Math.min(h, $scope.textarea_max_height)}px`
-
+            let textarea = document.querySelector("#note_content")
             if (e.keyCode == 32 || e.keyCode == 13) {
                 //#today #now #day
                 var codes = {
@@ -541,22 +539,20 @@ function main_controller($scope, $timeout, db_service) {
                     "#day": formatDay(new Date())
                 };
                 for (var code in codes) {
-                    if ($scope.newTaskContent.includes(code)) {
-                        $scope.newTaskContent = $scope.newTaskContent.replace(code, codes[code]);
+                    if ($scope.note_content.includes(code)) {
+                        $scope.note_content = $scope.note_content.replace(code, codes[code]);
                     }
                 }
                 if (e.keyCode == 13) {
-                    let value = textarea.value;
-                    let lines = value.split('\n');
-                    let lastLine = lines[lines.length - 1];
-                    let match = lastLine.match(/^(\d+)\.\s/);
-                    if (match) {
-                        let currentNumber = parseInt(match[1]);
-                        textarea.value += `\n${currentNumber + 1}. `;
-                        e.preventDefault();
-                    }
+                    $scope.note_textarea_container_height = Math.min(textarea.scrollHeight + 30,300)
                 }
+
             }
+            if($scope.note_content.length==0)
+            {
+                $scope.note_textarea_container_height = 45;
+                console.log("empty")
+            }           
         } catch (error) {
             console.log(error)
         }
@@ -709,9 +705,9 @@ function main_controller($scope, $timeout, db_service) {
 
         $scope.close_all_dialogs()
         $scope.dialog_flags.show_create_task_popup = true
-        $scope.newTaskContent = ""
-        // document.querySelector("#newTaskContent").style.height = `${$scope.textarea_default_height}px`
-        document.querySelector("#newTaskContent").focus();
+        $scope.note_content = ""
+        // document.querySelector("#note_content").style.height = `${$scope.textarea_default_height}px`
+        document.querySelector("#note_content").focus();
         //we are in a notebook
         if ($scope.selectedListIndex >= 0)
             $scope.show_select_notebooks_dropdown = false
@@ -961,7 +957,7 @@ function main_controller($scope, $timeout, db_service) {
     $scope.handle_note_edit_option_change = () => {
         if($scope.note_edit_selected_option)
         {
-            $scope.insertTextAtCursor("newTaskContent",$scope.note_edit_selected_option)
+            $scope.insertTextAtCursor("note_content",$scope.note_edit_selected_option)
         }
     }
 
@@ -1096,17 +1092,18 @@ function main_controller($scope, $timeout, db_service) {
         $scope.textarea_default_height = 64
         $scope.textarea_max_height = 200
         $scope.new_notebook_icon = "folder"
+
         //icons
         $scope.icons = {
             checked: "radio_button_checked",
             unchecked: "radio_button_unchecked"
         }
+        
         //default values
         $scope.defaultPageTitle = "Notebooks";
         $scope.default_app_icon = "eco"
         $scope.pageTitle = $scope.defaultPageTitle;
         $scope.copied_task = null
-
 
         //enable select notebooks
         $scope.select_notebooks = false
@@ -1114,13 +1111,15 @@ function main_controller($scope, $timeout, db_service) {
         $scope.select_notebooks_menu_text = "Select Notebooks"
         
         // input values
-        $scope.newTaskContent = ""
+        $scope.note_content = ""
         $scope.new_list_name = ""
         $scope.selected_note = null;
-        $scope.new_task_placeholder = "Create note"
+        $scope.note_content_placeholder = "Create note"
         $scope.new_var_name = ""
         $scope.new_var_value = ""
         $scope.max_notebook_title_len = 20
+        $scope.note_textarea_container_height = 45
+        
         // edit options for new note
         $scope.edit_options = [
             { icon: "title", insert_text: "#H1", title: "Heading" },

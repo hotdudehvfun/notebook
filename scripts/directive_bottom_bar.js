@@ -3,6 +3,34 @@ function directive_bottom_bar() {
         scope: false,
         /*html*/
         template: `
+            <div class="note_content_container">
+                <span class="material-symbols-outlined icon-btn">folder</span>
+                <div 
+                    ng-style="{'height':note_textarea_container_height+'px'}"
+                    class="note_textarea_container">
+                    <textarea
+                        ng-model="note_content"
+                        ng-keyup="handle_keypress_note_input($event)"
+                        id="note_content"
+                        class="new-task-content" 
+                        placeholder={{note_content_placeholder}}
+                        autofocus>
+                    </textarea>
+                    <span
+                    ng-hide="show_update_task_button"
+                    ng-click="create_note()"
+                    class="material-symbols-outlined icon-btn">arrow_upward</span>
+                    <span
+                    ng-show="show_update_task_button"
+                    ng-click="update_note()"
+                    class="material-symbols-outlined icon-btn">upgrade</span>
+                    
+                </div>
+                <span 
+                ng-click="open_sidebar(true)"
+                class="material-symbols-outlined">apps</span>
+            </div>
+            <!-- 
                 <div
                     ng-class="{active:dialog_flags.show_create_notebook_popup}"
                     class="bottom-bar-button button" 
@@ -31,6 +59,7 @@ function directive_bottom_bar() {
                     <span class="material-symbols-outlined">apps</span>
                     <span class="">View Notebooks</span>
                 </div> 
+                content bar -->
         `,
 
     }
