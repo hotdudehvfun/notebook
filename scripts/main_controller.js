@@ -1059,10 +1059,7 @@ function main_controller($scope, $timeout, db_service) {
         }else{
             //create property lock
         }
-
-            
     }
-    
 
     $scope.init = () => {
         //dialog flags

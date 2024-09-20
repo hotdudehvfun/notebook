@@ -22,7 +22,7 @@ html {
     --white_black: white;
     --bottom-bar-bg: white;
     --green: #4cd964;
-    --task-complete-color:#222;
+    --task-complete-color: #222;
 }
 
 body {
@@ -112,6 +112,13 @@ input:focus {
     border-bottom: 1px solid var(--list-border);
     /* background: var(--list-bg); */
 }
+
+ul.notebooks li:last-child > .list-panel-item
+{
+    border:none;
+}
+
+
 
 .list-panel-item-title {
     display: flex;
@@ -212,8 +219,9 @@ input:focus {
     /* margin: 0.5rem 1rem; */
     /* border-radius: 8px; */
 }
-.new-task-content:focus{
-    outline:none;
+
+.new-task-content:focus {
+    outline: none;
 }
 
 .new-task-content:empty:before {
@@ -349,9 +357,9 @@ input.add-new-list-title {
     max-height: 150px;
     grid-template-columns: repeat(3,1fr);
 }
-.add-task-edit-options > .chip
-{
-    transform:scale(0.9);
+
+.add-task-edit-options > .chip {
+    transform: scale(0.9);
 }
 
 .add_task_icon {
@@ -390,10 +398,11 @@ input.add-new-list-title {
 .m-1\/2 {
     margin: 0.5rem;
 }
-.m-1
-{
-    margin:0.5rem;
+
+.m-1 {
+    margin: 0.5rem;
 }
+
 .m-2 {
     margin: 1rem;
 }
@@ -588,8 +597,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .new_task_popup_child {
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
     font-size: 0.8rem;
     /* background: var(--list-bg); */
     padding: 0.5rem;
@@ -617,8 +626,6 @@ h1, h2, h3, h4, h5 {
     width: 100%;
     border-radius: 5px;
 }
-
-
 
 .space-between {
     justify-content: space-between;
@@ -769,9 +776,9 @@ img.empty_svg {
 .w-full {
     width: 100%;
 }
-.h-full
-{
-    height:100%;
+
+.h-full {
+    height: 100%;
 }
 
 .group_by_text {
@@ -841,7 +848,6 @@ img.empty_svg {
     color: black;
 }
 
-
 .trash_color {
     color: #ff4181;
 }
@@ -899,15 +905,12 @@ input#type2:checked + label.toggle_label > span.toggle_span {
 .handle {
 }
 
-
-.yellow_note
-{
+.yellow_note {
     background: #ffed58;
-    color:#222;
+    color: #222;
 }
 
-.chat_bubble
-{
+.chat_bubble {
     border-radius: 0rem 4rem 4rem 4rem;
 }
 
@@ -917,6 +920,7 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     width: 100%;
     gap: 0.25rem;
     padding: 0rem 0.25rem;
+    padding-bottom: 2rem;
 }
 
 .note_textarea_container {
@@ -929,4 +933,19 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     padding: 0.5rem 0.25rem;
 }
 
-.icon-btn {border-radius: 100px;background: var(--accent);display: flex;justify-content: center;align-items: center;color: var(--font-color);}
+.icon-btn {
+    border-radius: 100px;
+    background: var(--accent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--font-color);
+    padding: 4px;
+    font-size: 20px;
+}
+
+.edit_options {
+    display:block;
+    width:40px;
+}
+
