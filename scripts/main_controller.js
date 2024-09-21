@@ -254,12 +254,20 @@ function main_controller($scope, $timeout, db_service) {
         }
     };
     
+    $scope.save_theme = ()=>{
+        try {
+            $scope.init_theme()
+            $scope.save_data()
+        } catch (err) {
+            console.log("Save theme error:", err);
+        }
+    }
 
 
     $scope.save_data = () => {
         try {
             const _theme = $scope.is_dark ? "dark" : "light";
-            console.log("saving index",$scope.selectedListIndex)
+            // console.log("saving index",$scope.selectedListIndex)
             db_service.write(
                 {
                     notebooks: $scope.notebooks,
@@ -672,7 +680,6 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.create_system_var = () => {
         let error = ""
-        console.log($scope.new_var_value)
         if ($scope.new_var_name.length > 0 && $scope.new_var_value.length > 0) {
             //clean vars
             $scope.new_var_name = $scope.new_var_name.trim().toLocaleLowerCase()
@@ -681,7 +688,6 @@ function main_controller($scope, $timeout, db_service) {
         } else {
             error = "Empty variables cannot be created"
         }
-
         if (error == "") {
             system_vars[$scope.new_var_name] = $scope.new_var_value
             $scope.save_data();
@@ -692,7 +698,6 @@ function main_controller($scope, $timeout, db_service) {
         } else {
             $scope.show_toast(error)
         }
-
     }
 
     $scope.open_create_new_note_popup = () => {
@@ -1061,6 +1066,24 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
+    $scope.choose_create_btn = (pos)=>{
+        let toast_txts = ["Creat notes","Create notebook","System vars"]
+        if(!$scope.show_all_create_btns)
+        {
+            //open all so user can choose
+            // $scope.create_btns_arr = [true,true,true]
+            $scope.show_all_create_btns = true
+        }else{
+            //all are open now user can choose one
+            $scope.create_btns_arr = [false,false,false]
+            $scope.create_btns_arr[pos] = true
+            $scope.show_toast(toast_txts[pos])
+            $scope.show_all_create_btns = false
+        }
+    }
+
+    
+
     $scope.init = () => {
         //dialog flags
         $scope.dialog_flags = {
@@ -1084,6 +1107,10 @@ function main_controller($scope, $timeout, db_service) {
         $scope.is_toast_visible = false
         $scope.is_data_locked = false
         $scope.toast_msg = ""
+
+        $scope.create_btns_arr = [true,false,false]
+        $scope.show_all_create_btns = false
+        
 
         $scope.show_searchbar = false
         $scope.textarea_default_height = 64

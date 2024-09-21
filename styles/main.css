@@ -1,6 +1,7 @@
 html {
     /* light theme vars, dark theme vars in dark.css */
-    --accent: #bb86fc;
+    /* --accent: #bb86fc; */
+    --accent:#164ea6;
     --font-color: #333;
     --bg-color: whitesmoke;
     --border-color: #fff;
@@ -20,6 +21,7 @@ html {
     --theme_button_border: gray;
     /* white in light theme and black in dark mode  */
     --white_black: white;
+    --icon-btn-color: white;
     --bottom-bar-bg: white;
     --green: #4cd964;
     --task-complete-color: #222;
@@ -344,10 +346,19 @@ div#list-more-options-container {
 
 input.add-new-list-title {
     width: 100%;
-    background: var(--create-notebook-bg);
+    background: none;
     color: var(--font-color);
-    padding: 1.5rem;
+    /* padding: .5rem; */
     font-size: 0.8rem;
+}
+
+.system_var_input {
+    width: 100%;
+    background: none;
+    color: var(--font-color);
+    /* padding: .5rem; */
+    font-size: 0.8rem;
+    border-bottom: 1px solid var(--list-border);
 }
 
 .add-task-edit-options {
@@ -789,7 +800,7 @@ img.empty_svg {
 .notebook_age {
     padding: 0.5rem;
     font-weight: bold;
-    color: var(--accent);
+    color: var(--task-complete-color);
     font-size: 0.7rem;
 }
 
@@ -933,19 +944,43 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     padding: 0.5rem 0.25rem;
 }
 
+
+.notebook_container {
+    display: flex;
+    border: 1px solid;
+    border-radius: 100px;
+    align-items: center;
+    width: 100%;
+    padding: 0.125rem 0.25rem;
+}
+
+.system_var_container {
+    display: grid;
+    grid-template-columns:45% 45% 1fr;
+    grid-template-rows:1fr 1fr;
+    border: 1px solid;
+    border-radius: 1rem;
+    align-items: center;
+    width: 100%;
+    padding: 0.125rem 0.25rem;
+}
+
+
 .icon-btn {
     border-radius: 100px;
     background: var(--accent);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--font-color);
     padding: 4px;
     font-size: 20px;
+    display: inline-block;
+    color:var(--icon-btn-color);
 }
 
 .edit_options {
     display:block;
     width:40px;
+    color: currentColor;
 }
 

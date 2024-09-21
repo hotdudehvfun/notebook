@@ -39,7 +39,7 @@ function directive_main_content(){
                     data-index="{{$index}}" 
                     ng-repeat="note in notes | filter:{isTaskCompleted:false}">
                         <div
-                        class="task chat_bubble" 
+                        class="task" 
                         ng-class="{completed: note.isTaskCompleted}">
                             <span 
                                 class="material-symbols-outlined" 
@@ -60,7 +60,7 @@ function directive_main_content(){
                 class="group_by_text"
                 >{{count_completed_notes()}} completed notes</div>
                 <div ng-repeat="note in notes | filter:{isTaskCompleted:true}">
-                    <div class="task chat_bubble" ng-class="{completed: note.isTaskCompleted}">
+                    <div class="task" ng-class="{completed: note.isTaskCompleted}">
                         <span 
                             class="material-symbols-outlined" 
                             ng-bind="note.taskIcon"

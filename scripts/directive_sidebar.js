@@ -6,7 +6,7 @@ function directive_sidebar(){
       <div>
               <span 
               ng-click="open_sidebar(false)" 
-              class="material-symbols-outlined text-accent">close</span>
+              class="material-symbols-outlined">close</span>
           </div>
           <div class="flex-row">
               <h2>Hello Arun</h2>
