@@ -30,11 +30,17 @@ function directive_main_content(){
             </div>
 
             <!-- tasks -->
+            <!-- hide tasks when notebook is empty or notebook is locked -->
             <div ng-hide="notebooks.length==0">
                 <!-- normal tasks -->
                 <div class="notebook_age">{{notebook_age()}}</div>
-                <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{notes.length}} tasks</div>
-                <ul class="tasks reset_ul">
+                <div 
+                    ng-hide="selectedListName.toLowerCase()=='system'" 
+                    class="group_by_text">{{notes.length}} tasks
+                </div>
+                <ul
+                    ng-hide="is_notebook_locked()"
+                    class="tasks reset_ul">
                     <li 
                     data-index="{{$index}}" 
                     ng-repeat="note in notes | filter:{isTaskCompleted:false}">
@@ -82,6 +88,18 @@ function directive_main_content(){
                     </div>
                     <h2 class="text-center">{{empty_notebook_msg}}</h2>
                 </div>
+                <!-- notebook is locked-->
+                <div
+                class="empty-notebook"
+                ng-show="is_notebook_locked() && pageTitle.toLocaleLowerCase()!='system'">
+                    <div>
+                        <img src="img/lock.svg" class="empty_svg"/>
+                    </div>
+                    <h2 class="text-center">NoteBook is locked</h2>
+                </div>
+                
+
+
                 <!-- show system vars here -->
                  <div
                  ng-show="pageTitle.toLocaleLowerCase()=='system'">

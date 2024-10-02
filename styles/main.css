@@ -800,10 +800,14 @@ img.empty_svg {
 }
 
 .notebook_age {
-    padding: 0.5rem;
+    padding: 0.25rem .5rem;
     font-weight: bold;
-    color: var(--task-complete-color);
+    color: var(--icon-btn-color);
     font-size: 0.7rem;
+    display: inline-block;
+    background: var(--accent);
+    border-radius: 100px;
+    margin-top: 0.5rem;
 }
 
 /* 0.25rem 0.75rem */

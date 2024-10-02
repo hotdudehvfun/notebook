@@ -25,7 +25,7 @@ function directive_sidebar(){
           
           
           <h3 class="mt-2">Your notebooks</h3>
-          <div class="notebook_age">
+          <div class="notebook_count">
               {{get_total().total_tasks}} tasks {{get_total().total_notebooks}} notebooks
           </div>
           <!-- show all notebooks -->
