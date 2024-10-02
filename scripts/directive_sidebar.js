@@ -29,7 +29,7 @@ function directive_sidebar(){
               {{get_total().total_tasks}} tasks {{get_total().total_notebooks}} notebooks
           </div>
           <!-- show all notebooks -->
-          <div class="scroll-y flex-col m-1/2 rounded-3/4 border">
+          <div class="scroll-y flex-col m-1/2 rounded-3/4 border h-60vh">
               <ul class="notebooks reset_ul">
                   <li ng-repeat="(key, value) in notebooks | filter:exclude_sys_trash">
                       <div class="list-panel-item" >
@@ -43,7 +43,7 @@ function directive_sidebar(){
                               class="material-symbols-outlined notebook_icon"
                               ng-bind="notebook_selected_state(key)"></span>
                               <span
-                              class="material-symbols-outlined notebook_icon"
+                              class="material-symbols-outlined icon-btn"
                               ng-bind="get_notebook_icon(value)"
                               ng-hide="select_notebooks"
                               ></span>
@@ -61,7 +61,7 @@ function directive_sidebar(){
                           <div class="list-panel-item-title">
                               <!-- show when selected -->
                               <span
-                                  class="material-symbols-outlined notebook_icon"
+                                  class="material-symbols-outlined icon-btn green-btn"
                                   ng-bind="get_notebook_icon(value)">
                               </span>
                               <article ng-click="open_notebook(value)" class="selected" ng-bind="value.title">

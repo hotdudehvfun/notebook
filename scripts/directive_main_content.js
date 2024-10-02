@@ -84,11 +84,10 @@ function directive_main_content(){
                 </div>
                 <!-- show system vars here -->
                  <div
-                 ng-show="pageTitle.toLocaleLowerCase()=='system'"
-                 >
+                 ng-show="pageTitle.toLocaleLowerCase()=='system'">
                  <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
                     <div class="system_var_item">
-                        <span class="var_icon">x</span>
+                        <span class="material-symbols-outlined icon-btn">deployed_code</span>
                         <div class="var_chip">{{key}} = {{evaluate_exp(value)}}</div>
                         <!-- <div class="var_chip">{{evaluate_exp(value)}}</div> -->
                     </div>

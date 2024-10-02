@@ -16,7 +16,7 @@
     /* white in light theme and black in dark mode  */
     --white_black: #222;
     --bottom-bar-bg: rgb(45 45 45);
-    --task-complete-color: #E91E63;
+    --task-complete-color: #EF4444;
     .system {
     color: #FFEB3B;
     }

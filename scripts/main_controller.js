@@ -191,12 +191,14 @@ function main_controller($scope, $timeout, db_service) {
     }
 
     $scope.edit_var = function (key, value) {
-        $scope.system_var_popup_title = "Edit Variable"
-        $scope.system_var_popup_create_button_text = "Update Variable"
-        $scope.dialog_flags.show_create_system_var_popup = true
-        $scope.show_delete_system_var_button = true
-        $scope.new_var_name = key
-        $scope.new_var_value = system_vars[key]
+        try {
+            $scope.show_delete_system_var_button = true
+            $scope.new_var_name = key
+            $scope.new_var_value = system_vars[key]
+            
+        } catch (err) {
+            console.log("Edit var error",err)
+        }
     }
 
     $scope.insert_system_var_at_cursor = () => {
@@ -332,6 +334,10 @@ function main_controller($scope, $timeout, db_service) {
             $scope.selected_note = note;
             $scope.dialog_flags.show_task_more_options = true
             $scope.task_completed_state = note.isTaskCompleted
+            //check if we are inside trash
+            // console.log($scope.current_notebook)
+            $scope.init_note_more_options()
+
         } catch (err) {
             console.log("Error",err)
         }
@@ -354,23 +360,52 @@ function main_controller($scope, $timeout, db_service) {
 
 
     $scope.delete_task = () => {
-        if (confirm("Are you sure?")) {
+        try {
+            if (confirm("Are you sure you want to delete the note?")) {
+                // Remove the selected task
+                $scope.notes = $scope.notes.filter(task => task !== $scope.selected_note);
+                $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
+                
+                if($scope.current_notebook.title.toLowerCase()!='trash')
+                {
+                    const has_trash_notebook = $scope.notebooks.find(notebook => notebook.title.toLowerCase() === "trash");
+                    if (has_trash_notebook) {
+                        // deleted note gets timestamp of parent notebook timestamp
+                        $scope.selected_note.dateCreated = $scope.current_notebook.dateCreated;
+                        has_trash_notebook.taskArray.push($scope.selected_note);
+                    }
+                    $scope.show_toast("Note moved to Trash");
+                }else{
+                    $scope.show_toast("Note deleted forever");
+                }
+                $scope.save_data();
+                $scope.close_all_dialogs();
+            }
+        } catch (err) {
+            console.log("Delete error",err)
+        }
+    };
+
+    $scope.restore_note = () => {
+        try {
+            console.log($scope.selected_note)
             // Remove the selected task
             $scope.notes = $scope.notes.filter(task => task !== $scope.selected_note);
             $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
             
-            if($scope.current_notebook.title.toLowerCase()!='trash')
+            const parent_notebook = $scope.notebooks.find(notebook => notebook.dateCreated === $scope.selected_note.dateCreated);
+            console.log("parent",parent_notebook)
+            if(parent_notebook)
             {
-                const has_trash_notebook = $scope.notebooks.find(notebook => notebook.title.toLowerCase() === "trash");
-                if (has_trash_notebook) {
-                    has_trash_notebook.taskArray.push($scope.selected_note);
-                }
-                $scope.show_toast("Note moved to Trash");
+                parent_notebook.taskArray.push($scope.selected_note)
+                $scope.show_toast(`Note moved to ${parent_notebook.title}`);
             }else{
-                $scope.show_toast("Note deleted");
+                $scope.show_toast("Parent notebook not found");
             }
             $scope.save_data();
             $scope.close_all_dialogs();
+        } catch (err) {
+            console.log("Restore error",err)
         }
     };
     
@@ -671,10 +706,11 @@ function main_controller($scope, $timeout, db_service) {
     $scope.delete_system_var = () => {
         if (confirm("Are you sure?")) {
             delete system_vars[$scope.new_var_name]
-            $scope.close_all_dialogs()
             $scope.dialog_flags.show_delete_system_var_button = false
             $scope.save_data()
             $scope.show_toast("System var removed")
+            $scope.new_var_name = ""
+            $scope.new_var_value = ""
         }
     }
 
@@ -864,8 +900,15 @@ function main_controller($scope, $timeout, db_service) {
 
     //options shown when note is clicked
     $scope.init_note_more_options = () => {
+        $scope.is_trash_open = ($scope.current_notebook.title.toLowerCase()=="trash")
         $scope.note_more_options = [
             {
+                text: "Restore note",
+                icon: "restore_from_trash",
+                class: "task-more-options-item",
+                show: $scope.is_trash_open,
+                action: () => { $scope.restore_note() }
+            },{
                 text: "Update note",
                 icon: "edit",
                 class: "task-more-options-item",
@@ -1106,6 +1149,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.is_sortable = false
         $scope.is_toast_visible = false
         $scope.is_data_locked = false
+        $scope.is_trash_open = false
         $scope.toast_msg = ""
 
         $scope.create_btns_arr = [true,false,false]

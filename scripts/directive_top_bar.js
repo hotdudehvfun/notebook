@@ -7,7 +7,7 @@ function directive_top_bar() {
          <div class="flex">
             <span ng-click="open_sidebar(true)" class="material-symbols-outlined">menu</span>
          </div>
-        <div class="flex-row flex gap-1">
+        <div class="flex-row flex gap-1 justify-center">
             <span class="material-symbols-outlined">
                 {{default_app_icon}}
             </span>

@@ -8,17 +8,17 @@ function directive_bottom_bar() {
                 <span 
                     ng-click="choose_create_btn(0)"
                     ng-show="create_btns_arr[0] || show_all_create_btns"
-                    class="material-symbols-outlined icon-btn">edit_note</span>
+                    class="material-symbols-outlined icon-btn visible_pop_animation">edit_note</span>
                 <!-- notebook button -->
                 <span 
                     ng-click="choose_create_btn(1)"
                     ng-show="create_btns_arr[1] || show_all_create_btns" 
-                    class="material-symbols-outlined icon-btn">auto_stories</span>
+                    class="material-symbols-outlined icon-btn visible_pop_animation">auto_stories</span>
                 <!-- system var button -->
                 <span 
                     ng-click="choose_create_btn(2)"
                     ng-show="create_btns_arr[2] || show_all_create_btns" 
-                    class="material-symbols-outlined icon-btn">keyboard_command_key</span>
+                    class="material-symbols-outlined icon-btn visible_pop_animation">keyboard_command_key</span>
                 <div
                     ng-show="create_btns_arr[0]"
                     ng-style="{'height':note_textarea_container_height+'px'}"
@@ -102,13 +102,21 @@ function directive_bottom_bar() {
                         style="grid-column-start: 1;grid-column-end: 3;"/>
                     <div
                         style="
-                            grid-column-start: 3;
-                            grid-row-start: 1;
-                            grid-row-end: 3;
-                            text-align: center;">
+    grid-column-start: 3;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    text-align: center;
+    display: grid;
+    gap: 4px;
+    justify-content: center;">
                     <span
                         ng-click="create_system_var()"
                         class="material-symbols-outlined icon-btn">arrow_upward</span>
+                    <span
+                        ng-if="show_delete_system_var_button"
+                        ng-click="delete_system_var()"
+                        class="material-symbols-outlined icon-btn">delete</span>
+                        
                     </div>
                     
                 </div>

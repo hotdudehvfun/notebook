@@ -1,7 +1,7 @@
 html {
     /* light theme vars, dark theme vars in dark.css */
     /* --accent: #bb86fc; */
-    --accent:#164ea6;
+    --accent: #164ea6;
     --font-color: #333;
     --bg-color: whitesmoke;
     --border-color: #fff;
@@ -115,12 +115,9 @@ input:focus {
     /* background: var(--list-bg); */
 }
 
-ul.notebooks li:last-child > .list-panel-item
-{
-    border:none;
+ul.notebooks li:last-child > .list-panel-item {
+    border: none;
 }
-
-
 
 .list-panel-item-title {
     display: flex;
@@ -245,12 +242,12 @@ div#list-more-options-container {
     display: flex;
     flex-direction: column;
     border-radius: 1rem;
-    width: 80%;
-    height: 60vh;
+    width: clamp(30%,90%,400px);
     -webkit-backdrop-filter: blur(var(--more-options-blur));
     backdrop-filter: blur(var(--more-options-blur));
     border: 1px solid var(--more-options-border-color);
     overflow: auto;
+    height: 60vh;
 }
 
 .block_screen {
@@ -780,6 +777,11 @@ img.empty_svg {
     justify-content: end;
 }
 
+.justify-center {
+    justify-content: center;
+}
+
+
 .p-3\/4 {
     padding: 0.75rem;
 }
@@ -944,7 +946,6 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     padding: 0.5rem 0.25rem;
 }
 
-
 .notebook_container {
     display: flex;
     border: 1px solid;
@@ -956,8 +957,8 @@ input#type2:checked + label.toggle_label > span.toggle_span {
 
 .system_var_container {
     display: grid;
-    grid-template-columns:45% 45% 1fr;
-    grid-template-rows:1fr 1fr;
+    grid-template-columns: 45% 45% 1fr;
+    grid-template-rows: 1fr 1fr;
     border: 1px solid;
     border-radius: 1rem;
     align-items: center;
@@ -965,22 +966,29 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     padding: 0.125rem 0.25rem;
 }
 
-
 .icon-btn {
     border-radius: 100px;
     background: var(--accent);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: inline-flex;
     padding: 4px;
     font-size: 20px;
-    display: inline-block;
-    color:var(--icon-btn-color);
+    color: var(--icon-btn-color);
+    width: 30px;
+    justify-content: center;
+}
+
+.green-btn {
+    background: #4bd964;
+    color: black;
 }
 
 .edit_options {
-    display:block;
-    width:40px;
+    display: block;
+    width: 40px;
     color: currentColor;
 }
 
+.h-60vh
+{
+    height:60vh;
+}
