@@ -17,6 +17,9 @@
     --white_black: #222;
     --bottom-bar-bg: rgb(45 45 45);
     --task-complete-color: #EF4444;
+    
+    --table-bg:#222;
+    
     .system {
     color: #FFEB3B;
     }

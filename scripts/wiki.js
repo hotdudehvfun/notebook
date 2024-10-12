@@ -27,26 +27,38 @@ function sub(line)
 }
 
 function progress_bar(text) {
-    // Create a regex to match #XX% where XX is any number from 0 to 100
-    //const regex = /#(\d{1,2}|100)%/g;
+    if(text.includes(","))
+    {
+        return multi_progress_bar(text)
+    }
     const regex = /#((100|0|[1-9]?\d)(\.\d+)?|100(\.0+)?|0(\.0+)?|0)%/g;
-    
-    // Use replace with a callback to dynamically insert the matched percentage
     return text.replace(regex, (match, p1) => {
-        return `<div
-        class="progress_bar" 
-        data-value="${p1}"
-        style="background: linear-gradient(
-          to right, 
-          var(--progress-a),
-          var(--progress-a) ${p1}%,
-          var(--progress-b) ${p1}%,
-          var(--progress-b)
-        );"
-        >
+        return `
+        <div class="progress_bar">
+            <div class="progress progress_rounded bg-green" style="width:${p1}%;">${p1}%</div>
         </div>`;
     });
 }
+
+
+function multi_progress_bar(text) {
+    const regex = /#((\d{1,3}(,\d{1,3})*)%)/g;
+    return text.replace(regex, (match, p1) => {
+        const percentages = p1.split(',').map(value => value.trim().replace("%",""));
+        const progressBars = percentages.map(percentage => {
+            return `
+                <div class="progress" style="width:${percentage}%;">
+                    ${percentage}%
+                </div>`;
+        }).join('');
+        return `
+        <div class="progress_bar">
+            ${progressBars}
+        </div>`;
+    });
+}
+
+
 
 function check_for_system_vars(value)
 {
@@ -168,6 +180,39 @@ function handle_insert_class(input) {
     });
 }
 
+function handle_charts(line) {
+    // Check if the line starts with '_chart'
+    if (line.startsWith('@chart')) {
+        // Extract the content after '_chart'
+        let content = line.replace('@chart', '').trim();
+
+        // Create variables for labels, values, and type
+        let labels = [];
+        let values = [];
+        let type = '';
+
+        // Split the content by spaces, then by each parameter (Labels, Values, Type)
+        let params = content.split(' ');
+        params.forEach(param => {
+            let [key, value] = param.split(':');
+            key = key.toLowerCase();
+
+            if (key === 'labels') {
+                // Split labels by comma and trim each
+                labels = value.split(',').map(label => label.trim());
+            } else if (key === 'values') {
+                // Split values by comma and convert to numbers
+                values = value.split(',').map(val => parseFloat(val.trim()));
+            } else if (key === 'type') {
+                // Assign chart type
+                type = value.trim();
+            }
+        });
+        return `<canvas id="myChart"></canvas>`
+    }
+}
+
+
 
 function parseWikiTextToHTML(wikiText) {
     var lines = wikiText.trim().split('\n');
@@ -194,6 +239,10 @@ function parseWikiTextToHTML(wikiText) {
 
             //handle custom class
             line = handle_insert_class(line)
+
+            //handle charts
+            // line = handle_charts(line)
+            // console.log(line)
             
             if (line.startsWith('#')) {
                 // Handle headings

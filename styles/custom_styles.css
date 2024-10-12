@@ -32,3 +32,13 @@
 .text-right {
     text-align:right;
 }
+
+.bg-green
+{
+    background-color:var(--green);
+}
+
+.bg-red
+{
+    background-color:#ff4967;
+}

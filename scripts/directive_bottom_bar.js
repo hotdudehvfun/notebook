@@ -3,22 +3,58 @@ function directive_bottom_bar() {
         scope: false,
         /*html*/
         template: `
-            <div class="note_content_container">
-                <!-- system var button -->    
-                <span 
-                    ng-click="choose_create_btn(0)"
-                    ng-show="create_btns_arr[0] || show_all_create_btns"
-                    class="material-symbols-outlined icon-btn visible_pop_animation">edit_note</span>
-                <!-- notebook button -->
-                <span 
-                    ng-click="choose_create_btn(1)"
-                    ng-show="create_btns_arr[1] || show_all_create_btns" 
-                    class="material-symbols-outlined icon-btn visible_pop_animation">auto_stories</span>
+            <div
+            ng-class="{
+                create_btns_close:!show_all_create_btns,
+                create_btns_open:show_all_create_btns,
+                grid_rows_one:!create_btns_arr[0]
+                }"
+            class="note_content_container create_btns_close grid_rows_two">
                 <!-- system var button -->
-                <span 
-                    ng-click="choose_create_btn(2)"
-                    ng-show="create_btns_arr[2] || show_all_create_btns" 
-                    class="material-symbols-outlined icon-btn visible_pop_animation">keyboard_command_key</span>
+                <div
+                    ng-if="create_btns_arr[0]"
+                    class="edit_options_container">
+                    <div class="chip2">
+                        <span class="material-symbols-outlined">edit_note</span>
+                        <span>Edit Options</span>
+                    </div>
+                    <div 
+                        ng-repeat="option in edit_options" 
+                        class="chip" 
+                        ng-click="insertTextAtCursor('note_content',option.insert_text)">
+                        <span class="material-symbols-outlined">{{option.icon}}</span>
+                        <span>{{option.title}}</span>
+                    </div>
+                    <div class="chip2">
+                        <span class="material-symbols-outlined">deployed_code</span>
+                        <span>System Vars</span>
+                    </div>
+                    <div
+                        class="chip"
+                        ng-repeat="(key,value) in get_system_vars()"
+                        ng-click="insertTextAtCursor('note_content',key)"
+                        >
+                        <span>{{key}}={{value}}</span>
+                        <span>{{option.title}}</span>
+                    </div>
+                </div>
+
+                <div class="flex-row" style="grid-area:create_btns;">
+                    <span 
+                        ng-click="choose_create_btn(0)"
+                        ng-show="create_btns_arr[0] || show_all_create_btns"
+                        class="material-symbols-outlined icon-btn visible_pop_animation">edit_note</span>
+                    <!-- notebook button -->
+                    <span 
+                        ng-click="choose_create_btn(1)"
+                        ng-show="create_btns_arr[1] || show_all_create_btns" 
+                        class="material-symbols-outlined icon-btn visible_pop_animation">auto_stories</span>
+                    <!-- system var button -->
+                    <span 
+                        ng-click="choose_create_btn(2)"
+                        ng-show="create_btns_arr[2] || show_all_create_btns" 
+                        class="material-symbols-outlined icon-btn visible_pop_animation">keyboard_command_key</span>
+                </div>
                 <div
                     ng-show="create_btns_arr[0]"
                     ng-style="{'height':note_textarea_container_height+'px'}"
@@ -40,33 +76,7 @@ function directive_bottom_bar() {
                     ng-click="update_note()"
                     class="material-symbols-outlined icon-btn">upgrade</span>
                 </div>
-                <!--
-                <span 
-                ng-click="open_edit_options()"
-                class="material-symbols-outlined">apps</span>
-                -->
-                <select
-                    ng-show="create_btns_arr[0]"
-                    ng-change="handle_note_edit_option_change()"
-                    ng-model="note_edit_selected_option"
-                    name="notes_edit_options"
-                    class="select edit_options">
-                        <option value="">Edit</option>
-                        <optgroup label="Edit options">
-                        <option
-                            ng-repeat="option in edit_options"
-                            ng-value="option.insert_text"
-                            >{{option.title}}</option>
-                    </optgroup>
-                    <optgroup label="System Variables">
-                        <option 
-                        ng-repeat="(key,value) in get_system_vars()"
-                        ng-value="key"
-                        >{{key}} = {{value}}</option>
-                    </optgroup>
-                </select>
-
-
+                
                 <!-- create notebook div -->
                 <div
                     ng-show="create_btns_arr[1]"
@@ -101,61 +111,17 @@ function directive_bottom_bar() {
                         placeholder="Variable value"
                         style="grid-column-start: 1;grid-column-end: 3;"/>
                     <div
-                        style="
-    grid-column-start: 3;
-    grid-row-start: 1;
-    grid-row-end: 3;
-    text-align: center;
-    display: grid;
-    gap: 4px;
-    justify-content: center;">
-                    <span
-                        ng-click="create_system_var()"
-                        class="material-symbols-outlined icon-btn">arrow_upward</span>
-                    <span
-                        ng-if="show_delete_system_var_button"
-                        ng-click="delete_system_var()"
-                        class="material-symbols-outlined icon-btn">delete</span>
-                        
+                        style="grid-column-start: 3;grid-row-start: 1;grid-row-end: 3;text-align: center;display: grid;gap: 4px;justify-content: center;">
+                        <span
+                            ng-click="create_system_var()"
+                            class="material-symbols-outlined icon-btn">arrow_upward</span>
+                        <span
+                            ng-if="show_delete_system_var_button"
+                            ng-click="delete_system_var()"
+                            class="material-symbols-outlined icon-btn">delete</span>
                     </div>
-                    
                 </div>
-                
-
             </div>
-
-
-
-            <!-- 
-                <div
-                    ng-class="{active:dialog_flags.show_create_notebook_popup}"
-                    class="bottom-bar-button button" 
-                    ng-click="dialog_flags.show_create_notebook_popup=true">
-                    <span class="material-symbols-outlined">contract_edit</span>
-                    <span class="">NoteBook</span>
-                </div>
-                <div 
-                    ng-class="{active:dialog_flags.show_create_task_popup}"
-                    class="bottom-bar-button button" 
-                    ng-click="open_create_new_note_popup()">
-                    <span class="material-symbols-outlined">draw</span>
-                    <span class="">Note</span>
-                </div> 
-                <div 
-                    ng-class="{active:dialog_flags.show_create_system_var_popup}"
-                    class="bottom-bar-button button" 
-                    ng-click="open_create_system_var_popup()">
-                    <span class="material-symbols-outlined">keyboard_command_key</span>
-                    <span class="">System Var</span>
-                </div> 
-                <div 
-                    ng-class="{active:dialog_flags.is_sidebar_menu_open}"
-                    class="bottom-bar-button button" 
-                    ng-click="open_sidebar(true)">
-                    <span class="material-symbols-outlined">apps</span>
-                    <span class="">View Notebooks</span>
-                </div> 
-                content bar -->
         `,
 
     }

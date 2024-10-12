@@ -5,6 +5,25 @@ function main_controller($scope, $timeout, db_service) {
         return parseWikiTextToHTML(text)
     }
 
+    $scope.handle_chart_inside_note = function(text){
+        new Chart("myChart", {
+            type: "pie",
+            data: {
+              labels: ["Stocks","Mutual Funds"],
+              datasets: [{
+                backgroundColor: ["red","blue"],
+                data: [25,75]
+              }]
+            },
+            options: {
+              title: {
+                display: true,
+                text: "Funds"
+              }
+            }
+          });
+    }
+
     //for searching made easy
     // $scope.getTasksOnly = ()=> {
     //     var allTasks = [];
@@ -1193,7 +1212,8 @@ function main_controller($scope, $timeout, db_service) {
             { icon: "title", insert_text: "#H1", title: "Heading" },
             { icon: "list", insert_text: "* Item", title: "List" },
             { icon: "sliders", insert_text: "#50%", title: "Progress bar" },
-            { icon: "check_box", insert_text: "$ ", title: "Split notes" }
+            { icon: "check_box", insert_text: "$ ", title: "Split notes" },
+            { icon: "table", insert_text: ".table \n |a|b|c| \n..table ", title: "Table" },
         ]
 
         $scope.proverbs = [
@@ -1225,5 +1245,7 @@ function main_controller($scope, $timeout, db_service) {
         //make notebook and notes sortable
         $scope.init_sortable_list(".tasks", "notes");
         $scope.init_sortable_list(".notebooks","notebooks");
+        //chart testing
+        
     };
 }

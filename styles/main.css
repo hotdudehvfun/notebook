@@ -1,6 +1,6 @@
 html {
     /* light theme vars, dark theme vars in dark.css */
-    /* --accent: #bb86fc; */
+    --accent: #bb86fc;
     --accent: #164ea6;
     --font-color: #333;
     --bg-color: whitesmoke;
@@ -19,12 +19,15 @@ html {
     --block-screen-blur: 4px;
     --age_text_color: var(--accent);
     --theme_button_border: gray;
+    
     /* white in light theme and black in dark mode  */
     --white_black: white;
     --icon-btn-color: white;
     --bottom-bar-bg: white;
     --green: #4cd964;
     --task-complete-color: #222;
+    --table-bg:whitesmoke;
+    
 }
 
 body {
@@ -456,9 +459,12 @@ input.add-new-list-title {
     gap: 1rem;
     padding: 0.25rem 0.75rem;
 }
+.chip > span{
+    font-size:.6rem;
+}
 
 .chip > .material-symbols-outlined {
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 .progress_bar_holder {
@@ -469,25 +475,54 @@ input.add-new-list-title {
 .progress_bar {
     margin: 0.5rem;
     height: 20px;
-    width: 50%;
+    width: 80%;
     border-radius: 1rem;
-    /* background: linear-gradient(
-    to right, 
-    var(--progress-a),
-    var(--progress-a) 50%,
-    var(--progress-b) 50%,
-    var(--progress-b)
-  ); */
+    background: var(--progress-b);
+    display: flex;
 }
 
-.progress_bar:before {
+.progress:nth-child(1)
+{
+    background-color:#54bb55;
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+}
+
+.progress:nth-child(2)
+{
+    background-color:#ebad46;
+}
+
+.progress:nth-child(3)
+{
+    background-color:#db5246;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+
+
+.progress {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    text-shadow: 0px 0px #717171;
+}
+
+.progress_rounded {
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+}
+
+/* .progress_bar:before {
     content: attr(data-value) "%";
     font-size: 16px;
     text-align: center;
     display: block;
     text-shadow: 0px 0px #717171;
 }
-
+ */
 .list-icon {
     background: #ffdf2b;
     border: 2px solid #bca000;
@@ -781,7 +816,6 @@ img.empty_svg {
     justify-content: center;
 }
 
-
 .p-3\/4 {
     padding: 0.75rem;
 }
@@ -807,7 +841,7 @@ img.empty_svg {
     display: inline-block;
     background: var(--accent);
     border-radius: 100px;
-    margin-top: 0.5rem;
+    margin: 0.5rem;
 }
 
 /* 0.25rem 0.75rem */
@@ -932,12 +966,33 @@ input#type2:checked + label.toggle_label > span.toggle_span {
 }
 
 .note_content_container {
-    display: flex;
+    display: grid;
     align-items: center;
     width: 100%;
     gap: 0.25rem;
     padding: 0rem 0.25rem;
     padding-bottom: 2rem;
+}
+
+/* to prevent overlap of three create btns over right layout, change grid layout */
+.create_btns_open {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "edit_options edit_options edit_options edit_options" "create_btns input_area input_area input_area";
+}
+
+.create_btns_close {
+    grid-template-columns: 10% 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "edit_options edit_options" "create_btns input_area";
+}
+
+.grid_rows_two {
+    grid-template-rows: auto auto;
+}
+
+.grid_rows_one {
+    grid-template-rows: 0fr 1fr;
 }
 
 .note_textarea_container {
@@ -946,8 +1001,9 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     border-radius: 1rem;
     align-items: center;
     /* height: 200px; */
-    width: 100%;
+    width: -webkit-fill-available;
     padding: 0.5rem 0.25rem;
+    grid-area: input_area;
 }
 
 .notebook_container {
@@ -957,6 +1013,7 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     align-items: center;
     width: 100%;
     padding: 0.125rem 0.25rem;
+    grid-area: input_area;
 }
 
 .system_var_container {
@@ -968,6 +1025,7 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     align-items: center;
     width: 100%;
     padding: 0.125rem 0.25rem;
+    grid-area: input_area;
 }
 
 .icon-btn {
@@ -977,7 +1035,7 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     padding: 4px;
     font-size: 20px;
     color: var(--icon-btn-color);
-    width: 30px;
+    /* width: 30px; */
     justify-content: center;
 }
 
@@ -992,7 +1050,41 @@ input#type2:checked + label.toggle_label > span.toggle_span {
     color: currentColor;
 }
 
-.h-60vh
-{
-    height:60vh;
+.h-60vh {
+    height: 60vh;
+}
+
+.edit_options_container {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 0rem;
+    overflow-x: auto;
+    grid-area: edit_options;
+}
+
+.chip2 {
+    display: flex;
+    gap: 1rem;
+    background: var(--accent);
+    border-radius: 100px;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px;
+    color: white;
+    font-size:.6rem;
+}
+.chip2> .material-symbols-outlined{
+    font-size:1.1rem;
+}
+
+table {
+    background-color: var(--table-bg);
+    margin: 1em 0;
+    border: 1px solid var(--border-color-base,#a2a9b1);
+    border-collapse: collapse
+}
+
+table > tr > th,table > tr > td,table > * > tr > th,table > * > tr > td {
+    border: 1px solid var(--border-color-base,#a2a9b1);
+    padding: 0.2em 0.4em
 }

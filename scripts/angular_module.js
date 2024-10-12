@@ -14,6 +14,23 @@ console.log(`
 > Trash notebook
 > #Today #now #weekday
 `)
+
+/*
+{
+  "global":
+  {
+    "a":1,
+    "b":2
+  },
+  "custom":
+  {
+  
+  }
+}
+
+*/
+
+
 var system_vars = {}
 
 app.filter("sanitize", ['$sce', function ($sce) {

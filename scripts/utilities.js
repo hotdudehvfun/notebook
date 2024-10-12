@@ -165,20 +165,7 @@ function insertProgress()
 }
 
 
-function getRandomColor()
-{
-  let colors=
-  [
-    "#8bc34a",
-    "#E91E63",
-    "#CDDC39",
-    "#00BCD4",
-    "#009688"
-  ]
 
-  return colors[getRandomInt(0,colors.length-1)]
-
-}
 
 
 
