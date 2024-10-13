@@ -14,22 +14,24 @@ function directive_bottom_bar() {
                 <div
                     ng-if="create_btns_arr[0]"
                     class="edit_options_container">
-                    <div class="chip2">
+                    <div ng-class="{disabled:!show_edit_options}" ng-click="show_edit_options=!show_edit_options" class="chip2">
                         <span class="material-symbols-outlined">edit_note</span>
-                        <span>Edit Options</span>
+                        <span>Edit</span>
                     </div>
-                    <div 
+                    <div
+                        ng-show="show_edit_options" 
                         ng-repeat="option in edit_options" 
                         class="chip" 
                         ng-click="insertTextAtCursor('note_content',option.insert_text)">
                         <span class="material-symbols-outlined">{{option.icon}}</span>
                         <span>{{option.title}}</span>
                     </div>
-                    <div class="chip2">
+                    <div ng-class="{disabled:!show_edit_options_system_vars}" ng-click="show_edit_options_system_vars=!show_edit_options_system_vars"  class="chip2">
                         <span class="material-symbols-outlined">deployed_code</span>
                         <span>System Vars</span>
                     </div>
                     <div
+                        ng-show="show_edit_options_system_vars"
                         class="chip"
                         ng-repeat="(key,value) in get_system_vars()"
                         ng-click="insertTextAtCursor('note_content',key)"

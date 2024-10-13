@@ -47,7 +47,8 @@ function directive_main_content(){
                         <div
                         class="task" 
                         ng-class="{completed: note.isTaskCompleted}">
-                            <span 
+                            <span
+                                ng-show="show_note_complete_button" 
                                 class="material-symbols-outlined" 
                                 ng-bind="note.taskIcon"
                                 ng-click="toggle_note_completed_state(note)"></span>

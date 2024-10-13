@@ -11,25 +11,13 @@ function directive_sidebar(){
           <div class="flex-row">
               <h2>Hello Arun</h2>
           </div>
-          <div class="flex-row align-center">
-              <h3>Dark theme</h3>
-              <div style="transform: scale(.8);">
-                  <input
-                  ng-model="is_dark"
-                  ng-change="save_theme()" type="checkbox" id="type2" class="toggle_checkbox"/>
-                  <label for="type2" class="toggle_label">
-                      <span class="toggle_span"></span>
-                  </label>
-              </div>
-          </div>
           
-          
-          <h3 class="mt-2">Your notebooks</h3>
-          <div class="notebook_count">
-              {{get_total().total_tasks}} tasks {{get_total().total_notebooks}} notebooks
-          </div>
           <!-- show all notebooks -->
           <div class="scroll-y flex-col m-1/2 rounded-3/4 border h-60vh">
+            <h3 class="mt-2">Your notebooks</h3>
+            <div class="notebook_count">
+              {{get_total().total_tasks}} tasks {{get_total().total_notebooks}} notebooks
+            </div>
               <ul class="notebooks reset_ul">
                   <li ng-repeat="(key, value) in notebooks | filter:exclude_sys_trash">
                       <div class="list-panel-item" >
@@ -78,8 +66,37 @@ function directive_sidebar(){
                           </div>
                       </div>
                   </li>
-  
               </ul>
+          </div>
+
+
+          <!-- settings -->
+          <div class="flex-col rounded-3/4 border m-1/2">
+            <h3 class="mt-2">Settings</h3>
+            
+            <div class="flex-row space-between">
+                <h4>Enable dark theme</h4>
+                <div style="transform: scale(.65);">
+                    <input
+                    ng-model="is_dark"
+                    ng-change="save_theme()" type="checkbox" id="type2" class="toggle_checkbox"/>
+                    <label for="type2" class="toggle_label">
+                        <span class="toggle_span"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="flex-row space-between">
+                <h4>Show complete button</h4>
+                <div style="transform: scale(.65);">
+                    <input
+                    ng-model="show_note_complete_button"
+                    type="checkbox" id="type3" class="toggle_checkbox"/>
+                    <label for="type3" class="toggle_label">
+                        <span class="toggle_span"></span>
+                    </label>
+                </div>
+            </div>
+            
           </div>
       `
     }

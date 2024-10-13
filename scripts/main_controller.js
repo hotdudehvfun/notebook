@@ -1170,6 +1170,10 @@ function main_controller($scope, $timeout, db_service) {
         $scope.is_data_locked = false
         $scope.is_trash_open = false
         $scope.toast_msg = ""
+        $scope.show_edit_options = false //bottom bar note edit options
+        $scope.show_edit_options_system_vars = false //bottom bar note edit options system vars
+        $scope.show_note_complete_button = false // show hide complete button
+        
 
         $scope.create_btns_arr = [true,false,false]
         $scope.show_all_create_btns = false
@@ -1213,7 +1217,7 @@ function main_controller($scope, $timeout, db_service) {
             { icon: "list", insert_text: "* Item", title: "List" },
             { icon: "sliders", insert_text: "#50%", title: "Progress bar" },
             { icon: "check_box", insert_text: "$ ", title: "Split notes" },
-            { icon: "table", insert_text: ".table \n |a|b|c| \n..table ", title: "Table" },
+            { icon: "table", insert_text: "@table \n ||a,b |c,d", title: "Table" },
         ]
 
         $scope.proverbs = [

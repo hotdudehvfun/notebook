@@ -212,11 +212,86 @@ function handle_charts(line) {
     }
 }
 
+function handle_table_component(text) {
+    const lines = text.split('\n'); // Split the text by new lines
+    let headers = [];
+    let rows = [];
+    let sumCols = [];
+    let sumRow = [];
+
+    lines.forEach(line => {
+        line = line.trim();
+
+        // Check for the _sum_col option
+        if (line.startsWith('_sum_col')) {
+            const [, cols] = line.split('=');
+            sumCols = cols.split(',').map(col => parseInt(col.trim()) - 1); // Convert to zero-based indices
+        }
+
+        // Check for header row (||)
+        else if (line.startsWith('||')) {
+            headers = line.replace('||', '').split(',').map(cell => cell.trim());
+        }
+
+        // Check for regular row (|)
+        else if (line.startsWith('|')) {
+            const row = line.replace('|', '').split(',').map(cell => cell.trim());
+            rows.push(row);
+
+            // Keep track of sums for the columns specified in _sum_col
+            sumCols.forEach(col => {
+                sumRow[col] = (sumRow[col] || 0) + parseFloat(row[col] || 0);
+            });
+        }
+    });
+
+    // Create the table element (or HTML string)
+    let tableHtml = '<table>';
+
+    // Add header row
+    if (headers.length > 0) {
+        tableHtml += '<thead><tr>';
+        headers.forEach(header => {
+            tableHtml += `<th>${header}</th>`;
+        });
+        tableHtml += '</tr></thead>';
+    }
+
+    // Add body rows
+    tableHtml += '<tbody>';
+    rows.forEach(row => {
+        tableHtml += '<tr>';
+        row.forEach(cell => {
+            tableHtml += `<td>${cell}</td>`;
+        });
+        tableHtml += '</tr>';
+    });
+
+    // Add sum row if needed
+    if (sumCols.length > 0) {
+        tableHtml += '<tr>';
+        for(var i=0;i<sumRow.length;i++)
+            tableHtml += `<td>${sumRow[i] !== undefined ? sumRow[i] : 'Total'}</td>`;
+
+        tableHtml += '</tr>';
+    }
+
+    tableHtml += '</tbody></table>';
+
+    return tableHtml; // Return the generated table HTML
+}
 
 
 function parseWikiTextToHTML(wikiText) {
-    var lines = wikiText.trim().split('\n');
+
+    wikiText = wikiText.trim()
+    if(wikiText.startsWith("@table"))
+    {
+        //it is a table component
+        return handle_table_component(wikiText)
+    }
     let html = '';
+    let lines = wikiText.split("\n")
     lines.forEach(line => {
         line = line.trim()
         if(line.length>0)
@@ -273,11 +348,6 @@ function parseWikiTextToHTML(wikiText) {
                         html+= place_img(args[1],args[2])
                         break;
                 }
-            } else if (line.startsWith('|')) {
-                // Handle tables
-                const cells = line.split('|').map(cell => cell.trim()).filter(Boolean);
-                const tableRow = cells.map(cell => `<td>${cell}</td>`).join('');
-                html += `<tr>${tableRow}</tr>`;
             } else if(line.startsWith("."))
             {
                 html+= insert_tag(line)
@@ -290,7 +360,6 @@ function parseWikiTextToHTML(wikiText) {
                 }
             } 
         }
-        
     });
     return `${html}`;
 }
