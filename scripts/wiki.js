@@ -199,24 +199,50 @@ function handle_charts(text)
     setTimeout(()=>{
         update_chart(labels,values,id,type,title)
     },50)
-    return `<canvas id="${id}"></canvas>`
+    return `<canvas style="width:100%" id="${id}"></canvas>`
 }
 function update_chart(_labels,values,id,_type,title)
 {
-    new Chart(id, {
+    let chart = new Chart(id, {
         type: _type,
         data: {
           labels: _labels,
           datasets: [{
-            backgroundColor: COLORS.ALL,
-            data: values
+            backgroundColor: [
+                'rgba(255, 99, 132)',
+                'rgba(255, 159, 64)',
+                'rgba(255, 205, 86)',
+                'rgba(75, 192, 192)',
+                'rgba(54, 162, 235)',
+                'rgba(153, 102, 255)',
+                'rgba(201, 203, 207)'
+              ],
+            borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+                'rgb(201, 203, 207)'
+              ],
+            data: values,
+            label:title,
+
           }]
         },
         options: {
           title: {
             display: true,
             text: title
-          }
+          },
+          scales:{
+            y: {
+                ticks:{
+                    display:false
+                }
+            }
+        }
         }
       });
 }

@@ -17,10 +17,31 @@
     --white_black: #222;
     --bottom-bar-bg: rgb(45 45 45);
     --task-complete-color: #EF4444;
-    
-    --table-bg:#222;
-    
+    --table-bg: #222;
     .system {
-    color: #FFEB3B;
+        color: #FFEB3B;
     }
+
+    table {
+        border: 1px solid #202020ad;
+    }
+
+    th {
+        background: #121212c4;
+        color: white;
+    }
+
+    tr:nth-child(odd) {
+        background-color: #212121;
+    }
+
+    tr:nth-child(even) {
+        background-color: #292929a1;
+    }
+
+    tr {
+        border-top: 1px solid #23232333;
+    }
+
+    
 }

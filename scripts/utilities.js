@@ -10,9 +10,9 @@ let dialogStates =
 let COLORS = {
   RED:"#ff6384",
   ORANGE:"#fea03e",
-  YELLOW:"#fea03e",
+  YELLOW:"#eab308",
   GREEN:"#4ade80",
-  BLUE:"#fea03e",
+  BLUE:"#3b82f6",
   AMBER:"#f59e0b",
   LIME:"#84cc16",
   EMERALD:"#10b981",
@@ -25,6 +25,7 @@ let COLORS = {
   PINK:"#ec4899",
   ROSE:"#f43f5e",
   ALL:["#ff6384","#fea03e","#fea03e","#4ade80","#fea03e","#f59e0b","#84cc16","#10b981","#14b8a6","#06b6d4","#0ea5e9","#6366f1","#8b5cf6","#a855f7","#ec4899","#f43f5e"]
+
 }
 
 
