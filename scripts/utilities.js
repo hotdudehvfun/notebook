@@ -7,6 +7,26 @@ let dialogStates =
   "viewLists": false
 }
 
+let COLORS = {
+  RED:"#ff6384",
+  ORANGE:"#fea03e",
+  YELLOW:"#fea03e",
+  GREEN:"#4ade80",
+  BLUE:"#fea03e",
+  AMBER:"#f59e0b",
+  LIME:"#84cc16",
+  EMERALD:"#10b981",
+  TEAL:"#14b8a6",
+  CYAN:"#06b6d4",
+  SKY:"#0ea5e9",
+  INGIGO:"#6366f1",
+  VIOLET:"#8b5cf6",
+  PURPLE:"#a855f7",
+  PINK:"#ec4899",
+  ROSE:"#f43f5e",
+  ALL:["#ff6384","#fea03e","#fea03e","#4ade80","#fea03e","#f59e0b","#84cc16","#10b981","#14b8a6","#06b6d4","#0ea5e9","#6366f1","#8b5cf6","#a855f7","#ec4899","#f43f5e"]
+}
+
 
 //date argument in milliseconds
 function timeSince(date){

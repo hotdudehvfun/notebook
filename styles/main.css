@@ -162,11 +162,11 @@ ul.notebooks li:last-child > .list-panel-item {
 }
 
 .task p {
-    margin: 0.5rem;
+    margin: 0.25rem;
 }
 
 .task li {
-    margin: 0.5rem 1rem;
+    margin: 0.25rem 1.5rem;
     list-style: disc;
 }
 
@@ -571,7 +571,7 @@ input.add-new-list-title {
 }
 
 h1, h2, h3, h4, h5 {
-    margin: 0.5rem;
+    margin: 0.25rem;
     text-transform: capitalize;
 }
 

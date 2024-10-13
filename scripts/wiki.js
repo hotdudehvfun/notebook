@@ -180,36 +180,45 @@ function handle_insert_class(input) {
     });
 }
 
-function handle_charts(line) {
-    // Check if the line starts with '_chart'
-    if (line.startsWith('@chart')) {
-        // Extract the content after '_chart'
-        let content = line.replace('@chart', '').trim();
-
-        // Create variables for labels, values, and type
-        let labels = [];
-        let values = [];
-        let type = '';
-
-        // Split the content by spaces, then by each parameter (Labels, Values, Type)
-        let params = content.split(' ');
-        params.forEach(param => {
-            let [key, value] = param.split(':');
-            key = key.toLowerCase();
-
-            if (key === 'labels') {
-                // Split labels by comma and trim each
-                labels = value.split(',').map(label => label.trim());
-            } else if (key === 'values') {
-                // Split values by comma and convert to numbers
-                values = value.split(',').map(val => parseFloat(val.trim()));
-            } else if (key === 'type') {
-                // Assign chart type
-                type = value.trim();
-            }
-        });
-        return `<canvas id="myChart"></canvas>`
-    }
+function handle_charts(text)
+{
+    /*
+    @chart
+    pie
+    Title
+    chart2
+    a,b
+    1,2
+    */
+    const lines = text.split("\n")
+    const type = lines[1].trim()
+    const title = lines[2].trim()
+    const id = lines[3].trim()
+    const labels = lines[4].split(",")
+    const values = lines[5].split(',').map(v => handle_calculations(v.trim()));
+    setTimeout(()=>{
+        update_chart(labels,values,id,type,title)
+    },50)
+    return `<canvas id="${id}"></canvas>`
+}
+function update_chart(_labels,values,id,_type,title)
+{
+    new Chart(id, {
+        type: _type,
+        data: {
+          labels: _labels,
+          datasets: [{
+            backgroundColor: COLORS.ALL,
+            data: values
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: title
+          }
+        }
+      });
 }
 
 function handle_table_component(text) {
@@ -235,7 +244,7 @@ function handle_table_component(text) {
 
         // Check for regular row (|)
         else if (line.startsWith('|')) {
-            const row = line.replace('|', '').split(',').map(cell => cell.trim());
+            const row = line.replace('|', '').split(',').map(cell => handle_calculations(cell.trim()));
             rows.push(row);
 
             // Keep track of sums for the columns specified in _sum_col
@@ -287,8 +296,11 @@ function parseWikiTextToHTML(wikiText) {
     wikiText = wikiText.trim()
     if(wikiText.startsWith("@table"))
     {
-        //it is a table component
         return handle_table_component(wikiText)
+    }
+    if(wikiText.startsWith("@chart"))
+    {
+        return handle_charts(wikiText)
     }
     let html = '';
     let lines = wikiText.split("\n")

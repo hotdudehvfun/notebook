@@ -1217,7 +1217,13 @@ function main_controller($scope, $timeout, db_service) {
             { icon: "list", insert_text: "* Item", title: "List" },
             { icon: "sliders", insert_text: "#50%", title: "Progress bar" },
             { icon: "check_box", insert_text: "$ ", title: "Split notes" },
-            { icon: "table", insert_text: "@table \n ||a,b |c,d", title: "Table" },
+            { icon: "table", insert_text: "@table\n||a,b\n|c,d", title: "Table" },
+            { 
+                icon: "pie_chart",
+                insert_text:`@chart\npie\nTitle\nchartid\na,b\n1,2`,
+                title: "Chart"
+            },
+            
         ]
 
         $scope.proverbs = [
