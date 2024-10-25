@@ -84,6 +84,7 @@ function directive_bottom_bar() {
                     ng-show="create_btns_arr[1]"
                     class="notebook_container">
                     <input
+                        type="text"
                         name="notebook_name"
                         ng-keyup="handle_input_on_notebook($event)"
                         class="add-new-list-title rounded-2"
@@ -100,6 +101,7 @@ function directive_bottom_bar() {
                     ng-show="create_btns_arr[2]"
                     class="system_var_container">
                     <input
+                        type="text"
                         name="system_var_name" 
                         class="system_var_input"
                         ng-model="new_var_name" 

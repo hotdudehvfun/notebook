@@ -73,7 +73,11 @@ function directive_sidebar(){
           <!-- settings -->
           <div class="flex-col rounded-3/4 border m-1/2">
             <h3 class="mt-2">Settings</h3>
-            
+            <div class="flex-row space-between">
+                <h4>App Size</h4>
+                <h4>{{app_size()}}</h4>
+            </div>
+
             <div class="flex-row space-between">
                 <h4>Enable dark theme</h4>
                 <div style="transform: scale(.65);">

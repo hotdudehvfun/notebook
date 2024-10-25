@@ -50,4 +50,5 @@ app.directive("topBar",directive_top_bar);
 app.directive("popupRenameNotebook",directive_rename_notebook_popup);
 app.directive("popupCreateNotebook",directive_new_notebook_popup);
 app.directive("popupPassword",directive_password_popup);
+// app.directive("dbFileChange",db_file_change);
 

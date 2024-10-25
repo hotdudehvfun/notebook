@@ -94,7 +94,7 @@ body {
     background: #44409b;
 }
 
-input {
+input[type="text"] {
     margin: 0;
     border: none;
     height: 36px;
@@ -218,6 +218,7 @@ ul.notebooks li:last-child > .list-panel-item {
     background: var(--bg-color);
     margin: 0.5rem 1rem;
     border-radius: 8px;
+    border: 1px solid;
 }
 
 .new-task-content {
@@ -355,12 +356,13 @@ div#list-more-options-container {
     /* border-bottom: 2px solid var(--border-color); */
 }
 
-input.add-new-list-title {
+.add-new-list-title {
     width: 100%;
     background: none;
     color: var(--font-color);
     /* padding: .5rem; */
     font-size: 0.8rem;
+    /* border: 1px solid; */
 }
 
 .system_var_input {
@@ -1122,4 +1124,8 @@ table > tr > th, table > tr > td, table > * > tr > th,table > * > tr > td {
     color: gray;
     margin-left: .75rem;
     font-size: .65rem;
+}
+
+input#fileInput::-webkit-file-upload-button {
+  visibility: hidden;
 }

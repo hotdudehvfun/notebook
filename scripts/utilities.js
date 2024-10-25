@@ -164,6 +164,8 @@ function insertHtmlAtCursor(html)
           range.insertNode(node);
       }
   }
+
+  // angular.element(document.body).injector().get('$rootScope').$broadcast('update_db_textarea', fileReader.result);
 }
 
 function insertList(type)
@@ -358,16 +360,6 @@ function get_empty_proverbs(){
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 encrypt_data = (plain_text,key) => {
   let encrypted_text = CryptoJS.AES.encrypt(plain_text, key).toString();
   return encrypted_text;  
@@ -378,3 +370,14 @@ decrypt_data = (encrypted_text,key) => {
   let decrypted_text = bytes.toString(CryptoJS.enc.Utf8);  
   return decrypted_text;  
 }
+
+
+document.querySelector("#fileInput").addEventListener('change',function(){
+  var fileReader=new FileReader();
+  fileReader.onload=function(){
+    // console.log(fileReader.result)
+    document.querySelector("#db_textarea").value = fileReader.result;
+    angular.element(document.body).injector().get('$rootScope').$broadcast('update_db_textarea', fileReader.result);
+  }
+  fileReader.readAsText(this.files[0]);
+})

@@ -70,7 +70,12 @@
                 </select>
             </div>
             <div class="flex-col align-center w-full">
-                <div class="flex-row align-center w-full gap-1 mt-2">
+                <div class="flex-col align-center w-full gap-1 mt-2">
+                    <input 
+                        ng-show="db_operation=='import'"
+                        type="file" 
+                        id="fileInput"
+                        file-input="file" />
                     <textarea
                         ng-model="db_textarea"
                         id="db_textarea"
@@ -80,7 +85,7 @@
                 </div>
                 <div class="flex-row">
                     <span ng-click="dialog_flags.show_db_popup=false" class="button text-red-500">Cancel</span>
-                    <span ng-if="db_operation=='export'" ng-click="copy_to_clipboard(db_textarea)" class="button">Copy data</span>
+                    <span ng-if="db_operation=='export'" ng-click="export_db_as_file(db_textarea)" class="button">Export data</span>
                     <span ng-if="db_operation=='import'" ng-click="import_data()" class="button">Import data</span>
                 </div>
                 
@@ -132,6 +137,7 @@
 
 
     <!-- <script type="text/javascript" src="app.js"></script> -->
+    <!-- <script type="text/javascript" src="scripts/directive_file_change.js"></script> -->
     <script type="text/javascript" src="scripts/directive_password_popup.js"></script>
     <script type="text/javascript" src="scripts/directive_new_notebook_popup.js"></script>
     <script type="text/javascript" src="scripts/directive_main_content.js"></script>
