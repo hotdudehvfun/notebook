@@ -117,7 +117,7 @@ function directive_sidebar(){
             <div class="flex-row space-between align-center">
                 <h4>Import/Export</h4>
                 <div 
-                    ng-click="$scope.dialog_flags.show_db_popup = true; $scope.dialog_flags.show_list_more_options = false;"
+                    ng-click="close_all_dialogs(); dialog_flags.show_db_popup = true;"
                     class="button">Open Database</div>
             </div>
             
