@@ -236,6 +236,12 @@ function main_controller($scope, $timeout, db_service) {
                 alert("Notebook is already locked")
                 return "";
             }
+            if($scope.password.length==0)
+            {
+                $scope.show_toast("Password is required to lock notebook")
+                return "";
+            }
+
             $scope.notes.forEach((data, index) => {
                 data.title = encrypt_data(data.title, $scope.password)
             })
@@ -252,6 +258,12 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.unlock_data = () => {
         try {
+            if($scope.password.length==0)
+            {
+                $scope.show_toast("Password is required to lock notebook")
+                return "";
+            }
+
             if ($scope.is_notebook_locked()) {
                 // Test password by decrypting one field without modifying it
                 const testDecryption = decrypt_data($scope.notes[0].title, $scope.password);
@@ -483,10 +495,6 @@ function main_controller($scope, $timeout, db_service) {
         $scope.show_update_task_button = true
         $scope.close_all_dialogs()
         $scope.note_textarea_container_height = 300
-
-        // var textarea = document.querySelector('#note_content');
-        // const h = calculate_height_based_on_lines($scope.note_content, $scope.textarea_max_height)
-        // textarea.style.height = `${h + 40}px`;
     }
 
     // update task in popup
@@ -500,6 +508,19 @@ function main_controller($scope, $timeout, db_service) {
             $scope.show_toast("Note updated");
         } catch (err) {
             $scope.show_toast("Error while updating note")
+            console.log("Error while updating note", err)
+        }
+    }
+
+    //cancel update note
+    $scope.cancel_update_note = () => {
+        try {
+            console.log("cancel")
+            $scope.selected_note = null
+            $scope.show_update_task_button = false
+            $scope.note_content = ""
+            $scope.note_textarea_container_height = 45
+        } catch (err) {
             console.log("Error while updating note", err)
         }
     }
@@ -854,21 +875,6 @@ function main_controller($scope, $timeout, db_service) {
                 show: true,
                 action: () => { $scope.dialog_flags.show_password_popup = true }
             }, {
-                text: "Database",
-                icon: "database",
-                class: "task-more-options-item",
-                show: true,
-                action: () => { $scope.dialog_flags.show_db_popup = true; $scope.dialog_flags.show_list_more_options = false; }
-            }, {
-                text: $scope.is_sortable ? "Disable Sorting" : "Enable Sorting",
-                icon: "swap_vert",
-                class: "task-more-options-item",
-                show: true,
-                action: () => {
-                    $scope.is_sortable = !$scope.is_sortable;
-                    $scope.close_all_dialogs();
-                }
-            }, {
                 text: "Paste Task",
                 icon: "content_paste",
                 class: "task-more-options-item",
@@ -966,21 +972,49 @@ function main_controller($scope, $timeout, db_service) {
         ]
     }
 
+    $scope.handle_db_operation_change = () => {
+        try {
+            if ($scope.db_operation == $scope.CONST.EXPORT) {
+                let data = JSON.stringify(localStorage)
+                $scope.db_textarea = data
+                $scope.password = ""
+            } else {
+                $scope.db_textarea = ""
+            }
+            
+        } catch (err) {
+            // $scope.show_toast("Cannot export file")
+            console.error(err);
+        }
+    }
+
     $scope.export_db_as_file = function (textContent) {
         try {
+            if($scope.password.length==0)
+            {
+                alert("Protect this file with a password to continue")
+                return "";
+            }
+            if(textContent.length==0)
+            {
+                alert("Text is missing")
+                return "";
+            }
+            textContent = encrypt_data(textContent,$scope.password)
+            $scope.password = ""
             const blob = new Blob([textContent], { type: "text/plain" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = "myTextFile.txt";
             link.click();
             URL.revokeObjectURL(link.href);
-
         } catch (err) {
             console.log("Error export db", err)
             $scope.show_toast("Cannot export file")
         }
     }
 
+    // sending message to angular from outside world
     $scope.$on('update_db_textarea', function(event, newValue) {
         $scope.db_textarea = newValue;
       });
@@ -1001,15 +1035,17 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.import_data = () => {
         try {
-            // console.log($scope.db_textarea)
-            if ($scope.db_operation != "import") {
+            if ($scope.db_operation != $scope.CONST.IMPORT) {
                 $scope.show_toast("Operation not selected")
                 return ""
             }
+
             if ($scope.db_textarea.length == 0) {
-                $scope.show_toast("Missing JSON code")
+                $scope.show_toast("Missing text")
                 return ""
             }
+
+            $scope.db_textarea = $scope.unlock_file()
             if (!is_valid_json($scope.db_textarea)) {
                 $scope.show_toast("Invalid JSON code")
                 return ""
@@ -1022,9 +1058,8 @@ function main_controller($scope, $timeout, db_service) {
                 });
                 $scope.show_toast("Import Successful");
                 $scope.db_textarea = "";
-                $scope.db_operation = "";
+                $scope.db_operation = null;
                 $scope.close_all_dialogs()
-                //read data from storage
                 $scope.notebooks = $scope.read_data()
             }
         }
@@ -1034,22 +1069,20 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
-
-
-    $scope.handle_db_operation_change = () => {
+    $scope.unlock_file = () => {
         try {
-            if ($scope.db_operation == "export") {
-                let data = JSON.stringify(localStorage)
-                $scope.db_textarea = data
-            } else {
-                $scope.db_textarea = ""
+            if ($scope.password.length>0) {
+                const testDecryption = decrypt_data($scope.db_textarea, $scope.password);
+                if (testDecryption !== null && testDecryption !== "") {
+                    $scope.password = "";
+                    return testDecryption
+                }
             }
-            
+            return -1
         } catch (err) {
-            // $scope.show_toast("Cannot export file")
-            console.error(err);
+
         }
-    }
+    };
 
     $scope.handle_note_edit_option_change = () => {
         if ($scope.note_edit_selected_option) {
@@ -1222,6 +1255,11 @@ function main_controller($scope, $timeout, db_service) {
         $scope.default_app_icon = "eco"
         $scope.pageTitle = $scope.defaultPageTitle;
         $scope.copied_task = null
+        $scope.db_operation = null
+        $scope.CONST={
+            IMPORT:"import",
+            EXPORT:"export",
+        }
 
         //enable select notebooks
         $scope.select_notebooks = false
@@ -1237,6 +1275,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.new_var_value = ""
         $scope.max_notebook_title_len = 20
         $scope.note_textarea_container_height = 45
+        $scope.password = ""
 
         // edit options for new note
         $scope.edit_options = [

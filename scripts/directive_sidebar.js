@@ -89,6 +89,7 @@ function directive_sidebar(){
                     </label>
                 </div>
             </div>
+            
             <div class="flex-row space-between">
                 <h4>Show complete button</h4>
                 <div style="transform: scale(.65);">
@@ -99,6 +100,25 @@ function directive_sidebar(){
                         <span class="toggle_span"></span>
                     </label>
                 </div>
+            </div>
+
+            <div class="flex-row space-between">
+                <h4>Rearrange notebooks and notes</h4>
+                <div style="transform: scale(.65);">
+                    <input
+                        ng-model="is_sortable"
+                        type="checkbox" id="type4" class="toggle_checkbox"/>
+                        <label for="type4" class="toggle_label">
+                            <span class="toggle_span"></span>
+                        </label>
+                </div>
+            </div>
+
+            <div class="flex-row space-between align-center">
+                <h4>Import/Export</h4>
+                <div 
+                    ng-click="$scope.dialog_flags.show_db_popup = true; $scope.dialog_flags.show_list_more_options = false;"
+                    class="button">Open Database</div>
             </div>
             
           </div>

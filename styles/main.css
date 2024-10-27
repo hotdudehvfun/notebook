@@ -102,6 +102,17 @@ input[type="text"] {
     font-size: 0.95rem;
 }
 
+
+input[type="password"] {
+    border: 1px solid var(--white_black);
+    padding: 8px;
+    font-size: 0.95rem;
+    background:transparent;
+    border-radius:.5rem;
+    color: var(--font-color);
+}
+
+
 input:focus {
     outline: none;
 }

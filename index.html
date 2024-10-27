@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>NoteBook</title>
     <meta charset="UTF-8">
@@ -10,7 +11,7 @@
     <meta name="description" content="Author: Arun, a todo app">
     <meta http-equiv="cache-control" content="max-age=8000" />
     <meta http-equiv="cache-control" content="Private" />
-    
+
     <link rel="apple-touch-icon" sizes="180x180" href="img/ios/180.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/ios/32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/ios/16.png">
@@ -18,48 +19,50 @@
     <link rel="manifest" href="manifest.json">
     <meta id="theme-color" name="theme-color" content="aliceblue" />
     <meta name="mobile-web-app-capable" content="yes">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js" integrity="sha512-8AwTn2Tax8NWI+SqsYAXiKT8jO11WUBzTEWRoilYgr5GWnF4fNqBRD+hCr4JRSA1eZ/qwbI+FPsM3X/PQeHgpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js"
+        integrity="sha512-8AwTn2Tax8NWI+SqsYAXiKT8jO11WUBzTEWRoilYgr5GWnF4fNqBRD+hCr4JRSA1eZ/qwbI+FPsM3X/PQeHgpQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/aes.min.js" integrity="sha512-UOtWWEXoMk1WLeC873Gmrkb2/dZMwvN1ViM9C1mNvNmQSeXpEr8sRzXLmUSha1X4x5V892uFmEjiZzUsYiHYiw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"
+        integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/aes.min.js"
+        integrity="sha512-UOtWWEXoMk1WLeC873Gmrkb2/dZMwvN1ViM9C1mNvNmQSeXpEr8sRzXLmUSha1X4x5V892uFmEjiZzUsYiHYiw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
     <link rel="stylesheet" href="styles/custom_styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 </head>
-<body
-    ng-app="notebook_app"
-    ng-controller='main_controller'
-    ng-init="init()"
-    data-theme="{{is_dark?'dark':'light';}}">
+
+<body ng-app="notebook_app" ng-controller='main_controller' ng-init="init()" data-theme="{{is_dark?'dark':'light';}}">
     <div class="main-container">
         <!-- top bar -->
         <top-bar class="topbar shadow"></top-bar>
         <!-- content bar -->
         <main-content class="content"></main-content>
         <!-- bottom bar -->
-         <bottom-bar class="bottom-bar"></bottom-bar>
+        <bottom-bar class="bottom-bar"></bottom-bar>
     </div>
     <!-- sidebar menu -->
-     <side-bar class="sidebar-menu-container" ng-style="sidebar_left"></side-bar>
+    <side-bar class="sidebar-menu-container" ng-style="sidebar_left"></side-bar>
 
-     <!-- rename notebook dialog pop up-->
-     <popup-rename-notebook
-        ng-show="dialog_flags.show_rename_notebook_popup" 
-        class="popup visible_pop_animation">
-     </popup-rename-notebook>
+    <!-- rename notebook dialog pop up-->
+    <popup-rename-notebook ng-show="dialog_flags.show_rename_notebook_popup" class="popup visible_pop_animation">
+    </popup-rename-notebook>
 
-     <!-- import popup -->
-     <div class="popup visible_pop_animation" ng-show="dialog_flags.show_db_popup">
+    <!-- import popup -->
+    <div class="popup visible_pop_animation" ng-show="dialog_flags.show_db_popup">
         <div class="new_task_popup_child">
             <div class="flex-row align-center gap-1 m-2">
                 <span class="material-symbols-outlined list-icon">database</span>
-                <span>Choose operation</span>
-                <select
+                <span>Database Management</span>
+                <!-- <select
                 name="db_operation"
                 class="select text-accent capitalize bold text-2"
                 ng-model="db_operation"
@@ -68,15 +71,46 @@
                     <option value="import">Import Data</option>
                     <option value="export">Export Data</option>
                 </select>
+                 -->
             </div>
             <div class="flex-col align-center w-full">
                 <div class="flex-col align-center w-full gap-1 mt-2">
-                    <input 
-                        ng-show="db_operation=='import'"
+                    <div class="flex-row gap-2">
+                        <div
+                            ng-click="db_operation=CONST.IMPORT; handle_db_operation_change()"
+                            ng-class="{colorful:db_operation==CONST.IMPORT}"
+                            class="flex-row align-center gap-2 grayscale border rounded p-1/2">
+                            <span class="material-symbols-outlined list-icon">cloud_upload</span>
+                            <span>Import</span>
+                        </div>
+                        <div
+                            ng-click="db_operation=CONST.EXPORT; handle_db_operation_change()"
+                            ng-class="{colorful:db_operation==CONST.EXPORT}"
+                            class="flex-row align-center gap-2 grayscale border rounded p-1/2">
+                            <span class="material-symbols-outlined list-icon">cloud_download</span>
+                            <span>Export</span>
+                        </div>
+                    </div>
+                    <span ng-show="db_operation==CONST.IMPORT">Choose encrypted file to import</span>
+                    <input
+                        ng-show="db_operation==CONST.IMPORT"
                         type="file" 
                         id="fileInput"
                         file-input="file" />
+                    
+                    <div ng-if="db_operation==CONST.EXPORT">
+                            Set password to Encrypt the file
+                        </div>
+                    <div ng-if="db_operation==CONST.IMPORT">
+                            Enter password to Decrypt the file
+                    </div>        
+                    <input
+                        name="password"
+                        type="password"
+                        ng-model="password" 
+                        placeholder="Password for the file"></input>
                     <textarea
+                        ng-readonly="db_operation==CONST.EXPORT"
                         ng-model="db_textarea"
                         id="db_textarea"
                         class="new-task-content rounded-2"
@@ -84,26 +118,37 @@
                         ></textarea>
                 </div>
                 <div class="flex-row">
-                    <span ng-click="dialog_flags.show_db_popup=false" class="button text-red-500">Cancel</span>
-                    <span ng-if="db_operation=='export'" ng-click="export_db_as_file(db_textarea)" class="button">Export data</span>
-                    <span ng-if="db_operation=='import'" ng-click="import_data()" class="button">Import data</span>
+                    <span 
+                        ng-click="dialog_flags.show_db_popup=false; password=''; db_textarea='' " 
+                        class="button text-red-500">Cancel</span>
+                    <span 
+                        ng-if="db_operation==CONST.EXPORT && password.length>0" 
+                        ng-click="export_db_as_file(db_textarea)" 
+                        class="button">
+                        Encrypt and Export
+                    </span>
+                    <span 
+                        ng-if="db_operation==CONST.IMPORT && password.length>0" 
+                        ng-click="import_data()" 
+                        class="button">
+                        Decrypt and Import
+                    </span>
                 </div>
                 
             </div>
+            
+
         </div>
-      </div>
-      
+    </div>
+
 
 
 
     <!-- more options panel -->
     <div id="list-more-options-container" ng-show="dialog_flags.show_list_more_options">
         <div class="list-more-optionas-holder visible_pop_animation">
-            <div 
-            ng-repeat="option in notebook_more_options"
-            ng-class="option.class"
-            ng-click="option.action()"
-            ng-show="option.show">
+            <div ng-repeat="option in notebook_more_options" ng-class="option.class" ng-click="option.action()"
+                ng-show="option.show">
                 <span class="material-symbols-outlined">{{option.icon}}</span>
                 <div>{{option.text}}</div>
             </div>
@@ -120,11 +165,8 @@
     <!-- taskMoreOptiosContainer -->
     <div class="taskMoreOptionsConatiner" ng-show="dialog_flags.show_task_more_options">
         <div class="task-more-options-holder visible_pop_animation">
-            <div 
-            ng-repeat="option in note_more_options"
-            class="task-more-options-item"
-            ng-show="option.show"
-            ng-click="option.action()">
+            <div ng-repeat="option in note_more_options" class="task-more-options-item" ng-show="option.show"
+                ng-click="option.action()">
                 <span class="material-symbols-outlined ">{{option.icon}}</span>
                 <div>{{option.text}}</div>
             </div>
@@ -154,4 +196,5 @@
     <script type="text/javascript" src="scripts/html_gen.js"></script>
     <script type="text/javascript" src="scripts/utilities.js"></script>
 </body>
+
 </html>

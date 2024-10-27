@@ -69,14 +69,22 @@ function directive_bottom_bar() {
                         placeholder={{note_content_placeholder}}
                         autofocus>
                     </textarea>
-                    <span
-                    ng-hide="show_update_task_button"
-                    ng-click="create_note()"
-                    class="material-symbols-outlined icon-btn">arrow_upward</span>
-                    <span
-                    ng-show="show_update_task_button"
-                    ng-click="update_note()"
-                    class="material-symbols-outlined icon-btn">upgrade</span>
+                    <div class="flex-col">
+                        <span
+                        ng-hide="show_update_task_button"
+                        ng-click="create_note()"
+                        class="material-symbols-outlined icon-btn">arrow_upward</span>
+                        <span
+                        ng-show="show_update_task_button"
+                        ng-click="update_note()"
+                        class="material-symbols-outlined icon-btn">update</span>
+                        <span
+                        ng-show="show_update_task_button"
+                        ng-click="cancel_update_note()"
+                        class="material-symbols-outlined icon-btn">cancel</span>
+                    </div>
+                    
+                    
                 </div>
                 
                 <!-- create notebook div -->

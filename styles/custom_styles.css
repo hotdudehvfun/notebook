@@ -42,3 +42,11 @@
 {
     background-color:#ff4967;
 }
+
+.grayscale {
+    filter: grayscale(1);
+}
+
+.colorful {
+    filter: grayscale(0);
+}
