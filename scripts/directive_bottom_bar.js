@@ -17,8 +17,8 @@ function directive_bottom_bar() {
                     <div class="flex-row gap-1">
                         <div
                             ng-show="is_note_selected"
-                            ng-class="{disabled:!is_note_selected}"
-                            ng-click="is_note_selected=!is_note_selected" 
+                            ng-class="{disabled:!show_edit_options}"
+                            ng-click="show_edit_options=!show_edit_options" 
                             class="chip2">
                             <span class="material-symbols-outlined">edit_note</span>
                             <span>File</span>
@@ -41,7 +41,7 @@ function directive_bottom_bar() {
                     <div class="flex-row gap-1">
                         <!-- show note edit options when note is selected -->
                         <div
-                            ng-if="is_note_selected && option.show" 
+                            ng-if="show_edit_options && option.show && is_note_selected" 
                             ng-repeat="option in note_more_options"
                             class="chip mx-1" 
                             ng-click="option.action()">
@@ -70,7 +70,9 @@ function directive_bottom_bar() {
                     </div>
                 </div>
 
+                <!-- three buttons -->
                 <div class="flex-row" style="grid-area:create_btns;">
+                    <!-- note button -->
                     <span 
                         ng-click="choose_create_btn(0)"
                         ng-show="create_btns_arr[0] || show_all_create_btns"

@@ -163,8 +163,6 @@ function insertHtmlAtCursor(html)
           range.insertNode(node);
       }
   }
-
-  // angular.element(document.body).injector().get('$rootScope').$broadcast('update_db_textarea', fileReader.result);
 }
 
 function insertList(type)
@@ -201,6 +199,11 @@ function insertTextAtCursor(textareaId, text) {
   textarea.value = beforeText + text + afterText;
   textarea.selectionStart = textarea.selectionEnd = startPos + text.length;
   textarea.focus();
+
+
+  let newValue = document.querySelector("#note_content").value
+  console.log(newValue)
+  angular.element(document.body).injector().get('$rootScope').$broadcast('update_note_content_from_outside',newValue);
 }
 
 

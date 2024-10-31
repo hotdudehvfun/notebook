@@ -60,6 +60,7 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.show_purge_list_option = true
                 $scope.show_rename_list_option = true
                 $scope.is_note_selected = false;
+                $scope.show_edit_options = false;
                 $scope.selected_note = undefined
 
                 if (notebook.icon)
@@ -68,6 +69,14 @@ function main_controller($scope, $timeout, db_service) {
                     $scope.default_app_icon = "eco"
 
                 $scope.note_content_placeholder = `Create task in ${$scope.selectedListName}`
+
+                //show system tab in bottom bar
+                if(notebook.title.toLowerCase()=="system")
+                {
+                    $scope.create_btns_arr = [false,false,true]
+                }
+
+
                 $scope.open_sidebar(false)
                 $scope.save_data()
             }
@@ -415,6 +424,7 @@ function main_controller($scope, $timeout, db_service) {
                 }
                 $scope.is_note_selected = false;
                 $scope.selected_note = null;
+                $scope.show_edit_options = false;
                 $scope.save_data();
                 $scope.close_all_dialogs();
             }
@@ -474,6 +484,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.copied_task = null;
             $scope.is_note_selected = false;
             $scope.selected_note = null;
+            $scope.show_edit_options = false;
             $scope.show_toast("Task pasted")
         } catch (err) {
             $scope.show_toast("Failed to paste")
@@ -512,6 +523,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.note_textarea_container_height = 45
             $scope.is_note_selected = false;
             $scope.selected_note = null;
+            $scope.show_edit_options = false;
             $scope.save_data()
             $scope.show_toast("Note updated");
         } catch (err) {
@@ -1017,6 +1029,13 @@ function main_controller($scope, $timeout, db_service) {
     $scope.$on('update_db_textarea', function(event, newValue) {
         $scope.db_textarea = newValue;
       });
+    
+      // sending message to angular from outside world
+    $scope.$on('update_note_content_from_outside', function(event, newValue) {
+        $scope.note_content = newValue;
+        console.log($scope.note_content)
+      });
+    
       
 
     $scope.copy_to_clipboard = function (textToCopy) {
@@ -1288,18 +1307,8 @@ function main_controller($scope, $timeout, db_service) {
                 icon: "pie_chart",
                 insert_text: `@chart\npie\nTitle\nchartid\na,b\n1,2`,
                 title: "Chart"
-            },
-
+            }
         ]
-        // edit options when note is selected
-        $scope.edit_options = [
-            { icon: "edit", title: "Update" },
-            { icon: "file_copy", title: "Copy" },
-            { icon: "delete", title: "Delete" },
-            { icon: "check_box", title: "Toggle complete" },
-            { icon: "table", title: "Table" },
-        ]
-        
 
         $scope.proverbs = [
             "An empty vessel can hold anything.",
