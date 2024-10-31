@@ -52,7 +52,8 @@ function directive_main_content(){
                                 class="material-symbols-outlined" 
                                 ng-bind="note.taskIcon"
                                 ng-click="toggle_note_completed_state(note)"></span>
-                            <div  
+                            <div
+                                ng-class="{selected:selected_note==note}"
                                 class="task-content-div"
                                 ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                                 ng-click="handle_tap_on_note(note);"></div>

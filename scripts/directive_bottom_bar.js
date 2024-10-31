@@ -14,30 +14,59 @@ function directive_bottom_bar() {
                 <div
                     ng-if="create_btns_arr[0]"
                     class="edit_options_container">
-                    <div ng-class="{disabled:!show_edit_options}" ng-click="show_edit_options=!show_edit_options" class="chip2">
-                        <span class="material-symbols-outlined">edit_note</span>
-                        <span>Edit</span>
+                    <div class="flex-row gap-1">
+                        <div
+                            ng-show="is_note_selected"
+                            ng-class="{disabled:!is_note_selected}"
+                            ng-click="is_note_selected=!is_note_selected" 
+                            class="chip2">
+                            <span class="material-symbols-outlined">edit_note</span>
+                            <span>File</span>
+                        </div>
+                        <div
+                            ng-class="{disabled:!show_insert_options}"
+                            ng-click="show_insert_options=!show_insert_options" 
+                            class="chip2">
+                            <span class="material-symbols-outlined">edit_note</span>
+                            <span>Insert</span>
+                        </div>
+                        <div 
+                            ng-class="{disabled:!show_edit_options_system_vars}" 
+                            ng-click="show_edit_options_system_vars=!show_edit_options_system_vars"  class="chip2">
+                            <span class="material-symbols-outlined">deployed_code</span>
+                            <span>System Vars</span>
+                        </div>
                     </div>
-                    <div
-                        ng-show="show_edit_options" 
+                    
+                    <div class="flex-row gap-1">
+                        <!-- show note edit options when note is selected -->
+                        <div
+                            ng-if="is_note_selected && option.show" 
+                            ng-repeat="option in note_more_options"
+                            class="chip mx-1" 
+                            ng-click="option.action()">
+                            <span class="material-symbols-outlined">{{option.icon}}</span>
+                            <span>{{option.text}}</span>
+                        </div>
+                        <!-- show insert options -->
+                        <div
+                        ng-if="show_insert_options" 
                         ng-repeat="option in edit_options" 
                         class="chip" 
                         ng-click="insertTextAtCursor('note_content',option.insert_text)">
-                        <span class="material-symbols-outlined">{{option.icon}}</span>
-                        <span>{{option.title}}</span>
-                    </div>
-                    <div ng-class="{disabled:!show_edit_options_system_vars}" ng-click="show_edit_options_system_vars=!show_edit_options_system_vars"  class="chip2">
-                        <span class="material-symbols-outlined">deployed_code</span>
-                        <span>System Vars</span>
-                    </div>
+                            <span class="material-symbols-outlined">{{option.icon}}</span>
+                            <span>{{option.title}}</span>
+                        </div>
+                    <!-- show system vars options -->
                     <div
-                        ng-show="show_edit_options_system_vars"
+                        ng-if="show_edit_options_system_vars"
                         class="chip"
                         ng-repeat="(key,value) in get_system_vars()"
-                        ng-click="insertTextAtCursor('note_content',key)"
-                        >
-                        <span>{{key}}={{value}}</span>
-                        <span>{{option.title}}</span>
+                        ng-click="insertTextAtCursor('note_content',key)">
+                            <span>{{key}}={{value}}</span>
+                            <span>{{option.title}}</span>
+                    </div>
+                    
                     </div>
                 </div>
 

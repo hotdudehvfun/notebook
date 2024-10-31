@@ -477,7 +477,7 @@ div#list-more-options-container {
 
 .chip {
     background: var(--chip-bg);
-    border-radius: 1rem;
+    border-radius: .5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -1080,13 +1080,14 @@ input:checked + label.toggle_label > span.toggle_span {
     padding: 0.5rem 0rem;
     overflow-x: auto;
     grid-area: edit_options;
+    flex-direction: column;
 }
 
 .chip2 {
     display: flex;
     gap: 1rem;
     background: var(--accent);
-    border-radius: 100px;
+    border-radius: 0.5rem;
     justify-content: center;
     align-items: center;
     padding: 5px 10px;
@@ -1139,4 +1140,10 @@ table > tr > th, table > tr > td, table > * > tr > th,table > * > tr > td {
 
 input#fileInput::-webkit-file-upload-button {
   visibility: hidden;
+}
+
+
+.task-content-div.selected {
+    border: 1px solid;
+    border-radius: .25rem;
 }

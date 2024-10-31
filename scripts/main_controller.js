@@ -59,6 +59,8 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.show_delete_list_option = true
                 $scope.show_purge_list_option = true
                 $scope.show_rename_list_option = true
+                $scope.is_note_selected = false;
+                $scope.selected_note = undefined
 
                 if (notebook.icon)
                     $scope.default_app_icon = notebook.icon
@@ -367,7 +369,7 @@ function main_controller($scope, $timeout, db_service) {
         try {
             console.log(note)
             $scope.selected_note = note;
-            $scope.dialog_flags.show_task_more_options = true
+            $scope.is_note_selected = true
             $scope.task_completed_state = note.isTaskCompleted
             //check if we are inside trash
             // console.log($scope.current_notebook)
@@ -411,6 +413,8 @@ function main_controller($scope, $timeout, db_service) {
                 } else {
                     $scope.show_toast("Note deleted forever");
                 }
+                $scope.is_note_selected = false;
+                $scope.selected_note = null;
                 $scope.save_data();
                 $scope.close_all_dialogs();
             }
@@ -468,6 +472,8 @@ function main_controller($scope, $timeout, db_service) {
             $scope.save_data()
             $scope.close_all_dialogs()
             $scope.copied_task = null;
+            $scope.is_note_selected = false;
+            $scope.selected_note = null;
             $scope.show_toast("Task pasted")
         } catch (err) {
             $scope.show_toast("Failed to paste")
@@ -504,6 +510,8 @@ function main_controller($scope, $timeout, db_service) {
             $scope.show_update_task_button = false
             $scope.note_content = ""
             $scope.note_textarea_container_height = 45
+            $scope.is_note_selected = false;
+            $scope.selected_note = null;
             $scope.save_data()
             $scope.show_toast("Note updated");
         } catch (err) {
@@ -645,7 +653,6 @@ function main_controller($scope, $timeout, db_service) {
         $scope.select_notebooks = !$scope.select_notebooks
         $scope.select_notebooks_menu_text = $scope.select_notebooks ? "Cancel Selection" : "Select Notebooks";
         $scope.dialog_flags.show_list_more_options = false
-        $scope.dialog_flags.show_task_more_options = false
     }
 
     $scope.notebook_selected_state = function (index) {
@@ -673,7 +680,6 @@ function main_controller($scope, $timeout, db_service) {
         $scope.selected_notebooks = [];
         $scope.select_notebooks = false
         $scope.select_notebooks_menu_text = "Select Notebooks"
-        $scope.dialog_flags.show_task_more_options = false
         $scope.dialog_flags.show_list_more_options = false
         $scope.save_data();
     };
@@ -961,13 +967,6 @@ function main_controller($scope, $timeout, db_service) {
                 class: "task-more-options-item",
                 show: true,
                 action: () => { $scope.delete_task() }
-            },
-            {
-                text: "Close",
-                icon: "cancel",
-                class: "task-more-options-item text-red-500",
-                show: true,
-                action: () => { $scope.close_all_dialogs() }
             }
         ]
     }
@@ -1211,7 +1210,6 @@ function main_controller($scope, $timeout, db_service) {
         $scope.dialog_flags = {
             is_sidebar_menu_open: false,
             show_list_more_options: false,
-            show_task_more_options: false,
             show_create_notebook_popup: false,
             show_create_task_popup: false,
             show_db_popup: false,
@@ -1230,8 +1228,10 @@ function main_controller($scope, $timeout, db_service) {
         $scope.is_data_locked = false
         $scope.is_trash_open = false
         $scope.toast_msg = ""
+        $scope.is_note_selected = false //flag to check if any note is selected
         $scope.show_edit_options = false //bottom bar note edit options
-        $scope.show_edit_options_system_vars = false //bottom bar note edit options system vars
+        $scope.show_insert_options = false //bottom bar note insert options
+        $scope.show_edit_options_system_vars = false //bottom bar note insert system vars
         $scope.show_note_complete_button = false // show hide complete button
 
 
@@ -1277,7 +1277,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.note_textarea_container_height = 45
         $scope.password = ""
 
-        // edit options for new note
+        // insert options for new note
         $scope.edit_options = [
             { icon: "title", insert_text: "#H1", title: "Heading" },
             { icon: "list", insert_text: "* Item", title: "List" },
@@ -1291,6 +1291,15 @@ function main_controller($scope, $timeout, db_service) {
             },
 
         ]
+        // edit options when note is selected
+        $scope.edit_options = [
+            { icon: "edit", title: "Update" },
+            { icon: "file_copy", title: "Copy" },
+            { icon: "delete", title: "Delete" },
+            { icon: "check_box", title: "Toggle complete" },
+            { icon: "table", title: "Table" },
+        ]
+        
 
         $scope.proverbs = [
             "An empty vessel can hold anything.",
