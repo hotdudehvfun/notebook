@@ -27,21 +27,23 @@ function sub(line)
 }
 
 function progress_bar(text) {
-    if(text.includes(","))
-    {
-        return multi_progress_bar(text)
-    }
-    const regex = /#((100|0|[1-9]?\d)(\.\d+)?|100(\.0+)?|0(\.0+)?|0)%/g;
-    return text.replace(regex, (match, p1) => {
+    // #80% no color
+    // #90,red% red color
+    const regex = /#((100|0|[1-9]?\d)(\.\d+)?|100(\.0+)?|0(\.0+)?|0)(,(\w+))?%/g;
+    return text.replace(regex, (match, p1, _, __, ___, ____, color) => {
+        // Set the color, default to "green" if not provided
+        // console.log(match)
+        color = color || "green";
+        color = color.replace(",","")
         return `
         <div class="progress-bar-container">
-            <div class="progress-bar" style="width: ${p1}%;">
+            <div class="progress-bar bg-${color}" style="width: ${p1}%;">
                 <span class="progress-text">${p1}%</span>
             </div>
-        </div>`
-        
+        </div>`;
     });
 }
+
 
 
 function multi_progress_bar(text) {
@@ -206,46 +208,49 @@ function handle_charts(text)
 }
 function update_chart(_labels,values,id,_type,title)
 {
-    let chart = new Chart(id, {
-        type: _type,
-        data: {
-          labels: _labels,
-          datasets: [{
-            backgroundColor: [
-                'rgba(255, 99, 132)',
-                'rgba(255, 159, 64)',
-                'rgba(255, 205, 86)',
-                'rgba(75, 192, 192)',
-                'rgba(54, 162, 235)',
-                'rgba(153, 102, 255)',
-                'rgba(201, 203, 207)'
-              ],
-            borderColor: [
-                "white"
-              ],
-            data: values,
-            label:title,
-
-          }]
-        },
-        options: {
-            animation:false,
-          title: {
-            display: true,
-            text: title
-          },
-          aspectRation:1,
-          scales:{
-            y: {
-                ticks:{
-                    display:false,
-                    maxTicksLimit:2,
+    try {
+        let chart = new Chart(id, {
+            type: _type,
+            data: {
+              labels: _labels,
+              datasets: [{
+                backgroundColor: [
+                    'rgba(255, 99, 132)',
+                    'rgba(255, 159, 64)',
+                    'rgba(255, 205, 86)',
+                    'rgba(75, 192, 192)',
+                    'rgba(54, 162, 235)',
+                    'rgba(153, 102, 255)',
+                    'rgba(201, 203, 207)'
+                  ],
+                borderColor: [
+                    "white"
+                  ],
+                data: values,
+                label:title,
+    
+              }]
+            },
+            options: {
+                animation:false,
+              title: {
+                display: true,
+                text: title
+              },
+              aspectRation:1,
+              scales:{
+                y: {
+                    ticks:{
+                        display:false,
+                        maxTicksLimit:2,
+                    }
                 }
             }
-        }
-        }
-      });
-    //   console.log(chart)
+            }
+          });
+    } catch (err) {
+          console.log(err)
+    }
 }
 
 function handle_table_component(text) {

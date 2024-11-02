@@ -403,6 +403,38 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
+    $scope.start_bulk_move_completed_tasks = () => {
+        try {
+            //show notebooks quick list
+            $scope.dialog_flags.show_quick_notebooks = true
+        } catch (error) {
+            console.log("Cannot remove completed notes", error)
+        }
+    }
+    $scope.handle_tap_on_quick_notebooks_item = (_notebook) => {
+        try {
+            //in future we might use quick notebooks list for other feature
+            let completed_notes = $scope.notes.filter(note => note.isTaskCompleted)
+            completed_notes = completed_notes.reduce((accumulator,note)=>{
+                note.isTaskCompleted = false
+                accumulator.push(note)
+                return accumulator
+            },[]);
+            // console.log(completed_notes)
+            _notebook.taskArray.push(...completed_notes)
+            //removing completed notes from current notebook
+            $scope.notes = $scope.notes.filter(note => !note.isTaskCompleted)
+            $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes  
+            $scope.save_data()
+            $scope.close_all_dialogs()
+            $scope.show_toast(`${completed_notes.length} notes moved to ${_notebook.title}`)
+        } catch (error) {
+            console.log("Cannot bulk move completed notes", error)
+        }
+    }
+    
+    
+
 
     $scope.delete_task = () => {
         try {
@@ -905,6 +937,12 @@ function main_controller($scope, $timeout, db_service) {
                 show: true,
                 action: () => { $scope.handle_rename_notebook() }
             }, {
+                text: "Move completed tasks",
+                icon: "flight_takeoff",
+                class: "task-more-options-item",
+                show: $scope.notebook_has_completed_tasks(),
+                action: () => { $scope.start_bulk_move_completed_tasks() }
+            },{
                 text: "Remove completed tasks",
                 icon: "delete_sweep",
                 class: "task-more-options-item",
@@ -1144,7 +1182,8 @@ function main_controller($scope, $timeout, db_service) {
 
     // sort notes and notebooks: Optimized
     $scope.init_sortable_list = function (selector, array_name) {
-        $scope.sortable = Sortable.create(document.querySelector(selector), {
+        //notes and notebooks
+        $scope[`sortable-${array_name}`] = Sortable.create(document.querySelector(selector), {
             animation: 250,
             dragClass: "sortable-drag",
             handle: ".handle",
@@ -1234,6 +1273,7 @@ function main_controller($scope, $timeout, db_service) {
             show_db_popup: false,
             show_create_system_var_popup: false,
             show_password_popup: false,
+            show_quick_notebooks:false, // show quick notebook list
         }
         //button flags
         $scope.show_delete_system_var_button = false
@@ -1337,10 +1377,8 @@ function main_controller($scope, $timeout, db_service) {
         $scope.init_note_more_options()
 
         //make notebook and notes sortable
-        $scope.init_sortable_list(".tasks", "notes");
         $scope.init_sortable_list(".notebooks", "notebooks");
-        //chart testing
-
+        $scope.init_sortable_list(".tasks", "notes");
     };
 }
 

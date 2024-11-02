@@ -43,6 +43,27 @@
     background-color:#ff4967;
 }
 
+.bg-blue {
+  background-color: #37a2eb;
+}
+
+.bg-teal {
+  background-color: #4cc0c0;
+}
+
+.bg-orange {
+  background-color: #ff9e40;
+}
+
+.bg-purple {
+  background-color: #9a66ff;
+}
+
+.bg-yellow {
+  background-color: #ffcd56;
+}
+
+
 .grayscale {
     filter: grayscale(1);
 }

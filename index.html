@@ -155,6 +155,18 @@
         </div>
     </div>
 
+
+    <!-- notebooks list for various options -->
+    <div id="list-more-options-container" ng-show="dialog_flags.show_quick_notebooks">
+        <div class="list-more-optionas-holder visible_pop_animation">
+            <div ng-repeat="notebook in notebooks" ng-click="handle_tap_on_quick_notebooks_item(notebook)" class="task-more-options-item">
+                <span class="material-symbols-outlined">{{get_notebook_icon(notebook)}}</span>
+                <div>{{notebook.title}}</div>
+            </div>
+        </div>
+    </div>
+    
+
     <!-- blocking screen  -->
     <div class="block_screen" ng-if="is_any_dialog_open()" ng-click="close_all_dialogs()"></div>
 

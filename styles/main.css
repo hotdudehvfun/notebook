@@ -60,7 +60,7 @@ body {
     border-radius: 1rem;
     padding: 0.5rem 1rem;
     display: inline-flex;
-    color: var(--accent);
+    color: var(--font-color);
     margin: 0.5em;
     text-align: center;
     align-items: center;
@@ -503,7 +503,6 @@ div#list-more-options-container {
 
 .progress-bar {
   height: 100%;
-  background-color: #4caf50;
   text-align: center;
   line-height: 20px; /* Vertically centers the text */
   color: white;
@@ -715,13 +714,13 @@ h1, h2, h3, h4, h5 {
 
 .system_var_item {
     display: flex;
-    padding: 0.5rem;
-    margin: 0.5rem;
-    background: var(--system-var-bg);
+    padding: 0.5rem 0.25rem;
+    margin: 0.125rem 0.5rem;
+    /* background: var(--system-var-bg); */
     font-size: 1rem;
     gap: 1rem;
     border-radius: 8px;
-    border: 1px solid var(--system-var-border);
+    /* border: 1px solid var(--system-var-border); */
 }
 
 .var_icon {
@@ -739,7 +738,7 @@ h1, h2, h3, h4, h5 {
     /* background:linear-gradient(90deg,#35c759,#0d8e2d); */
     padding: 0.125rem 1rem;
     border-radius: 100px;
-    border: 1px solid #35c759;
+    /* border: 1px solid #35c759; */
     font-family: math;
     font-style: italic;
 }
@@ -906,10 +905,10 @@ img.empty_svg {
 }
 
 .system {
-    color: black;
+    color: #ff4181;
 }
 
-.trash_color {
+.trash {
     color: #ff4181;
 }
 
@@ -982,6 +981,7 @@ input:checked + label.toggle_label > span.toggle_span {
     gap: 0.25rem;
     padding: 0rem 0.25rem;
     padding-bottom: 2rem;
+    transition: 0.5s all;
 }
 
 /* to prevent overlap of three create btns over right layout, change grid layout */

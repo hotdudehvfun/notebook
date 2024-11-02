@@ -13,6 +13,8 @@ console.log(`
 > Define custom variables
 > Trash notebook
 > #Today #now #weekday
+> System and Trash Notebooks
+> Bulk move completed notes to other notebook
 `)
 
 /*

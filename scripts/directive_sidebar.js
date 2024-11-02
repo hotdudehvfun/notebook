@@ -19,11 +19,11 @@ function directive_sidebar(){
               {{get_total().total_tasks}} tasks {{get_total().total_notebooks}} notebooks
             </div>
               <ul class="notebooks reset_ul">
-                  <li ng-repeat="(key, value) in notebooks | filter:exclude_sys_trash">
+                  <li ng-repeat="(key, value) in notebooks">
                       <div class="list-panel-item" >
                           <div 
-                          class="list-panel-item-title"
-                          ng-class="{system:value.title.toLowerCase()=='system',trash_color:value.title.toLowerCase()=='trash'}"
+                            class="list-panel-item-title"
+                            ng-class="{system:value.title.toLowerCase()=='system',trash:value.title.toLowerCase()=='trash'}"
                           >
                               <!-- show when selected -->
                               <span
@@ -31,6 +31,7 @@ function directive_sidebar(){
                               class="material-symbols-outlined notebook_icon"
                               ng-bind="notebook_selected_state(key)"></span>
                               <span
+                              ng-class="{'bg-red':value.title.toLowerCase()=='system'||value.title.toLowerCase()=='trash'}"
                               class="material-symbols-outlined icon-btn"
                               ng-bind="get_notebook_icon(value)"
                               ng-hide="select_notebooks"
@@ -40,29 +41,6 @@ function directive_sidebar(){
                               class="list-sub-text"
                               ng-bind="get_notebook_info(value)"></span>
                               <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
-                          </div>
-                      </div>
-                  </li>
-                  <!-- show system and trash notebook -->
-                  <li ng-repeat="(key, value) in notebooks | filter:only_sys_trash">
-                      <div class="list-panel-item" >
-                          <div class="list-panel-item-title">
-                              <!-- show when selected -->
-                              <span
-                                  class="material-symbols-outlined icon-btn green-btn"
-                                  ng-bind="get_notebook_icon(value)">
-                              </span>
-                              <article ng-click="open_notebook(value)" class="selected" ng-bind="value.title">
-                              </article>
-                              <span 
-                                  class="list-sub-text" 
-                                  ng-bind="get_notebook_info(value)">
-                              </span>
-                              <span 
-                                  ng-show="is_sortable" 
-                                  class="material-symbols-outlined handle p-1/2">
-                                  drag_handle
-                              </span>
                           </div>
                       </div>
                   </li>
