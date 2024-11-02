@@ -34,9 +34,12 @@ function progress_bar(text) {
     const regex = /#((100|0|[1-9]?\d)(\.\d+)?|100(\.0+)?|0(\.0+)?|0)%/g;
     return text.replace(regex, (match, p1) => {
         return `
-        <div class="progress_bar">
-            <div class="progress progress_rounded bg-green" style="width:${p1}%;">${p1}%</div>
-        </div>`;
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: ${p1}%;">
+                <span class="progress-text">${p1}%</span>
+            </div>
+        </div>`
+        
     });
 }
 
@@ -226,19 +229,23 @@ function update_chart(_labels,values,id,_type,title)
           }]
         },
         options: {
+            animation:false,
           title: {
             display: true,
             text: title
           },
+          aspectRation:1,
           scales:{
             y: {
                 ticks:{
-                    display:false
+                    display:false,
+                    maxTicksLimit:2,
                 }
             }
         }
         }
       });
+    //   console.log(chart)
 }
 
 function handle_table_component(text) {
