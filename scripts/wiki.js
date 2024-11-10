@@ -27,21 +27,36 @@ function sub(line)
 }
 
 function progress_bar(text) {
-    // #80% no color
-    // #90,red% red color
-    const regex = /#((100|0|[1-9]?\d)(\.\d+)?|100(\.0+)?|0(\.0+)?|0)(,(\w+))?%/g;
-    return text.replace(regex, (match, p1, _, __, ___, ____, color) => {
-        // Set the color, default to "green" if not provided
-        // console.log(match)
-        color = color || "green";
-        color = color.replace(",","")
-        return `
-        <div class="progress-bar-container">
-            <div class="progress-bar bg-${color}" style="width: ${p1}%;">
-                <span class="progress-text">${p1}%</span>
-            </div>
-        </div>`;
-    });
+    // #80% default color = green
+    // #90,red% color = red
+    try {
+        text = text.trim()
+        if(text.startsWith("#") && text.endsWith("%"))
+        {
+            text = text.replace(/[ #%]/g,'').trim().split(",")
+            let p1 = clamp(0,parseFloat(text[0]),100);
+            let color = text.length==2?text[1]:"green";
+            return `
+            <div class="progress-bar-container">
+                <div class="progress-bar bg-${color}" style="width: ${p1}%;">
+                    <span class="progress-text">${p1}%</span>
+                </div>
+            </div>`;
+        }
+        return text;
+    } catch (err) {
+        console.log("Error in progress bar component",err)
+        return text
+    }
+}
+
+function check_for_line(text)
+{
+    if(text.trim().startsWith("---"))
+    {
+        return `<div class="line"></div>`
+    }
+    return text
 }
 
 
@@ -178,11 +193,16 @@ function insert_tag(line)
 //_class1_class2_class3
 function handle_insert_class(input) {
     // Regular expression to match lines starting with _class1_class2_... followed by text
-    return input.replace(/^_([\w_]+)\s(.+)/gm, function(match, classes, text) {
-        // Replace underscores with spaces to separate class names
-        const classList = classes.replace(/_/g, ' ');
-        return `<span class="${classList}">${text}</span>`;
-    });
+    if(input.startsWith("_"))
+    {
+        return input.replace(/^_([\w_]+)\s(.+)/gm, function(match, classes, text) {
+            // Replace underscores with spaces to separate class names
+            const classList = classes.replace(/_/g, ' ');
+            return `<span class="${classList}">${text}</span>`;
+        });
+    }
+    return input
+    
 }
 
 function handle_charts(text)
@@ -350,15 +370,21 @@ function parseWikiTextToHTML(wikiText) {
             line = sup(line)
             // x~y~
             line = sub(line)
+            
             // handle {2+2} eval expression
             line = handle_calculations(line)
 
             // progress bar #20%
             line = progress_bar(line)
 
+            //check for a line
+            line = check_for_line(line)
+
+
             //handle custom class
             line = handle_insert_class(line)
 
+            
             //handle charts
             // line = handle_charts(line)
             // console.log(line)

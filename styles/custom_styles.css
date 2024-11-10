@@ -11,58 +11,53 @@
     color: var(--accent);
 }
 
-.center
-{
-    text-align:center;
+.center {
+    text-align: center;
 }
 
 .bold {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .underline {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
-.italic
-{
-    font-style:italic;
+.italic {
+    font-style: italic;
 }
 
 .text-right {
-    text-align:right;
+    text-align: right;
 }
 
-.bg-green
-{
-    background-color:var(--green);
+.bg-green {
+    background-color: var(--green);
 }
 
-.bg-red
-{
-    background-color:#ff4967;
+.bg-red {
+    background-color: #ff4967;
 }
 
 .bg-blue {
-  background-color: #37a2eb;
+    background-color: #37a2eb;
 }
 
 .bg-teal {
-  background-color: #4cc0c0;
+    background-color: #4cc0c0;
 }
 
 .bg-orange {
-  background-color: #ff9e40;
+    background-color: #ff9e40;
 }
 
 .bg-purple {
-  background-color: #9a66ff;
+    background-color: #9a66ff;
 }
 
 .bg-yellow {
-  background-color: #ffcd56;
+    background-color: #ffcd56;
 }
-
 
 .grayscale {
     filter: grayscale(1);

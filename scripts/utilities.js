@@ -383,3 +383,8 @@ document.querySelector("#fileInput").addEventListener('change',function(){
   }
   fileReader.readAsText(this.files[0]);
 })
+
+
+function clamp(min, current, max) {
+  return Math.min(Math.max(current, min), max);
+}

@@ -413,25 +413,35 @@ function main_controller($scope, $timeout, db_service) {
     }
     $scope.handle_tap_on_quick_notebooks_item = (_notebook) => {
         try {
-            //in future we might use quick notebooks list for other feature
-            let completed_notes = $scope.notes.filter(note => note.isTaskCompleted)
-            completed_notes = completed_notes.reduce((accumulator,note)=>{
-                note.isTaskCompleted = false
-                accumulator.push(note)
-                return accumulator
-            },[]);
-            // console.log(completed_notes)
-            _notebook.taskArray.push(...completed_notes)
-            //removing completed notes from current notebook
-            $scope.notes = $scope.notes.filter(note => !note.isTaskCompleted)
-            $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes  
-            $scope.save_data()
-            $scope.close_all_dialogs()
-            $scope.show_toast(`${completed_notes.length} notes moved to ${_notebook.title}`)
+            // Get the selected notebook and _notebook task arrays
+            let selectedNotebook = $scope.notebooks[$scope.selectedListIndex];
+            let completedNotes = [];
+    
+            // Filter out completed tasks and store them in completedNotes array
+            selectedNotebook.taskArray = selectedNotebook.taskArray.filter(note => {
+                if (note.isTaskCompleted) {
+                    completedNotes.push(note);
+                    return false; // Exclude from taskArray
+                }
+                return true; // Keep in taskArray if not completed
+            });
+    
+            // Move completed notes to the target _notebook
+            _notebook.taskArray.push(...completedNotes);
+            $scope.notebooks[$scope.selectedListIndex].taskArray = selectedNotebook.taskArray
+    
+            // Optionally save data, close dialogs, and show toast message
+            $scope.save_data();
+            $scope.close_all_dialogs();
+            $scope.show_toast(`${completedNotes.length} notes moved to ${_notebook.title}`);
+
+            $scope.open_notebook()
+    
         } catch (error) {
-            console.log("Cannot bulk move completed notes", error)
+            console.log("Cannot bulk move completed notes", error);
         }
-    }
+    };
+    
     
     
 
@@ -729,14 +739,18 @@ function main_controller($scope, $timeout, db_service) {
     };
 
     $scope.get_total = () => {
-        let total_tasks = 0, total_notebooks = $scope.notebooks.length
-        // console.log($scope.notebooks)
-        $scope.notebooks.forEach((item, index) => {
-            total_tasks += item["taskArray"].length;
-        })
-        return {
-            "total_tasks": total_tasks,
-            "total_notebooks": total_notebooks
+        try {
+            let total_tasks = 0, total_notebooks = $scope.notebooks.length
+            // console.log($scope.notebooks)
+            $scope.notebooks.forEach((item, index) => {
+                total_tasks += item["taskArray"].length;
+            })
+            return {
+                "total_tasks": total_tasks,
+                "total_notebooks": total_notebooks
+            }
+        } catch (err) {
+            console.log("Error while getting total",err)
         }
     }
 
