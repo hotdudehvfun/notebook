@@ -36,6 +36,13 @@ function directive_bottom_bar() {
                             <span class="material-symbols-outlined">deployed_code</span>
                             <span>System Vars</span>
                         </div>
+                        <div
+                            ng-class="{disabled:!dialog_flags.is_sidebar_menu_open}" 
+                            ng-click="open_sidebar(true)" class="chip2">
+                            <span class="material-symbols-outlined">book_ribbon</span>
+                            <span>View Notebooks</span>
+                        </div>
+                        
                     </div>
                     
                     <div class="flex-row gap-1">

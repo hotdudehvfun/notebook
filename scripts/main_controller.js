@@ -997,42 +997,46 @@ function main_controller($scope, $timeout, db_service) {
 
     //options shown when note is clicked
     $scope.init_note_more_options = () => {
-        $scope.is_trash_open = ($scope.current_notebook.title.toLowerCase() == "trash")
-        $scope.note_more_options = [
-            {
-                text: "Restore note",
-                icon: "restore_from_trash",
-                class: "task-more-options-item",
-                show: $scope.is_trash_open,
-                action: () => { $scope.restore_note() }
-            }, {
-                text: "Update note",
-                icon: "edit",
-                class: "task-more-options-item",
-                show: true,
-                action: () => { $scope.open_update_task_popup() }
-            }, {
-                text: "Copy note",
-                icon: "file_copy",
-                class: "task-more-options-item",
-                show: true,
-                action: () => { $scope.copy_task() }
-            }, {
-                text: "Paste inside note",
-                icon: "content_paste",
-                class: "task-more-options-item",
-                show: $scope.copied_task != null,
-                action: () => {
-                    $scope.paste_task()
+        try {
+            $scope.is_trash_open = ($scope.current_notebook.title.toLowerCase() == "trash")
+            $scope.note_more_options = [
+                {
+                    text: "Restore note",
+                    icon: "restore_from_trash",
+                    class: "task-more-options-item",
+                    show: $scope.is_trash_open,
+                    action: () => { $scope.restore_note() }
+                }, {
+                    text: "Update note",
+                    icon: "edit",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => { $scope.open_update_task_popup() }
+                }, {
+                    text: "Copy note",
+                    icon: "file_copy",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => { $scope.copy_task() }
+                }, {
+                    text: "Paste inside note",
+                    icon: "content_paste",
+                    class: "task-more-options-item",
+                    show: $scope.copied_task != null,
+                    action: () => {
+                        $scope.paste_task()
+                    }
+                }, {
+                    text: "Delete note",
+                    icon: "delete",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => { $scope.delete_task() }
                 }
-            }, {
-                text: "Delete note",
-                icon: "delete",
-                class: "task-more-options-item",
-                show: true,
-                action: () => { $scope.delete_task() }
-            }
-        ]
+            ]
+        } catch (err) {
+            console.log("Error while init more options",err)
+        }
     }
 
     $scope.handle_db_operation_change = () => {

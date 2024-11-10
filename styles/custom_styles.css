@@ -66,3 +66,8 @@
 .colorful {
     filter: grayscale(0);
 }
+
+.bg-red-pink
+{
+    background:linear-gradient(90deg, #ff4967, #f3217a);
+}

@@ -22,9 +22,13 @@
     table {
         border: 1px solid #202020ad;
     }
+    thead tr
+    {
+        background:linear-gradient(90deg, #ff4967, #f3217a);
+    }
 
     th {
-        background: #121212c4;
+        background: transparent;
         color: white;
     }
 
@@ -38,6 +42,10 @@
 
     tr {
         border-top: 1px solid #23232333;
+    }
+    .topbar
+    {
+        background: #303030;
     }
 
     
