@@ -55,6 +55,16 @@ function directive_bottom_bar() {
                             <span class="material-symbols-outlined">{{option.icon}}</span>
                             <span>{{option.text}}</span>
                         </div>
+                        <!-- sub menu for split note -->
+
+                        <div
+                            ng-if="show_split_note_btns" 
+                            ng-repeat="delimiter in presets_delimiters"
+                            class="chip mx-1" 
+                            ng-click="split_note(delimiter)">
+                            <span>{{delimiter}}</span>
+                        </div>
+
                         <!-- show insert options -->
                         <div
                         ng-if="show_insert_options" 

@@ -198,11 +198,8 @@ function main_controller($scope, $timeout, db_service) {
                     //set type of note
                     newTask.set_is_component();
                     newTask.set_component_type();
-
-
                     $scope.notebooks[$scope.selectedListIndex].taskArray.push(newTask);
                 });
-
                 $scope.notes = $scope.notebooks[$scope.selectedListIndex].taskArray;
 
                 // Reset input and dialog states
@@ -218,7 +215,45 @@ function main_controller($scope, $timeout, db_service) {
             console.error(err);
             $scope.show_toast("Failed to create note");
         }
-    };
+    }
+
+    // split selected task in to multiple tasks based on delimiter
+    $scope.split_note = (delimiter) => {
+        try {
+            // show delimiters and on press split task
+            // split task based on that delimiter
+            console.log(delimiter,$scope.selected_note)
+            const taskContent = $scope.selected_note.title.trim();
+            delimiter = delimiter=="new line"?"\n":delimiter;
+            if (taskContent.length > 0) {
+                let tasks = split_text_into_tasks(taskContent,delimiter);
+                // Determine if adding single or multiple tasks
+                tasks = tasks.length > 0 ? tasks : [taskContent];
+                // Add tasks to the selected notebook
+                tasks.forEach(item => {
+                    let newTask = new Task(item);
+                    newTask.taskIcon = $scope.icons.unchecked;
+                    //set type of note
+                    newTask.set_is_component();
+                    newTask.set_component_type();
+                    $scope.notebooks[$scope.selectedListIndex].taskArray.push(newTask);
+                });
+                $scope.notes = $scope.notebooks[$scope.selectedListIndex].taskArray;
+
+                // Reset input and dialog states
+                $scope.note_content = "";
+                $scope.note_textarea_container_height = 45;
+                $scope.pageTitle = $scope.selectedListName;
+                // Save data and show toast notification
+                $scope.save_data();
+                const toastText = tasks.length > 1 ? `${tasks.length} Notes added` : "Note added";
+                $scope.show_toast(toastText);
+            }
+        } catch (err) {
+            console.error(err);
+            $scope.show_toast("Failed to split note");
+        }
+    }
 
 
     $scope.get_system_vars = () => {
@@ -376,13 +411,26 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.handle_tap_on_note = function (note) {
         try {
-            console.log(note)
-            $scope.selected_note = note;
+            $scope.selected_note = note
+            console.log($scope.selected_note)
             $scope.is_note_selected = true
+            //show file options when note is selected
+            $scope.show_edit_options = true
             $scope.task_completed_state = note.isTaskCompleted
             //check if we are inside trash
             // console.log($scope.current_notebook)
             $scope.init_note_more_options()
+
+        } catch (err) {
+            console.log("Error", err)
+        }
+    }
+
+    $scope.handle_dbl_tap_on_note = function (note) {
+        try {
+            console.log("dbl click on",note)
+            //update note on dbl click
+            $scope.open_update_task_popup()            
 
         } catch (err) {
             console.log("Error", err)
@@ -504,15 +552,54 @@ function main_controller($scope, $timeout, db_service) {
             if ($scope.selected_note) {
                 //create new task to make a copy
                 $scope.copied_task = new Task($scope.selected_note.title)
-                $scope.show_toast("Task Copied");
+                //also copy to clipboard
+                let dummy = document.createElement("input")
+                dummy.setAttribute("type","text")
+                dummy.value = $scope.selected_note.title
+                dummy.select()
+                dummy.setSelectionRange(0,99999)
+                navigator.clipboard.writeText(dummy.value);
+                $scope.show_toast("Note and content copied to clipboard");
                 $scope.close_all_dialogs()
             }
         } catch (err) {
             $scope.show_toast("Failed to copy");
             console.log("Error while copying note", err)
         }
-
     }
+
+    $scope.merge_completed_notes = () => {
+        try {
+            // Step 1: Filter out completed notes
+            const completedNotes = $scope.notes.filter(note => note.isTaskCompleted);
+            if (completedNotes.length === 0) {
+                $scope.show_toast("No completed notes to merge");
+                return;
+            }
+            // Step 2: Combine their content into a single note
+            const mergedContent = completedNotes.map(note => note.title).join("\n\n");
+    
+            // Step 3: Create a new merged note
+            const mergedNote = new Task(mergedContent)
+    
+            // Step 4: Remove completed notes from the notebook
+            $scope.notes = $scope.notes.filter(note => !note.isTaskCompleted);
+            $scope.notes.push(mergedNote)
+    
+            // Step 5: Add the new merged note
+            $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
+    
+            // Save and provide feedback
+            $scope.save_data();
+            $scope.close_all_dialogs();
+            $scope.show_toast("Completed notes merged successfully");
+        } catch (error) {
+            console.error("Cannot merge completed notes", error);
+        }
+    };
+    
+    
+
 
     $scope.paste_task = () => {
         try {
@@ -559,7 +646,9 @@ function main_controller($scope, $timeout, db_service) {
     // update task in popup
     $scope.update_note = () => {
         try {
+            
             $scope.selected_note.title = $scope.note_content.trim()
+
             $scope.show_update_task_button = false
             $scope.note_content = ""
             $scope.note_textarea_container_height = 45
@@ -957,6 +1046,12 @@ function main_controller($scope, $timeout, db_service) {
                 show: $scope.notebook_has_completed_tasks(),
                 action: () => { $scope.start_bulk_move_completed_tasks() }
             },{
+                text: "Merge completed tasks",
+                icon: "merge",
+                class: "task-more-options-item",
+                show: $scope.notebook_has_completed_tasks(),
+                action: () => { $scope.merge_completed_notes() }
+            },{
                 text: "Remove completed tasks",
                 icon: "delete_sweep",
                 class: "task-more-options-item",
@@ -1026,11 +1121,23 @@ function main_controller($scope, $timeout, db_service) {
                     action: () => {
                         $scope.paste_task()
                     }
+                },{
+                    text: "Split note",
+                    icon: "splitscreen",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => {
+                        $scope.show_split_note_btns =!$scope.show_split_note_btns
+                        console.log($scope.show_split_note_btns)
+                        $scope.init_note_more_options()
+                    }
                 }, {
+                    //hide delete button when split submenu is open
+                    //submenu is better than popup
                     text: "Delete note",
                     icon: "delete",
                     class: "task-more-options-item",
-                    show: true,
+                    show: !$scope.show_split_note_btns,
                     action: () => { $scope.delete_task() }
                 }
             ]
@@ -1293,6 +1400,7 @@ function main_controller($scope, $timeout, db_service) {
             show_password_popup: false,
             show_quick_notebooks:false, // show quick notebook list
         }
+
         //button flags
         $scope.show_delete_system_var_button = false
         $scope.show_nav_more_vert_button = false
@@ -1310,6 +1418,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.show_insert_options = false //bottom bar note insert options
         $scope.show_edit_options_system_vars = false //bottom bar note insert system vars
         $scope.show_note_complete_button = false // show hide complete button
+        $scope.show_split_note_btns = false // split note sub menu btns
 
 
         $scope.create_btns_arr = [true, false, false]
@@ -1353,6 +1462,8 @@ function main_controller($scope, $timeout, db_service) {
         $scope.max_notebook_title_len = 20
         $scope.note_textarea_container_height = 45
         $scope.password = ""
+        $scope.selected_split_delimiter = "\n" // default delimiter is new line
+        $scope.presets_delimiters = ["new line","#","$","!"]
 
         // insert options for new note
         $scope.edit_options = [

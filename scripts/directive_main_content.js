@@ -56,6 +56,7 @@ function directive_main_content(){
                                 ng-class="{selected:selected_note==note}"
                                 class="task-content-div"
                                 ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
+                                ng-dblclick="handle_dbl_tap_on_note(note);"
                                 ng-click="handle_tap_on_note(note);"></div>
                             <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                         </div>

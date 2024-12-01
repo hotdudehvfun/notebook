@@ -17,22 +17,6 @@ console.log(`
 > Bulk move completed notes to other notebook
 `)
 
-/*
-{
-  "global":
-  {
-    "a":1,
-    "b":2
-  },
-  "custom":
-  {
-  
-  }
-}
-
-*/
-
-
 var system_vars = {}
 
 app.filter("sanitize", ['$sce', function ($sce) {
@@ -52,5 +36,6 @@ app.directive("topBar",directive_top_bar);
 app.directive("popupRenameNotebook",directive_rename_notebook_popup);
 app.directive("popupCreateNotebook",directive_new_notebook_popup);
 app.directive("popupPassword",directive_password_popup);
+
 // app.directive("dbFileChange",db_file_change);
 
