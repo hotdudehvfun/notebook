@@ -26,6 +26,7 @@ html {
     --green: #4cd964;
     --task-complete-color: #222;
     --table-bg: whitesmoke;
+    --progress-height:16px;
 }
 
 body {
@@ -166,11 +167,11 @@ ul.notebooks li:last-child > .list-panel-item {
     border-radius: 8px;
     align-items: center;
     /* transition: 0.5s all; */
-    margin: 0.25rem .25rem;
+    margin: 1rem .25rem;
     /* border-bottom: 1px solid var(--list-border); */
     /* border: 1px solid var(--system-var-border); */
     overflow: hidden;
-    font-size: 130%;
+    font-size: 120%;
 }
 
 .task p {
@@ -285,7 +286,7 @@ div#list-more-options-container {
     backdrop-filter: blur(var(--more-options-blur));
     border: 1px solid var(--more-options-border-color);
     overflow: auto;
-    height: clamp(30%,60%,300px);
+    height: 60vh;
 }
 
 .block_screen {
@@ -509,7 +510,7 @@ div#list-more-options-container {
   background-color: var(--more-options-border-color);
   border-radius: 100px;
   overflow: hidden;
-  height: 6px;
+  height: var(--progress-height);
   position: relative;
   margin: 0.5rem 1rem;
 }
@@ -529,8 +530,8 @@ div#list-more-options-container {
   text-align: center;
   font-weight: bold;
   color: var(--font-color);
-  line-height: 6px;
-  font-size: 6px;
+  line-height: var(--progress-height);
+  font-size: 12px;
 }
 
 

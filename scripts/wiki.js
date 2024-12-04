@@ -226,6 +226,7 @@ function handle_charts(text)
     },50)
     return `<canvas style="width:100%" id="${id}"></canvas>`
 }
+
 function update_chart(_labels,values,id,_type,title)
 {
     try {
@@ -358,7 +359,7 @@ function parseWikiTextToHTML(wikiText) {
     let lines = wikiText.split("\n")
     lines.forEach(line => {
         line = line.trim()
-        if(line.length>0)
+        //if(line.length>0)
         {
             //::text center::
             line = center_aligned(line)
@@ -426,7 +427,8 @@ function parseWikiTextToHTML(wikiText) {
                 // Handle regular text
                 if(line.length>0)
                 {
-                    html += `<p>${line}</p>`;
+                    html += `<div>${line}</div>`;
+                    // console.log(html)
                 }
             } 
         }

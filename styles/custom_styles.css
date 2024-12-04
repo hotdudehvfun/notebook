@@ -71,3 +71,9 @@
 {
     background:linear-gradient(90deg, #ff4967, #f3217a);
 }
+
+grid_title_bar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+}
