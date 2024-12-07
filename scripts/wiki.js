@@ -1,28 +1,24 @@
 
-  
-  // if no data is found create demo files
-  function setupDemoList() {
+
+// if no data is found create demo files
+function setupDemoList() {
     //demo list
     let list = new List("First Notebook");
     let task = new Task("We have added first note!");
     list.taskArray.push(task);
     return [list];
-  }
+}
 
-function bold(line)
-{
+function bold(line) {
     return line.replace(/:(.*?)(:)/g, '<b>$1</b>')
 }
-function italic(line)
-{
+function italic(line) {
     return line.replace(/_(.*?)(_)/g, '<i>$1</i>')
 }
-function sup(line)
-{
+function sup(line) {
     return line.replace(/\^(.*?)(\^)/g, '<sup>$1</sup>')
 }
-function sub(line)
-{
+function sub(line) {
     return line.replace(/\~(.*?)(\~)/g, '<sub>$1</sub>')
 }
 
@@ -31,11 +27,10 @@ function progress_bar(text) {
     // #90,red% color = red
     try {
         text = text.trim()
-        if(text.startsWith("#") && text.endsWith("%"))
-        {
-            text = text.replace(/[ #%]/g,'').trim().split(",")
-            let p1 = clamp(0,parseFloat(text[0]),100);
-            let color = text.length==2?text[1]:"green";
+        if (text.startsWith("#") && text.endsWith("%")) {
+            text = text.replace(/[ #%]/g, '').trim().split(",")
+            let p1 = clamp(0, parseFloat(text[0]), 100);
+            let color = text.length == 2 ? text[1] : "green";
             return `
             <div class="progress-bar-container">
                 <div class="progress-bar bg-${color}" style="width: ${p1}%;">
@@ -45,15 +40,13 @@ function progress_bar(text) {
         }
         return text;
     } catch (err) {
-        console.log("Error in progress bar component",err)
+        console.log("Error in progress bar component", err)
         return text
     }
 }
 
-function check_for_line(text)
-{
-    if(text.trim().startsWith("---"))
-    {
+function check_for_line(text) {
+    if (text.trim().startsWith("---")) {
         return `<div class="line"></div>`
     }
     return text
@@ -64,7 +57,7 @@ function check_for_line(text)
 function multi_progress_bar(text) {
     const regex = /#((\d{1,3}(,\d{1,3})*)%)/g;
     return text.replace(regex, (match, p1) => {
-        const percentages = p1.split(',').map(value => value.trim().replace("%",""));
+        const percentages = p1.split(',').map(value => value.trim().replace("%", ""));
         const progressBars = percentages.map(percentage => {
             return `
                 <div class="progress" style="width:${percentage}%;">
@@ -80,11 +73,10 @@ function multi_progress_bar(text) {
 
 
 
-function check_for_system_vars(value)
-{
+function check_for_system_vars(value) {
     // Recursive function to evaluate expressions
     function evaluate(value) {
-        return value.replace(/\b[a-zA-Z_]\w*\b/g, function(match) {
+        return value.replace(/\b[a-zA-Z_]\w*\b/g, function (match) {
             if (system_vars.hasOwnProperty(match)) {
                 // If the match is an expression, evaluate it recursively
                 let expr = system_vars[match];
@@ -125,10 +117,10 @@ function handle_calculations(text) {
         try {
             // Replace variable names with values if needed
             expression = check_for_system_vars(expression);
-            
+
             // Evaluate the expression
             let result = eval(expression);
-            
+
             // If result is a floating-point number, round it to 1 decimal place
             result = result % 1 === 0 ? result : result.toFixed(1);
 
@@ -145,15 +137,14 @@ function handle_calculations(text) {
 }
 
 
-function handle_list(line)
-{
+function handle_list(line) {
     // Handle lists
     // if a single line contains many * it will be converted to list items
     // it means * cannot be used in text if a line starts with *
-    let html=""
-    line.split("*").forEach((item)=>{
+    let html = ""
+    line.split("*").forEach((item) => {
         let text = item.replace(/[\*\-]/g, '').trim();
-        if(text.length>0)
+        if (text.length > 0)
             html += `<li>${text}</li>`
     })
     return html
@@ -165,27 +156,24 @@ function center_aligned(text) {
     return htmlText;
 }
 
-function box(line)
-{
+function box(line) {
     return `<div class="box">${parseWikiTextToHTML(line.trim())}</div>`
 }
 
-function insert_tag(line)
-{
-    var html=""
+function insert_tag(line) {
+    var html = ""
     try {
         // start tag len = 2
         // end tag len = 3
         // .ol ..ol
         var arr = line.split(".")
-        var tag = arr[arr.length-1]
-        if(arr.length==2)
+        var tag = arr[arr.length - 1]
+        if (arr.length == 2)
             html = `<${tag}>`
         else
             html = `</${tag}>`
-    } catch (error)
-    {
-        html="ERROR"
+    } catch (error) {
+        html = "ERROR"
     }
     return html
 }
@@ -193,20 +181,18 @@ function insert_tag(line)
 //_class1_class2_class3
 function handle_insert_class(input) {
     // Regular expression to match lines starting with _class1_class2_... followed by text
-    if(input.startsWith("_"))
-    {
-        return input.replace(/^_([\w_]+)\s(.+)/gm, function(match, classes, text) {
+    if (input.startsWith("_")) {
+        return input.replace(/^_([\w_]+)\s(.+)/gm, function (match, classes, text) {
             // Replace underscores with spaces to separate class names
             const classList = classes.replace(/_/g, ' ');
             return `<span class="${classList}">${text}</span>`;
         });
     }
     return input
-    
+
 }
 
-function handle_charts(text)
-{
+function handle_charts(text) {
     /*
     @chart
     pie
@@ -221,58 +207,134 @@ function handle_charts(text)
     const id = lines[3].trim()
     const labels = lines[4].split(",")
     const values = lines[5].split(',').map(v => handle_calculations(v.trim()));
-    setTimeout(()=>{
-        update_chart(labels,values,id,type,title)
-    },50)
+    setTimeout(() => {
+        update_chart(labels, values, id, type, title)
+    }, 50)
     return `<canvas style="width:100%" id="${id}"></canvas>`
 }
 
-function update_chart(_labels,values,id,_type,title)
-{
+function update_chart(_labels, values, id, _type, title) {
+    var colors = [
+        'rgba(255, 99, 132)',
+        'rgba(255, 159, 64)',
+        'rgba(255, 205, 86)',
+        'rgba(75, 192, 192)',
+        'rgba(54, 162, 235)',
+        'rgba(153, 102, 255)',
+        'rgba(201, 203, 207)'
+    ]
+
     try {
         let chart = new Chart(id, {
             type: _type,
             data: {
-              labels: _labels,
-              datasets: [{
-                backgroundColor: [
-                    'rgba(255, 99, 132)',
-                    'rgba(255, 159, 64)',
-                    'rgba(255, 205, 86)',
-                    'rgba(75, 192, 192)',
-                    'rgba(54, 162, 235)',
-                    'rgba(153, 102, 255)',
-                    'rgba(201, 203, 207)'
-                  ],
-                borderColor: [
-                    "white"
-                  ],
-                data: values,
-                label:title,
-    
-              }]
+                labels: _labels,
+                tension: 0.5,
+                datasets: [{
+                    backgroundColor: colors,
+                    borderColor: ["white"],
+                    fill: false,
+                    data: values,
+                    label: title,
+
+                }]
             },
             options: {
-                animation:false,
-              title: {
-                display: true,
-                text: title
-              },
-              aspectRation:1,
-              scales:{
-                y: {
-                    ticks:{
-                        display:false,
-                        maxTicksLimit:2,
+                animation: false,
+                title: {
+                    display: false,
+                    text: title
+                },
+                aspectRation: 1,
+                scales: {
+                    y: {
+                        ticks: {
+                            display: false,
+                            maxTicksLimit: 2,
+                        }
                     }
                 }
             }
-            }
-          });
+        });
     } catch (err) {
-          console.log(err)
+        console.log(err)
     }
 }
+
+
+
+function handle_returns(text) {
+    /*
+    @returns
+    3 //how many lines
+    Title1,Title2,Title3 //3 lines
+    label1,lable2 //common labels
+    20, 30
+    10, 40
+    20, 40 // 3 lines with two data points
+    chartid
+    */
+    const lines = text.split("\n");
+    let total_lines = lines[1]
+    let titles = lines[2].split(",")
+    let labels = lines[3].split(",")
+    let line1_points = lines[4].split(",").map(v => handle_calculations(v.trim()));
+    let line2_points = lines[5].split(",").map(v => handle_calculations(v.trim()));
+    let line3_points = lines[6].split(",").map(v => handle_calculations(v.trim()));
+    let id = lines[7].trim()
+    setTimeout(() => {
+        update_chart_returns(titles,labels,line1_points,line2_points,line3_points,id)
+    }, 50)
+    return `<canvas style="width:100%" id="${id}"></canvas>`
+}
+
+function update_chart_returns(_titles,_labels,_line1_points,_line2_points,_line3_points,id) {
+    try {
+        let chart = new Chart(id, {
+            type: "line",
+            data: {
+                labels: _labels,
+                tension: 0.5,
+                datasets: [
+                    {
+                        label:_titles[0],
+                        data:_line1_points,
+                        borderColor: ["#ff4967"],
+                        fill:false,
+                    },
+                    {
+                        label:_titles[1],
+                        data:_line2_points,
+                        borderColor: ["#164ea6"],
+                        fill:false,
+                    },
+                    {
+                        label:_titles[2],
+                        data:_line3_points,
+                        borderColor: ["#4cd964"],
+                        fill:false,
+                    },
+                ]
+            },
+            options: {
+                animation: false,
+                title: {display: false,},
+                aspectRation: 1,
+                scales: {
+                    y: {
+                        ticks: {
+                            display: false,
+                            maxTicksLimit: 2,
+                        }
+                    }
+                }
+            }
+        });
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 
 function handle_table_component(text) {
     const lines = text.split('\n'); // Split the text by new lines
@@ -332,7 +394,7 @@ function handle_table_component(text) {
     // Add sum row if needed
     if (sumCols.length > 0) {
         tableHtml += '<tr>';
-        for(var i=0;i<sumRow.length;i++)
+        for (var i = 0; i < sumRow.length; i++)
             tableHtml += `<td>${sumRow[i] !== undefined ? sumRow[i] : 'Total'}</td>`;
 
         tableHtml += '</tr>';
@@ -347,14 +409,16 @@ function handle_table_component(text) {
 function parseWikiTextToHTML(wikiText) {
 
     wikiText = wikiText.trim()
-    if(wikiText.startsWith("@table"))
-    {
+    if (wikiText.startsWith("@table")) {
         return handle_table_component(wikiText)
     }
-    if(wikiText.startsWith("@chart"))
-    {
+    if (wikiText.startsWith("@chart")) {
         return handle_charts(wikiText)
     }
+    if (wikiText.startsWith("@returns")) {
+        return handle_returns(wikiText)
+    }
+
     let html = '';
     let lines = wikiText.split("\n")
     lines.forEach(line => {
@@ -362,16 +426,16 @@ function parseWikiTextToHTML(wikiText) {
         //if(line.length>0)
         {
             //::text center::
-            line = center_aligned(line)
+            //line = center_aligned(line)
             //:bold:
-            line = bold(line)
+            //line = bold(line)
             // _italic_
             //line = italic(line)
             // x^y^
             line = sup(line)
             // x~y~
             line = sub(line)
-            
+
             // handle {2+2} eval expression
             line = handle_calculations(line)
 
@@ -385,52 +449,47 @@ function parseWikiTextToHTML(wikiText) {
             //handle custom class
             line = handle_insert_class(line)
 
-            
+
             //handle charts
             // line = handle_charts(line)
             // console.log(line)
-            
+
             if (line.startsWith('#')) {
                 // Handle headings
                 const level = line.match(/^(#+)/)[0].length;
                 const text = line.replace(/#+/g, '').trim().toLocaleLowerCase();
                 html += `<h${level}>${text}</h${level}>`;
-            } else if(line.startsWith("~"))
-            {
-                const text = line.replace(/~/g,'').trim()
-                if(text.length>0)
-                    html += box(text) 
+            } else if (line.startsWith("~")) {
+                const text = line.replace(/~/g, '').trim()
+                if (text.length > 0)
+                    html += box(text)
             }
-            else if (line.startsWith('*')||line.startsWith('-')) {
+            else if (line.startsWith('*') || line.startsWith('-')) {
                 html += handle_list(line)
             }
-            else if(line.startsWith("{{") && line.endsWith("}}"))
-            {
+            else if (line.startsWith("{{") && line.endsWith("}}")) {
                 //handle custom template
                 var text = line.replace(/\{\{|\}\}/g, '').trim()
                 var args = text.split("#")
                 console.log(args)
-                switch(args[0])
-                {
+                switch (args[0]) {
                     case "flex":
-                        html+= flex(args[1],args[2])
+                        html += flex(args[1], args[2])
                         break;
                     case "img":
-                        html+= place_img(args[1],args[2])
+                        html += place_img(args[1], args[2])
                         break;
                 }
-            } else if(line.startsWith("."))
-            {
-                html+= insert_tag(line)
+            } else if (line.startsWith(".")) {
+                html += insert_tag(line)
             }
             else {
                 // Handle regular text
-                if(line.length>0)
-                {
+                if (line.length > 0) {
                     html += `<div>${line}</div>`;
                     // console.log(html)
                 }
-            } 
+            }
         }
     });
     return `${html}`;
