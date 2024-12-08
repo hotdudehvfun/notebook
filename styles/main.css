@@ -42,7 +42,8 @@ body {
     flex-direction: column;
     background-color: var(--bg-color);
     color: var(--font-color);
-    font-size: 12px;
+    font-size: 10px;
+    
 }
 
 * {
@@ -420,6 +421,12 @@ div#list-more-options-container {
 .flex-row {
     display: flex;
     flex-direction: row;
+}
+
+.flex-row-reverse
+{
+    display:flex;
+    flex-direction:row-reverse;
 }
 
 .flex-col {
@@ -1163,4 +1170,43 @@ input#fileInput::-webkit-file-upload-button {
 .line {
     height: 2px;
     background: var(--theme_button_border);
+}
+
+.back_circle
+{
+    filter: opacity(0.10);
+}
+
+.circular_bar_text_container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Adds spacing between items */
+}
+
+.circular_bar_text_container_item {
+  position: relative;
+  padding-left: 20px; /* Space for the dot */
+  font-size: 110%;
+}
+
+.circular_bar_text_container_item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px; /* Dot size */
+  height: 10px; /* Dot size */
+  border-radius: 50%; /* Makes it circular */
+  background-color: currentcolor;
+    
+}
+
+
+text.circular_bar_text {
+    transform: rotate(90deg) translate(-6%, 3%);
+    transform-origin: center;
+    stroke: white;
+    fill: transparent;
+    text-align: center;
 }

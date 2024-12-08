@@ -405,6 +405,90 @@ function handle_table_component(text) {
     return tableHtml; // Return the generated table HTML
 }
 
+function circum(r)
+{
+    return Math.PI*2*r;
+}
+
+function calculate_dashoffset(r,p)
+{
+    return circum(r)*(1-(p/100));
+}
+
+function show_progress(p,that)
+{
+    try {
+        that.parentElement.querySelector(".circular_bar_text").innerHTML=`${p}`;
+        // console.log(that.parentElement.querySelector(".circular_bar_text"))
+    } catch (err) {
+        console.log("Failed to show progress inside text",err)
+    }
+}
+
+function handle_circular_bars(text)
+{
+    try {
+        let lines = text.split("\n")
+        let texts = lines[1].split(",").map(v => handle_calculations(v.trim()));
+        let p = lines[2].split(",").map(v => handle_calculations(v.trim()));
+        let text_pos = "LEFT" //by default text is on left side
+        if(lines.length==4)
+        {
+            text_pos = lines[3].trim()
+        }
+    
+        let radius = 70
+        let r_gap = 20
+        let size = 180
+        let svg=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform: rotate(-90deg)">`
+        let colors = ["#ff4967","#f4b424","#49dc6b","#9a66ff"]
+        for(let i=0;i<p.length;i++)
+        {
+            svg+=`
+            <!-- back circle -->
+            <circle class="back_circle" r="${radius-r_gap*i}" cx="${size/2}" cy="${size/2}" fill="transparent" 
+              stroke="${colors[i]}" stroke-linecap="round" stroke-width="12">
+              </circle>
+    
+            <!-- progress circle -->
+            <circle onclick="show_progress(${p[i]},this)" r="${radius-r_gap*i}" cx="${size/2}" cy="${size/2}" fill="transparent" 
+              stroke="${colors[i]}" stroke-linecap="round" stroke-width="12"
+              stroke-dasharray="${circum(radius-r_gap*i)}" stroke-dashoffset="${calculate_dashoffset(radius-r_gap*i,p[i])}">
+              </circle>
+            `
+        }
+
+        svg+=`        
+            <!-- text in center -->
+            <text x="${size/2}" y="${size/2}" class="circular_bar_text">${p[0]}</text>  
+        </svg>`
+        let text_html = ``
+        texts.forEach((item,index)=>{
+            text_html+=`<div style="color:${colors[index]};" class='circular_bar_text_container_item'>${item}</div>`
+        })
+
+        //determine text pos
+        let flex_class="flex-row"
+        if(text_pos=="RIGHT")
+        {
+            flex_class = "flex-row-reverse"
+        }
+
+        let html = `
+        <div class="${flex_class} align-center justify-center">
+            <div class='circular_bar_text_container'>
+                ${text_html}
+            </div>
+            ${svg}
+        </div>
+        `
+        return html;
+    } catch (err) {
+        console.log("Error");
+    }
+    return "Error while handling circular progress"
+}
+
 
 function parseWikiTextToHTML(wikiText) {
 
@@ -418,6 +502,11 @@ function parseWikiTextToHTML(wikiText) {
     if (wikiText.startsWith("@returns")) {
         return handle_returns(wikiText)
     }
+    
+    if (wikiText.startsWith("@circular_bars")) {
+        return handle_circular_bars(wikiText)
+    }
+    
 
     let html = '';
     let lines = wikiText.split("\n")
