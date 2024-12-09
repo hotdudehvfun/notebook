@@ -1174,7 +1174,7 @@ input#fileInput::-webkit-file-upload-button {
 
 .back_circle
 {
-    filter: opacity(0.10);
+    opacity: 0.1;
 }
 
 .circular_bar_text_container {

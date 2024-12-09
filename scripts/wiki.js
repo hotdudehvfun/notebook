@@ -458,10 +458,7 @@ function handle_circular_bars(text)
             `
         }
 
-        svg+=`        
-            <!-- text in center -->
-            <text x="${size/2}" y="${size/2}" class="circular_bar_text">${p[0]}</text>  
-        </svg>`
+        svg+=`</svg>`
         let text_html = ``
         texts.forEach((item,index)=>{
             text_html+=`<div style="color:${colors[index]};" class='circular_bar_text_container_item'>${item}</div>`
@@ -479,7 +476,8 @@ function handle_circular_bars(text)
             <div class='circular_bar_text_container'>
                 ${text_html}
             </div>
-            ${svg}
+                            ${svg}
+
         </div>
         `
         return html;
