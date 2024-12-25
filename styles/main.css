@@ -27,6 +27,7 @@ html {
     --task-complete-color: #222;
     --table-bg: whitesmoke;
     --progress-height:16px;
+    --color-btn-background:#f5f5f5;
 }
 
 body {
@@ -172,7 +173,7 @@ ul.notebooks li:last-child > .list-panel-item {
     /* border-bottom: 1px solid var(--list-border); */
     /* border: 1px solid var(--system-var-border); */
     overflow: hidden;
-    font-size: 120%;
+    font-size: 140%;
 }
 
 .task p {
@@ -257,6 +258,7 @@ ul.notebooks li:last-child > .list-panel-item {
     background: none;
     /* margin: 0.5rem 1rem; */
     /* border-radius: 8px; */
+    /* border: 1px solid; */
 }
 
 .new-task-content:focus {
@@ -287,7 +289,7 @@ div#list-more-options-container {
     backdrop-filter: blur(var(--more-options-blur));
     border: 1px solid var(--more-options-border-color);
     overflow: auto;
-    height: 60vh;
+    max-height: 60vh;
 }
 
 .block_screen {
@@ -1069,13 +1071,14 @@ input:checked + label.toggle_label > span.toggle_span {
 
 .icon-btn {
     border-radius: 100px;
-    background: var(--accent);
+    /* background: var(--accent); */
     display: inline-flex;
     padding: 4px;
     font-size: 20px;
     color: var(--icon-btn-color);
     /* width: 30px; */
     justify-content: center;
+    background: var(--color-btn-background);
 }
 
 .green-btn {
@@ -1186,7 +1189,7 @@ input#fileInput::-webkit-file-upload-button {
 .circular_bar_text_container_item {
   position: relative;
   padding-left: 20px; /* Space for the dot */
-  font-size: 110%;
+  /* font-size: 110%; */
 }
 
 .circular_bar_text_container_item::before {
@@ -1202,11 +1205,22 @@ input#fileInput::-webkit-file-upload-button {
     
 }
 
-
 text.circular_bar_text {
     transform: rotate(90deg) translate(-6%, 3%);
     transform-origin: center;
     stroke: white;
     fill: transparent;
     text-align: center;
+}
+
+.txt-btn
+{
+    text-align: center;
+    color: var(--progress-a);
+    font-weight: bold;
+    width: max-content;
+}
+.txt-btn:active
+{
+    text-decoration:underline;
 }

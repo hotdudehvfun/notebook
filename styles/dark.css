@@ -18,6 +18,8 @@
     --bottom-bar-bg: rgb(45 45 45);
     --task-complete-color: #EF4444;
     --table-bg: #222;
+    --color-btn-background:#333;
+
     
     table {
         border: 1px solid #202020ad;

@@ -63,17 +63,18 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.show_edit_options = false;
                 $scope.selected_note = undefined
 
-                if (notebook.icon)
-                    $scope.default_app_icon = notebook.icon
-                else
-                    $scope.default_app_icon = "eco"
+                // to show icon on topbar
+                $scope.default_app_icon = $scope.get_notebook_icon(notebook)
 
-                $scope.note_content_placeholder = `Create task in ${$scope.selectedListName}`
+
+                $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`
 
                 //show system tab in bottom bar
                 if(notebook.title.toLowerCase()=="system")
                 {
                     $scope.create_btns_arr = [false,false,true]
+                }else{
+                    $scope.create_btns_arr = [true,false,false]
                 }
 
 
@@ -123,16 +124,28 @@ function main_controller($scope, $timeout, db_service) {
 
 
 
-    //rename to notebook
+    //get notebook icon
     $scope.get_notebook_icon = function (notebook) {
         try {
+            if(notebook.hasOwnProperty("is_locked"))
+            {
+                if(notebook.is_locked)
+                {
+                    return "lock"
+                }
+            }
             if (notebook.hasOwnProperty("icon"))
+            {
                 return notebook.icon
+            }
             else
+            {
                 return "folder"
+            }
         } catch (err) {
             console.log(err)
         }
+        return "folder"
     }
 
     $scope.insertTextAtCursor = function (id, value) {
@@ -293,6 +306,7 @@ function main_controller($scope, $timeout, db_service) {
             })
             $scope.password = ""
             $scope.notebooks[$scope.selectedListIndex].is_locked = true;
+            $scope.default_app_icon = "lock"
             $scope.save_data()
             $scope.close_all_dialogs()
             $scope.show_toast("Notebook is locked")
@@ -321,6 +335,7 @@ function main_controller($scope, $timeout, db_service) {
                     });
                     $scope.password = "";
                     $scope.notebooks[$scope.selectedListIndex].is_locked = false;
+                    $scope.default_app_icon = $scope.notebooks[$scope.selectedListIndex].icon
                     $scope.save_data();
                     $scope.close_all_dialogs();
                     $scope.show_toast("Notebook unlocked");
@@ -1386,6 +1401,10 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
+    $scope.greet_user = (username) =>{
+        return greet_user(username);
+    }
+
 
 
     $scope.init = () => {
@@ -1476,7 +1495,13 @@ function main_controller($scope, $timeout, db_service) {
                 icon: "pie_chart",
                 insert_text: `@chart\npie\nTitle\nchartid\na,b\n1,2`,
                 title: "Chart"
-            }
+            },
+            {
+                icon: "progress_activity",
+                insert_text: `@circular_bars\nA, B, C\n50, 50, 50`,
+                title: "Circular Progress"
+            },
+            
         ]
 
         $scope.proverbs = [

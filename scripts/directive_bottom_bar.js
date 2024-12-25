@@ -88,21 +88,24 @@ function directive_bottom_bar() {
                 </div>
 
                 <!-- three buttons -->
-                <div class="flex-row" style="grid-area:create_btns;">
+                <div class="flex-row gap-1 switch-btns-container" style="grid-area:create_btns;">
                     <!-- note button -->
                     <span 
                         ng-click="choose_create_btn(0)"
                         ng-show="create_btns_arr[0] || show_all_create_btns"
-                        class="material-symbols-outlined icon-btn visible_pop_animation">edit_note</span>
+                        style="color:#49dc6b;"
+                        class="material-symbols-outlined icon-btn visible_pop_animation">stylus_note</span>
                     <!-- notebook button -->
                     <span 
                         ng-click="choose_create_btn(1)"
                         ng-show="create_btns_arr[1] || show_all_create_btns" 
+                        style="color:#f4b424;"
                         class="material-symbols-outlined icon-btn visible_pop_animation">auto_stories</span>
                     <!-- system var button -->
                     <span 
                         ng-click="choose_create_btn(2)"
                         ng-show="create_btns_arr[2] || show_all_create_btns" 
+                        style="color:#fd4967;"
                         class="material-symbols-outlined icon-btn visible_pop_animation">keyboard_command_key</span>
                 </div>
                 <div
@@ -117,19 +120,19 @@ function directive_bottom_bar() {
                         placeholder={{note_content_placeholder}}
                         autofocus>
                     </textarea>
-                    <div class="flex-col">
+                    <div class="flex-col gap-1 align-center">
                         <span
-                        ng-hide="show_update_task_button"
-                        ng-click="create_note()"
-                        class="material-symbols-outlined icon-btn">arrow_upward</span>
+                            ng-hide="show_update_task_button"
+                            ng-click="create_note()"
+                            class="txt-btn">Create</span>
                         <span
-                        ng-show="show_update_task_button"
-                        ng-click="update_note()"
-                        class="material-symbols-outlined icon-btn">update</span>
+                            ng-show="show_update_task_button"
+                            ng-click="update_note()"
+                            class="txt-btn">Update</span>
                         <span
-                        ng-show="show_update_task_button"
-                        ng-click="cancel_update_note()"
-                        class="material-symbols-outlined icon-btn">cancel</span>
+                            ng-show="note_content.length>=1"
+                            ng-click="cancel_update_note()"
+                            class="txt-btn">Cancel</span>
                     </div>
                     
                     

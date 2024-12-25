@@ -388,3 +388,18 @@ document.querySelector("#fileInput").addEventListener('change',function(){
 function clamp(min, current, max) {
   return Math.min(Math.max(current, min), max);
 }
+
+
+function greet_user(username) {
+  const currentHour = new Date().getHours(); // Get the current hour (0-23)
+  let txt = "";
+  if (currentHour >= 5 && currentHour < 12) {
+      return `Morning, ${username}`
+  } else if (currentHour >= 12 && currentHour < 17) {
+      return `Afternoon, ${username}`
+  } else if (currentHour >= 17 && currentHour < 21) {
+      return `Evening, ${username}`
+  } else {
+      return `Night, ${username}`
+  }
+}
