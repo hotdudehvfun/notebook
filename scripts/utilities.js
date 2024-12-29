@@ -7,29 +7,29 @@ let dialogStates =
 }
 
 let COLORS = {
-  RED:"#ff6384",
-  ORANGE:"#fea03e",
-  YELLOW:"#eab308",
-  GREEN:"#4ade80",
-  BLUE:"#3b82f6",
-  AMBER:"#f59e0b",
-  LIME:"#84cc16",
-  EMERALD:"#10b981",
-  TEAL:"#14b8a6",
-  CYAN:"#06b6d4",
-  SKY:"#0ea5e9",
-  INGIGO:"#6366f1",
-  VIOLET:"#8b5cf6",
-  PURPLE:"#a855f7",
-  PINK:"#ec4899",
-  ROSE:"#f43f5e",
-  ALL:["#ff6384","#fea03e","#fea03e","#4ade80","#fea03e","#f59e0b","#84cc16","#10b981","#14b8a6","#06b6d4","#0ea5e9","#6366f1","#8b5cf6","#a855f7","#ec4899","#f43f5e"]
+  RED: "#ff6384",
+  ORANGE: "#fea03e",
+  YELLOW: "#eab308",
+  GREEN: "#4ade80",
+  BLUE: "#3b82f6",
+  AMBER: "#f59e0b",
+  LIME: "#84cc16",
+  EMERALD: "#10b981",
+  TEAL: "#14b8a6",
+  CYAN: "#06b6d4",
+  SKY: "#0ea5e9",
+  INGIGO: "#6366f1",
+  VIOLET: "#8b5cf6",
+  PURPLE: "#a855f7",
+  PINK: "#ec4899",
+  ROSE: "#f43f5e",
+  ALL: ["#ff6384", "#fea03e", "#fea03e", "#4ade80", "#fea03e", "#f59e0b", "#84cc16", "#10b981", "#14b8a6", "#06b6d4", "#0ea5e9", "#6366f1", "#8b5cf6", "#a855f7", "#ec4899", "#f43f5e"]
 
 }
 
 
 //date argument in milliseconds
-function timeSince(date){
+function timeSince(date) {
   let minute = 60;
   let hour = minute * 60;
   let day = hour * 24;
@@ -87,7 +87,7 @@ timeToGo = (date) => {
 }
 
 
-groupBy = (list, keyGetter)=> {
+groupBy = (list, keyGetter) => {
   const map = new Map();
   list.forEach((item) => {
     const key = keyGetter(item);
@@ -152,34 +152,30 @@ function sortList(listArray) {
 
 
 
-function insertHtmlAtCursor(html)
-{
+function insertHtmlAtCursor(html) {
   var sel, range, node;
   if (window.getSelection) {
-      sel = window.getSelection();
-      if (sel.getRangeAt && sel.rangeCount) {
-          range = window.getSelection().getRangeAt(0);
-          node = range.createContextualFragment(html);
-          range.insertNode(node);
-      }
+    sel = window.getSelection();
+    if (sel.getRangeAt && sel.rangeCount) {
+      range = window.getSelection().getRangeAt(0);
+      node = range.createContextualFragment(html);
+      range.insertNode(node);
+    }
   }
 }
 
-function insertList(type)
-{
+function insertList(type) {
   document.querySelector("#newTaskContent").focus();
-  var html=`<${type}><li>Type here</li></${type}>`;
+  var html = `<${type}><li>Type here</li></${type}>`;
   insertHtmlAtCursor(html)
 }
 
-function insertHeading()
-{
+function insertHeading() {
   document.querySelector("#newTaskContent").focus();
   insertHtmlAtCursor('<h1>Heading 1<h1/>')
 }
 
-function insertProgress()
-{
+function insertProgress() {
   document.querySelector("#newTaskContent").focus();
   insertHtmlAtCursor(`#50%`)
 }
@@ -203,7 +199,7 @@ function insertTextAtCursor(textareaId, text) {
 
   let newValue = document.querySelector("#note_content").value
   console.log(newValue)
-  angular.element(document.body).injector().get('$rootScope').$broadcast('update_note_content_from_outside',newValue);
+  angular.element(document.body).injector().get('$rootScope').$broadcast('update_note_content_from_outside', newValue);
 }
 
 
@@ -275,13 +271,13 @@ const iconMapping = {
   'party': 'celebration',
   'gifts': 'card_giftcard',
   'todo': 'receipt_long',
-  'system':'keyboard_command_key',
+  'system': 'keyboard_command_key',
 };
 
 function getIconForTitle(title) {
   for (const [keyword, icon] of Object.entries(iconMapping)) {
     if (title.toLowerCase().includes(keyword)) {
-        return icon;
+      return icon;
     }
   }
   return 'folder'; // Default icon
@@ -295,26 +291,23 @@ function getTranslateX(element) {
 
 function sendNotification() {
   var options = {
-      body: 'This is a notification.',
-      icon: '/logo.png' // Optional: Add your icon here
+    body: 'This is a notification.',
+    icon: '/logo.png' // Optional: Add your icon here
   };
   var notification = new Notification('Hello!', options);
 
   // Optional: Add a click event to the notification
-  notification.onclick = function() {
-      window.open('https://yourwebsite.com'); // Open a URL on notification click
+  notification.onclick = function () {
+    window.open('https://yourwebsite.com'); // Open a URL on notification click
   };
 }
 
 
-function split_text_into_tasks(text,delim)
-{
+function split_text_into_tasks(text, delim) {
   let lines = text.trim().split(delim)
   let multiple_tasks = []
-  lines.forEach((line,index)=>
-  {
-    if(line.trim().length>0)
-    {
+  lines.forEach((line, index) => {
+    if (line.trim().length > 0) {
       multiple_tasks.push(line.trim())
     }
   })
@@ -323,19 +316,19 @@ function split_text_into_tasks(text,delim)
 
 function is_valid_json(json_string) {
   try {
-      JSON.parse(json_string);
-      return true;  // JSON is valid
+    JSON.parse(json_string);
+    return true;  // JSON is valid
   } catch (e) {
-      return false; // JSON is invalid
+    return false; // JSON is invalid
   }
 }
 
 // Function to calculate height based on number of lines
-function calculate_height_based_on_lines(text,max_height) {
-  const lineHeight = 20; 
+function calculate_height_based_on_lines(text, max_height) {
+  const lineHeight = 20;
   const lines = text.split('\n').length;
   const h = lines * lineHeight;
-  return Math.min(h,max_height);
+  return Math.min(h, max_height);
 }
 
 let proverbs = [
@@ -352,31 +345,31 @@ let proverbs = [
   "A full cup cannot accept more water.",
   "True understanding comes from nothingness.",
 ]
-function get_empty_proverbs(){
+function get_empty_proverbs() {
   try {
-    const proverb  = proverbs.getRandomItem()
+    const proverb = proverbs.getRandomItem()
     console.log(proverb)
     return proverb;
   } catch (err) {
-   console.log(err) 
+    console.log(err)
   }
 }
 
-encrypt_data = (plain_text,key) => {
+encrypt_data = (plain_text, key) => {
   let encrypted_text = CryptoJS.AES.encrypt(plain_text, key).toString();
-  return encrypted_text;  
+  return encrypted_text;
 }
 
-decrypt_data = (encrypted_text,key) => {
+decrypt_data = (encrypted_text, key) => {
   let bytes = CryptoJS.AES.decrypt(encrypted_text, key);
-  let decrypted_text = bytes.toString(CryptoJS.enc.Utf8);  
-  return decrypted_text;  
+  let decrypted_text = bytes.toString(CryptoJS.enc.Utf8);
+  return decrypted_text;
 }
 
 
-document.querySelector("#fileInput").addEventListener('change',function(){
-  var fileReader=new FileReader();
-  fileReader.onload=function(){
+document.querySelector("#fileInput").addEventListener('change', function () {
+  var fileReader = new FileReader();
+  fileReader.onload = function () {
     // console.log(fileReader.result)
     document.querySelector("#db_textarea").value = fileReader.result;
     angular.element(document.body).injector().get('$rootScope').$broadcast('update_db_textarea', fileReader.result);
@@ -394,12 +387,54 @@ function greet_user(username) {
   const currentHour = new Date().getHours(); // Get the current hour (0-23)
   let txt = "";
   if (currentHour >= 5 && currentHour < 12) {
-      return `Morning, ${username}`
+    return `Morning, ${username}`
   } else if (currentHour >= 12 && currentHour < 17) {
-      return `Afternoon, ${username}`
+    return `Afternoon, ${username}`
   } else if (currentHour >= 17 && currentHour < 21) {
-      return `Evening, ${username}`
+    return `Evening, ${username}`
   } else {
-      return `Night, ${username}`
+    return `Night, ${username}`
+  }
+}
+
+
+
+
+let touch = {
+  x: {
+    start: 0,
+    end: 0,
+    threshold: 50,
+  },
+  y: {
+    start: 0,
+    end: 0,
+    threshold: 50,
+  }
+}
+document.addEventListener("DOMContentLoaded", () => {
+  // Detect when the user starts touching
+  document.body.addEventListener('touchstart', (event) => {
+    touch.x.start = event.touches[0].clientX; // Record the starting X position
+    //console.log(touch.x.start)
+  }, false);
+
+  // Detect when the user ends touching
+  document.body.addEventListener('touchend', (event) => {
+    touch.x.end = event.changedTouches[0].clientX; // Record the ending X position
+    handleSwipe();
+  }, false);
+
+})
+
+
+// Determine swipe direction
+function handleSwipe() {
+  if (touch.x.end - touch.x.start > touch.x.threshold) { // Threshold to qualify as a 'right swipe'
+    angular.element(document.body).injector().get('$rootScope').$broadcast(
+      'broadcast_right_swipe', 
+      touch);
+
+
   }
 }

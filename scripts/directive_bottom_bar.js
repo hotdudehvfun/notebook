@@ -27,19 +27,19 @@ function directive_bottom_bar() {
                             ng-class="{disabled:!show_insert_options}"
                             ng-click="show_insert_options=!show_insert_options" 
                             class="chip2">
-                            <span class="material-symbols-outlined">edit_note</span>
+                            <span class="material-symbols-outlined orange">edit_note</span>
                             <span>Insert</span>
                         </div>
                         <div 
                             ng-class="{disabled:!show_edit_options_system_vars}" 
                             ng-click="show_edit_options_system_vars=!show_edit_options_system_vars"  class="chip2">
-                            <span class="material-symbols-outlined">deployed_code</span>
+                            <span class="material-symbols-outlined teal">deployed_code</span>
                             <span>System Vars</span>
                         </div>
                         <div
                             ng-class="{disabled:!dialog_flags.is_sidebar_menu_open}" 
                             ng-click="open_sidebar(true)" class="chip2">
-                            <span class="material-symbols-outlined">book_ribbon</span>
+                            <span class="material-symbols-outlined red">book_ribbon</span>
                             <span>View Notebooks</span>
                         </div>
                         
@@ -93,8 +93,7 @@ function directive_bottom_bar() {
                     <span 
                         ng-click="choose_create_btn(0)"
                         ng-show="create_btns_arr[0] || show_all_create_btns"
-                        style="color:#49dc6b;"
-                        class="material-symbols-outlined icon-btn visible_pop_animation">stylus_note</span>
+                        class="material-symbols-outlined icon-btn visible_pop_animation teal">stylus_note</span>
                     <!-- notebook button -->
                     <span 
                         ng-click="choose_create_btn(1)"
@@ -110,9 +109,9 @@ function directive_bottom_bar() {
                 </div>
                 <div
                     ng-show="create_btns_arr[0]"
-                    ng-style="{'height':note_textarea_container_height+'px'}"
                     class="note_textarea_container">
                     <textarea
+                        ng-style="{'height':note_textarea_container_height+'px'}"
                         ng-model="note_content"
                         ng-keyup="handle_keypress_note_input($event)"
                         id="note_content"
@@ -120,19 +119,19 @@ function directive_bottom_bar() {
                         placeholder={{note_content_placeholder}}
                         autofocus>
                     </textarea>
-                    <div class="flex-col gap-1 align-center">
+                    <div class="flex-col gap-1 align-center m-1">
                         <span
                             ng-hide="show_update_task_button"
                             ng-click="create_note()"
-                            class="txt-btn">Create</span>
+                            class="material-symbols-outlined icon-btn green">add_circle</span>
                         <span
                             ng-show="show_update_task_button"
                             ng-click="update_note()"
-                            class="txt-btn">Update</span>
+                            class="material-symbols-outlined icon-btn green">edit_square</span>
                         <span
                             ng-show="note_content.length>=1"
                             ng-click="cancel_update_note()"
-                            class="txt-btn">Cancel</span>
+                            class="material-symbols-outlined icon-btn red">cancel</span>
                     </div>
                     
                     

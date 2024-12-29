@@ -33,7 +33,9 @@ function directive_main_content(){
             <!-- hide tasks when notebook is empty or notebook is locked -->
             <div ng-hide="notebooks.length==0">
                 <!-- normal tasks -->
-                <div class="notebook_age">{{notebook_age()}}</div>
+                <div class="notebook_age">
+                    <span class="material-symbols-outlined" style="font-size:20px;">schedule</span>&nbsp; {{notebook_age()}}
+                </div>
                 <div 
                     ng-hide="selectedListName.toLowerCase()=='system'" 
                     class="group_by_text">{{notes.length}} tasks

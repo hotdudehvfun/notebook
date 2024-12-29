@@ -39,7 +39,7 @@ function main_controller($scope, $timeout, db_service) {
         try {
             if ($scope.current_notebook) {
                 let ms = $scope.current_notebook.dateCreated
-                return `Created: ${timeSince(ms)}`
+                return `${timeSince(ms)}`
             }
             return "Notebook is very old"
         } catch (err) {
@@ -217,7 +217,7 @@ function main_controller($scope, $timeout, db_service) {
 
                 // Reset input and dialog states
                 $scope.note_content = "";
-                $scope.note_textarea_container_height = 45;
+                $scope.note_textarea_container_height = $scope.note_textarea_container_default_height;
                 $scope.pageTitle = $scope.selectedListName;
                 // Save data and show toast notification
                 $scope.save_data();
@@ -255,7 +255,7 @@ function main_controller($scope, $timeout, db_service) {
 
                 // Reset input and dialog states
                 $scope.note_content = "";
-                $scope.note_textarea_container_height = 45;
+                $scope.note_textarea_container_height = $scope.note_textarea_container_default_height;
                 $scope.pageTitle = $scope.selectedListName;
                 // Save data and show toast notification
                 $scope.save_data();
@@ -655,7 +655,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.note_content = $scope.selected_note.title.trim()
         $scope.show_update_task_button = true
         $scope.close_all_dialogs()
-        $scope.note_textarea_container_height = 300
+        $scope.note_textarea_container_height = $scope.note_textarea_container_max_height
     }
 
     // update task in popup
@@ -685,7 +685,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.selected_note = null
             $scope.show_update_task_button = false
             $scope.note_content = ""
-            $scope.note_textarea_container_height = 45
+            $scope.note_textarea_container_height = $scope.note_textarea_container_default_height
         } catch (err) {
             console.log("Error while updating note", err)
         }
@@ -794,12 +794,12 @@ function main_controller($scope, $timeout, db_service) {
                     }
                 }
                 if (e.keyCode == 13) {
-                    $scope.note_textarea_container_height = Math.min(textarea.scrollHeight + 30, 300)
+                    $scope.note_textarea_container_height = Math.min(textarea.scrollHeight + 30, $scope.note_textarea_container_max_height)
                 }
 
             }
             if ($scope.note_content.length == 0) {
-                $scope.note_textarea_container_height = 45;
+                $scope.note_textarea_container_height = $scope.note_textarea_container_default_height;
                 console.log("empty")
             }
         } catch (error) {
@@ -1111,6 +1111,16 @@ function main_controller($scope, $timeout, db_service) {
             $scope.is_trash_open = ($scope.current_notebook.title.toLowerCase() == "trash")
             $scope.note_more_options = [
                 {
+                    text: "Mark done",
+                    icon: "radio_button_checked",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => { 
+                        $scope.selected_note.isTaskCompleted = true
+                        $scope.selected_note.taskIcon = "radio_button_checked"
+                        $scope.save_data();
+                    }
+                },{
                     text: "Restore note",
                     icon: "restore_from_trash",
                     class: "task-more-options-item",
@@ -1214,7 +1224,17 @@ function main_controller($scope, $timeout, db_service) {
         console.log($scope.note_content)
       });
     
-      
+    
+    // sending message to angular from outside world
+    $scope.$on('broadcast_right_swipe', function(event, touch) {
+        //open notebook when start x is near left end of screen
+        let left_screen_limit = window.screen.width * 0.30
+        if(touch.x.start < left_screen_limit)
+        {
+            $scope.open_sidebar(true)
+            $scope.$apply();
+        }
+      });
 
     $scope.copy_to_clipboard = function (textToCopy) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1479,7 +1499,9 @@ function main_controller($scope, $timeout, db_service) {
         $scope.new_var_name = ""
         $scope.new_var_value = ""
         $scope.max_notebook_title_len = 20
-        $scope.note_textarea_container_height = 45
+        $scope.note_textarea_container_default_height = 35
+        $scope.note_textarea_container_height = 35
+        $scope.note_textarea_container_max_height = 250
         $scope.password = ""
         $scope.selected_split_delimiter = "\n" // default delimiter is new line
         $scope.presets_delimiters = ["new line","#","$","!"]

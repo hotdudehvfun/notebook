@@ -878,10 +878,11 @@ img.empty_svg {
     font-weight: bold;
     color: var(--icon-btn-color);
     font-size: 0.6rem;
-    display: inline-block;
+    display: inline-flex;
     background: var(--accent);
     border-radius: 100px;
     margin: 0.5rem;
+    align-items: center;
 }
 
 /* 0.25rem 0.75rem */
@@ -1037,6 +1038,7 @@ input:checked + label.toggle_label > span.toggle_span {
 }
 
 .note_textarea_container {
+    min-height: fit-content;
     display: flex;
     border: 1px solid;
     border-radius: 1rem;
