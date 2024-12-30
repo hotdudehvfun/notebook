@@ -14,7 +14,7 @@ function directive_sidebar(){
           
           <!-- show all notebooks -->
           <div class="scroll-y flex-col m-1/2 rounded-3/4 border h-60vh">
-            <h3 class="mt-2">Your notebooks</h3>
+            <h2 class="mt-2">Your notebooks</h2>
             <div class="notebook_count">
               {{get_total().total_tasks}} tasks {{get_total().total_notebooks}} notebooks
             </div>
@@ -31,18 +31,19 @@ function directive_sidebar(){
                               class="material-symbols-outlined notebook_icon"
                               ng-bind="notebook_selected_state(key)"></span>
                               
-                              <span
-                              ng-class="{'bg-red':value.title.toLowerCase()=='system'||value.title.toLowerCase()=='trash'}"
+                            <!-- notebook icon -->
+                            <span
+                              ng-class="{'red':value.title.toLowerCase()=='system'||value.title.toLowerCase()=='trash'}"
                               class="material-symbols-outlined icon-btn"
                               ng-bind="get_notebook_icon(value)"
                               ng-hide="select_notebooks"></span>
-
+                              
                               <article ng-click="open_notebook(value)" class="selected" ng-bind="value.title"></article>
-
+                              
                               <span 
                               class="list-sub-text"
                               ng-bind="get_notebook_info(value)"></span>
-                              
+
                               <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                           </div>
                       </div>
@@ -53,7 +54,7 @@ function directive_sidebar(){
 
           <!-- settings -->
           <div class="flex-col rounded-3/4 border m-1/2">
-            <h3 class="mt-2">Settings</h3>
+            <h2 class="mt-2">Settings</h2>
             <div class="flex-row space-between">
                 <h4>App Size</h4>
                 <h4>{{app_size()}}</h4>

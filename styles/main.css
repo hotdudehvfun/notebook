@@ -1011,9 +1011,8 @@ input:checked + label.toggle_label > span.toggle_span {
     align-items: center;
     width: 100%;
     gap: 0.25rem;
-    padding: 0rem 0.25rem;
+    padding: 1rem 1rem;
     padding-bottom: 2rem;
-    transition: 0.5s all;
 }
 
 /* to prevent overlap of three create btns over right layout, change grid layout */
