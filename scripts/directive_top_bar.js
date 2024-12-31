@@ -9,12 +9,12 @@ function directive_top_bar() {
          </div>
         <div class="flex-row flex gap-1 justify-center">
             <span class="material-symbols-outlined">
-                {{default_app_icon}}
+                {{pageIcon}}
             </span>
             <div 
                 class="app-title"
                 ng-click="handle_click_on_notebook_title()">
-                {{pageTitle}}
+                <span>{{pageTitle}}</span>
             </div>
         </div>
         <div class="flex-row flex align-center justify-end gap-1">

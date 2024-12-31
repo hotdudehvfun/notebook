@@ -29,17 +29,56 @@ function directive_main_content(){
                 </div> -->
             </div>
 
-            <!-- tasks -->
-            <!-- hide tasks when notebook is empty or notebook is locked -->
-            <div ng-hide="notebooks.length==0">
+
+
+            <!-- notebooks -->
+            <div ng-show="show_view=='notebooks'">
+            <h2 class="mt-2">Your notebooks</h2>
+            <div class="notebook_count">
+              {{get_total().total_tasks}} tasks {{get_total().total_notebooks}} notebooks
+            </div>
+              <ul class="notebooks reset_ul">
+                  <li ng-repeat="(key, value) in notebooks" class="notebooks_li">
+                      <div class="list-panel-item" >
+                          <div class="list-panel-item-title">
+                              <!-- show when selected -->
+                              <span
+                              ng-show="select_notebooks"
+                              class="material-symbols-outlined notebook_icon"
+                              ng-bind="notebook_selected_state(key)"></span>
+                              
+                            <!-- notebook icon -->
+                            <span
+                              class="material-symbols-outlined icon-btn"
+                              ng-bind="get_notebook_icon(value)"
+                              ng-hide="select_notebooks"></span>
+                              
+                              <article ng-click="open_notebook(value)" class="selected" ng-bind="value.title"></article>
+                              
+                              <span 
+                              class="list-sub-text"
+                              ng-bind="get_notebook_info(value)"></span>
+
+                              <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
+                          </div>
+                      </div>
+                  </li>
+              </ul>                
+            </div>
+
+
+            <!-- notes -->
+            <div ng-show="show_view=='notes'">
                 <!-- normal tasks -->
                 <div class="notebook_age">
                     <span class="material-symbols-outlined" style="font-size:20px;">schedule</span>&nbsp; {{notebook_age()}}
                 </div>
+                
                 <div 
                     ng-hide="selectedListName.toLowerCase()=='system'" 
                     class="group_by_text">{{notes.length}} tasks
                 </div>
+                
                 <ul
                     ng-hide="is_notebook_locked()"
                     class="tasks reset_ul">
@@ -93,6 +132,7 @@ function directive_main_content(){
                     </div>
                     <h2 class="text-center">{{empty_notebook_msg}}</h2>
                 </div>
+                
                 <!-- notebook is locked-->
                 <div
                 class="empty-notebook"

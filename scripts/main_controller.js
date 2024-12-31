@@ -62,9 +62,10 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.is_note_selected = false;
                 $scope.show_edit_options = false;
                 $scope.selected_note = undefined
+                $scope.show_view = "notes"
 
                 // to show icon on topbar
-                $scope.default_app_icon = $scope.get_notebook_icon(notebook)
+                $scope.pageIcon = $scope.get_notebook_icon(notebook)
 
 
                 $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`
@@ -91,8 +92,27 @@ function main_controller($scope, $timeout, db_service) {
             let left_val = state ? "0px" : "-90vw";
             $scope.sidebar_left = { left: left_val }
             $scope.dialog_flags.is_sidebar_menu_open = state
+
         } catch (err) {
             console.log("Cannot open side bar", err)
+        }
+    }
+    $scope.set_view = function(view_name)
+    {
+        //available views
+        /*
+            notebooks = list of notebooks
+            notes = notes inside notebook
+            vars = show list of user defined variables
+        */
+        $scope.show_view = view_name
+        if($scope.show_view=='notebooks')
+        {
+            //show create notebook area
+            $scope.create_btns_arr = [false, true, false]
+            //reset icon and title
+            $scope.pageTitle = $scope.defaultPageTitle
+            $scope.pageIcon = $scope.default_app_icon
         }
     }
 
@@ -306,7 +326,7 @@ function main_controller($scope, $timeout, db_service) {
             })
             $scope.password = ""
             $scope.notebooks[$scope.selectedListIndex].is_locked = true;
-            $scope.default_app_icon = "lock"
+            $scope.pageIcon = "lock"
             $scope.save_data()
             $scope.close_all_dialogs()
             $scope.show_toast("Notebook is locked")
@@ -335,7 +355,7 @@ function main_controller($scope, $timeout, db_service) {
                     });
                     $scope.password = "";
                     $scope.notebooks[$scope.selectedListIndex].is_locked = false;
-                    $scope.default_app_icon = $scope.notebooks[$scope.selectedListIndex].icon
+                    $scope.pageIcon = $scope.notebooks[$scope.selectedListIndex].icon
                     $scope.save_data();
                     $scope.close_all_dialogs();
                     $scope.show_toast("Notebook unlocked");
@@ -389,10 +409,9 @@ function main_controller($scope, $timeout, db_service) {
             $scope.theme = data.theme;
             $scope.is_dark = $scope.theme == "dark";
             $scope.init_theme()
-
             //load last notebook
-            $scope.selectedListName = $scope.notebooks[$scope.selectedListIndex].title
-            $scope.open_notebook($scope.notebooks[$scope.selectedListIndex])
+            //$scope.selectedListName = $scope.notebooks[$scope.selectedListIndex].title
+            //$scope.open_notebook($scope.notebooks[$scope.selectedListIndex])
 
             //set up system notebooks
             $scope.init_system_notebooks()
@@ -1458,9 +1477,11 @@ function main_controller($scope, $timeout, db_service) {
         $scope.show_edit_options_system_vars = false //bottom bar note insert system vars
         $scope.show_note_complete_button = false // show hide complete button
         $scope.show_split_note_btns = false // split note sub menu btns
+        $scope.show_view = "notebooks" //options can be notebooks, notes
 
 
-        $scope.create_btns_arr = [true, false, false]
+        // by default create notebook is shown
+        $scope.create_btns_arr = [false, true, false]
         $scope.show_all_create_btns = false
 
 
@@ -1479,6 +1500,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.defaultPageTitle = "Notebooks";
         $scope.default_app_icon = "eco"
         $scope.pageTitle = $scope.defaultPageTitle;
+        $scope.pageIcon = "eco"
         $scope.copied_task = null
         $scope.db_operation = null
         $scope.CONST={

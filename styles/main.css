@@ -123,11 +123,14 @@ input:focus {
 .list-panel-item {
     display: inline-flex;
     flex-direction: column;
-    padding: 0.5rem 0.25rem;
+    padding: 1rem 0.5rem;
     width: 100%;
-    transition: 0.2s all;
-    border-bottom: 1px solid var(--list-border);
-    /* background: var(--list-bg); */
+    /* transition: 0.2s all; */
+    /* border-bottom: 1px solid var(--list-border); */
+    background: var(--list-bg);
+    border-radius: 8px;
+    /* margin: .125rem .75rem; */
+    height: 150px;
 }
 
 ul.notebooks li:last-child > .list-panel-item {
@@ -136,7 +139,8 @@ ul.notebooks li:last-child > .list-panel-item {
 
 .list-panel-item-title {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: self-start;
 }
 
 .toast {
@@ -306,11 +310,9 @@ div#list-more-options-container {
 .list-panel-item > div > article {
     text-transform: capitalize;
     font-size: 0.8rem;
-    margin-left: 0.5rem;
     width: -webkit-fill-available;
     padding: 0.5rem 0.25rem;
     font-weight: bold;
-    color: currentColor;
 }
 
 .list-panel-item > article.selected {
@@ -319,14 +321,10 @@ div#list-more-options-container {
 }
 
 .list-sub-text {
-    color: currentColor;
-    align-self: center;
     margin: 0.5rem;
     text-align: end;
     font-weight: bolder;
     background: var(--white_black);
-    /* padding: 0.25rem; */
-    border-radius: 0.25rem;
 }
 
 .taskMoreOptionsConatiner {
@@ -1039,8 +1037,9 @@ input:checked + label.toggle_label > span.toggle_span {
 .note_textarea_container {
     min-height: fit-content;
     display: flex;
-    border: 1px solid;
-    border-radius: 1rem;
+    border: solid;
+    border-width: 0px 0px 1px 0px;
+    /* border-radius: 1rem; */
     align-items: center;
     /* height: 200px; */
     width: -webkit-fill-available;
@@ -1050,8 +1049,9 @@ input:checked + label.toggle_label > span.toggle_span {
 
 .notebook_container {
     display: flex;
-    border: 1px solid;
-    border-radius: 100px;
+    border: solid;
+    border-width: 0px 0px 1px 0px;
+    /* border-radius: 100px; */
     align-items: center;
     width: 100%;
     padding: 0.125rem 0.25rem;
@@ -1079,7 +1079,7 @@ input:checked + label.toggle_label > span.toggle_span {
     color: var(--icon-btn-color);
     /* width: 30px; */
     justify-content: center;
-    background: var(--color-btn-background);
+    /* background: var(--color-btn-background); */
 }
 
 .green-btn {
@@ -1224,4 +1224,17 @@ text.circular_bar_text {
 .txt-btn:active
 {
     text-decoration:underline;
+}
+
+ul.notebooks {
+    display: grid;
+    /* grid-template-columns: 1fr 1fr; */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: .5rem;
+}
+
+.list-panel-item-title > .material-symbols-outlined {
+    font-size:1.5rem;
+    
 }

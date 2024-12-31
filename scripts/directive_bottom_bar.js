@@ -12,7 +12,6 @@ function directive_bottom_bar() {
             class="note_content_container create_btns_close grid_rows_two">
                 <!-- system var button -->
                 <div
-                    ng-if="create_btns_arr[0]"
                     class="edit_options_container">
                     <div class="flex-row gap-1">
                         <div
@@ -38,7 +37,7 @@ function directive_bottom_bar() {
                         </div>
                         <div
                             ng-class="{disabled:!dialog_flags.is_sidebar_menu_open}" 
-                            ng-click="open_sidebar(true)" class="chip2">
+                            ng-click="set_view('notebooks')" class="chip2">
                             <span class="material-symbols-outlined red">book_ribbon</span>
                             <span>View Notebooks</span>
                         </div>

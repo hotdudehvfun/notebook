@@ -1,9 +1,8 @@
 [data-theme='dark'] {
     --font-color: white;
     --bg-color: #272727;
-    --list-bg: #2a2a2a61;
+    --list-bg: #222222;
     --border-color: #2997ff;
-    --list-border: #494949;
     --chip-bg: #191919;
     --progress-a: #2997ff;
     --progress-b: #121212;
@@ -19,8 +18,6 @@
     --task-complete-color: #EF4444;
     --table-bg: #222;
     --color-btn-background:#333;
-
-    
     table {
         border: 1px solid #202020ad;
     }
@@ -28,27 +25,21 @@
     {
         background:linear-gradient(90deg, #ff4967, #f3217a);
     }
-
     th {
         background: transparent;
-        color: white;
+    color: white;
     }
-
     tr:nth-child(odd) {
         background-color: #212121;
     }
-
     tr:nth-child(even) {
         background-color: #292929a1;
     }
-
     tr {
         border-top: 1px solid #23232333;
     }
     .topbar
     {
-        background: #303030;
+    background: #303030;
     }
-
-    
 }
