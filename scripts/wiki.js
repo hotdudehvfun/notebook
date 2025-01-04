@@ -274,18 +274,22 @@ function handle_returns(text) {
     20, 40 // 3 lines with two data points
     chartid
     */
-    const lines = text.split("\n");
-    let total_lines = lines[1]
-    let titles = lines[2].split(",")
-    let labels = lines[3].split(",")
-    let line1_points = lines[4].split(",").map(v => handle_calculations(v.trim()));
-    let line2_points = lines[5].split(",").map(v => handle_calculations(v.trim()));
-    let line3_points = lines[6].split(",").map(v => handle_calculations(v.trim()));
-    let id = lines[7].trim()
-    setTimeout(() => {
-        update_chart_returns(titles,labels,line1_points,line2_points,line3_points,id)
-    }, 50)
-    return `<canvas style="width:100%" id="${id}"></canvas>`
+    try {
+        const lines = text.split("\n");
+        let total_lines = parseInt(lines[1].trim())
+        let titles = lines[2].split(",")
+        let labels = lines[3].split(",")
+        let line1_points = lines[4].split(",").map(v => handle_calculations(v.trim()));
+        let line2_points = lines[5].split(",").map(v => handle_calculations(v.trim()));
+        let line3_points = lines[6].split(",").map(v => handle_calculations(v.trim()));
+        let id = lines[7].trim()
+        setTimeout(() => {
+            update_chart_returns(titles,labels,line1_points,line2_points,line3_points,id)
+        }, 50)
+        return `<canvas style="width:100%" id="${id}"></canvas>`
+    } catch (err) {
+        console.log("Error while handling returns charts",err)
+    }
 }
 
 function update_chart_returns(_titles,_labels,_line1_points,_line2_points,_line3_points,id) {

@@ -91,18 +91,23 @@
                             <span>Export</span>
                         </div>
                     </div>
-                    <span ng-show="db_operation==CONST.IMPORT">Choose encrypted file to import</span>
+
+                    <label for="fileInput" ng-show="db_operation==CONST.IMPORT" class="align-center border flex-row gap-1 justify-center m-1 p-1/2 rounded shadow">
+                        <span class="material-symbols-outlined">upload_file</span>
+                        Choose file to import
+                    </label>
                     <input
                         ng-show="db_operation==CONST.IMPORT"
                         type="file" 
                         id="fileInput"
                         file-input="file" />
+
                     
                     <div ng-if="db_operation==CONST.EXPORT">
-                            Set password to Encrypt the file
+                            Set password to encrypt the file
                         </div>
                     <div ng-if="db_operation==CONST.IMPORT">
-                            Enter password to Decrypt the file
+                        Enter password to decrypt the uploaded file
                     </div>        
                     <input
                         name="password"
