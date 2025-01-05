@@ -1,12 +1,16 @@
 /* formatting classes for notes */
-.orange{
+.yellow{
+    color:#f4b424;
+}
+.orange
+{
     color:#ff9e40;
 }
 .teal{
     color:teal;
 }
 .red {
-    color: #ff4967;
+    color: #fd4967; 
 }
 
 .green {

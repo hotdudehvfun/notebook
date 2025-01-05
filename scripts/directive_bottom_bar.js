@@ -4,44 +4,24 @@ function directive_bottom_bar() {
         /*html*/
         template: `
             <div
-            ng-class="{
+                ng-class="{
                 create_btns_close:!show_all_create_btns,
                 create_btns_open:show_all_create_btns,
-                grid_rows_one:!create_btns_arr[0]
                 }"
             class="note_content_container create_btns_close grid_rows_two">
-                <!-- system var button -->
-                <div
-                    class="edit_options_container">
+                <div class="edit_options_container">
+                    <!-- menu buttons -->
                     <div class="flex-row gap-1">
                         <div
-                            ng-show="is_note_selected"
-                            ng-class="{disabled:!show_edit_options}"
-                            ng-click="show_edit_options=!show_edit_options" 
+                            ng-repeat="item in bottom_bar_menu"
+                            ng-show="item.show"
+                            ng-class="{'chip2-selected': item.is_selected}" 
+                            ng-click="item.action(item)" 
                             class="chip2">
-                            <span class="material-symbols-outlined">edit_note</span>
-                            <span>File</span>
+                            <span class="material-symbols-outlined">{{item.icon}}</span>
+                            <span>{{item.text}}</span>
                         </div>
-                        <div
-                            ng-class="{disabled:!show_insert_options}"
-                            ng-click="show_insert_options=!show_insert_options" 
-                            class="chip2">
-                            <span class="material-symbols-outlined orange">edit_note</span>
-                            <span>Insert</span>
-                        </div>
-                        <div 
-                            ng-class="{disabled:!show_edit_options_system_vars}" 
-                            ng-click="show_edit_options_system_vars=!show_edit_options_system_vars"  class="chip2">
-                            <span class="material-symbols-outlined teal">deployed_code</span>
-                            <span>System Vars</span>
-                        </div>
-                        <div
-                            ng-class="{disabled:!dialog_flags.is_sidebar_menu_open}" 
-                            ng-click="set_view('notebooks')" class="chip2">
-                            <span class="material-symbols-outlined red">book_ribbon</span>
-                            <span>View Notebooks</span>
-                        </div>
-                        
+                
                     </div>
                     
                     <div class="flex-row gap-1">
@@ -73,6 +53,17 @@ function directive_bottom_bar() {
                             <span class="material-symbols-outlined">{{option.icon}}</span>
                             <span>{{option.title}}</span>
                         </div>
+
+                        <!-- show component options -->
+                        <div
+                            ng-if="show_component_options" 
+                            class="chip">
+                            <span>{{get_component_details()}}</span>
+                        </div>
+
+                        
+
+
                     <!-- show system vars options -->
                     <div
                         ng-if="show_edit_options_system_vars"
@@ -97,14 +88,12 @@ function directive_bottom_bar() {
                     <span 
                         ng-click="choose_create_btn(1)"
                         ng-show="create_btns_arr[1] || show_all_create_btns" 
-                        style="color:#f4b424;"
-                        class="material-symbols-outlined icon-btn visible_pop_animation">auto_stories</span>
+                        class="material-symbols-outlined icon-btn visible_pop_animation yellow">auto_stories</span>
                     <!-- system var button -->
                     <span 
                         ng-click="choose_create_btn(2)"
                         ng-show="create_btns_arr[2] || show_all_create_btns" 
-                        style="color:#fd4967;"
-                        class="material-symbols-outlined icon-btn visible_pop_animation">keyboard_command_key</span>
+                        class="material-symbols-outlined icon-btn visible_pop_animation red">keyboard_command_key</span>
                 </div>
                 <div
                     ng-show="create_btns_arr[0]"
@@ -151,7 +140,7 @@ function directive_bottom_bar() {
                         autofocus/>
                     <span
                         ng-click="create_notebook()"
-                        class="material-symbols-outlined icon-btn">arrow_upward</span>
+                        class="material-symbols-outlined icon-btn yellow">arrow_upward</span>
                 </div>
                 <!-- create system var -->
                 <div

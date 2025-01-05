@@ -9,6 +9,7 @@ html {
     --list-bg: #ffffff57;
     --border-color: #2997ff;
     --chip-bg: whitesmoke;
+    --chip2-border:#e7e7e7;
     --progress-a: #4ade80;
     --progress-b: aliceblue;
     --more-options-border-color: #e6e6e6;
@@ -627,8 +628,6 @@ h1, h2, h3, h4, h5 {
 
 .bottom-bar {
     padding-bottom: 0.5rem;
-    display: flex;
-    justify-content: space-between;
     background: var(--bottom-bar-bg);
     margin: 0.5rem;
     border-radius: 8px;
@@ -1109,22 +1108,31 @@ input:checked + label.toggle_label > span.toggle_span {
 .chip2 {
     display: flex;
     gap: 1rem;
-    background: var(--accent);
     border-radius: 0.5rem;
     justify-content: center;
     align-items: center;
     padding: 5px 10px;
     /* color: white; */
     font-size: .6rem;
+    border: 1px solid var(--chip2-border);
 }
 
-.chip2> .material-symbols-outlined {
+
+.chip2 > .material-symbols-outlined {
     font-size: 1.1rem;
 }
 
-.chip2.disabled {
-    background: var(--chip-bg);
+.chip2.chip2-selected > .material-symbols-outlined {
+    animation:chip2_icon_anim .5s infinite alternate;
 }
+
+@keyframes chip2_icon_anim
+{
+    to{
+        transform:scale(1.2);
+    }
+}
+
 
 table {
     border: 1px solid;
@@ -1237,4 +1245,8 @@ ul.notebooks {
 .list-panel-item-title > .material-symbols-outlined {
     font-size:1.5rem;
     
+}
+
+.chip2-selected{
+    background:var(--accent);
 }

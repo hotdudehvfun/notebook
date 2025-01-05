@@ -446,14 +446,15 @@ function main_controller($scope, $timeout, db_service) {
     $scope.handle_tap_on_note = function (note) {
         try {
             $scope.selected_note = note
-            console.log($scope.selected_note)
+            // console.log($scope.selected_note)
             $scope.is_note_selected = true
             //show file options when note is selected
-            $scope.show_edit_options = true
+            // $scope.show_edit_options = true
             $scope.task_completed_state = note.isTaskCompleted
             //check if we are inside trash
             // console.log($scope.current_notebook)
             $scope.init_note_more_options()
+            $scope.init_bottom_bar_menu()
 
         } catch (err) {
             console.log("Error", err)
@@ -1190,6 +1191,72 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
+
+    //bottom bar menu
+    $scope.init_bottom_bar_menu = () => {
+        $scope.bottom_bar_menu = [
+            {
+                text: "File",
+                icon: "edit_note",
+                class: "chip2",
+                is_selected:false,
+                show: $scope.is_note_selected,
+                action: (item) => { 
+                    $scope.show_edit_options=!$scope.show_edit_options 
+                    item.is_selected = !item.is_selected
+                }
+            },
+            {
+                text: "Insert",
+                icon: "edit_note",
+                class: "chip2",
+                is_selected:false,
+                show: true,
+                action: (item) => { 
+                    $scope.show_insert_options=!$scope.show_insert_options 
+                    item.is_selected = !item.is_selected
+                }
+            },
+            {
+                text: "Component",
+                icon: "sports_esports",
+                class: "chip2",
+                is_selected:false,
+                show: true,
+                action: (item) => { 
+                    $scope.show_component_options=!$scope.show_component_options 
+                    item.is_selected = !item.is_selected
+                }
+            },
+            {
+                text: "System vars",
+                icon: "deployed_code",
+                class: "chip2",
+                is_selected:false,
+                show: true,
+                action: (item) => { 
+                    $scope.show_edit_options_system_vars=!$scope.show_edit_options_system_vars 
+                    item.is_selected = !item.is_selected
+                }
+            },
+            {
+                text: "View notebooks",
+                icon: "book_ribbon",
+                class: "chip2",
+                is_selected:false,
+                show: true,
+                action: (item) => { 
+                    $scope.set_view('notebooks') 
+                    item.is_selected = !item.is_selected
+                }
+            }]
+    }
+
+    // Function to toggle selected class
+    // $scope.toggle_is_selected = function (item)
+    // {
+    // };
+
     $scope.handle_db_operation_change = () => {
         try {
             if ($scope.db_operation == $scope.CONST.EXPORT) {
@@ -1439,6 +1506,32 @@ function main_controller($scope, $timeout, db_service) {
             $scope.show_all_create_btns = false
         }
     }
+    
+
+    $scope.get_component_details = ()=>{
+
+        if($scope.selected_note)
+        {
+            /* 
+            component types:
+            @table
+            @chart
+            @returns
+            @circular_bars
+            @label_and_bars
+            */
+           if($scope.selected_note.title.trim().startsWith("@"))
+           {
+            let component_name = $scope.selected_note.title.trim().split("\n")[0]
+            component_name = component_name.split("@")[1]
+            return `Component Detected:${component_name}`
+           }else{
+            return "Component Detected:Text"
+           }
+        }else{
+            return "Note not selected"
+        }
+    }
 
     $scope.greet_user = (username) =>{
         return greet_user(username);
@@ -1474,6 +1567,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.is_note_selected = false //flag to check if any note is selected
         $scope.show_edit_options = false //bottom bar note edit options
         $scope.show_insert_options = false //bottom bar note insert options
+        $scope.show_component_options = false //bottom bar component options for various components
         $scope.show_edit_options_system_vars = false //bottom bar note insert system vars
         $scope.show_note_complete_button = false // show hide complete button
         $scope.show_split_note_btns = false // split note sub menu btns
@@ -1528,6 +1622,8 @@ function main_controller($scope, $timeout, db_service) {
         $scope.selected_split_delimiter = "\n" // default delimiter is new line
         $scope.presets_delimiters = ["new line","#","$","!"]
 
+        // menu buttons
+
         // insert options for new note
         $scope.edit_options = [
             { icon: "title", insert_text: "#H1", title: "Heading" },
@@ -1573,6 +1669,7 @@ function main_controller($scope, $timeout, db_service) {
         //more options when notebook or note is clicked
         $scope.init_notebook_more_options()
         $scope.init_note_more_options()
+        $scope.init_bottom_bar_menu()
 
         //make notebook and notes sortable
         $scope.init_sortable_list(".notebooks", "notebooks");
