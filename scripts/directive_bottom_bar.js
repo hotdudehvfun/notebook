@@ -10,6 +10,14 @@ function directive_bottom_bar() {
                 }"
             class="note_content_container create_btns_close grid_rows_two">
                 <div class="edit_options_container">
+                    <!-- title -->
+                    <div class="botom_bar_title" ng-if="show_view=='notebooks'">
+                        Open a new notebook
+                    </div>
+                    <div class="botom_bar_title" ng-if="show_view=='notes'">
+                        {{note_content_placeholder}}
+                    </div>
+                    
                     <!-- menu buttons -->
                     <div class="flex-row gap-1">
                         <div
@@ -21,7 +29,6 @@ function directive_bottom_bar() {
                             <span class="material-symbols-outlined">{{item.icon}}</span>
                             <span>{{item.text}}</span>
                         </div>
-                
                     </div>
                     
                     <div class="flex-row gap-1">

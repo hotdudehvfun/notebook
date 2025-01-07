@@ -66,10 +66,7 @@ function main_controller($scope, $timeout, db_service) {
 
                 // to show icon on topbar
                 $scope.pageIcon = $scope.get_notebook_icon(notebook)
-
-
                 $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`
-
                 //show system tab in bottom bar
                 if(notebook.title.toLowerCase()=="system")
                 {
@@ -77,8 +74,7 @@ function main_controller($scope, $timeout, db_service) {
                 }else{
                     $scope.create_btns_arr = [true,false,false]
                 }
-
-
+                $scope.init_bottom_bar_menu()
                 $scope.open_sidebar(false)
                 $scope.save_data()
             }
@@ -113,6 +109,11 @@ function main_controller($scope, $timeout, db_service) {
             //reset icon and title
             $scope.pageTitle = $scope.defaultPageTitle
             $scope.pageIcon = $scope.default_app_icon
+            //reset selected note
+            $scope.selected_note = null;
+            $scope.is_note_selected = false;
+            //recalculate bottom bar
+            $scope.init_bottom_bar_menu()
         }
     }
 
@@ -1200,7 +1201,7 @@ function main_controller($scope, $timeout, db_service) {
                 icon: "edit_note",
                 class: "chip2",
                 is_selected:false,
-                show: $scope.is_note_selected,
+                show: $scope.show_view=="notes" && $scope.is_note_selected,
                 action: (item) => { 
                     $scope.show_edit_options=!$scope.show_edit_options 
                     item.is_selected = !item.is_selected
@@ -1211,7 +1212,7 @@ function main_controller($scope, $timeout, db_service) {
                 icon: "edit_note",
                 class: "chip2",
                 is_selected:false,
-                show: true,
+                show: $scope.show_view=="notes",
                 action: (item) => { 
                     $scope.show_insert_options=!$scope.show_insert_options 
                     item.is_selected = !item.is_selected
@@ -1222,7 +1223,7 @@ function main_controller($scope, $timeout, db_service) {
                 icon: "sports_esports",
                 class: "chip2",
                 is_selected:false,
-                show: true,
+                show: $scope.is_note_selected,//show component tab when a note is selected
                 action: (item) => { 
                     $scope.show_component_options=!$scope.show_component_options 
                     item.is_selected = !item.is_selected
@@ -1233,7 +1234,7 @@ function main_controller($scope, $timeout, db_service) {
                 icon: "deployed_code",
                 class: "chip2",
                 is_selected:false,
-                show: true,
+                show: $scope.show_view=="notes",
                 action: (item) => { 
                     $scope.show_edit_options_system_vars=!$scope.show_edit_options_system_vars 
                     item.is_selected = !item.is_selected
@@ -1244,7 +1245,7 @@ function main_controller($scope, $timeout, db_service) {
                 icon: "book_ribbon",
                 class: "chip2",
                 is_selected:false,
-                show: true,
+                show: $scope.show_view!="notebooks",//show only when note viewing notebooks
                 action: (item) => { 
                     $scope.set_view('notebooks') 
                     item.is_selected = !item.is_selected
