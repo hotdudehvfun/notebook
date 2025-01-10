@@ -90,17 +90,21 @@ function directive_main_content(){
                         <div
                         class="task" 
                         ng-class="{completed: note.isTaskCompleted}">
-                            <span
-                                ng-show="show_note_complete_button" 
-                                class="material-symbols-outlined" 
-                                ng-bind="note.taskIcon"
-                                ng-click="toggle_note_completed_state(note)"></span>
+                            
+                            <!-- note content -->
                             <div
                                 ng-class="{selected:selected_note==note}"
                                 class="task-content-div"
                                 ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                                 ng-dblclick="handle_dbl_tap_on_note(note);"
                                 ng-click="handle_tap_on_note(note);"></div>
+                            <!-- complete button -->
+                            <span
+                                ng-show="show_note_complete_button || selected_note==note" 
+                                class="material-symbols-outlined" 
+                                ng-bind="note.taskIcon"
+                                ng-click="toggle_note_completed_state(note)"></span>
+                            <!-- drag handle -->
                             <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                         </div>
                     </li>

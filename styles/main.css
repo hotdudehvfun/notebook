@@ -193,6 +193,7 @@ ul.notebooks li:last-child > .list-panel-item {
 .task .task-content-div {
     /* margin-left: 10px; */
     width: 100%;
+    padding: .25rem 0rem;
 }
 
 .task-content-div::first-letter,
@@ -1182,6 +1183,7 @@ input#fileInput::-webkit-file-upload-button {
 .task-content-div.selected {
     border: 1px solid;
     border-radius: .25rem;
+    border-style: dashed;
 }
 
 .line {

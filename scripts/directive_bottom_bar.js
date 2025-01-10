@@ -32,34 +32,17 @@ function directive_bottom_bar() {
                     </div>
                     
                     <div class="flex-row gap-1">
-                        <!-- show note edit options when note is selected -->
+                        <!-- bottom bar sub menu items -->
                         <div
-                            ng-if="show_edit_options && option.show && is_note_selected" 
-                            ng-repeat="option in note_more_options"
+                            ng-repeat="submenu_item in current_bottom_bar_active_menu"
                             class="chip mx-1" 
-                            ng-click="option.action()">
-                            <span class="material-symbols-outlined">{{option.icon}}</span>
-                            <span>{{option.text}}</span>
-                        </div>
-                        <!-- sub menu for split note -->
-
-                        <div
-                            ng-if="show_split_note_btns" 
-                            ng-repeat="delimiter in presets_delimiters"
-                            class="chip mx-1" 
-                            ng-click="split_note(delimiter)">
-                            <span>{{delimiter}}</span>
+                            ng-click="submenu_item.action()">
+                            <span class="material-symbols-outlined">{{submenu_item.icon}}</span>
+                            <span>{{submenu_item.text}}</span>
                         </div>
 
-                        <!-- show insert options -->
-                        <div
-                        ng-if="show_insert_options" 
-                        ng-repeat="option in edit_options" 
-                        class="chip" 
-                        ng-click="insertTextAtCursor('note_content',option.insert_text)">
-                            <span class="material-symbols-outlined">{{option.icon}}</span>
-                            <span>{{option.title}}</span>
-                        </div>
+
+                        
 
                         <!-- show component options -->
                         <div
@@ -67,9 +50,6 @@ function directive_bottom_bar() {
                             class="chip">
                             <span>{{get_component_details()}}</span>
                         </div>
-
-                        
-
 
                     <!-- show system vars options -->
                     <div

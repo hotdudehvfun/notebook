@@ -114,6 +114,10 @@ function main_controller($scope, $timeout, db_service) {
             $scope.is_note_selected = false;
             //recalculate bottom bar
             $scope.init_bottom_bar_menu()
+            //reset selected notebook
+            $scope.current_notebook = null
+            $scope.selectedListIndex = -1
+
         }
     }
 
@@ -454,7 +458,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.task_completed_state = note.isTaskCompleted
             //check if we are inside trash
             // console.log($scope.current_notebook)
-            $scope.init_note_more_options()
+            $scope.init_file_menu_items()
             $scope.init_bottom_bar_menu()
 
         } catch (err) {
@@ -1045,16 +1049,19 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.is_notebook_locked = () => {
         try {
-            $scope.current_notebook = $scope.notebooks[$scope.selectedListIndex]
-            if ($scope.current_notebook.hasOwnProperty("is_locked")) {
-                return $scope.current_notebook.is_locked
+            if($scope.current_notebook)
+            {
+                $scope.current_notebook = $scope.notebooks[$scope.selectedListIndex]
+                if ($scope.current_notebook.hasOwnProperty("is_locked")) {
+                    return $scope.current_notebook.is_locked
+                }
             }
             return false
         } catch (err) {
             console.log(err)
         }
     }
-    //options shown when notebook is clicked
+    //notebook menu
     $scope.init_notebook_more_options = () => {
         $scope.notebook_more_options = [
             {
@@ -1124,13 +1131,11 @@ function main_controller($scope, $timeout, db_service) {
         ]
     }
 
-
-
-    //options shown when note is clicked
-    $scope.init_note_more_options = () => {
+    //file menu items
+    $scope.init_file_menu_items = () => {
         try {
             $scope.is_trash_open = ($scope.current_notebook.title.toLowerCase() == "trash")
-            $scope.note_more_options = [
+            $scope.file_menu_items = [
                 {
                     text: "Mark done",
                     icon: "radio_button_checked",
@@ -1175,7 +1180,7 @@ function main_controller($scope, $timeout, db_service) {
                     action: () => {
                         $scope.show_split_note_btns =!$scope.show_split_note_btns
                         console.log($scope.show_split_note_btns)
-                        $scope.init_note_more_options()
+                        $scope.init_file_menu_items()
                     }
                 }, {
                     //hide delete button when split submenu is open
@@ -1192,6 +1197,68 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
+    //insert menu items
+    $scope.init_insert_menu_items = ()=>{
+        try {
+            $scope.insert_menu_items = 
+            [
+                {   icon: "title", 
+                    class:"task-more-options-item",
+                    text: "Heading" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',"#H1")
+                    }
+                },
+                {   icon: "list", 
+                    class:"task-more-options-item",
+                    text: "List" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',"* Item")
+                    }
+                },
+                {   icon: "sliders", 
+                    class:"task-more-options-item",
+                    text: "Progress bar" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',"#50%")
+                    }
+                },
+                {   icon: "check_box", 
+                    class:"task-more-options-item",
+                    text: "Split notes" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',"$ ")
+                    }
+                },
+                {   icon: "table", 
+                    class:"task-more-options-item",
+                    text: "Table" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',"@table\n||a,b\n|c,d")
+                    }
+                },
+                {
+                    icon: "pie_chart",
+                    class:"task-more-options-item",
+                    text: "Chart",
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',`@chart\npie\nTitle\nchartid\na,b\n1,2`)
+                    }
+                },
+                {
+                    icon: "progress_activity",
+                    class:"task-more-options-item",
+                    text: "Circular Progress",
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',`@circular_bars\nA, B, C\n50, 50, 50`)
+                    }
+                },
+            ]
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
 
     //bottom bar menu
     $scope.init_bottom_bar_menu = () => {
@@ -1203,8 +1270,15 @@ function main_controller($scope, $timeout, db_service) {
                 is_selected:false,
                 show: $scope.show_view=="notes" && $scope.is_note_selected,
                 action: (item) => { 
-                    $scope.show_edit_options=!$scope.show_edit_options 
-                    item.is_selected = !item.is_selected
+                    // $scope.show_edit_options=!$scope.show_edit_options
+                    $scope.toggle_is_selected(item)
+                    if(item.is_selected){
+                        $scope.init_file_menu_items()
+                        $scope.current_bottom_bar_active_menu = $scope.file_menu_items;
+                    }else{
+                        $scope.current_bottom_bar_active_menu = null;
+
+                    }
                 }
             },
             {
@@ -1214,8 +1288,16 @@ function main_controller($scope, $timeout, db_service) {
                 is_selected:false,
                 show: $scope.show_view=="notes",
                 action: (item) => { 
-                    $scope.show_insert_options=!$scope.show_insert_options 
-                    item.is_selected = !item.is_selected
+                    // $scope.show_insert_options=!$scope.show_insert_options 
+                    $scope.toggle_is_selected(item)
+                    if(item.is_selected)
+                    {
+                        $scope.init_insert_menu_items()
+                        $scope.current_bottom_bar_active_menu = $scope.insert_menu_items;
+                    }else{
+                        $scope.current_bottom_bar_active_menu = null;
+
+                    }
                 }
             },
             {
@@ -1226,7 +1308,7 @@ function main_controller($scope, $timeout, db_service) {
                 show: $scope.is_note_selected,//show component tab when a note is selected
                 action: (item) => { 
                     $scope.show_component_options=!$scope.show_component_options 
-                    item.is_selected = !item.is_selected
+                    $scope.toggle_is_selected(item)
                 }
             },
             {
@@ -1237,7 +1319,7 @@ function main_controller($scope, $timeout, db_service) {
                 show: $scope.show_view=="notes",
                 action: (item) => { 
                     $scope.show_edit_options_system_vars=!$scope.show_edit_options_system_vars 
-                    item.is_selected = !item.is_selected
+                    $scope.toggle_is_selected(item)
                 }
             },
             {
@@ -1248,15 +1330,23 @@ function main_controller($scope, $timeout, db_service) {
                 show: $scope.show_view!="notebooks",//show only when note viewing notebooks
                 action: (item) => { 
                     $scope.set_view('notebooks') 
-                    item.is_selected = !item.is_selected
+                    $scope.toggle_is_selected(item)
                 }
             }]
     }
 
+
+
     // Function to toggle selected class
-    // $scope.toggle_is_selected = function (item)
-    // {
-    // };
+    $scope.toggle_is_selected = function (item)
+    {
+        $scope.bottom_bar_menu.forEach((menu_item)=>
+        {
+            if(item!=menu_item)
+                menu_item.is_selected = false
+        })
+        item.is_selected = !item.is_selected
+    };
 
     $scope.handle_db_operation_change = () => {
         try {
@@ -1623,27 +1713,6 @@ function main_controller($scope, $timeout, db_service) {
         $scope.selected_split_delimiter = "\n" // default delimiter is new line
         $scope.presets_delimiters = ["new line","#","$","!"]
 
-        // menu buttons
-
-        // insert options for new note
-        $scope.edit_options = [
-            { icon: "title", insert_text: "#H1", title: "Heading" },
-            { icon: "list", insert_text: "* Item", title: "List" },
-            { icon: "sliders", insert_text: "#50%", title: "Progress bar" },
-            { icon: "check_box", insert_text: "$ ", title: "Split notes" },
-            { icon: "table", insert_text: "@table\n||a,b\n|c,d", title: "Table" },
-            {
-                icon: "pie_chart",
-                insert_text: `@chart\npie\nTitle\nchartid\na,b\n1,2`,
-                title: "Chart"
-            },
-            {
-                icon: "progress_activity",
-                insert_text: `@circular_bars\nA, B, C\n50, 50, 50`,
-                title: "Circular Progress"
-            },
-            
-        ]
 
         $scope.proverbs = [
             "An empty vessel can hold anything.",
@@ -1659,6 +1728,7 @@ function main_controller($scope, $timeout, db_service) {
             "A full cup cannot accept more water.",
             "True understanding comes from nothingness.",
         ]
+
         $scope.empty_notebook_msg = getRandomItem($scope.proverbs)
 
         //read saved data
@@ -1669,7 +1739,7 @@ function main_controller($scope, $timeout, db_service) {
 
         //more options when notebook or note is clicked
         $scope.init_notebook_more_options()
-        $scope.init_note_more_options()
+        $scope.init_file_menu_items()
         $scope.init_bottom_bar_menu()
 
         //make notebook and notes sortable
