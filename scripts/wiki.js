@@ -130,8 +130,8 @@ function handle_calculations(text) {
             }
             return result;
         } catch (e) {
-            console.error(`Error evaluating expression: ${expression}`, e);
-            return match; // Return the original match if there's an error
+            console.log(`Error evaluating expression:`, e);
+            return "INVALID EXPRESSION"; // Return the original match if there's an error
         }
     });
 }

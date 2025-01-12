@@ -114,6 +114,8 @@ function main_controller($scope, $timeout, db_service) {
             $scope.is_note_selected = false;
             //recalculate bottom bar
             $scope.init_bottom_bar_menu()
+            //hide any open menu
+            $scope.current_bottom_bar_active_menu = null
             //reset selected notebook
             $scope.current_notebook = null
             $scope.selectedListIndex = -1
@@ -565,21 +567,26 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.restore_note = () => {
         try {
-            console.log($scope.selected_note)
-            // Remove the selected task
-            $scope.notes = $scope.notes.filter(task => task !== $scope.selected_note);
-            $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
+            if($scope.current_notebook.title.toLowerCase()=="trash") {
+                // console.log($scope.selected_note)
+                //first find the parent notebook of selected note
+                const parent_notebook = $scope.notebooks.find(notebook => notebook.dateCreated === $scope.selected_note.dateCreated);
+                console.log("parent", parent_notebook)
 
-            const parent_notebook = $scope.notebooks.find(notebook => notebook.dateCreated === $scope.selected_note.dateCreated);
-            console.log("parent", parent_notebook)
-            if (parent_notebook) {
-                parent_notebook.taskArray.push($scope.selected_note)
-                $scope.show_toast(`Note moved to ${parent_notebook.title}`);
-            } else {
-                $scope.show_toast("Parent notebook not found");
+                if (parent_notebook) {
+                    // move task from trash to notebook
+                    $scope.notes = $scope.notes.filter(task => task !== $scope.selected_note);
+                    $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
+
+                    parent_notebook.taskArray.push($scope.selected_note)
+                    $scope.show_toast(`Note moved to ${parent_notebook.title}`);
+
+                    $scope.save_data();
+                    // $scope.close_all_dialogs();
+                } else {
+                    $scope.show_toast("Parent notebook not found");
+                }
             }
-            $scope.save_data();
-            $scope.close_all_dialogs();
         } catch (err) {
             console.log("Restore error", err)
         }
@@ -803,6 +810,37 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
+    $scope.auto_insert = (e)=>{
+        try {
+            let textarea = document.querySelector("#note_content")
+            const cursorPos = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPos);
+            const textAfter = textarea.value.substring(cursorPos);
+      
+            // Get the current line
+            const lines = textBefore.split("\n");
+            const currentLine = lines[lines.length - 1];
+      
+            // Check if the current line starts with $
+            if (currentLine.trimStart().startsWith("$")) {
+              e.preventDefault(); // Prevent default Enter behavior
+      
+              // Insert a newline and $ on the next line
+              const newText = textBefore + "\n$" + textAfter;
+              textarea.value = newText;
+      
+              // Move the cursor to the new line after the $
+              textarea.selectionStart = textarea.selectionEnd = cursorPos + 2;
+
+              console.log(textarea.value)
+
+
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     $scope.handle_keypress_note_input = function (e) {
         try {
             let textarea = document.querySelector("#note_content")
@@ -813,6 +851,7 @@ function main_controller($scope, $timeout, db_service) {
                     "#now": formatTime(new Date()),
                     "#day": formatDay(new Date())
                 };
+
                 for (var code in codes) {
                     if ($scope.note_content.includes(code)) {
                         $scope.note_content = $scope.note_content.replace(code, codes[code]);
@@ -1202,8 +1241,9 @@ function main_controller($scope, $timeout, db_service) {
         try {
             $scope.insert_menu_items = 
             [
-                {   icon: "title", 
+                {   icon: "title",
                     class:"task-more-options-item",
+                    show:true,
                     text: "Heading" ,
                     action:()=>{
                         $scope.insertTextAtCursor('note_content',"#H1")
@@ -1211,6 +1251,7 @@ function main_controller($scope, $timeout, db_service) {
                 },
                 {   icon: "list", 
                     class:"task-more-options-item",
+                    show:true,
                     text: "List" ,
                     action:()=>{
                         $scope.insertTextAtCursor('note_content',"* Item")
@@ -1218,6 +1259,7 @@ function main_controller($scope, $timeout, db_service) {
                 },
                 {   icon: "sliders", 
                     class:"task-more-options-item",
+                    show:true,
                     text: "Progress bar" ,
                     action:()=>{
                         $scope.insertTextAtCursor('note_content',"#50%")
@@ -1225,6 +1267,7 @@ function main_controller($scope, $timeout, db_service) {
                 },
                 {   icon: "check_box", 
                     class:"task-more-options-item",
+                    show:true,
                     text: "Split notes" ,
                     action:()=>{
                         $scope.insertTextAtCursor('note_content',"$ ")
@@ -1232,6 +1275,7 @@ function main_controller($scope, $timeout, db_service) {
                 },
                 {   icon: "table", 
                     class:"task-more-options-item",
+                    show:true,
                     text: "Table" ,
                     action:()=>{
                         $scope.insertTextAtCursor('note_content',"@table\n||a,b\n|c,d")
@@ -1240,6 +1284,7 @@ function main_controller($scope, $timeout, db_service) {
                 {
                     icon: "pie_chart",
                     class:"task-more-options-item",
+                    show:true,
                     text: "Chart",
                     action:()=>{
                         $scope.insertTextAtCursor('note_content',`@chart\npie\nTitle\nchartid\na,b\n1,2`)
@@ -1248,6 +1293,7 @@ function main_controller($scope, $timeout, db_service) {
                 {
                     icon: "progress_activity",
                     class:"task-more-options-item",
+                    show:true,
                     text: "Circular Progress",
                     action:()=>{
                         $scope.insertTextAtCursor('note_content',`@circular_bars\nA, B, C\n50, 50, 50`)
@@ -1739,8 +1785,10 @@ function main_controller($scope, $timeout, db_service) {
 
         //more options when notebook or note is clicked
         $scope.init_notebook_more_options()
-        $scope.init_file_menu_items()
-        $scope.init_bottom_bar_menu()
+        //$scope.init_file_menu_items()
+        // $scope.init_bottom_bar_menu()
+        // $scope.init_insert_menu_items()
+
 
         //make notebook and notes sortable
         $scope.init_sortable_list(".notebooks", "notebooks");

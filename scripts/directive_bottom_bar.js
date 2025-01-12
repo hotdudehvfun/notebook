@@ -36,6 +36,7 @@ function directive_bottom_bar() {
                         <div
                             ng-repeat="submenu_item in current_bottom_bar_active_menu"
                             class="chip mx-1" 
+                            ng-show="submenu_item.show"
                             ng-click="submenu_item.action()">
                             <span class="material-symbols-outlined">{{submenu_item.icon}}</span>
                             <span>{{submenu_item.text}}</span>
