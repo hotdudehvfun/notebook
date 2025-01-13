@@ -19,7 +19,7 @@ function directive_bottom_bar() {
                     </div>
                     
                     <!-- menu buttons -->
-                    <div class="flex-row gap-1">
+                    <div class="flex-row gap-1 scroll-y w-full">
                         <div
                             ng-repeat="item in bottom_bar_menu"
                             ng-show="item.show"
@@ -31,7 +31,7 @@ function directive_bottom_bar() {
                         </div>
                     </div>
                     
-                    <div class="flex-row gap-1">
+                    <div class="flex-row gap-1 scroll-y w-full">
                         <!-- bottom bar sub menu items -->
                         <div
                             ng-repeat="submenu_item in current_bottom_bar_active_menu"

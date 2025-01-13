@@ -1241,6 +1241,30 @@ function main_controller($scope, $timeout, db_service) {
         try {
             $scope.insert_menu_items = 
             [
+                {   icon: "calendar_month",
+                    class:"task-more-options-item",
+                    show:true,
+                    text: "Today" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',formatDate(new Date()))
+                    }
+                },
+                {   icon: "event",
+                    class:"task-more-options-item",
+                    show:true,
+                    text: "Day" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',formatDay(new Date()))
+                    }
+                },
+                {   icon: "schedule",
+                    class:"task-more-options-item",
+                    show:true,
+                    text: "Now" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',formatTime(new Date()))
+                    }
+                },
                 {   icon: "title",
                     class:"task-more-options-item",
                     show:true,
@@ -1249,6 +1273,15 @@ function main_controller($scope, $timeout, db_service) {
                         $scope.insertTextAtCursor('note_content',"#H1")
                     }
                 },
+                {   icon: "ink_highlighter",
+                    class:"task-more-options-item",
+                    show:true,
+                    text: "Highlight" ,
+                    action:()=>{
+                        $scope.insertTextAtCursor('note_content',"!important!")
+                    }
+                },
+                
                 {   icon: "list", 
                     class:"task-more-options-item",
                     show:true,

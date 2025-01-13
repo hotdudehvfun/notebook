@@ -29,6 +29,8 @@ html {
     --table-bg: whitesmoke;
     --progress-height:16px;
     --color-btn-background:#f5f5f5;
+    --highlight-color:white;
+    --highlight-bg:var(--accent);
 }
 
 body {
@@ -1261,4 +1263,14 @@ ul.notebooks {
 .botom_bar_title {
     font-size: .8rem;
     margin: .5rem 0rem;
+}
+
+
+
+.highlight {
+    display: inline;
+    color: var(--highlight-color);
+    background: var(--highlight-bg);
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
 }

@@ -4,7 +4,7 @@
     --list-bg: #222222;
     --border-color: #2997ff;
     --chip-bg: #191919;
-    --chip2-border:#121212;
+    --chip2-border: #121212;
     --progress-a: #2997ff;
     --progress-b: #121212;
     --more-options-border-color: #363636;
@@ -18,29 +18,36 @@
     --bottom-bar-bg: rgb(45 45 45);
     --task-complete-color: #EF4444;
     --table-bg: #222;
-    --color-btn-background:#333;
+    --color-btn-background: #333;
+    --highlight-color:yellow;
+    --highlight-bg:black;
     table {
         border: 1px solid #202020ad;
     }
-    thead tr
-    {
-        background:linear-gradient(90deg, #ff4967, #f3217a);
+
+    thead tr {
+        background: linear-gradient(90deg, #ff4967, #f3217a);
     }
+
     th {
         background: transparent;
-    color: white;
+        color: white;
     }
-    tr:nth-child(odd) {
+
+    tr: nth-child(odd) {
         background-color: #212121;
     }
-    tr:nth-child(even) {
+
+    tr: nth-child(even) {
         background-color: #292929a1;
     }
+
     tr {
         border-top: 1px solid #23232333;
     }
-    .topbar
-    {
-    background: #303030;
+
+    .topbar {
+        background: #303030;
     }
+    
 }

@@ -12,6 +12,10 @@ function setupDemoList() {
 function bold(line) {
     return line.replace(/:(.*?)(:)/g, '<b>$1</b>')
 }
+function handle_highlight(line)
+{
+    return line.replace(/!(.*?)(!)/g, '<div class="highlight">$1</div>')
+}
 function italic(line) {
     return line.replace(/_(.*?)(_)/g, '<i>$1</i>')
 }
@@ -518,10 +522,16 @@ function parseWikiTextToHTML(wikiText) {
         {
             //::text center::
             //line = center_aligned(line)
+            
             //:bold:
             //line = bold(line)
+            
             // _italic_
             //line = italic(line)
+            
+            // !highlight!
+            line = handle_highlight(line)
+            
             // x^y^
             line = sup(line)
             // x~y~
@@ -533,9 +543,8 @@ function parseWikiTextToHTML(wikiText) {
             // progress bar #20%
             line = progress_bar(line)
 
-            //check for a line
+            //--- means a line
             line = check_for_line(line)
-
 
             //handle custom class
             line = handle_insert_class(line)
