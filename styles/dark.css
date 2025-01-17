@@ -19,8 +19,9 @@
     --task-complete-color: #EF4444;
     --table-bg: #222;
     --color-btn-background: #333;
-    --highlight-color:yellow;
-    --highlight-bg:black;
+    --highlight-color: yellow;
+    --highlight-bg: black;
+    
     table {
         border: 1px solid #202020ad;
     }
@@ -34,11 +35,11 @@
         color: white;
     }
 
-    tr: nth-child(odd) {
+    tr:nth-child(odd) {
         background-color: #212121;
     }
 
-    tr: nth-child(even) {
+    tr:nth-child(even) {
         background-color: #292929a1;
     }
 
@@ -50,4 +51,10 @@
         background: #303030;
     }
     
+    .highlight
+    {
+        color: var(--accent);
+        background: #c4dbff;
+    }
 }
+

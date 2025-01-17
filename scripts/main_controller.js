@@ -202,6 +202,7 @@ function main_controller($scope, $timeout, db_service) {
     $scope.create_notebook = () => {
         try {
             if ($scope.new_list_name.length > 1) {
+
                 let duplicate = $scope.notebooks.some(list => list.title.toLowerCase() === $scope.new_list_name.toLowerCase())
                 if (duplicate) {
                     alert(`Notebook "${$scope.new_list_name}" already exists.`);
@@ -211,7 +212,8 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.notebooks.push(new_list)
                 $scope.show_toast(`Notebook created: ${new_list.title}`);
                 $scope.new_list_name = ""
-                $scope.dialog_flags.show_create_notebook_popup = false
+                $scope.show_create_notebook_layout = false
+                $scope.new_notebook_icon = "folder"
                 $scope.save_data();
             }
         } catch (err) {
@@ -305,10 +307,16 @@ function main_controller($scope, $timeout, db_service) {
             $scope.show_delete_system_var_button = true
             $scope.new_var_name = key
             $scope.new_var_value = system_vars[key]
+            //show input area
+            $scope.bottom_bar_active_div="system"
 
         } catch (err) {
             console.log("Edit var error", err)
         }
+    }
+    $scope.clear_system_input_vars = ()=>{
+        $scope.new_var_name = ""
+        $scope.new_var_value = ""
     }
 
     $scope.insert_system_var_at_cursor = () => {
@@ -693,9 +701,7 @@ function main_controller($scope, $timeout, db_service) {
     // update task in popup
     $scope.update_note = () => {
         try {
-            
             $scope.selected_note.title = $scope.note_content.trim()
-
             $scope.show_update_task_button = false
             $scope.note_content = ""
             $scope.note_textarea_container_height = 45
@@ -703,7 +709,8 @@ function main_controller($scope, $timeout, db_service) {
             $scope.selected_note = null;
             $scope.show_edit_options = false;
             $scope.save_data()
-            $scope.show_toast("Note updated");
+            $scope.show_toast("Note updated")
+            $scope.init_bottom_bar_menu()
         } catch (err) {
             $scope.show_toast("Error while updating note")
             console.log("Error while updating note", err)
@@ -1055,6 +1062,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.notebooks[$scope.selectedListIndex] = selectedList
 
             // Save data and close popup
+            $scope.new_notebook_icon = "folder" //reset new notebook icon
             $scope.save_data();
             $scope.close_all_dialogs()
 
@@ -1709,12 +1717,37 @@ function main_controller($scope, $timeout, db_service) {
 
 
 
+    $scope.toggle_bottom_bar_div = (divId)=>
+    {
+        $scope.bottom_bar_active_div = $scope.bottom_bar_active_div === divId ? "null" : divId;
+        if(divId=='note')
+        {
+            $scope.init_bottom_bar_menu()
+        }
+    }
+
+    $scope.get_note_content_placeholder = ()=>{
+        if($scope.current_notebook)
+        {
+            return `Create note in <div class='inline orange bold'>${$scope.current_notebook.title}</div>`
+        }
+        return "Create quick note"
+    }
+
     $scope.init = () => {
+        //CONST values
+        $scope.CONST={
+            IMPORT:"import",
+            EXPORT:"export",
+            VIEW_NOTEBOOK:"notebooks",
+            VIEW_NOTE:"notes",
+            VIEW_SYSTEM:"system_vars"
+        }
+
         //dialog flags
         $scope.dialog_flags = {
             is_sidebar_menu_open: false,
             show_list_more_options: false,
-            show_create_notebook_popup: false,
             show_create_task_popup: false,
             show_db_popup: false,
             show_create_system_var_popup: false,
@@ -1742,17 +1775,17 @@ function main_controller($scope, $timeout, db_service) {
         $scope.show_note_complete_button = false // show hide complete button
         $scope.show_split_note_btns = false // split note sub menu btns
         $scope.show_view = "notebooks" //options can be notebooks, notes
+        $scope.bottom_bar_active_div = "null" //hide or show bottom bar create divs
+
 
 
         // by default create notebook is shown
         $scope.create_btns_arr = [false, true, false]
         $scope.show_all_create_btns = false
-
-
         $scope.show_searchbar = false
         $scope.textarea_default_height = 64
         $scope.textarea_max_height = 200
-        $scope.new_notebook_icon = "folder"
+        $scope.new_notebook_icon = "folder" //show this icon on create notebook and update it automatically
 
         //icons
         $scope.icons = {
@@ -1767,10 +1800,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.pageIcon = "eco"
         $scope.copied_task = null
         $scope.db_operation = null
-        $scope.CONST={
-            IMPORT:"import",
-            EXPORT:"export",
-        }
+        
 
         //enable select notebooks
         $scope.select_notebooks = false

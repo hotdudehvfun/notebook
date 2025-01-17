@@ -31,11 +31,20 @@ app.controller('main_controller',main_controller);
 // directives
 app.directive("mainContent",directive_main_content);
 app.directive("sideBar",directive_sidebar);
-app.directive("bottomBar",directive_bottom_bar);
+app.directive("bottomBar",function(){
+  return {
+    scope: false,
+    templateUrl:'/scripts/directives/bottom-bar.html'
+}
+});
 app.directive("topBar",directive_top_bar);
 app.directive("popupRenameNotebook",directive_rename_notebook_popup);
 app.directive("popupCreateNotebook",directive_new_notebook_popup);
 app.directive("popupPassword",directive_password_popup);
+app.directive("createNotebookLayout",directive_create_notebook_layout);
+app.directive("createNoteLayout",directive_create_note_layout);
+
+
 
 // app.directive("dbFileChange",db_file_change);
 
