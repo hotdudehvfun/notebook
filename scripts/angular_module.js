@@ -34,7 +34,7 @@ app.directive("sideBar",directive_sidebar);
 app.directive("bottomBar",function(){
   return {
     scope: false,
-    templateUrl:'/scripts/directives/bottom-bar.html'
+    templateUrl:'./scripts/directives/bottom-bar.html'
 }
 });
 app.directive("topBar",directive_top_bar);
