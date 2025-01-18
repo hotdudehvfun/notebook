@@ -75,7 +75,7 @@ html, body {
     height: 100%;
     margin: 0px;
     flex-direction: column;
-    padding: .25rem;
+    padding: .75rem;
     gap: 0.5rem;
 }
 
@@ -176,7 +176,7 @@ ul.notebooks li:last-child > .list-panel-item {
     /* border-bottom: 1px solid var(--list-border); */
     /* border: 1px solid var(--system-var-border); */
     overflow: hidden;
-    font-size: 140%;
+    font-size: 1rem;
 }
 
 .task p {
@@ -330,6 +330,7 @@ div#list-more-options-container {
     font-weight: bolder;
     /* background: var(--white_black); */
     color: var(--age_text_color);
+    font-size: .75rem;
 }
 
 .taskMoreOptionsConatiner {
@@ -627,9 +628,10 @@ h1, h2, h3, h4, h5 {
 }
 
 .content {
-    flex: 1;
+    /* flex: 1; */
     overflow-y: auto;
     border-radius: 8px;
+    height: 50%;
 }
 
 .bottom-bar {
@@ -826,6 +828,7 @@ h1, h2, h3, h4, h5 {
     left: -90vw;
     backdrop-filter: blur(var(--more-options-blur));
     -webkit-backdrop-filter: blur(var(--more-options-blur));
+    top: 0px;
 }
 
 .scroll-y {
