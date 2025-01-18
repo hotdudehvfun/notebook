@@ -116,3 +116,12 @@ grid_title_bar {
 .wrap{
     flex-wrap:wrap;
 }
+
+.col-reverse
+{
+    display:flex;
+    flex-direction:column-reverse;
+}
+.grow{
+    flex-grow:1;
+}

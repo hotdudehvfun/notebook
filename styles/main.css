@@ -57,12 +57,12 @@ html, body {
 
 .button {
     border-radius: 1rem;
-    padding: 0.5rem .9rem;
+    padding: 4px 12px;
     display: inline-flex;
     color: var(--font-color);
     text-align: center;
     align-items: center;
-    border: 1px solid var(--chip-bg);
+    /* border: 1px solid var(--chip-bg); */
     font-size: .75rem;
 }
 
@@ -76,7 +76,7 @@ html, body {
     height: 100%;
     margin: 0px;
     flex-direction: column;
-    padding: .75rem;
+    padding: .75rem 0rem;
     gap: 0.5rem;
 }
 
@@ -287,6 +287,7 @@ div#list-more-options-container {
     align-items: center;
     width: 100%;
     border-radius: 5px;
+    font-size: .9rem;
 }
 
 .list-more-optionas-holder {
@@ -635,8 +636,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .bottom-bar {
-    padding-bottom: 0.5rem;
-    background: var(--bottom-bar-bg);
+    padding-bottom: 1rem;
+    /* background: var(--bottom-bar-bg); */
     border-radius: 8px;
 }
 
@@ -829,6 +830,8 @@ h1, h2, h3, h4, h5 {
     backdrop-filter: blur(var(--more-options-blur));
     -webkit-backdrop-filter: blur(var(--more-options-blur));
     top: 0px;
+    font-size:.8rem;
+    
 }
 
 .scroll-y {

@@ -48,13 +48,13 @@
     }
 
     .topbar {
-        background: #303030;
+        /* background: #303030; */
     }
     
     .highlight
     {
-        color: var(--accent);
-        background: #c4dbff;
+        color: #ff4967;
+        background: #fff0f3;
     }
 }
 

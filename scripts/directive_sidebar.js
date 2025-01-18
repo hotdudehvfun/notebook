@@ -17,11 +17,11 @@ function directive_sidebar(){
 
 
           <!-- settings -->
-          <div class="flex-col rounded-3/4 border m-1/2">
+          <div class="flex-col rounded-3/4  m-1/2 gap-1">
             <h2 class="mt-2">Settings</h2>
             <div class="flex-row space-between">
                 <h4>App Size</h4>
-                <h4>{{app_size()}}</h4>
+                <h4 class="orange">{{app_size()}}</h4>
             </div>
 
             <div class="flex-row space-between">
