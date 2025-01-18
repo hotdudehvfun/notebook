@@ -63,6 +63,7 @@ html, body {
     text-align: center;
     align-items: center;
     border: 1px solid var(--chip-bg);
+    font-size: .75rem;
 }
 
 .button-icon {
@@ -628,10 +629,9 @@ h1, h2, h3, h4, h5 {
 }
 
 .content {
-    /* flex: 1; */
+    flex-grow: 1;
     overflow-y: auto;
     border-radius: 8px;
-    height: 50%;
 }
 
 .bottom-bar {
@@ -1253,7 +1253,7 @@ ul.notebooks {
 }
 
 .botom_bar_title {
-    font-size: .8rem;
+    font-size: 1rem;
     margin: .5rem 0rem;
     display: flex;
     gap: .5rem;

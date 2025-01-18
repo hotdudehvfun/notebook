@@ -112,3 +112,7 @@ grid_title_bar {
 .border {
     border: 1px solid var(--list-border);
 }
+
+.wrap{
+    flex-wrap:wrap;
+}
