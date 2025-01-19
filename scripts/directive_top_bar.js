@@ -8,11 +8,11 @@ function directive_top_bar() {
             <span ng-click="open_sidebar(true)" class="material-symbols-outlined">menu</span>
          </div>
         <div class="flex-row flex gap-1 justify-center">
-            <span class="material-symbols-outlined">
+            <span class="material-symbols-outlined gradient-text-orange">
                 {{pageIcon}}
             </span>
             <div 
-                class="app-title"
+                class="app-title gradient-text-orange"
                 ng-click="handle_click_on_notebook_title()">
                 <span>{{pageTitle}}</span>
             </div>

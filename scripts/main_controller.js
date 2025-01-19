@@ -317,6 +317,7 @@ function main_controller($scope, $timeout, db_service) {
     $scope.clear_system_input_vars = ()=>{
         $scope.new_var_name = ""
         $scope.new_var_value = ""
+        $scope.show_delete_system_var_button = false
     }
 
     $scope.insert_system_var_at_cursor = () => {
@@ -799,7 +800,7 @@ function main_controller($scope, $timeout, db_service) {
 
 
     $scope.handle_click_on_notebook_title = () => {
-        if ($scope.selectedListIndex >= 0) {
+        if ($scope.current_notebook) {
             //close all dialogs
             $scope.close_all_dialogs()
             //show notebook options
@@ -1005,10 +1006,9 @@ function main_controller($scope, $timeout, db_service) {
         }
         if (error == "") {
             system_vars[$scope.new_var_name] = $scope.new_var_value
+            $scope.clear_system_input_vars();
+            $scope.bottom_bar_active_div='null'; 
             $scope.save_data();
-            $scope.new_var_name = ""
-            $scope.new_var_value = ""
-            $scope.close_all_dialogs()
             $scope.show_toast("Variable created");
         } else {
             $scope.show_toast(error)
@@ -1110,72 +1110,75 @@ function main_controller($scope, $timeout, db_service) {
     }
     //notebook menu
     $scope.init_notebook_more_options = () => {
-        $scope.notebook_more_options = [
-            {
-                text: $scope.is_notebook_locked() ? "Unlock notebook" : "Lock notebook",
-                icon: "password",
-                class: "task-more-options-item",
-                show: true,
-                action: () => { $scope.dialog_flags.show_password_popup = true }
-            }, {
-                text: "Paste Task",
-                icon: "content_paste",
-                class: "task-more-options-item",
-                show: $scope.copied_task != null,
-                action: () => { $scope.paste_task_inside_notebook() }
-            }, {
-                text: "Rename notebook",
-                icon: "format_color_text",
-                class: "task-more-options-item",
-                show: true,
-                action: () => { $scope.handle_rename_notebook() }
-            }, {
-                text: "Move completed tasks",
-                icon: "flight_takeoff",
-                class: "task-more-options-item",
-                show: $scope.notebook_has_completed_tasks(),
-                action: () => { $scope.start_bulk_move_completed_tasks() }
-            },{
-                text: "Merge completed tasks",
-                icon: "merge",
-                class: "task-more-options-item",
-                show: $scope.notebook_has_completed_tasks(),
-                action: () => { $scope.merge_completed_notes() }
-            },{
-                text: "Remove completed tasks",
-                icon: "delete_sweep",
-                class: "task-more-options-item",
-                show: $scope.notebook_has_completed_tasks(),
-                action: () => { $scope.handle_remove_completed_tasks() }
-            },
-            {
-                text: "Refresh",
-                icon: "autorenew",
-                class: "task-more-options-item",
-                show: true,
-                action: () => { location.reload(); }
-            }, {
-                text: "Delete all tasks",
-                icon: "warning",
-                class: "task-more-options-item text-red-500",
-                show: true,
-                action: () => { $scope.purge_notebook() }
-            },
-            {
-                text: "Delete notebook",
-                icon: "delete",
-                class: "task-more-options-item text-red-500",
-                show: true,
-                action: () => { $scope.delete_notebook() }
-            },
-            {
-                text: "Close",
-                icon: "cancel",
-                class: "task-more-options-item text-red-500",
-                show: true,
-                action: () => { $scope.close_all_dialogs() }
-            }
-        ]
+        if($scope.current_notebook)
+        {
+            $scope.notebook_more_options = [
+                {
+                    text: $scope.is_notebook_locked() ? "Unlock notebook" : "Lock notebook",
+                    icon: "password",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => { $scope.dialog_flags.show_password_popup = true }
+                }, {
+                    text: "Paste Task",
+                    icon: "content_paste",
+                    class: "task-more-options-item",
+                    show: $scope.copied_task != null,
+                    action: () => { $scope.paste_task_inside_notebook() }
+                }, {
+                    text: "Rename notebook",
+                    icon: "format_color_text",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => { $scope.handle_rename_notebook() }
+                }, {
+                    text: "Move completed tasks",
+                    icon: "flight_takeoff",
+                    class: "task-more-options-item",
+                    show: $scope.notebook_has_completed_tasks(),
+                    action: () => { $scope.start_bulk_move_completed_tasks() }
+                },{
+                    text: "Merge completed tasks",
+                    icon: "merge",
+                    class: "task-more-options-item",
+                    show: $scope.notebook_has_completed_tasks(),
+                    action: () => { $scope.merge_completed_notes() }
+                },{
+                    text: "Remove completed tasks",
+                    icon: "delete_sweep",
+                    class: "task-more-options-item",
+                    show: $scope.notebook_has_completed_tasks(),
+                    action: () => { $scope.handle_remove_completed_tasks() }
+                },
+                {
+                    text: "Refresh",
+                    icon: "autorenew",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => { location.reload(); }
+                }, {
+                    text: "Delete all tasks",
+                    icon: "warning",
+                    class: "task-more-options-item text-red-500",
+                    show: true,
+                    action: () => { $scope.purge_notebook() }
+                },
+                {
+                    text: "Delete notebook",
+                    icon: "delete",
+                    class: "task-more-options-item text-red-500",
+                    show: true,
+                    action: () => { $scope.delete_notebook() }
+                },
+                {
+                    text: "Close",
+                    icon: "cancel",
+                    class: "task-more-options-item text-red-500",
+                    show: true,
+                    action: () => { $scope.close_all_dialogs() }
+                }
+            ]
+    }
     }
 
     //file menu items
@@ -1576,13 +1579,19 @@ function main_controller($scope, $timeout, db_service) {
     };
 
     $scope.close_all_dialogs = () => {
-        //hide delete button on system var
-        $scope.show_delete_system_var_button = false
-        $scope.open_sidebar(false)
-        for (let key in $scope.dialog_flags) {
-            if ($scope.dialog_flags.hasOwnProperty(key)) {
-                $scope.dialog_flags[key] = false;
+        try {
+            //hide delete button on system var
+            $scope.show_delete_system_var_button = false
+            for (let key in $scope.dialog_flags) {
+                if ($scope.dialog_flags.hasOwnProperty(key)) {
+                    $scope.dialog_flags[key] = false;
+                }
             }
+            $scope.show_toast("Var deleted")
+            //close system input
+            $scope.bottom_bar_active_div='null'; 
+        } catch (err) {
+            console.log(err)
         }
     };
 

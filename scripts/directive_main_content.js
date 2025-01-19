@@ -51,7 +51,7 @@ function directive_main_content(){
                               ng-bind="notebook_selected_state(key)"></span>
                               <!-- notebook icon -->
                               <span
-                              class="material-symbols-outlined icon-btn teal"
+                              class="material-symbols-outlined icon-btn gradient-text-orange"
                               ng-bind="get_notebook_icon(value)"
                               ng-hide="select_notebooks"></span>
                               

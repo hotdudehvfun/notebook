@@ -63,7 +63,7 @@ html, body {
     text-align: center;
     align-items: center;
     /* border: 1px solid var(--chip-bg); */
-    font-size: .75rem;
+    font-size: 1rem;
 }
 
 .button-icon {
@@ -259,7 +259,6 @@ ul.notebooks li:last-child > .list-panel-item {
     width: 100%;
     color: var(--font-color);
     font-size: 0.8rem;
-    border: none;
     resize: none;
     height: 100%;
     background: none;
@@ -268,6 +267,7 @@ ul.notebooks li:last-child > .list-panel-item {
     /* border: 1px solid; */
     border: solid;
     border-width: 0px 0px 1px 0px;
+    border-radius: 0px;
 }
 
 .new-task-content:focus {
@@ -315,7 +315,7 @@ div#list-more-options-container {
 
 .list-panel-item > div > article {
     text-transform: capitalize;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     width: -webkit-fill-available;
     padding: 0.5rem 0.25rem;
     font-weight: bold;
@@ -393,9 +393,10 @@ div#list-more-options-container {
     width: 100%;
     background: none;
     color: var(--font-color);
-    /* padding: .5rem; */
+    padding: .5rem;
     font-size: 0.8rem;
     border: 1px solid;
+    border-radius: 0px;
 }
 
 .add-new-list-title:focus{
@@ -639,6 +640,7 @@ h1, h2, h3, h4, h5 {
     padding-bottom: 1rem;
     /* background: var(--bottom-bar-bg); */
     border-radius: 8px;
+    margin: .5rem;
 }
 
 .select {
@@ -830,8 +832,7 @@ h1, h2, h3, h4, h5 {
     backdrop-filter: blur(var(--more-options-blur));
     -webkit-backdrop-filter: blur(var(--more-options-blur));
     top: 0px;
-    font-size:.8rem;
-    
+    font-size: .9rem;
 }
 
 .scroll-y {
@@ -1272,3 +1273,12 @@ ul.notebooks {
     border-radius: 4px;
 }
 
+.user-logo
+{
+    background: orange;
+    border-radius: 100px;
+    color: white;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+}

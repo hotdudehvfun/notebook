@@ -30,7 +30,16 @@ app.controller('main_controller',main_controller);
 
 // directives
 app.directive("mainContent",directive_main_content);
-app.directive("sideBar",directive_sidebar);
+
+//sidebar
+app.directive("sideBar",function(){
+  return{
+    scope:false,
+    templateUrl:"./scripts/directives/sidebar.html",
+  }
+});
+
+//bottom bar
 app.directive("bottomBar",function(){
   return {
     scope: false,

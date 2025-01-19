@@ -165,13 +165,13 @@
                     <span class="material-symbols-outlined button-icon">cancel</span>
                     <span>Cancel</span>
                 </div>
-                <div ng-click="create_system_var()" class="button rounded-full gap-1">
+                <div ng-click="create_system_var();" class="button rounded-full gap-1">
                     <span class="material-symbols-outlined button-icon">add</span>
                     <span>Create</span>
                 </div>
                 <div 
                     ng-if="show_delete_system_var_button"
-                    ng-click="delete_system_var()" class="button rounded-full gap-1">
+                    ng-click="bottom_bar_active_div='null'; delete_system_var();" class="button rounded-full gap-1">
                     <span class="material-symbols-outlined button-icon">delete</span>
                     <span>delete</span>
                 </div>

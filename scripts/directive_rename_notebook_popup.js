@@ -10,12 +10,13 @@ function directive_rename_notebook_popup() {
              <div>Rename: <span>{{selectedListName}}</span></div>
             </div>
              <input
+                type="text"
                 name="notebook_name" 
-                class="add-new-list-title rounded-2"
+                class="add-new-list-title"
                 ng-model="new_list_name" 
                 ng-attr-placeholder="Enter new name"
                 ng-keypress="handle_input_on_rename_notebook($event)"
-                autofocus></input>
+                autofocus/>
                     <div class="flex-row space-between m-2">
                         <span ng-click="dialog_flags.show_rename_notebook_popup=false;new_list_name=''; " class="button text-red-500">Cancel</span>
                         <span ng-click="rename_notebook()" class="button">Rename</span>                
