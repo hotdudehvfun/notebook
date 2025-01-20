@@ -1,18 +1,14 @@
-<div>
-    <span ng-click="open_sidebar(false)" class="material-symbols-outlined">close</span>
-</div>
+
 <div class="flex-col gap-1 align-center">
     <!-- <img src="./img/user.svg" class="user-logo" /> -->
-        <svg class="user-logo shadow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-            <path fill-rule="evenodd" d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z" clip-rule="evenodd"/>
-          </svg>
+    <svg class="user-logo shadow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        fill="currentColor" viewBox="0 0 24 24">
+        <path fill-rule="evenodd"
+            d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+            clip-rule="evenodd" />
+    </svg>
     <h2>{{greet_user('528491')}}</h2>
 </div>
-
-<!-- show all notebooks -->
-
-
-
 <!-- settings -->
 <div class="flex-col rounded-3/4  m-1/2 gap-1">
     <h2 class="mt-2">Settings</h2>
@@ -20,7 +16,6 @@
         <h4>App Size</h4>
         <h4 class="orange">{{app_size()}}</h4>
     </div>
-
     <div class="flex-row space-between">
         <h4>Enable dark theme</h4>
         <div style="transform: scale(.65);">
@@ -30,7 +25,6 @@
             </label>
         </div>
     </div>
-
     <div class="flex-row space-between">
         <h4>Show complete button</h4>
         <div style="transform: scale(.65);">
@@ -40,7 +34,6 @@
             </label>
         </div>
     </div>
-
     <div class="flex-row space-between">
         <h4>Rearrange notebooks and notes</h4>
         <div style="transform: scale(.65);">
@@ -50,11 +43,9 @@
             </label>
         </div>
     </div>
-
     <div class="flex-row space-between align-center">
         <h4>Import/Export</h4>
         <div ng-click="close_all_dialogs(); dialog_flags.show_db_popup = true;" class="button orange">Open Database
         </div>
     </div>
-
 </div>

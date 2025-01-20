@@ -1,0 +1,27 @@
+<!-- app title -->
+<div class="flex">
+    <svg ng-click="open_sidebar(true)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h10" />
+    </svg>
+
+</div>
+<div class="flex-row flex gap-1 justify-center">
+    <span class="material-symbols-outlined gradient-text-orange">
+        {{pageIcon}}
+    </span>
+    <div class="app-title gradient-text-orange" ng-click="handle_click_on_notebook_title()">
+        <span>{{pageTitle}}</span>
+    </div>
+</div>
+<div class="flex-row flex align-center justify-end gap-1">
+    <span ng-click="show_searchbar=!show_searchbar" class="material-symbols-outlined">search
+    </span>
+    <!-- <span 
+   ng-click="toggle_data_lock()"
+   class="material-symbols-outlined">{{is_data_locked?'lock':'lock_open';}}
+   </span> -->
+
+    <span style="z-index: 999;" class="material-symbols-outlined" ng-click="handle_click_on_more_vert()"
+        ng-bind="nav_more_vert_icon()"></span>
+</div>

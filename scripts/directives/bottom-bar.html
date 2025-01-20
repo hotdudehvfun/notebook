@@ -26,7 +26,7 @@
                 ng-click="bottom_bar_active_div='null'"
                 class="button rounded-full gap-1">
                 <span class="material-symbols-outlined button-icon">cancel</span>
-                <span>Cancel</span>
+                <span>Close</span>
             </div>
             <div ng-click="create_notebook()" class="button rounded-full gap-1">
                 <span class="material-symbols-outlined button-icon">add</span>
@@ -108,7 +108,7 @@
                 ng-click="bottom_bar_active_div='null'; cancel_update_note();"
                 class="button rounded-full gap-1">
                 <span class="material-symbols-outlined button-icon">cancel</span>
-                <span>Cancel</span>
+                <span>Close</span>
             </div>
             <div ng-hide="show_update_task_button" ng-click="create_note()" class="button rounded-full gap-1">
                 <span class="material-symbols-outlined button-icon">add</span>
@@ -163,7 +163,7 @@
                     ng-click="bottom_bar_active_div='null'; clear_system_input_vars()"
                     class="button rounded-full gap-1">
                     <span class="material-symbols-outlined button-icon">cancel</span>
-                    <span>Cancel</span>
+                    <span>Close</span>
                 </div>
                 <div ng-click="create_system_var();" class="button rounded-full gap-1">
                     <span class="material-symbols-outlined button-icon">add</span>
@@ -197,33 +197,33 @@
 
     <!-- bottom button -->
     <div
-        ng-show="bottom_bar_active_div=='null'" 
+        ng-show="true" 
         class="flex-row p-1/2 justify-space-between wrap gap-1">
         <!-- create notebook button -->
         <div 
             ng-class="{'bg-red-pink': bottom_bar_active_div=='notebook'} "
-            ng-click="toggle_bottom_bar_div('notebook')" class="button rounded-full gap-1 grow  col-reverse">
-            <span class="material-symbols-outlined button-icon">auto_stories</span>
-            <span>Notebook</span>
+            ng-click="toggle_bottom_bar_div('notebook')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            <span class="material-symbols-outlined button-icon" style="font-size: 1.4rem;">auto_stories</span>
+            <!-- <span>Notebook</span> -->
         </div>
         <!-- create note button -->
         <div 
             ng-class="{'bg-red-pink':bottom_bar_active_div=='note'}"
-            ng-click="toggle_bottom_bar_div('note')" class="button rounded-full gap-1 grow  col-reverse">
-            <span class="material-symbols-outlined button-icon">stylus_note</span>
-            <span>Note</span>
+            ng-click="toggle_bottom_bar_div('note')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            <span class="material-symbols-outlined button-icon" style="font-size: 1.4rem;">stylus_note</span>
+            <!-- <span>Note</span> -->
         </div>
         <!-- system var button -->
         <div 
             ng-class="{'bg-red-pink':bottom_bar_active_div=='system'}"
-            ng-click="toggle_bottom_bar_div('system')" class="button rounded-full gap-1 grow  col-reverse">
-            <span class="material-symbols-outlined button-icon">keyboard_command_key</span>
-            <span>System</span>
+            ng-click="toggle_bottom_bar_div('system')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            <span class="material-symbols-outlined button-icon" style="font-size: 1.4rem;">keyboard_command_key</span>
+            <!-- <span>System</span> -->
         </div>
         <!-- view notebooks button -->
-        <div ng-show="show_view=='notes'" ng-click="set_view('notebooks')" class="button rounded-full gap-1 grow  col-reverse">
-            <span class="material-symbols-outlined button-icon">arrow_back</span>
-            <span>Back</span>
+        <div ng-show="show_view=='notes'" ng-click="set_view('notebooks')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            <span class="material-symbols-outlined button-icon" style="font-size: 1.4rem;">arrow_back</span>
+            <!-- <span>Back</span> -->
         </div>
     </div>
 

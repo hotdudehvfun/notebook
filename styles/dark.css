@@ -35,10 +35,12 @@
         color: white;
     }
 
+    /* no space after : */
     tr:nth-child(odd) {
         background-color: #212121;
     }
-
+    
+    /* no space after : */
     tr:nth-child(even) {
         background-color: #292929a1;
     }
@@ -50,11 +52,17 @@
     .topbar {
         /* background: #303030; */
     }
-    
-    .highlight
-    {
+
+    .highlight {
         color: #ff4967;
         background: #fff0f3;
     }
-}
 
+    .toast {
+        border: 1px solid #ffffff1c;
+    }
+
+    .list-sub-text {
+        color: orange;
+    }
+}

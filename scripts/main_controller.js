@@ -1580,16 +1580,12 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.close_all_dialogs = () => {
         try {
-            //hide delete button on system var
-            $scope.show_delete_system_var_button = false
+            $scope.open_sidebar(false)
             for (let key in $scope.dialog_flags) {
                 if ($scope.dialog_flags.hasOwnProperty(key)) {
                     $scope.dialog_flags[key] = false;
                 }
             }
-            $scope.show_toast("Var deleted")
-            //close system input
-            $scope.bottom_bar_active_div='null'; 
         } catch (err) {
             console.log(err)
         }

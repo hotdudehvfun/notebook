@@ -28,8 +28,14 @@ app.filter("sanitize", ['$sce', function ($sce) {
 app.service('db_service',db_service)
 app.controller('main_controller',main_controller);
 
-// directives
-app.directive("mainContent",directive_main_content);
+
+// main content
+app.directive("mainContent",function(){
+  return{
+    scope:false,
+    templateUrl:"./scripts/directives/main-content.html",
+  }
+});
 
 //sidebar
 app.directive("sideBar",function(){
@@ -46,7 +52,13 @@ app.directive("bottomBar",function(){
     templateUrl:'./scripts/directives/bottom-bar.html'
 }
 });
-app.directive("topBar",directive_top_bar);
+//top bar
+app.directive("topBar",function(){
+  return {
+    scope: false,
+    templateUrl:'./scripts/directives/topbar.html'
+}
+});
 app.directive("popupRenameNotebook",directive_rename_notebook_popup);
 app.directive("popupCreateNotebook",directive_new_notebook_popup);
 app.directive("popupPassword",directive_password_popup);

@@ -69,6 +69,11 @@
     background-color: #ffcd56;
 }
 
+.bg-blur{
+    -webkit-backdrop-filter: blur(var(--block-screen-blur));
+    backdrop-filter: blur(var(--block-screen-blur));
+}
+
 .grayscale {
     filter: grayscale(1);
 }
@@ -132,4 +137,8 @@ grid_title_bar {
     background: -webkit-linear-gradient(left,#ff9e40, #ff5c29);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.spacer {
+    height: 3.5rem;
 }
