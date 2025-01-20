@@ -211,8 +211,9 @@ function main_controller($scope, $timeout, db_service) {
                 let new_list = new List($scope.new_list_name, $scope.new_notebook_icon);
                 $scope.notebooks.push(new_list)
                 $scope.show_toast(`Notebook created: ${new_list.title}`);
+                
                 $scope.new_list_name = ""
-                $scope.show_create_notebook_layout = false
+                $scope.bottom_bar_active_div = 'null'
                 $scope.new_notebook_icon = "folder"
                 $scope.save_data();
             }
@@ -229,20 +230,36 @@ function main_controller($scope, $timeout, db_service) {
     $scope.create_note = () => {
         try {
             const taskContent = $scope.note_content.trim();
+            if(taskContent.length==0)
+                return;
+
+            //prepare notes
+            let tasks = split_text_into_tasks(taskContent, "$");
+            // Determine if adding single or multiple tasks
+            tasks = tasks.length > 0 ? tasks : [taskContent];
+            // Add tasks to the selected notebook
+            tasks.forEach(item => {
+                let newTask = new Task(item);
+                newTask.taskIcon = $scope.icons.unchecked;
+                //set type of note
+                newTask.set_is_component();
+                newTask.set_component_type();
+                $scope.notebooks[$scope.selectedListIndex].taskArray.push(newTask);
+            });
+            $scope.notes = $scope.notebooks[$scope.selectedListIndex].taskArray;
+
+            if($scope.current_notebook)
+            {
+                //create note inside this notebook
+            }else{
+                //check if quick notes exists
+                //if not create it and add note to it
+            }
             if (taskContent.length > 0 && $scope.selectedListIndex >= 0) {
-                let tasks = split_text_into_tasks(taskContent, "$");
-                // Determine if adding single or multiple tasks
-                tasks = tasks.length > 0 ? tasks : [taskContent];
-                // Add tasks to the selected notebook
-                tasks.forEach(item => {
-                    let newTask = new Task(item);
-                    newTask.taskIcon = $scope.icons.unchecked;
-                    //set type of note
-                    newTask.set_is_component();
-                    newTask.set_component_type();
-                    $scope.notebooks[$scope.selectedListIndex].taskArray.push(newTask);
-                });
-                $scope.notes = $scope.notebooks[$scope.selectedListIndex].taskArray;
+                
+
+
+
 
                 // Reset input and dialog states
                 $scope.note_content = "";
@@ -472,6 +489,9 @@ function main_controller($scope, $timeout, db_service) {
             $scope.init_file_menu_items()
             $scope.init_bottom_bar_menu()
 
+            $scope.dialog_flags.show_note_more_options = true
+            // console.log()
+
         } catch (err) {
             console.log("Error", err)
         }
@@ -697,6 +717,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.show_update_task_button = true
         $scope.close_all_dialogs()
         $scope.note_textarea_container_height = $scope.note_textarea_container_max_height
+        $scope.bottom_bar_active_div = 'note'
     }
 
     // update task in popup
@@ -1187,14 +1208,15 @@ function main_controller($scope, $timeout, db_service) {
             $scope.is_trash_open = ($scope.current_notebook.title.toLowerCase() == "trash")
             $scope.file_menu_items = [
                 {
-                    text: "Mark done",
+                    text: "Toggle complete",
                     icon: "radio_button_checked",
                     class: "task-more-options-item",
                     show: true,
                     action: () => { 
-                        $scope.selected_note.isTaskCompleted = true
-                        $scope.selected_note.taskIcon = "radio_button_checked"
+                        $scope.selected_note.isTaskCompleted = !$scope.selected_note.isTaskCompleted
+                        $scope.selected_note.taskIcon = $scope.selected_note.isTaskCompleted?"radio_button_checked":"radio_button_unchecked";
                         $scope.save_data();
+                        $scope.close_all_dialogs();
                     }
                 },{
                     text: "Restore note",
@@ -1213,7 +1235,9 @@ function main_controller($scope, $timeout, db_service) {
                     icon: "file_copy",
                     class: "task-more-options-item",
                     show: true,
-                    action: () => { $scope.copy_task() }
+                    action: () => { $scope.copy_task(); 
+
+                     }
                 }, {
                     text: "Paste inside note",
                     icon: "content_paste",
@@ -1221,6 +1245,7 @@ function main_controller($scope, $timeout, db_service) {
                     show: $scope.copied_task != null,
                     action: () => {
                         $scope.paste_task()
+
                     }
                 },{
                     text: "Split note",
@@ -1228,9 +1253,9 @@ function main_controller($scope, $timeout, db_service) {
                     class: "task-more-options-item",
                     show: true,
                     action: () => {
-                        $scope.show_split_note_btns =!$scope.show_split_note_btns
-                        console.log($scope.show_split_note_btns)
-                        $scope.init_file_menu_items()
+                        $scope.split_note("new line")
+                        $scope.save_data()
+                        $scope.close_all_dialogs()
                     }
                 }, {
                     //hide delete button when split submenu is open
@@ -1239,7 +1264,10 @@ function main_controller($scope, $timeout, db_service) {
                     icon: "delete",
                     class: "task-more-options-item",
                     show: !$scope.show_split_note_btns,
-                    action: () => { $scope.delete_task() }
+                    action: () => { 
+                        $scope.delete_task()
+
+                     }
                 }
             ]
         } catch (err) {
@@ -1758,6 +1786,7 @@ function main_controller($scope, $timeout, db_service) {
             show_create_system_var_popup: false,
             show_password_popup: false,
             show_quick_notebooks:false, // show quick notebook list
+            show_note_more_options:false, // show options for notes
         }
 
         //button flags

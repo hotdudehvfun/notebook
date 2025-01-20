@@ -16,7 +16,7 @@
     --create-notebook-bg: white;
     --system-var-bg: #ffffff;
     --system-var-border: #cfcfcf;
-    --block-screen-blur: 16px;
+    --block-screen-blur: 32px;
     --age_text_color: var(--accent);
     --theme_button_border: gray;
     --white_black: white; /* white in light theme and black in dark mode  */
@@ -124,17 +124,20 @@ input:focus {
     flex-direction: column;
     padding: .75rem 0.5rem;
     width: 100%;
-    /* transition: 0.2s all; */
-    /* border-bottom: 1px solid var(--list-border); */
     background: var(--list-bg);
-    border-radius: 4px;
-    /* height: 150px; */
-    /* box-shadow: 0px 4px 4px #00000036; */
-    border: 1px solid var(--chip2-border);
+    border: solid var(--chip2-border);
+    border-width: 0px 0px 1px 0px;
 }
 
-ul.notebooks li:last-child > .list-panel-item {
-    border: none;
+ul.notebooks li:first-child > .list-panel-item
+{
+    border-radius:8px 8px 0px 0px;
+}
+
+ul.notebooks li:last-child > .list-panel-item
+{
+    border-radius:0px 0px 8px 8px;
+    border:none;
 }
 
 .list-panel-item-title {
@@ -259,7 +262,7 @@ ul.notebooks li:last-child > .list-panel-item {
     overflow-y: auto;
     width: 100%;
     color: var(--font-color);
-    font-size: 0.8rem;
+    font-size: 1rem;
     resize: none;
     height: 100%;
     background: none;
@@ -310,8 +313,8 @@ div#list-more-options-container {
     top: 0px;
     left: 0px;
     z-index: 900;
-    -webkit-backdrop-filter: blur(var(--block-screen-blur));
-    backdrop-filter: blur(var(--block-screen-blur));
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
 }
 
 .list-panel-item > div > article {
@@ -666,7 +669,7 @@ h1, h2, h3, h4, h5 {
     width: 100%;
     left: 0px;
     top: 0px;
-    z-index: 9999;
+    z-index: 900;
 }
 
 .app-subtitle {
@@ -1187,9 +1190,6 @@ input#fileInput::-webkit-file-upload-button {
 }
 
 .task-content-div.selected {
-    border: 1px solid;
-    border-radius: .25rem;
-    border-style: dashed;
 }
 
 .line {
@@ -1265,10 +1265,11 @@ ul.notebooks {
 }
 
 .botom_bar_title {
-    font-size: 1rem;
+    font-size: 1.2rem;
     margin: .5rem 0rem;
-    display: flex;
     gap: .5rem;
+    display: flex;
+    align-items: center;
 }
 
 
@@ -1293,4 +1294,7 @@ ul.notebooks {
 
 .icon-btn-padding {
     padding: .4rem 2rem;
+}
+.not-active {
+    color: gray;
 }

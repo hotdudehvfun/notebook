@@ -130,8 +130,20 @@
 
 
 
+    <!-- more options panel for note-->
+    <div id="list-more-options-container" ng-show="dialog_flags.show_note_more_options">
+        <div class="list-more-optionas-holder visible_pop_animation">
+            <div ng-repeat="option in file_menu_items" ng-class="option.class" ng-click="option.action()"
+                ng-show="option.show">
+                <span class="material-symbols-outlined">{{option.icon}}</span>
+                <div>{{option.text}}</div>
+            </div>
+        </div>
+    </div>
 
-    <!-- more options panel -->
+
+
+    <!-- more options panel for notebook-->
     <div id="list-more-options-container" ng-show="dialog_flags.show_list_more_options">
         <div class="list-more-optionas-holder visible_pop_animation">
             <div ng-repeat="option in notebook_more_options" ng-class="option.class" ng-click="option.action()"

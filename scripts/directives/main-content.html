@@ -34,7 +34,7 @@
                     <span ng-show="select_notebooks" class="material-symbols-outlined notebook_icon"
                         ng-bind="notebook_selected_state(key)"></span>
                     <!-- notebook icon -->
-                    <span class="material-symbols-outlined icon-btn gradient-text-orange"
+                    <span class="material-symbols-outlined icon-btn orange"
                         ng-bind="get_notebook_icon(value)" ng-hide="select_notebooks"></span>
 
                     <article class="selected" ng-bind="value.title"></article>
@@ -63,14 +63,13 @@
     <ul ng-hide="is_notebook_locked()" class="tasks reset_ul">
         <li data-index="{{$index}}" ng-repeat="note in notes | filter:{isTaskCompleted:false}">
             <div class="task" ng-class="{completed: note.isTaskCompleted}">
-
+                <!-- complete button -->
+                <span ng-show="show_note_complete_button" class="material-symbols-outlined"
+                    ng-bind="note.taskIcon" ng-click="toggle_note_completed_state(note)"></span>
                 <!-- note content -->
                 <div ng-class="{selected:selected_note==note}" class="task-content-div"
                     ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                     ng-dblclick="handle_dbl_tap_on_note(note);" ng-click="handle_tap_on_note(note);"></div>
-                <!-- complete button -->
-                <span ng-show="show_note_complete_button || selected_note==note" class="material-symbols-outlined"
-                    ng-bind="note.taskIcon" ng-click="toggle_note_completed_state(note)"></span>
                 <!-- drag handle -->
                 <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
             </div>
