@@ -213,8 +213,8 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.show_toast(`Notebook created: ${new_list.title}`);
                 
                 $scope.new_list_name = ""
-                $scope.bottom_bar_active_div = 'null'
                 $scope.new_notebook_icon = "folder"
+                $scope.close_all_dialogs();
                 $scope.save_data();
             }
         } catch (err) {
@@ -1401,7 +1401,7 @@ function main_controller($scope, $timeout, db_service) {
             },
             {
                 text: "Insert",
-                icon: "edit_note",
+                icon: "format_paint",
                 class: "chip2",
                 is_selected:false,
                 show: $scope.show_view=="notes",
@@ -1787,6 +1787,7 @@ function main_controller($scope, $timeout, db_service) {
             show_password_popup: false,
             show_quick_notebooks:false, // show quick notebook list
             show_note_more_options:false, // show options for notes
+            show_notebook_popup:false,//to show create notebook popup
         }
 
         //button flags

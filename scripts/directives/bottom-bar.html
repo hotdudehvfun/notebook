@@ -1,50 +1,26 @@
 <div class="flex-col">
-    <!-- create notebook layout -->
-    <div class="flex-col p-1/2 gap-1" ng-show="bottom_bar_active_div=='notebook'">
-        <!-- title -->
-        <div class="botom_bar_title orange">
-            <span class="material-symbols-outlined button-icon">auto_stories</span>
-            Create notebook
-        </div>
-    
-        <div class="flex-row gap-1 align-center">
-            <!-- icon -->
-            <span class="material-symbols-outlined button-icon">{{new_notebook_icon}}</span>
-            <!-- notebook name input -->
-            <input
-                type="text"
-                name="notebook_name"
-                ng-keyup="handle_input_on_notebook($event)"
-                class="add-new-list-title"
-                ng-model="new_list_name" 
-                ng-attr-placeholder="New NoteBook name..."
-                placeholder="New NoteBook name..."
-                autofocus/>
-        </div>
+    <!-- create note layout -->
+    <div ng-show="bottom_bar_active_div=='note'" class="flex-col p-1/2 gap-1 shadow">
+        <!-- note buttons -->
         <div class="flex-row gap-1 space-between">
             <div 
-                ng-click="bottom_bar_active_div='null'"
-                class="button rounded-full gap-1">
-                <span class="material-symbols-outlined button-icon">cancel</span>
+                ng-click="bottom_bar_active_div='null'; cancel_update_note();"
+                class="button rounded-full gap-1 orange">
+                <!-- <span class="material-symbols-outlined button-icon">cancel</span> -->
                 <span>Close</span>
             </div>
-            <div ng-class="{'orange':new_list_name.length>1}" ng-click="create_notebook()" class="button rounded-full gap-1 transition not-active">
-                <span class="material-symbols-outlined button-icon">add</span>
-                <span>Create</span>
+            <div 
+                ng-class="{'orange':note_content.length>0}" 
+                ng-hide="show_update_task_button" 
+                ng-click="create_note()" 
+                class="button rounded-full gap-1 not-active">
+                <!-- <span class="material-symbols-outlined button-icon">add</span> -->
+                <span>Done</span>
             </div>
-        </div>
-    </div>
-
-
-
-
-
-    <!-- create note layout -->
-    <div ng-show="bottom_bar_active_div=='note'" class="flex-col p-1/2 gap-1">
-        <!-- title -->
-        <div class="botom_bar_title orange" >
-            <span class="material-symbols-outlined button-icon">description</span>
-            <div ng-bind-html="get_note_content_placeholder() | sanitize"></div>
+            <div ng-show="show_update_task_button" ng-click="update_note()" class="button rounded-full gap-1 orange">
+                <!-- <span class="material-symbols-outlined button-icon">edit_square</span> -->
+                <span>Done</span>
+            </div>
         </div>
 
         <!-- menu buttons -->
@@ -56,12 +32,29 @@
                 ng-click="item.action(item)" 
                 class="chip2">
                 <span class="material-symbols-outlined">{{item.icon}}</span>
-                <span>{{item.text}}</span>
+                <!-- <span>{{item.text}}</span> -->
             </div>
         </div>
 
+        
+    
+        <!-- note input -->
+        <div class="note_textarea_container gap-1">
+            <!-- <span class="material-symbols-outlined button-icon">description</span> -->
+            <textarea
+                autocomplete="off"
+                ng-style="{'height':note_textarea_container_height+'px'}"
+                ng-model="note_content"
+                ng-keyup="handle_keypress_note_input($event)"
+                id="note_content"
+                class="new-task-content" 
+                placeholder={{note_content_placeholder}}
+                autofocus>
+            </textarea>
+        </div>
+
         <!-- bottom bar sub menu items -->
-        <div class="flex-row gap-1 scroll-y w-full">
+        <div class="flex-row gap-1 w-full wrap scroll" style="max-height: 200px;">
             <div
                 ng-repeat="submenu_item in current_bottom_bar_active_menu"
                 class="chip mx-1" 
@@ -84,41 +77,11 @@
                 class="chip"
                 ng-repeat="(key,value) in get_system_vars()"
                 ng-click="insertTextAtCursor('note_content',key)">
-                    <span>{{key}}={{value}}</span>
+                    <span>{{key}}</span>
                     <span>{{option.title}}</span>
             </div>        
         </div>
-    
-        <!-- note input -->
-        <div class="note_textarea_container gap-1">
-            <span class="material-symbols-outlined button-icon">description</span>
-            <textarea
-                ng-style="{'height':note_textarea_container_height+'px'}"
-                ng-model="note_content"
-                ng-keyup="handle_keypress_note_input($event)"
-                id="note_content"
-                class="new-task-content" 
-                placeholder={{note_content_placeholder}}
-                autofocus>
-            </textarea>
-        </div>
-        <!-- note buttons -->
-        <div class="flex-row gap-1 space-between">
-            <div 
-                ng-click="bottom_bar_active_div='null'; cancel_update_note();"
-                class="button rounded-full gap-1">
-                <span class="material-symbols-outlined button-icon">cancel</span>
-                <span>Close</span>
-            </div>
-            <div ng-hide="show_update_task_button" ng-click="create_note()" class="button rounded-full gap-1">
-                <span class="material-symbols-outlined button-icon">add</span>
-                <span>Create</span>
-            </div>
-            <div ng-show="show_update_task_button" ng-click="update_note()" class="button rounded-full gap-1">
-                <span class="material-symbols-outlined button-icon">edit_square</span>
-                <span>Update</span>
-            </div>
-        </div>
+        
     </div>
 
 
@@ -197,12 +160,12 @@
 
     <!-- bottom button -->
     <div
-        ng-show="true" 
+        ng-show="bottom_bar_active_div=='null'" 
         class="flex-row p-1/2 justify-space-between wrap gap-1">
         <!-- create notebook button -->
         <div 
             ng-class="{'bg-red-pink': bottom_bar_active_div=='notebook'} "
-            ng-click="toggle_bottom_bar_div('notebook')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            ng-click="dialog_flags.show_notebook_popup=true" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
             <span class="material-symbols-outlined button-icon-l;">auto_stories</span>
             <!-- <span>Notebook</span> -->
         </div>

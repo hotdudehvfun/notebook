@@ -113,6 +113,9 @@ grid_title_bar {
 {
     padding:.125rem;
 }
+.p-1{
+    padding:1rem;
+}
 
 .border {
     border: 1px solid var(--list-border);

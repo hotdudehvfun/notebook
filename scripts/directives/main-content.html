@@ -27,15 +27,18 @@
         {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
     </div>
     <ul class="notebooks reset_ul">
-        <li ng-click="open_notebook(value)" ng-repeat="(key, value) in notebooks" class="notebooks_li">
+        <li 
+            ng-click="open_notebook(value)" 
+            ng-repeat="(key, value) in notebooks" 
+            class="notebooks_li">
             <div class="list-panel-item">
                 <div class="list-panel-item-title">
                     <!-- show when selected -->
                     <span ng-show="select_notebooks" class="material-symbols-outlined notebook_icon"
                         ng-bind="notebook_selected_state(key)"></span>
                     <!-- notebook icon -->
-                    <span class="material-symbols-outlined icon-btn orange"
-                        ng-bind="get_notebook_icon(value)" ng-hide="select_notebooks"></span>
+                    <span class="material-symbols-outlined icon-btn orange" ng-bind="get_notebook_icon(value)"
+                        ng-hide="select_notebooks"></span>
 
                     <article class="selected" ng-bind="value.title"></article>
 
@@ -46,6 +49,10 @@
             </div>
         </li>
     </ul>
+    <!-- empty space at last -->
+    <div ng-show="notebooks.length!=0" style="height:100px" ng-click="bottom_bar_active_div='notebook'">
+        
+    </div>
 </div>
 
 
@@ -56,6 +63,11 @@
     <div class="notebook_age">
         <span class="material-symbols-outlined" style="font-size:20px;">schedule</span>&nbsp; {{notebook_age()}}
     </div>
+    <!-- clipboard -->
+    <div class="notebook_age" ng-show="copied_task!=null">
+        <span class="material-symbols-outlined" style="font-size:20px;">content_paste</span>&nbsp; 1 task
+    </div>
+
 
     <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{notes.length}} tasks
     </div>
@@ -65,7 +77,7 @@
             <div class="task" ng-class="{completed: note.isTaskCompleted}">
                 <!-- complete button -->
                 <span ng-show="show_note_complete_button" class="material-symbols-outlined"
-                    ng-bind="note.taskIcon" ng-click="toggle_note_completed_state(note)"></span>
+                    ng-click="toggle_note_completed_state(note)">check_box_outline_blank</span>
                 <!-- note content -->
                 <div ng-class="{selected:selected_note==note}" class="task-content-div"
                     ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
@@ -81,13 +93,18 @@
     </div>
     <div ng-repeat="note in notes | filter:{isTaskCompleted:true}">
         <div class="task" ng-class="{completed: note.isTaskCompleted}">
-            <span class="material-symbols-outlined" ng-bind="note.taskIcon"
-                ng-click="toggle_note_completed_state(note)"></span>
+            <span class="material-symbols-outlined" ng-click="toggle_note_completed_state(note)">check_box
+            </span>
             <div class="task-content-div" ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                 ng-click="handle_tap_on_note(note);">
             </div>
         </div>
     </div>
+
+    <!-- empty space at last if notebook is not empty -->
+     <div ng-show="notes.length!=0" style="height:100px" ng-click="bottom_bar_active_div='note'">
+        
+     </div>
 
     <!-- empty state empty list-->
     <div class="empty-notebook" ng-show="notes.length==0 && pageTitle.toLocaleLowerCase()!='system'">

@@ -50,12 +50,12 @@
     }
 
     .topbar {
-        /* background: #303030; */
+        background: #272727;
     }
 
     .highlight {
         color: #ff4967;
-        background: #fff0f3;
+        background: #ff49671a;
     }
 
     .toast {
@@ -66,3 +66,4 @@
         color: orange;
     }
 }
+
