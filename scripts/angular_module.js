@@ -37,6 +37,15 @@ app.directive("mainContent",function(){
   }
 });
 
+//create notebook popup
+app.directive("createNotebookPopup",function(){
+  return{
+    scope:false,
+    templateUrl:"./scripts/directives/create-notebook-popup.html",
+  }
+});
+
+
 //sidebar
 app.directive("sideBar",function(){
   return{

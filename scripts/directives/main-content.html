@@ -50,8 +50,7 @@
         </li>
     </ul>
     <!-- empty space at last -->
-    <div ng-show="notebooks.length!=0" style="height:100px" ng-click="bottom_bar_active_div='notebook'">
-        
+    <div ng-show="notebooks.length!=0" style="height:100px" ng-click="dialog_flags.show_notebook_popup=true">
     </div>
 </div>
 
@@ -101,7 +100,7 @@
         </div>
     </div>
 
-    <!-- empty space at last if notebook is not empty -->
+    <!-- empty space at last if notebook on click open new notebook dialog -->
      <div ng-show="notes.length!=0" style="height:100px" ng-click="bottom_bar_active_div='note'">
         
      </div>

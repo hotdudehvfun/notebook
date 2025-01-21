@@ -600,7 +600,7 @@ div#list-more-options-container {
 }
 
 .visible_pop_animation {
-    animation: pop_anim 0.4s;
+    animation: pop_anim 0.2s;
     transform-origin: center;
 }
 
