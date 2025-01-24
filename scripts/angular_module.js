@@ -34,6 +34,11 @@ app.directive("mainContent",function(){
   return{
     scope:false,
     templateUrl:"./scripts/directives/main-content.html",
+    link:function(scope,element,attrs){
+      //make notebook and notes sortable
+      scope.init_sortable_list(".notebooks", "notebooks");
+      scope.init_sortable_list(".tasks", "notes");
+    }
   }
 });
 

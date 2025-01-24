@@ -92,7 +92,10 @@
     </div>
     <div ng-repeat="note in notes | filter:{isTaskCompleted:true}">
         <div class="task" ng-class="{completed: note.isTaskCompleted}">
-            <span class="material-symbols-outlined" ng-click="toggle_note_completed_state(note)">check_box
+            <span
+                class="" 
+                ng-click="toggle_note_completed_state(note)">
+                ✅
             </span>
             <div class="task-content-div" ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                 ng-click="handle_tap_on_note(note);">

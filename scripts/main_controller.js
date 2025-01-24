@@ -337,8 +337,22 @@ function main_controller($scope, $timeout, db_service) {
     }
 
 
-    $scope.get_system_vars = () => {
-        return system_vars
+    $scope.init_system_var_menu_items = () => {
+        $scope.system_var_menu_items = []
+        for(const key in system_vars)
+        {
+            if(system_vars.hasOwnProperty(key))
+            {
+                $scope.system_var_menu_items.push(
+                    {
+                        icon: "calculate",
+                        show: true,
+                        text: key,
+                        action: () => {$scope.insertTextAtCursor('note_content',key)}
+                    }
+                )
+            }
+        }
     }
 
     $scope.edit_var = function (key, value) {
@@ -753,6 +767,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.save_data()
             $scope.show_toast("Note updated")
             $scope.init_bottom_bar_menu()
+            $scope.bottom_bar_active_div = 'null'
         } catch (err) {
             $scope.show_toast("Error while updating note")
             console.log("Error while updating note", err)
@@ -908,6 +923,8 @@ function main_controller($scope, $timeout, db_service) {
                 }
                 if (e.keyCode == 13) {
                     $scope.note_textarea_container_height = Math.min(textarea.scrollHeight + 30, $scope.note_textarea_container_max_height)
+                    if($scope.is_list_mode_on)
+                        $scope.insertTextAtCursor('note_content',$scope.current_list_symbol+" ") //insert space
                 }
 
             }
@@ -1410,38 +1427,17 @@ function main_controller($scope, $timeout, db_service) {
     $scope.init_bottom_bar_menu = () => {
         $scope.bottom_bar_menu = [
             {
-                text: "File",
-                icon: "edit_note",
-                class: "chip2",
-                is_selected: false,
-                show: $scope.show_view == "notes" && $scope.is_note_selected,
-                action: (item) => {
-                    // $scope.show_edit_options=!$scope.show_edit_options
-                    $scope.toggle_is_selected(item)
-                    if (item.is_selected) {
-                        $scope.init_file_menu_items()
-                        $scope.current_bottom_bar_active_menu = $scope.file_menu_items;
-                    } else {
-                        $scope.current_bottom_bar_active_menu = null;
-
-                    }
-                }
-            },
-            {
                 text: "Insert",
                 icon: "format_paint",
                 class: "chip2",
-                is_selected: false,
-                show: $scope.show_view == "notes",
+                show: true,
                 action: (item) => {
-                    // $scope.show_insert_options=!$scope.show_insert_options 
-                    $scope.toggle_is_selected(item)
-                    if (item.is_selected) {
+                    $scope.toggle_bottom_bar_active_menu(item.text)
+                    if ($scope.bottom_bar_active_menu==item.text) {
                         $scope.init_insert_menu_items()
                         $scope.current_bottom_bar_active_menu = $scope.insert_menu_items;
                     } else {
                         $scope.current_bottom_bar_active_menu = null;
-
                     }
                 }
             },
@@ -1449,47 +1445,52 @@ function main_controller($scope, $timeout, db_service) {
                 text: "Component",
                 icon: "sports_esports",
                 class: "chip2",
-                is_selected: false,
                 show: $scope.is_note_selected,//show component tab when a note is selected
                 action: (item) => {
-                    $scope.show_component_options = !$scope.show_component_options
-                    $scope.toggle_is_selected(item)
+                    $scope.toggle_bottom_bar_active_menu(item.text)
+                    if($scope.bottom_bar_active_menu==item.text)
+                    {
+                        // $scope.init_component_menu_items()
+                        $scope.current_bottom_bar_active_menu = null
+                    } else {
+                        $scope.current_bottom_bar_active_menu = null;
+                    }
                 }
             },
             {
                 text: "System vars",
                 icon: "deployed_code",
                 class: "chip2",
-                is_selected: false,
-                show: $scope.show_view == "notes",
+                show: true,
                 action: (item) => {
-                    $scope.show_edit_options_system_vars = !$scope.show_edit_options_system_vars
-                    $scope.toggle_is_selected(item)
+                    // $scope.show_edit_options_system_vars = !$scope.show_edit_options_system_vars
+                    $scope.toggle_bottom_bar_active_menu(item.text)
+                    if($scope.bottom_bar_active_menu==item.text)
+                    {
+                        $scope.init_system_var_menu_items()
+                        $scope.current_bottom_bar_active_menu = $scope.system_var_menu_items
+                    } else {
+                        $scope.current_bottom_bar_active_menu = null;
+                    }
                 }
             },
             {
-                text: "View notebooks",
-                icon: "book_ribbon",
+                text: "List mode",
+                icon: "list_alt",
                 class: "chip2",
-                is_selected: false,
-                show: $scope.show_view != "notebooks",//show only when note viewing notebooks
+                show: true,
                 action: (item) => {
-                    $scope.set_view('notebooks')
-                    $scope.toggle_is_selected(item)
+                    $scope.toggle_bottom_bar_active_menu(item.text)
+                    $scope.current_bottom_bar_active_menu = null;
+                    $scope.is_list_mode_on = ($scope.bottom_bar_active_menu==item.text)
+                    $scope.show_toast(`List mode ${bool_to_on_off($scope.is_list_mode_on)} | ${$scope.current_list_symbol}`)
                 }
             }]
     }
-
-
-
-    // Function to toggle selected class
-    $scope.toggle_is_selected = function (item) {
-        $scope.bottom_bar_menu.forEach((menu_item) => {
-            if (item != menu_item)
-                menu_item.is_selected = false
-        })
-        item.is_selected = !item.is_selected
-    };
+    // handle bottom bar menu click
+    $scope.toggle_bottom_bar_active_menu = (menu_id) => {
+        $scope.bottom_bar_active_menu = $scope.bottom_bar_active_menu === menu_id ? "null" : menu_id;
+    }
 
     $scope.handle_db_operation_change = () => {
         try {
@@ -1809,6 +1810,7 @@ function main_controller($scope, $timeout, db_service) {
             show_quick_notebooks: false, // show quick notebook list
             show_note_more_options: false, // show options for notes
             show_notebook_popup: false,//to show create notebook popup
+
         }
 
         //button flags
@@ -1832,6 +1834,10 @@ function main_controller($scope, $timeout, db_service) {
         $scope.show_split_note_btns = false // split note sub menu btns
         $scope.show_view = "notebooks" //options can be notebooks, notes
         $scope.bottom_bar_active_div = "null" //hide or show bottom bar create divs
+        $scope.bottom_bar_active_menu = "null" //hide or show bottom bar menu options
+        $scope.is_list_mode_on = false // if on on enter press a symbol is inserted at start of line
+        $scope.current_list_symbol = "✅"
+        $scope.list_symbols_array = ["✅","⚠","-","*"]
 
 
 
@@ -1909,9 +1915,7 @@ function main_controller($scope, $timeout, db_service) {
         // $scope.init_insert_menu_items()
 
 
-        //make notebook and notes sortable
-        $scope.init_sortable_list(".notebooks", "notebooks");
-        $scope.init_sortable_list(".tasks", "notes");
+        
     };
 }
 

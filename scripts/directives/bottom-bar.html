@@ -28,7 +28,7 @@
             <div
                 ng-repeat="item in bottom_bar_menu"
                 ng-show="true"
-                ng-class="{'chip2-selected': item.is_selected}" 
+                ng-class="{'chip2-selected': bottom_bar_active_menu==item.text}" 
                 ng-click="item.action(item)" 
                 class="chip2">
                 <span class="material-symbols-outlined">{{item.icon}}</span>

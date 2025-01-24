@@ -34,6 +34,7 @@
             </label>
         </div>
     </div>
+    
     <div class="flex-row space-between">
         <h4>Rearrange notebooks and notes</h4>
         <div style="transform: scale(.65);">
@@ -43,9 +44,19 @@
             </label>
         </div>
     </div>
+
+    <div class="flex-row space-between align-center">
+        <h4>List symbol</h4>
+        <select
+            ng-model="current_list_symbol" ng-options="item for item in list_symbols_array">
+        </select>
+    </div>
+    
+
     <div class="flex-row space-between align-center">
         <h4>Import/Export</h4>
         <div ng-click="close_all_dialogs(); dialog_flags.show_db_popup = true;" class="button orange">Open Database
         </div>
     </div>
+
 </div>

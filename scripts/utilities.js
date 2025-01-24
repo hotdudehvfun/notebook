@@ -438,3 +438,9 @@ function handleSwipe() {
 
   }
 }
+
+
+function bool_to_on_off(state)
+{
+  return state?"on":"off";
+}
