@@ -50,31 +50,29 @@ function main_controller($scope, $timeout, db_service) {
     $scope.open_notebook = function (notebook) {
         try {
             if (notebook) {
-                console.log("opening notebook", notebook)
-                $scope.current_notebook = notebook;
+                $scope.pageTitle = notebook.title;
+                $scope.pageIcon = $scope.get_notebook_icon(notebook)
+                $scope.current_notebook = notebook; // so that we can get age of system notebook
+                //show system vars
+                if (notebook.title.toLowerCase() == "system") {
+                    $scope.show_view = "system"
+                    console.log("opening notebook", notebook)
+                    return
+                }
                 $scope.selectedListIndex = $scope.notebooks.indexOf(notebook);
                 $scope.notes = notebook.taskArray;
                 $scope.selectedListName = notebook.title;
-                $scope.pageTitle = notebook.title;
                 $scope.show_delete_list_option = true
                 $scope.show_purge_list_option = true
                 $scope.show_rename_list_option = true
                 $scope.is_note_selected = false;
                 $scope.show_edit_options = false;
                 $scope.selected_note = undefined
-                $scope.show_view = "notes"
+                $scope.show_view = "note"
 
                 // to show icon on topbar
-                $scope.pageIcon = $scope.get_notebook_icon(notebook)
                 $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`
-                //show system tab in bottom bar
-                if (notebook.title.toLowerCase() == "system") {
-                    $scope.create_btns_arr = [false, false, true]
-                } else {
-                    $scope.create_btns_arr = [true, false, false]
-                }
                 $scope.init_bottom_bar_menu()
-                $scope.open_sidebar(false)
                 $scope.save_data()
             }
         } catch (err) {
@@ -173,12 +171,20 @@ function main_controller($scope, $timeout, db_service) {
     $scope.insertTextAtCursor = function (id, value) {
         insertTextAtCursor(id, value)
     }
+    $scope.get_system_var_length = () => {
+        try {
+            return Object.keys(system_vars).length
+        } catch (err) {
+            console.log(err)
+        }
+        return -1;
+    }
 
     $scope.get_notebook_info = function (notebook) {
         try {
             let title = notebook.title
             if (title.toLowerCase() == "system") {
-                return Object.keys(system_vars).length
+                return $scope.get_system_var_length()
             }
             var completed = notebook.taskArray.filter(function (note) { return note.isTaskCompleted == true }).length;
             if (completed == 0)
@@ -241,14 +247,14 @@ function main_controller($scope, $timeout, db_service) {
     $scope.create_note = () => {
         try {
             const task_content = $scope.note_content.trim();
-    
+
             if (is_valid_note_content(task_content)) {
                 // Create a new task
                 const new_task = new Task(task_content);
                 new_task.task_icon = $scope.icons.unchecked;
                 new_task.set_is_component();
                 new_task.set_component_type();
-                let msg=""
+                let msg = ""
                 if ($scope.current_notebook) {
                     // Add the note to the current notebook
                     $scope.current_notebook.taskArray.push(new_task);
@@ -261,7 +267,7 @@ function main_controller($scope, $timeout, db_service) {
                     $scope.notes = quick_notes_notebook.taskArray;
                     msg = `Note created in ${quick_notes_notebook.title}`
                 }
-    
+
                 reset_note_form();
                 $scope.save_data();
                 $scope.show_toast(msg);
@@ -274,18 +280,18 @@ function main_controller($scope, $timeout, db_service) {
             $scope.show_toast("Failed to create note");
         }
     };
-    
+
     // Helper function to get or create the "quick notes" notebook
     const get_or_create_quick_notes = () => {
         let quick_notes_notebook = $scope.notebooks.find(
             (notebook) => notebook.title.toLowerCase() === "quick notes"
         );
-    
+
         if (!quick_notes_notebook) {
             // Create the "quick notes" notebook if it doesn't exist
             quick_notes_notebook = $scope.create_notebook("quick notes");
         }
-    
+
         return quick_notes_notebook;
     };
 
@@ -336,19 +342,29 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
+    $scope.get_system_vars = () => {
+        let sortedByKey = Object.keys(system_vars)
+            .sort() // Sort keys
+            .reduce((result, key) => {
+                result[key] = system_vars[key];
+                return result;
+            }, {});
+        return sortedByKey
+    }
+
+
+
 
     $scope.init_system_var_menu_items = () => {
         $scope.system_var_menu_items = []
-        for(const key in system_vars)
-        {
-            if(system_vars.hasOwnProperty(key))
-            {
+        for (const key in system_vars) {
+            if (system_vars.hasOwnProperty(key)) {
                 $scope.system_var_menu_items.push(
                     {
                         icon: "calculate",
                         show: true,
                         text: key,
-                        action: () => {$scope.insertTextAtCursor('note_content',key)}
+                        action: () => { $scope.insertTextAtCursor('note_content', key) }
                     }
                 )
             }
@@ -360,6 +376,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.show_delete_system_var_button = true
             $scope.new_var_name = key
             $scope.new_var_value = system_vars[key]
+            $scope.system_create_btn_title = "Update"
             //show input area
             $scope.bottom_bar_active_div = "system"
 
@@ -370,6 +387,7 @@ function main_controller($scope, $timeout, db_service) {
     $scope.clear_system_input_vars = () => {
         $scope.new_var_name = ""
         $scope.new_var_value = ""
+        $scope.system_create_btn_title = "Create"
         $scope.show_delete_system_var_button = false
     }
 
@@ -923,8 +941,8 @@ function main_controller($scope, $timeout, db_service) {
                 }
                 if (e.keyCode == 13) {
                     $scope.note_textarea_container_height = Math.min(textarea.scrollHeight + 30, $scope.note_textarea_container_max_height)
-                    if($scope.is_list_mode_on)
-                        $scope.insertTextAtCursor('note_content',$scope.current_list_symbol+" ") //insert space
+                    if ($scope.is_list_mode_on)
+                        $scope.insertTextAtCursor('note_content', $scope.current_list_symbol + " ") //insert space
                 }
 
             }
@@ -1053,24 +1071,19 @@ function main_controller($scope, $timeout, db_service) {
     }
 
     $scope.create_system_var = () => {
-        let error = ""
-        if ($scope.new_var_name.length > 0 && $scope.new_var_value.length > 0) {
+        if ($scope.new_var_name.trim() != "" && $scope.new_var_value.trim() != "") {
             //clean vars
             $scope.new_var_name = $scope.new_var_name.trim().toLocaleLowerCase()
             $scope.new_var_value = $scope.new_var_value.trim().toLocaleLowerCase()
-
         } else {
-            error = "Empty variables cannot be created"
+            $scope.show_toast("Varibale name and value are required");
+            return;
         }
-        if (error == "") {
-            system_vars[$scope.new_var_name] = $scope.new_var_value
-            $scope.clear_system_input_vars();
-            $scope.bottom_bar_active_div = 'null';
-            $scope.save_data();
-            $scope.show_toast("Variable created");
-        } else {
-            $scope.show_toast(error)
-        }
+        system_vars[$scope.new_var_name] = $scope.new_var_value
+        $scope.show_toast(`Variable ${$scope.system_create_btn_title}d`);
+        $scope.clear_system_input_vars();
+        $scope.bottom_bar_active_div = 'null';
+        $scope.save_data();
     }
 
     $scope.open_create_new_note_popup = () => {
@@ -1433,7 +1446,7 @@ function main_controller($scope, $timeout, db_service) {
                 show: true,
                 action: (item) => {
                     $scope.toggle_bottom_bar_active_menu(item.text)
-                    if ($scope.bottom_bar_active_menu==item.text) {
+                    if ($scope.bottom_bar_active_menu == item.text) {
                         $scope.init_insert_menu_items()
                         $scope.current_bottom_bar_active_menu = $scope.insert_menu_items;
                     } else {
@@ -1448,8 +1461,7 @@ function main_controller($scope, $timeout, db_service) {
                 show: $scope.is_note_selected,//show component tab when a note is selected
                 action: (item) => {
                     $scope.toggle_bottom_bar_active_menu(item.text)
-                    if($scope.bottom_bar_active_menu==item.text)
-                    {
+                    if ($scope.bottom_bar_active_menu == item.text) {
                         // $scope.init_component_menu_items()
                         $scope.current_bottom_bar_active_menu = null
                     } else {
@@ -1465,8 +1477,7 @@ function main_controller($scope, $timeout, db_service) {
                 action: (item) => {
                     // $scope.show_edit_options_system_vars = !$scope.show_edit_options_system_vars
                     $scope.toggle_bottom_bar_active_menu(item.text)
-                    if($scope.bottom_bar_active_menu==item.text)
-                    {
+                    if ($scope.bottom_bar_active_menu == item.text) {
                         $scope.init_system_var_menu_items()
                         $scope.current_bottom_bar_active_menu = $scope.system_var_menu_items
                     } else {
@@ -1482,7 +1493,7 @@ function main_controller($scope, $timeout, db_service) {
                 action: (item) => {
                     $scope.toggle_bottom_bar_active_menu(item.text)
                     $scope.current_bottom_bar_active_menu = null;
-                    $scope.is_list_mode_on = ($scope.bottom_bar_active_menu==item.text)
+                    $scope.is_list_mode_on = ($scope.bottom_bar_active_menu == item.text)
                     $scope.show_toast(`List mode ${bool_to_on_off($scope.is_list_mode_on)} | ${$scope.current_list_symbol}`)
                 }
             }]
@@ -1832,12 +1843,13 @@ function main_controller($scope, $timeout, db_service) {
         $scope.show_edit_options_system_vars = false //bottom bar note insert system vars
         $scope.show_note_complete_button = false // show hide complete button
         $scope.show_split_note_btns = false // split note sub menu btns
-        $scope.show_view = "notebooks" //options can be notebooks, notes
+        $scope.show_view = "notebook" //options can be notebooks, notes
         $scope.bottom_bar_active_div = "null" //hide or show bottom bar create divs
         $scope.bottom_bar_active_menu = "null" //hide or show bottom bar menu options
         $scope.is_list_mode_on = false // if on on enter press a symbol is inserted at start of line
         $scope.current_list_symbol = "✅"
-        $scope.list_symbols_array = ["✅","⚠","-","*"]
+        $scope.list_symbols_array = ["✅", "⚠", "-", "*"]
+        $scope.system_create_btn_title = "Create"
 
 
 
@@ -1915,7 +1927,7 @@ function main_controller($scope, $timeout, db_service) {
         // $scope.init_insert_menu_items()
 
 
-        
+
     };
 }
 

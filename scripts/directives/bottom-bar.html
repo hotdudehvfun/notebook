@@ -81,7 +81,6 @@
                     <span>{{option.title}}</span>
             </div>        
         </div>
-        
     </div>
 
 
@@ -97,7 +96,7 @@
         <!-- title -->
         <div class="botom_bar_title orange">
             <span class="material-symbols-outlined button-icon">keyboard_command_key</span>
-            Custmom variables
+            Custom variables
         </div>
 
         <!-- create system var -->
@@ -130,7 +129,7 @@
                 </div>
                 <div ng-click="create_system_var();" class="button rounded-full gap-1">
                     <span class="material-symbols-outlined button-icon">add</span>
-                    <span>Create</span>
+                    <span>{{system_create_btn_title}}</span>
                 </div>
                 <div 
                     ng-if="show_delete_system_var_button"
@@ -184,7 +183,7 @@
             <!-- <span>System</span> -->
         </div>
         <!-- view notebooks button -->
-        <div ng-show="show_view=='notes'" ng-click="set_view('notebooks')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+        <div ng-hide="show_view=='notebook'" ng-click="set_view('notebook')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
             <span class="material-symbols-outlined button-icon-l;">arrow_back</span>
             <!-- <span>Back</span> -->
         </div>

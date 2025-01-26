@@ -19,6 +19,10 @@ console.log(`
 
 var system_vars = {}
 
+
+
+
+
 app.filter("sanitize", ['$sce', function ($sce) {
   return function (htmlCode) {
     return $sce.trustAsHtml(htmlCode);

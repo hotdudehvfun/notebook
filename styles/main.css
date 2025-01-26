@@ -773,11 +773,11 @@ h1, h2, h3, h4, h5 {
 
 .system_var_item {
     display: flex;
-    padding: 0.5rem 0.25rem;
-    margin: 0.125rem 0.5rem;
+    /* padding: 0.5rem 0.25rem; */
+    /* margin: 0.125rem 0.5rem; */
     /* background: var(--system-var-bg); */
     font-size: 1rem;
-    gap: 1rem;
+    /* gap: 1rem; */
     border-radius: 8px;
     /* border: 1px solid var(--system-var-border); */
 }

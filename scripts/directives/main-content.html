@@ -20,7 +20,7 @@
 
 
 <!-- notebooks -->
-<div ng-show="show_view=='notebooks'">
+<div ng-show="show_view=='notebook'">
     <div class="spacer"></div>
     <h2 class="mt-2">Your notebooks</h2>
     <div class="notebook_count">
@@ -56,7 +56,7 @@
 
 
 <!-- notes -->
-<div ng-show="show_view=='notes'">
+<div ng-show="show_view=='note'">
     <div class="spacer"></div>
     <!-- normal tasks -->
     <div class="notebook_age">
@@ -123,17 +123,23 @@
         </div>
         <h2 class="text-center">NoteBook is locked</h2>
     </div>
+</div>
 
-
-
-    <!-- show system vars here -->
-    <div ng-show="pageTitle.toLocaleLowerCase()=='system'">
-        <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
-            <div class="system_var_item">
-                <span class="material-symbols-outlined icon-btn">deployed_code</span>
-                <div class="var_chip">{{key}} = {{evaluate_exp(value)}}</div>
-                <!-- <div class="var_chip">{{evaluate_exp(value)}}</div> -->
-            </div>
+ <!-- show system vars here -->
+ <div ng-show="show_view=='system'">
+    <div class="spacer"></div>
+    <div class="notebook_age">
+        <span class="material-symbols-outlined" style="font-size:20px;">schedule</span>&nbsp; {{notebook_age()}}
+    </div>
+    <div class="notebook_age">
+        <span class="material-symbols-outlined" style="font-size:20px;">deployed_code</span>&nbsp; {{get_system_var_length()}}
+    </div>
+    
+    <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
+        <div class="system_var_item">
+            <span class="material-symbols-outlined icon-btn">calculate</span>
+            <div class="var_chip">{{key}} = {{evaluate_exp(value)}}</div>
+            <!-- <div class="var_chip">{{evaluate_exp(value)}}</div> -->
         </div>
     </div>
 </div>
