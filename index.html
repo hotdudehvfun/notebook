@@ -51,7 +51,7 @@
 <body ng-app="notebook_app" ng-controller='main_controller' ng-init="init()" data-theme="{{is_dark?'dark':'light';}}">
     <div class="main-container">
         <!-- top bar -->
-        <top-bar class="topbar bg-blur"></top-bar>
+        <top-bar class="topbar bg-blur scroll"></top-bar>
         <!-- content bar -->
         <main-content class="content "></main-content>
         <!-- bottom bar -->
@@ -82,8 +82,7 @@
 
 
     <!-- rename notebook dialog pop up-->
-    <popup-rename-notebook ng-show="dialog_flags.show_rename_notebook_popup" class="popup visible_pop_animation">
-    </popup-rename-notebook>
+    <popup-rename-notebook ng-show="dialog_flags.show_rename_notebook_popup" class="popup visible_pop_animation"></popup-rename-notebook>
 
     <!-- import popup -->
     <div class="popup visible_pop_animation" ng-show="dialog_flags.show_db_popup">
@@ -162,7 +161,7 @@
     <!-- more options panel for note-->
     <div id="list-more-options-container" ng-show="dialog_flags.show_note_more_options">
         <div class="list-more-optionas-holder visible_pop_animation">
-            <div ng-repeat="option in file_menu_items" ng-class="option.class" ng-click="option.action()"
+            <div ng-repeat="option in note_more_options" ng-class="option.class" ng-click="option.action()"
                 ng-show="option.show">
                 <span class="material-symbols-outlined">{{option.icon}}</span>
                 <div>{{option.text}}</div>

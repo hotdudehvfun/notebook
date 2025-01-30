@@ -96,6 +96,9 @@ html, body {
     outline: none;
     text-align: center;
     text-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .selected-list {
@@ -994,9 +997,10 @@ img.empty_svg {
     flex-direction: column;
 }
 
-input[type="checkbox"] {
+input[type="checkbox"].toggle_checkbox {
     display: none;
 }
+
 
 label.toggle_label {
     background: #aeaeae;

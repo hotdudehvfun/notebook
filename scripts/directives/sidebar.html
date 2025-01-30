@@ -28,7 +28,7 @@
     <div class="flex-row space-between">
         <h4>Show complete button</h4>
         <div style="transform: scale(.65);">
-            <input ng-model="show_note_complete_button" type="checkbox" id="type3" class="toggle_checkbox" />
+            <input ng-change="is_note_multi_select_on=false" ng-model="show_note_complete_button" type="checkbox" id="type3" class="toggle_checkbox" />
             <label for="type3" class="toggle_label">
                 <span class="toggle_span"></span>
             </label>

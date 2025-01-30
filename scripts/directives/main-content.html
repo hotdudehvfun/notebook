@@ -67,21 +67,45 @@
         <span class="material-symbols-outlined" style="font-size:20px;">content_paste</span>&nbsp; 1 task
     </div>
 
-
     <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{notes.length}} tasks
     </div>
 
     <ul ng-hide="is_notebook_locked()" class="tasks reset_ul">
         <li data-index="{{$index}}" ng-repeat="note in notes | filter:{isTaskCompleted:false}">
             <div class="task" ng-class="{completed: note.isTaskCompleted}">
-                <!-- complete button -->
-                <span ng-show="show_note_complete_button" class="material-symbols-outlined"
-                    ng-click="toggle_note_completed_state(note)">check_box_outline_blank</span>
+                <!-- multi select checkbox -->
+                <input
+                    style="accent-color: orange;"
+                    class="visible_pop_animation"
+                    ng-show="is_note_multi_select_on"
+                    ng-model="note.isSelected"
+                    ng-change="handle_tap_on_note_checkbox(note)"         
+                    type="checkbox">
+                <!-- multi select checkbox -->
+                 <!-- as we are binding direct property of note just save on ng-change -->
+                <input
+                    class="visible_pop_animation"
+                    ng-show="show_note_complete_button"
+                    ng-change="save_data()"
+                    ng-model="note.isTaskCompleted"
+                    type="checkbox">
+                
+                <!-- <span
+                    ng-show="is_note_multi_select_on" 
+                    class="material-symbols-outlined"
+                    ng-click="handle_click_on_note_checkbox(note)">
+                        check_box_outline_blank
+                </span> -->
+                
                 <!-- note content -->
-                <div ng-class="{selected:selected_note==note}" class="task-content-div"
+                <div 
+                    ng-class="{selected:selected_note==note}" 
+                    class="task-content-div"
                     ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
-                    ng-dblclick="handle_dbl_tap_on_note(note);" ng-click="handle_tap_on_note(note);"></div>
-                <!-- drag handle -->
+                    ng-dblclick="handle_dbl_tap_on_note(note);" 
+                    ng-click="handle_tap_on_note(note);"></div>
+                
+                    <!-- drag handle -->
                 <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
             </div>
         </li>

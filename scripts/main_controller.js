@@ -98,9 +98,7 @@ function main_controller($scope, $timeout, db_service) {
             vars = show list of user defined variables
         */
         $scope.show_view = view_name
-        if ($scope.show_view == 'notebooks') {
-            //show create notebook area
-            $scope.create_btns_arr = [false, true, false]
+        if ($scope.show_view == 'notebook') {
             //reset icon and title
             $scope.pageTitle = $scope.defaultPageTitle
             $scope.pageIcon = $scope.default_app_icon
@@ -538,7 +536,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.task_completed_state = note.isTaskCompleted
             //check if we are inside trash
             // console.log($scope.current_notebook)
-            $scope.init_file_menu_items()
+            $scope.init_note_more_options()
             $scope.init_bottom_bar_menu()
 
             $scope.dialog_flags.show_note_more_options = true
@@ -582,31 +580,23 @@ function main_controller($scope, $timeout, db_service) {
             console.log("Cannot remove completed notes", error)
         }
     }
+
+    //show list of notebooks for quick actions
     $scope.handle_tap_on_quick_notebooks_item = (_notebook) => {
         try {
-            // Get the selected notebook and _notebook task arrays
-            let selectedNotebook = $scope.notebooks[$scope.selectedListIndex];
-            let completedNotes = [];
-
-            // Filter out completed tasks and store them in completedNotes array
-            selectedNotebook.taskArray = selectedNotebook.taskArray.filter(note => {
-                if (note.isTaskCompleted) {
-                    completedNotes.push(note);
-                    return false; // Exclude from taskArray
-                }
-                return true; // Keep in taskArray if not completed
-            });
-
-            // Move completed notes to the target _notebook
-            _notebook.taskArray.push(...completedNotes);
-            $scope.notebooks[$scope.selectedListIndex].taskArray = selectedNotebook.taskArray
-
-            // Optionally save data, close dialogs, and show toast message
-            $scope.save_data();
-            $scope.close_all_dialogs();
-            $scope.show_toast(`${completedNotes.length} notes moved to ${_notebook.title}`);
-
-            $scope.open_notebook()
+            //move notebook
+            if($scope.action_on_quick_notebook_item==$scope.CONST.MOVE)
+            {
+                $scope.move_selected_notes_to_notebook(_notebook)
+                return
+            }
+            //open notebook
+            if($scope.action_on_quick_notebook_item==$scope.CONST.OPEN)
+            {
+                $scope.open_notebook(_notebook)
+                $scope.close_all_dialogs()
+                return
+            }
 
         } catch (error) {
             console.log("Cannot bulk move completed notes", error);
@@ -823,7 +813,100 @@ function main_controller($scope, $timeout, db_service) {
         }
     };
 
+    $scope.handle_multi_select_action = (action_code) =>
+    {
+        //complete action
+        if($scope.CONST.COMPLETE == action_code)
+        {
+            $scope.note_multi_select_array.forEach((note,index)=>{
+                note.isTaskCompleted = true
+                note.isSelected = false
+            })
+            $scope.note_multi_select_array = []
+            $scope.save_data()
+            return;
+        }
+        //move action
+        if($scope.CONST.MOVE == action_code)
+        {
+            //show quick notebooks
+            $scope.dialog_flags.show_quick_notebooks = true;
+            return;
+        }
+        if($scope.CONST.MERGE == action_code)
+        {
+            try {
+                const mergedContent = $scope.note_multi_select_array.map(note => note.title).join("\n\n");
+                const mergedNote = new Task(mergedContent)
+                //remove notes
+                $scope.notes = $scope.notes.filter(note => !$scope.note_multi_select_array.includes(note));
+                $scope.notes.push(mergedNote)
+                $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
+                $scope.save_data();
+                $scope.show_toast("Notes merged");
+            } catch (error) {
+                console.error("Cannot merge completed notes", error);
+            }
+            return;
+        }
+        if($scope.CONST.REMOVE == action_code)
+        {
+            try {
+                //remove notes
+                $scope.notes = $scope.notes.filter(note => !$scope.note_multi_select_array.includes(note));
+                $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
+                $scope.save_data()
+                $scope.show_toast("Notes removed");
+            } catch (error) {
+                console.error(error);
+            }
+            return;
+        }
+    }
 
+    $scope.move_selected_notes_to_notebook = (_notebook)=>{
+        try {
+            //remove selected props
+            $scope.note_multi_select_array.forEach(note => note.isSelected = false);
+            //push notes to selected notebook
+            _notebook.taskArray.push(...$scope.note_multi_select_array);
+            //remove selected notes from current notebook
+            $scope.notes = $scope.notes.filter(note => !$scope.note_multi_select_array.includes(note));
+            $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes
+    
+            $scope.save_data();
+            $scope.close_all_dialogs();
+            $scope.show_toast(`${$scope.note_multi_select_array.length} notes moved to ${_notebook.title}`);
+            $scope.note_multi_select_array = []
+            $scope.is_note_multi_select_on = false
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    $scope.handle_tap_on_note_checkbox = (note)=>
+    {
+        if($scope.is_note_multi_select_on)
+        {
+            if(note.isSelected)
+            {
+                $scope.note_multi_select_array.push(note)
+            }
+            else
+            {
+                //remove note
+                const index = $scope.note_multi_select_array.indexOf(note);
+                if (index > -1) {
+                    $scope.note_multi_select_array.splice(index, 1);
+                }
+            }
+            console.log($scope.note_multi_select_array)
+        }else{
+            //when multi select is off 
+            // just complete notes
+            $scope.toggle_note_completed_state(note);
+        }
+    }
 
     $scope.toggle_note_completed_state = function (note) {
         if (note) {
@@ -874,13 +957,13 @@ function main_controller($scope, $timeout, db_service) {
 
 
     $scope.handle_click_on_notebook_title = () => {
-        if ($scope.current_notebook) {
+        try {
             //close all dialogs
             $scope.close_all_dialogs()
-            //show notebook options
-            $scope.dialog_flags.show_list_more_options = true
-            //update texts when opening more options 
-            $scope.init_notebook_more_options()
+            //open quick notebooks
+            $scope.dialog_flags.show_quick_notebooks = true
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -1250,11 +1333,19 @@ function main_controller($scope, $timeout, db_service) {
         }
     }
 
+
     //file menu items
-    $scope.init_file_menu_items = () => {
+    $scope.init_note_more_options = () => {
         try {
             $scope.is_trash_open = ($scope.current_notebook.title.toLowerCase() == "trash")
-            $scope.file_menu_items = [
+            $scope.note_more_options = [
+                {
+                    text: "Update note",
+                    icon: "edit",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => { $scope.open_update_task_popup() }
+                },
                 {
                     text: "Toggle complete",
                     icon: "radio_button_checked",
@@ -1266,18 +1357,22 @@ function main_controller($scope, $timeout, db_service) {
                         $scope.save_data();
                         $scope.close_all_dialogs();
                     }
+                },{
+                    text: "Select notes",
+                    icon: "check_box",
+                    class: "task-more-options-item",
+                    show: true,
+                    action: () => {
+                        $scope.is_note_multi_select_on = true
+                        $scope.show_note_complete_button = false
+                        $scope.close_all_dialogs();
+                    }
                 }, {
                     text: "Restore note",
                     icon: "restore_from_trash",
                     class: "task-more-options-item",
                     show: $scope.is_trash_open,
                     action: () => { $scope.restore_note() }
-                }, {
-                    text: "Update note",
-                    icon: "edit",
-                    class: "task-more-options-item",
-                    show: true,
-                    action: () => { $scope.open_update_task_popup() }
                 }, {
                     text: "Copy note",
                     icon: "file_copy",
@@ -1807,7 +1902,12 @@ function main_controller($scope, $timeout, db_service) {
             EXPORT: "export",
             VIEW_NOTEBOOK: "notebooks",
             VIEW_NOTE: "notes",
-            VIEW_SYSTEM: "system_vars"
+            VIEW_SYSTEM: "system_vars",
+            COMPLETE:1,
+            MOVE:2,
+            MERGE:3,
+            REMOVE:4,
+            OPEN:5,
         }
 
         //dialog flags
@@ -1850,6 +1950,9 @@ function main_controller($scope, $timeout, db_service) {
         $scope.current_list_symbol = "✅"
         $scope.list_symbols_array = ["✅", "⚠", "-", "*"]
         $scope.system_create_btn_title = "Create"
+        $scope.is_note_multi_select_on = false // to turn on off multi select
+        $scope.note_multi_select_array = [] // hold selected notes
+        $scope.action_on_quick_notebook_item = $scope.CONST.OPEN
 
 
 
@@ -1922,12 +2025,6 @@ function main_controller($scope, $timeout, db_service) {
 
         //more options when notebook or note is clicked
         $scope.init_notebook_more_options()
-        //$scope.init_file_menu_items()
-        // $scope.init_bottom_bar_menu()
-        // $scope.init_insert_menu_items()
-
-
-
     };
 }
 
