@@ -22,6 +22,10 @@
     color: var(--accent);
 }
 
+.light-gray{
+    color:#464646
+}
+
 
 .center {
     text-align: center;

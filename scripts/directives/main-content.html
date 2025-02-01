@@ -20,7 +20,7 @@
 
 
 <!-- notebooks -->
-<div ng-show="show_view=='notebook'">
+<div ng-show="show_view==CONST.VIEW_NOTEBOOK">
     <div class="spacer"></div>
     <h2 class="mt-2">Your notebooks</h2>
     <div class="notebook_count">
@@ -56,7 +56,7 @@
 
 
 <!-- notes -->
-<div ng-show="show_view=='note'">
+<div ng-show="show_view==CONST.VIEW_NOTE">
     <div class="spacer"></div>
     <!-- normal tasks -->
     <div class="notebook_age">
@@ -154,7 +154,7 @@
 </div>
 
  <!-- show system vars here -->
- <div ng-show="show_view=='system'">
+ <div ng-show="show_view==CONST.VIEW_SYSTEM">
     <div class="spacer"></div>
     <div class="notebook_age">
         <span class="material-symbols-outlined" style="font-size:20px;">schedule</span>&nbsp; {{notebook_age()}}
@@ -165,9 +165,13 @@
     
     <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
         <div class="system_var_item">
-            <span class="material-symbols-outlined icon-btn">calculate</span>
-            <div class="var_chip">{{key}} = {{evaluate_exp(value)}}</div>
-            <!-- <div class="var_chip">{{evaluate_exp(value)}}</div> -->
+            <div class="key">{{key}}</div>
+            <div class="flex-row space-between">
+                <div class="light-gray">Formula</div>
+                <div class="value">{{value}}</div>
+            </div>
+            <div class="light-gray">Evaluated expression</div>
+            <div class="evaluated_exp">{{evaluate_exp(value)}}</div>
         </div>
     </div>
 </div>

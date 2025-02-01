@@ -55,7 +55,7 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.current_notebook = notebook; // so that we can get age of system notebook
                 //show system vars
                 if (notebook.title.toLowerCase() == "system") {
-                    $scope.show_view = "system"
+                    $scope.show_view = $scope.CONST.VIEW_SYSTEM
                     console.log("opening notebook", notebook)
                     return
                 }
@@ -68,7 +68,7 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.is_note_selected = false;
                 $scope.show_edit_options = false;
                 $scope.selected_note = undefined
-                $scope.show_view = "note"
+                $scope.show_view = $scope.CONST.VIEW_NOTE
 
                 // to show icon on topbar
                 $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`
@@ -98,7 +98,7 @@ function main_controller($scope, $timeout, db_service) {
             vars = show list of user defined variables
         */
         $scope.show_view = view_name
-        if ($scope.show_view == 'notebook') {
+        if ($scope.show_view == $scope.CONST.VIEW_NOTEBOOK) {
             //reset icon and title
             $scope.pageTitle = $scope.defaultPageTitle
             $scope.pageIcon = $scope.default_app_icon
@@ -832,6 +832,7 @@ function main_controller($scope, $timeout, db_service) {
         {
             //show quick notebooks
             $scope.dialog_flags.show_quick_notebooks = true;
+            $scope.action_on_quick_notebook_item = $scope.CONST.MOVE;
             return;
         }
         // merge
@@ -873,6 +874,7 @@ function main_controller($scope, $timeout, db_service) {
         if($scope.CONST.CANCEL == action_code)
         {
             try {
+                $scope.note_multi_select_array.forEach(item=> item.isSelected=false)
                 $scope.note_multi_select_array = []
                 $scope.is_note_multi_select_on = false
             } catch (error) {
@@ -887,6 +889,14 @@ function main_controller($scope, $timeout, db_service) {
             $scope.note_multi_select_array.forEach(note => note.isSelected = false);
             //push notes to selected notebook
             _notebook.taskArray.push(...$scope.note_multi_select_array);
+            var destination_notebook_index = $scope.notebooks.indexOf(_notebook)
+            if(destination_notebook_index!=-1)
+                $scope.notebooks[destination_notebook_index] = _notebook
+
+            console.log(
+                $scope.notebooks[destination_notebook_index] = _notebook
+            )
+
             //remove selected notes from current notebook
             $scope.notes = $scope.notes.filter(note => !$scope.note_multi_select_array.includes(note));
             $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes
@@ -979,6 +989,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.close_all_dialogs()
             //open quick notebooks
             $scope.dialog_flags.show_quick_notebooks = true
+            $scope.action_on_quick_notebook_item = $scope.CONST.OPEN
         } catch (error) {
             console.log(error)
         }
@@ -1968,7 +1979,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.show_edit_options_system_vars = false //bottom bar note insert system vars
         $scope.show_note_complete_button = false // show hide complete button
         $scope.show_split_note_btns = false // split note sub menu btns
-        $scope.show_view = "notebook" //options can be notebooks, notes
+        $scope.show_view = $scope.CONST.VIEW_NOTEBOOK //options can be notebooks, notes
         $scope.bottom_bar_active_div = "null" //hide or show bottom bar create divs
         $scope.bottom_bar_active_menu = "null" //hide or show bottom bar menu options
         $scope.is_list_mode_on = false // if on on enter press a symbol is inserted at start of line
