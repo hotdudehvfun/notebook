@@ -41,7 +41,7 @@ app.directive("mainContent",function(){
     link:function(scope,element,attrs){
       //make notebook and notes sortable
       scope.init_sortable_list(".notebooks", "notebooks");
-      scope.init_sortable_list(".tasks", "notes");
+      scope.init_sortable_list(".notes", "notes");
     }
   }
 });

@@ -50,7 +50,12 @@
         </li>
     </ul>
     <!-- empty space at last -->
-    <div ng-show="notebooks.length!=0" style="height:100px" ng-click="dialog_flags.show_notebook_popup=true">
+    <div 
+        ng-show="notebooks.length!=0" 
+        style="height:100px" 
+        ng-click="dialog_flags.show_notebook_popup=true"
+        class="align-center flex-row justify-center create-note-text">
+        <span>Tap here to open new notebook</span>
     </div>
 </div>
 
@@ -70,7 +75,7 @@
     <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{notes.length}} tasks
     </div>
 
-    <ul ng-hide="is_notebook_locked()" class="tasks reset_ul">
+    <ul ng-hide="is_notebook_locked()" class="notes reset_ul">
         <li data-index="{{$index}}" ng-repeat="note in notes | filter:{isTaskCompleted:false}">
             <div class="task" ng-class="{completed: note.isTaskCompleted}">
                 <!-- multi select checkbox -->

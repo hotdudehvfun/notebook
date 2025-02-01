@@ -2063,5 +2063,3 @@ function main_controller($scope, $timeout, db_service) {
         $scope.init_notebook_more_options()
     };
 }
-
-
