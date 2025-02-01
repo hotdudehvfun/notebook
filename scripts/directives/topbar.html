@@ -21,6 +21,10 @@
    class="material-symbols-outlined">{{is_data_locked?'lock':'lock_open';}}
    </span> -->
 
-    <span style="z-index: 999;" class="material-symbols-outlined" ng-click="handle_click_on_more_vert()"
+    <span
+        ng-show="current_notebook"
+        style="z-index: 999;" 
+        class="material-symbols-outlined" 
+        ng-click="handle_click_on_more_vert()"
         ng-bind="nav_more_vert_icon()"></span>
 </div>

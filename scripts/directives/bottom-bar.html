@@ -158,12 +158,13 @@
 
      <!-- multi select options -->
       <div
-        ng-show="note_multi_select_array.length>0"
+        ng-show="is_note_multi_select_on"
         class="orange flex-row space-between p-1">
             <div ng-click="handle_multi_select_action(CONST.COMPLETE)">Complete</div>
             <div ng-click="handle_multi_select_action(CONST.MERGE)">Merge</div>
             <div ng-click="handle_multi_select_action(CONST.MOVE)">Move</div>
             <div ng-click="handle_multi_select_action(CONST.REMOVE)">Remove</div>
+            <div ng-click="handle_multi_select_action(CONST.CANCEL)">Cancel</div>
       </div>
     <!-- bottom button -->
     <div

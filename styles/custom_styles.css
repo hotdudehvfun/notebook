@@ -1,5 +1,6 @@
 /* formatting classes for notes */
-.yellow{
+.yellow
+{
     color:#f4b424;
 }
 .orange
@@ -20,6 +21,7 @@
 .blue {
     color: var(--accent);
 }
+
 
 .center {
     text-align: center;

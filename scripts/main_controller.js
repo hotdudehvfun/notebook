@@ -823,6 +823,7 @@ function main_controller($scope, $timeout, db_service) {
                 note.isSelected = false
             })
             $scope.note_multi_select_array = []
+            $scope.is_note_multi_select_on = false
             $scope.save_data()
             return;
         }
@@ -833,6 +834,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.dialog_flags.show_quick_notebooks = true;
             return;
         }
+        // merge
         if($scope.CONST.MERGE == action_code)
         {
             try {
@@ -844,11 +846,14 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
                 $scope.save_data();
                 $scope.show_toast("Notes merged");
+                $scope.note_multi_select_array = []
+                $scope.is_note_multi_select_on = false
             } catch (error) {
                 console.error("Cannot merge completed notes", error);
             }
             return;
         }
+        //remove action
         if($scope.CONST.REMOVE == action_code)
         {
             try {
@@ -857,10 +862,22 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
                 $scope.save_data()
                 $scope.show_toast("Notes removed");
+                $scope.note_multi_select_array = []
+                $scope.is_note_multi_select_on = false
             } catch (error) {
                 console.error(error);
             }
             return;
+        }
+        //cancel 
+        if($scope.CONST.CANCEL == action_code)
+        {
+            try {
+                $scope.note_multi_select_array = []
+                $scope.is_note_multi_select_on = false
+            } catch (error) {
+                console.error(error);
+            }
         }
     }
 
@@ -968,10 +985,11 @@ function main_controller($scope, $timeout, db_service) {
     }
 
     $scope.handle_click_on_more_vert = () => {
-        if ($scope.is_any_dialog_open()) {
+        if($scope.current_notebook)
+        {
             $scope.close_all_dialogs();
-        } else {
-            $scope.handle_click_on_notebook_title()
+            $scope.init_notebook_more_options()
+            $scope.dialog_flags.show_list_more_options = true
         }
     }
 
@@ -1881,6 +1899,12 @@ function main_controller($scope, $timeout, db_service) {
         $scope.bottom_bar_active_div = $scope.bottom_bar_active_div === divId ? "null" : divId;
         if (divId == 'note') {
             $scope.init_bottom_bar_menu()
+            //also focus on input
+            setTimeout(()=>{document.querySelector("#note_content").focus()},100)
+        }
+        if(divId == "notebook")
+        {
+            setTimeout(()=>{document.querySelector(".add-new-list-title").focus()},100)
         }
     }
 
@@ -1900,14 +1924,15 @@ function main_controller($scope, $timeout, db_service) {
         $scope.CONST = {
             IMPORT: "import",
             EXPORT: "export",
-            VIEW_NOTEBOOK: "notebooks",
-            VIEW_NOTE: "notes",
-            VIEW_SYSTEM: "system_vars",
+            VIEW_NOTEBOOK: "notebook",
+            VIEW_NOTE: "note",
+            VIEW_SYSTEM: "system_var",
             COMPLETE:1,
             MOVE:2,
             MERGE:3,
             REMOVE:4,
             OPEN:5,
+            CANCEL:6
         }
 
         //dialog flags
