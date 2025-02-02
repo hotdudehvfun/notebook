@@ -46,6 +46,9 @@
 .text-right {
     text-align: right;
 }
+.right{
+    text-align:right;
+}
 
 .bg-green {
     background-color: var(--green);
@@ -97,6 +100,7 @@ grid_title_bar {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
+    gap: .5rem;
 }
 
 .material-symbols-outlined {
@@ -150,4 +154,20 @@ grid_title_bar {
 
 .spacer {
     height: 4rem;
+}
+
+.text-sm {
+    font-size: 0.875rem; /* ~14px */
+}
+
+.text-md {
+    font-size: 1rem; /* ~16px (Base size) */
+}
+
+.text-lg {
+    font-size: 1.25rem; /* ~20px */
+}
+
+.text-xl {
+    font-size: 1.5rem; /* ~24px */
 }

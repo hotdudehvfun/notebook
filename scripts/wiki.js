@@ -106,7 +106,8 @@ function check_for_system_vars(value) {
 function format_currency(result) {
     let formattedResult = new Intl.NumberFormat('en-IN', {
         style: 'currency',
-        currency: 'INR'
+        currency: 'INR',
+        maximumFractionDigits:0
     }).format(result);
     return formattedResult;
 }
@@ -126,7 +127,7 @@ function handle_calculations(text) {
             let result = eval(expression);
 
             // If result is a floating-point number, round it to 1 decimal place
-            result = result % 1 === 0 ? result : result.toFixed(1);
+            result = result % 1 == 0 ? result : result.toFixed(1);
 
             // If ":c" flag is present, format the result as currency
             if (isCurrency) {
@@ -345,73 +346,94 @@ function update_chart_returns(_titles,_labels,_line1_points,_line2_points,_line3
 
 
 function handle_table_component(text) {
-    const lines = text.split('\n'); // Split the text by new lines
-    let headers = [];
-    let rows = [];
-    let sumCols = [];
-    let sumRow = [];
-
-    lines.forEach(line => {
-        line = line.trim();
-
-        // Check for the _sum_col option
-        if (line.startsWith('_sum_col')) {
-            const [, cols] = line.split('=');
-            sumCols = cols.split(',').map(col => parseInt(col.trim()) - 1); // Convert to zero-based indices
-        }
-
-        // Check for header row (||)
-        else if (line.startsWith('||')) {
-            headers = line.replace('||', '').split(',').map(cell => cell.trim());
-        }
-
-        // Check for regular row (|)
-        else if (line.startsWith('|')) {
-            const row = line.replace('|', '').split(',').map(cell => handle_calculations(cell.trim()));
-            rows.push(row);
-
-            // Keep track of sums for the columns specified in _sum_col
-            sumCols.forEach(col => {
-                sumRow[col] = (sumRow[col] || 0) + parseFloat(row[col] || 0);
+    try {
+        const lines = text.split('\n'); // Split the text by new lines
+        let headers = [];
+        let rows = [];
+        let sumCols = [];
+        let sumRow = [];
+    
+        lines.forEach(line => {
+            line = line.trim();
+    
+            // Check for the _sum_col option
+            if (line.startsWith('_sum_col')) {
+                const [, cols] = line.split('=');
+                sumCols = cols.split(',').map(col => parseInt(col.trim()) - 1); // Convert to zero-based indices
+            }
+    
+            // Check for header row (||)
+            else if (line.startsWith('||')) {
+                headers = line.replace('||', '').split(',').map(cell => cell.trim());
+            }
+    
+            // Check for regular row (|)
+            else if (line.startsWith('|')) {
+                const row = line.replace('|', '').split(',').map(cell => handle_calculations(cell.trim()));
+                rows.push(row);
+    
+                // Keep track of sums for the columns specified in _sum_col
+                sumCols.forEach(col => {
+                    sumRow[col] = (sumRow[col] || 0) + parseFloat(row[col] || 0);
+                });
+            }
+        });
+    
+        // Create the table element (or HTML string)
+        let tableHtml = '<table>';
+    
+        // Add header row
+        if (headers.length > 0) {
+            tableHtml += '<thead><tr>';
+            headers.forEach(header => {
+                tableHtml += `<th>${header}</th>`;
             });
+            tableHtml += '</tr></thead>';
         }
-    });
-
-    // Create the table element (or HTML string)
-    let tableHtml = '<table>';
-
-    // Add header row
-    if (headers.length > 0) {
-        tableHtml += '<thead><tr>';
-        headers.forEach(header => {
-            tableHtml += `<th>${header}</th>`;
+    
+        // Add body rows
+        tableHtml += '<tbody>';
+        rows.forEach(row => {
+            tableHtml += '<tr>';
+            row.forEach(cell => {
+                tableHtml += `<td>${cell}</td>`;
+            });
+            tableHtml += '</tr>';
         });
-        tableHtml += '</tr></thead>';
+    
+        // Add sum row if needed
+        if (sumCols.length > 0) {
+            tableHtml += '<tr>';
+            
+            // Find the first sum column index
+            const firstSumCol = Math.min(...sumCols);
+            
+            // Add a merged "Total" cell spanning all non-sum columns
+            if (firstSumCol > 0) {
+                tableHtml += `<td class="text-center" colspan="${firstSumCol}"><b>Total</b></td>`;
+            }
+
+            // Add sum values in their respective columns
+            for (let i = firstSumCol; i < headers.length; i++) {
+                if (sumCols.includes(i)) {
+                    tableHtml += `<td><b>${sumRow[i] !== undefined ? sumRow[i] : ''}</b></td>`;
+                } else {
+                    tableHtml += `<td></td>`; // Empty cell for non-sum columns
+                }
+            }
+
+            tableHtml += '</tr>';
+        }
+
+        tableHtml += '</tbody></table>';
+    
+        return tableHtml; // Return the generated table HTML
+    } catch (err) {
+        console.log(err);
+        return "INVALID EXPRESSION IN TABLE COMPONENT";
     }
-
-    // Add body rows
-    tableHtml += '<tbody>';
-    rows.forEach(row => {
-        tableHtml += '<tr>';
-        row.forEach(cell => {
-            tableHtml += `<td>${cell}</td>`;
-        });
-        tableHtml += '</tr>';
-    });
-
-    // Add sum row if needed
-    if (sumCols.length > 0) {
-        tableHtml += '<tr>';
-        for (var i = 0; i < sumRow.length; i++)
-            tableHtml += `<td>${sumRow[i] !== undefined ? sumRow[i] : 'Total'}</td>`;
-
-        tableHtml += '</tr>';
-    }
-
-    tableHtml += '</tbody></table>';
-
-    return tableHtml; // Return the generated table HTML
 }
+
 
 function circum(r)
 {

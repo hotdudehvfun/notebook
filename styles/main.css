@@ -25,7 +25,7 @@
     --green: #4cd964;
     --task-complete-color: #222;
     --table-bg: whitesmoke;
-    --progress-height: 16px;
+    --progress-height: 12px;
     --color-btn-background: #f5f5f5;
     --highlight-color: white;
     --highlight-bg: var(--accent);
@@ -567,7 +567,7 @@ div#list-more-options-container {
     overflow: hidden;
     height: var(--progress-height);
     position: relative;
-    margin: 0.5rem 1rem;
+    /* margin: 0.5rem 1rem; */
 }
 
 .progress-bar {
@@ -657,7 +657,7 @@ div#list-more-options-container {
 }
 
 h1, h2, h3, h4, h5 {
-    margin: 0.25rem;
+    margin: 0;
     text-transform: capitalize;
 }
 
@@ -1256,8 +1256,9 @@ input#fileInput::-webkit-file-upload-button {
 }
 
 .line {
-    height: 2px;
+    height: 4px;
     background: var(--theme_button_border);
+    margin: .5rem 0rem;
 }
 
 .back_circle {
@@ -1390,4 +1391,10 @@ select {
     display:flex;
     gap: .75rem;
     padding: 0rem 0.5rem;
+}
+.money {
+    font-family:"Doto";
+    font-weight: 600;
+    shape-rendering: geometricprecision;
+    color: #49dc6b;
 }

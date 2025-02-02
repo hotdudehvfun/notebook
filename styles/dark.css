@@ -27,7 +27,8 @@
     }
 
     thead tr {
-        background: linear-gradient(90deg, #ff4967, #f3217a);
+        /* background: linear-gradient(90deg, #ff4967, #f3217a); */
+        background: #161616 !important;!i;!;
     }
 
     th {
