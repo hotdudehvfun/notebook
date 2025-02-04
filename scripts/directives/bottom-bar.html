@@ -1,6 +1,9 @@
 <div class="flex-col">
     <!-- create note layout -->
-    <div ng-show="bottom_bar_active_div=='note'" class="flex-col p-1/2 gap-1 shadow">
+    <div
+        ng-show="bottom_bar_active_div=='note'" 
+        style="border: 1px solid var(--theme_button_border);"
+        class="flex-col p-1/2 gap-1 shadow drawer-rounded px-1 py-1/2">
         <!-- note buttons -->
         <div class="flex-row gap-1 space-between">
             <div 
@@ -92,7 +95,30 @@
 
 
     <!-- system var layout -->
-     <div ng-show="bottom_bar_active_div=='system'" class="flex-col p-1/2 gap-1">
+     <div
+        style="border: 1px solid var(--theme_button_border);" 
+        ng-show="bottom_bar_active_div=='system'" 
+        class="flex-col p-1/2 gap-1 drawer-rounded">
+        <!-- action button -->
+        <div class="flex-row gap-1 space-between">
+            <div 
+                ng-click="bottom_bar_active_div='null'; clear_system_input_vars()"
+                class="button rounded-full gap-1">
+                <!-- <span class="material-symbols-outlined button-icon">cancel</span> -->
+                <span>Close</span>
+            </div>
+            <div ng-click="create_system_var();" class="button rounded-full gap-1">
+                <!-- <span class="material-symbols-outlined button-icon">add</span> -->
+                <span>{{system_create_btn_title}}</span>
+            </div>
+            <div 
+                ng-if="show_delete_system_var_button"
+                ng-click="bottom_bar_active_div='null'; delete_system_var();" class="button rounded-full gap-1">
+                <!-- <span class="material-symbols-outlined button-icon">delete</span> -->
+                <span>delete</span>
+            </div>
+        </div>
+
         <!-- title -->
         <div class="botom_bar_title orange">
             <span class="material-symbols-outlined button-icon">keyboard_command_key</span>
@@ -120,25 +146,7 @@
                     placeholder="Variable value"/>
             </div>
             
-            <div class="flex-row gap-1 space-between">
-                <div 
-                    ng-click="bottom_bar_active_div='null'; clear_system_input_vars()"
-                    class="button rounded-full gap-1">
-                    <span class="material-symbols-outlined button-icon">cancel</span>
-                    <span>Close</span>
-                </div>
-                <div ng-click="create_system_var();" class="button rounded-full gap-1">
-                    <span class="material-symbols-outlined button-icon">add</span>
-                    <span>{{system_create_btn_title}}</span>
-                </div>
-                <div 
-                    ng-if="show_delete_system_var_button"
-                    ng-click="bottom_bar_active_div='null'; delete_system_var();" class="button rounded-full gap-1">
-                    <span class="material-symbols-outlined button-icon">delete</span>
-                    <span>delete</span>
-                </div>
-                
-            </div>
+            
     </div>
      </div>
 

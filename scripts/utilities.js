@@ -412,6 +412,8 @@ let touch = {
     threshold: 50,
   }
 }
+
+
 document.addEventListener("DOMContentLoaded", () => {
   // Detect when the user starts touching
   document.body.addEventListener('touchstart', (event) => {
@@ -424,6 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
     touch.x.end = event.changedTouches[0].clientX; // Record the ending X position
     handleSwipe();
   }, false);
+
 
 })
 

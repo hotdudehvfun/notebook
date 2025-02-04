@@ -39,7 +39,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
@@ -60,10 +62,7 @@
     <side-bar class="sidebar-menu-container" ng-style="sidebar_left"></side-bar>
 
     <!-- create-notebook-popup -->
-    <create-notebook-popup
-        style="bottom: 38vh;top: initial;" 
-        class="popup" 
-        ng-show="dialog_flags.show_notebook_popup">
+    <create-notebook-popup style="bottom: 0px;" class="popup" ng-show="dialog_flags.show_notebook_popup">
     </create-notebook-popup>
 
 
@@ -84,7 +83,8 @@
 
 
     <!-- rename notebook dialog pop up-->
-    <popup-rename-notebook ng-show="dialog_flags.show_rename_notebook_popup" class="popup visible_pop_animation"></popup-rename-notebook>
+    <popup-rename-notebook ng-show="dialog_flags.show_rename_notebook_popup"
+        class="popup visible_pop_animation"></popup-rename-notebook>
 
     <!-- import popup -->
     <div class="popup visible_pop_animation" ng-show="dialog_flags.show_db_popup">
@@ -218,6 +218,17 @@
     <!-- passwrord popup -->
     <popup-password ng-show="dialog_flags.show_password_popup" class="popup visible_pop_animation"></popup-password>
 
+
+    <div class="splash-screen">
+        Loading...
+    </div>
+    <script>
+
+        window.onload = () => {
+            //splash screen
+            document.querySelector(".splash-screen").style.display = "none"
+        }
+    </script>
     <!-- <script type="text/javascript" src="app.js"></script> -->
     <!-- <script type="text/javascript" src="scripts/directive_file_change.js"></script> -->
     <script type="text/javascript" src="scripts/directive_create_note_layout.js"></script>
