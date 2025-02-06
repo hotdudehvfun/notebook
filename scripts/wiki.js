@@ -608,7 +608,7 @@ function parseWikiTextToHTML(wikiText) {
             else {
                 // Handle regular text
                 if (line.length > 0) {
-                    html += `<div>${line}</div>`;
+                    html += `<div class='plain-text'>${line}</div>`;
                     // console.log(html)
                 }
             }

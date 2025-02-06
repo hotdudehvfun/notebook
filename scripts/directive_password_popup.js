@@ -14,7 +14,8 @@ function directive_password_popup()
              <input
                 name="password"
                 type="password"
-                class="add-new-list-title rounded-2"
+                id="password"
+                class="add-new-list-title"
                 ng-model="password" 
                 placeholder="Enter the password"></input>
             <div class="flex-row space-between m-2">
@@ -22,12 +23,14 @@ function directive_password_popup()
                 <span 
                     ng-hide="is_notebook_locked()" 
                     ng-click="lock_data()" 
-                    class="button">Lock Data
+                    ng-class="{'orange':password.length>0}"
+                    class="button not-active transition">Lock Data
                 </span>
                 <span 
                     ng-show="is_notebook_locked()" 
                     ng-click="unlock_data()" 
-                    class="button">Unlock Data
+                    ng-class="{'orange':password.length>0}"
+                    class="button not-active transition">Unlock Data
                 </span>
             </div>
          </div>

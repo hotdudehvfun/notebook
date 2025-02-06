@@ -68,26 +68,15 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <!-- rename notebook dialog pop up-->
-    <popup-rename-notebook ng-show="dialog_flags.show_rename_notebook_popup"
-        class="popup visible_pop_animation"></popup-rename-notebook>
+    <popup-rename-notebook 
+        style="bottom: 30vh;" 
+        ng-show="dialog_flags.show_rename_notebook_popup"
+        class="popup">
+    </popup-rename-notebook>
 
     <!-- import popup -->
-    <div class="popup visible_pop_animation" ng-show="dialog_flags.show_db_popup">
+    <div style="top: 20vh;" class="popup " ng-show="dialog_flags.show_db_popup">
         <div class="new_task_popup_child">
             <div class="flex-row align-center gap-1 m-2">
                 <span class="material-symbols-outlined list-icon">database</span>
@@ -162,7 +151,7 @@
 
     <!-- more options panel for note-->
     <div id="list-more-options-container" ng-show="dialog_flags.show_note_more_options">
-        <div class="list-more-optionas-holder visible_pop_animation">
+        <div class="list-more-optionas-holder ">
             <div ng-repeat="option in note_more_options" ng-class="option.class" ng-click="option.action()"
                 ng-show="option.show">
                 <span class="material-symbols-outlined">{{option.icon}}</span>
@@ -175,7 +164,7 @@
 
     <!-- more options panel for notebook-->
     <div id="list-more-options-container" ng-show="dialog_flags.show_list_more_options">
-        <div class="list-more-optionas-holder visible_pop_animation">
+        <div class="list-more-optionas-holder ">
             <div ng-repeat="option in notebook_more_options" ng-class="option.class" ng-click="option.action()"
                 ng-show="option.show">
                 <span class="material-symbols-outlined">{{option.icon}}</span>
@@ -187,7 +176,7 @@
 
     <!-- notebooks list for various options -->
     <div id="list-more-options-container" ng-show="dialog_flags.show_quick_notebooks">
-        <div class="list-more-optionas-holder visible_pop_animation">
+        <div class="list-more-optionas-holder ">
             <div ng-repeat="notebook in notebooks" ng-click="handle_tap_on_quick_notebooks_item(notebook)"
                 class="task-more-options-item">
                 <span class="material-symbols-outlined">{{get_notebook_icon(notebook)}}</span>
@@ -206,7 +195,7 @@
 
     <!-- taskMoreOptiosContainer -->
     <!-- <div class="taskMoreOptionsConatiner" ng-show="dialog_flags.show_task_more_options">
-        <div class="task-more-options-holder visible_pop_animation">
+        <div class="task-more-options-holder ">
             <div ng-repeat="option in note_more_options" class="task-more-options-item" ng-show="option.show"
                 ng-click="option.action()">
                 <span class="material-symbols-outlined ">{{option.icon}}</span>
@@ -216,7 +205,10 @@
     </div> -->
 
     <!-- passwrord popup -->
-    <popup-password ng-show="dialog_flags.show_password_popup" class="popup visible_pop_animation"></popup-password>
+    <popup-password
+        style="bottom: 30vh;" 
+        ng-show="dialog_flags.show_password_popup;" 
+        class="popup"></popup-password>
 
 
     <div class="splash-screen">

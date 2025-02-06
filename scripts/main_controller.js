@@ -397,9 +397,10 @@ function main_controller($scope, $timeout, db_service) {
     $scope.lock_data = () => {
         try {
             if ($scope.is_notebook_locked()) {
-                alert("Notebook is already locked")
+                $scope.show_toast("Notebook is already locked")
                 return "";
             }
+
             if ($scope.password.length == 0) {
                 $scope.show_toast("Password is required to lock notebook")
                 return "";
@@ -1220,8 +1221,13 @@ function main_controller($scope, $timeout, db_service) {
 
 
     $scope.handle_rename_notebook = () => {
-        $scope.close_all_dialogs()
-        $scope.dialog_flags.show_rename_notebook_popup = true
+        try {
+            $scope.close_all_dialogs()
+            $scope.dialog_flags.show_rename_notebook_popup = true
+            $scope.focus_input("#rename-notebook")
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     $scope.rename_notebook = () => {
@@ -1299,7 +1305,11 @@ function main_controller($scope, $timeout, db_service) {
                     icon: "password",
                     class: "task-more-options-item",
                     show: true,
-                    action: () => { $scope.dialog_flags.show_password_popup = true }
+                    action: () => { 
+                        $scope.close_all_dialogs();
+                        $scope.dialog_flags.show_password_popup = true; 
+                        $scope.focus_input("#password")
+                    }
                 }, {
                     text: "Paste Task",
                     icon: "content_paste",
@@ -1910,12 +1920,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.bottom_bar_active_div = $scope.bottom_bar_active_div === divId ? "null" : divId;
         if (divId == 'note') {
             $scope.init_bottom_bar_menu()
-            //also focus on input
-            setTimeout(()=>{document.querySelector("#note_content").focus()},100)
-        }
-        if(divId == "notebook")
-        {
-            setTimeout(()=>{document.querySelector(".add-new-list-title").focus()},100)
+            $scope.focus_input("#note_content")
         }
     }
 
@@ -1928,6 +1933,12 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.has_notebook = (notebook_name) => {
         return $scope.notebooks.find(notebook => notebook.title.toLowerCase() === notebook_name.toLowerCase())
+    }
+
+    $scope.focus_input = (selector)=>{
+        $timeout(function() {
+            document.querySelector(selector)?.focus();
+        }, 0);
     }
 
     $scope.init = () => {

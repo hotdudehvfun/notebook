@@ -16,11 +16,14 @@
                 ng-class="{'orange':note_content.length>0}" 
                 ng-hide="show_update_task_button" 
                 ng-click="create_note()" 
-                class="button rounded-full gap-1 not-active">
+                class="button rounded-full gap-1 not-active transition">
                 <!-- <span class="material-symbols-outlined button-icon">add</span> -->
                 <span>Done</span>
             </div>
-            <div ng-show="show_update_task_button" ng-click="update_note()" class="button rounded-full gap-1 orange">
+            <div 
+                ng-show="show_update_task_button" 
+                ng-click="update_note()" 
+                class="button rounded-full gap-1 orange">
                 <!-- <span class="material-symbols-outlined button-icon">edit_square</span> -->
                 <span>Done</span>
             </div>
@@ -85,12 +88,6 @@
             </div>        
         </div>
     </div>
-
-
-
-
-
-
 
 
 
@@ -181,7 +178,7 @@
         <!-- create notebook button -->
         <div 
             ng-class="{'bg-red-pink': bottom_bar_active_div=='notebook'} "
-            ng-click="dialog_flags.show_notebook_popup=true" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            ng-click="dialog_flags.show_notebook_popup=true; focus_input('.add-new-list-title')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
             <span class="material-symbols-outlined button-icon-l;">auto_stories</span>
             <!-- <span>Notebook</span> -->
         </div>

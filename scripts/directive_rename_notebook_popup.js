@@ -11,7 +11,8 @@ function directive_rename_notebook_popup() {
             </div>
              <input
                 type="text"
-                name="notebook_name" 
+                name="notebook_name"
+                id="rename-notebook"
                 class="add-new-list-title"
                 ng-model="new_list_name" 
                 ng-attr-placeholder="Enter new name"
@@ -19,7 +20,10 @@ function directive_rename_notebook_popup() {
                 autofocus/>
                     <div class="flex-row space-between m-2">
                         <span ng-click="dialog_flags.show_rename_notebook_popup=false;new_list_name=''; " class="button text-red-500">Cancel</span>
-                        <span ng-click="rename_notebook()" class="button">Rename</span>                
+                        <span
+                            ng-class="{'orange':new_list_name.length>=2}" 
+                            ng-click="rename_notebook()" 
+                            class="button not-active transition">Rename</span>                
                     </div>
          </div>
             </div>
