@@ -1970,7 +1970,7 @@ function main_controller($scope, $timeout, db_service) {
                     groups['Older'][month_year].push(notebook);
                 }
             });
-            console.log(groups)
+            // console.log(groups)
             return groups;
         } catch (err) {
             console.log(err)

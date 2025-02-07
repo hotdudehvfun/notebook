@@ -570,7 +570,7 @@ div#list-more-options-container {
     overflow: hidden;
     height: var(--progress-height);
     position: relative;
-    /* margin: 0.5rem 1rem; */
+    margin: 0.5rem 1rem;
 }
 
 .progress-bar {
@@ -1406,6 +1406,8 @@ select {
     padding: 1rem 1rem;
     z-index: 999;
     border: 1px solid var(--theme_button_border);
+    width: 80%;
+    max-width: 600px;
 }
 
 .drawer-rounded
