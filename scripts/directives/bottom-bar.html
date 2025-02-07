@@ -2,8 +2,8 @@
     <!-- create note layout -->
     <div
         ng-show="bottom_bar_active_div=='note'" 
-        style="border: 1px solid var(--theme_button_border);"
-        class="flex-col p-1/2 gap-1 shadow drawer-rounded px-1 py-1/2">
+        style="border: 1px solid var(--theme_button_border); height: 80vh;"
+        class="flex-col gap-1 shadow drawer-rounded px-1 py-1/2">
         <!-- note buttons -->
         <div class="flex-row gap-1 space-between">
             <div 
@@ -49,7 +49,6 @@
             <!-- <span class="material-symbols-outlined button-icon">description</span> -->
             <textarea
                 autocomplete="off"
-                ng-style="{'height':note_textarea_container_height+'px'}"
                 ng-model="note_content"
                 ng-keyup="handle_keypress_note_input($event)"
                 id="note_content"

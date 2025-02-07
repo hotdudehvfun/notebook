@@ -214,7 +214,7 @@ ul.notebooks li:last-child > .list-panel-item
 }
 
 .task li {
-    margin: 0.5rem 2.8rem;
+    margin: 0.5rem 2rem;
     list-style: disc;
 }
 
@@ -291,13 +291,8 @@ ul.notebooks li:last-child > .list-panel-item
     resize: none;
     height: 100%;
     background: none;
-    /* margin: 0.5rem 1rem; */
-    /* border-radius: 8px; */
-    /* border: 1px solid; */
-    border: solid;
-    border-width: 0px 0px 1px 0px;
-    border-radius: 0px;
     font-family: monospace;
+    border: none;
 }
 
 .new-task-content:focus {
@@ -1121,12 +1116,9 @@ input:checked + label.toggle_label > span.toggle_span {
 }
 
 .note_textarea_container {
-    min-height: fit-content;
     display: flex;
-    /* border: solid; */
-    /* border-width: 0px 0px 1px 0px; */
     align-items: center;
-    /* height: 200px; */
+    height: 100%;
     width: -webkit-fill-available;
     padding: 0.5rem 0.25rem;
 }
@@ -1406,8 +1398,8 @@ select {
     padding: 1rem 1rem;
     z-index: 999;
     border: 1px solid var(--theme_button_border);
-    width: 80%;
-    max-width: 600px;
+    width: 90%;
+    max-width: 512px;
 }
 
 .drawer-rounded
