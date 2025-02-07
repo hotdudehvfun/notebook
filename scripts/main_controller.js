@@ -1941,6 +1941,44 @@ function main_controller($scope, $timeout, db_service) {
         }, 0);
     }
 
+    $scope.get_grouped_notebooks = function () {
+        try {
+            let today = new Date();
+            let notebooks = $scope.notebooks;
+            let groups = {
+                'Recently Created': [],
+                'This Month': [],
+                'Older': {}
+            };
+        
+            notebooks.forEach(notebook => {
+                let created_date = new Date(notebook.dateCreated);
+                let diff_days = Math.floor((today - created_date) / (1000 * 60 * 60 * 24));
+        
+                if (diff_days <= 7) {
+                    groups['Recently Created'].push(notebook);
+                } else if (
+                    created_date.getFullYear() === today.getFullYear() &&
+                    created_date.getMonth() === today.getMonth()
+                ) {
+                    groups['This Month'].push(notebook);
+                } else {
+                    let month_year = created_date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                    if (!groups['Older'][month_year]) {
+                        groups['Older'][month_year] = [];
+                    }
+                    groups['Older'][month_year].push(notebook);
+                }
+            });
+            console.log(groups)
+            return groups;
+        } catch (err) {
+            console.log(err)
+        }
+        return [];
+    };
+    
+
     $scope.init = () => {
         //CONST values
         $scope.CONST = {
@@ -2068,6 +2106,8 @@ function main_controller($scope, $timeout, db_service) {
         $scope.notebooks = [];
         $scope.notes = [];
         $scope.read_data();
+        $scope.grouped_notebooks = $scope.get_grouped_notebooks()
+
 
 
         //more options when notebook or note is clicked

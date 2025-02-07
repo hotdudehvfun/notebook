@@ -26,29 +26,48 @@
     <div class="notebook_count">
         {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
     </div>
-    <ul class="notebooks reset_ul">
-        <li 
-            ng-click="open_notebook(value)" 
-            ng-repeat="(key, value) in notebooks" 
-            class="notebooks_li">
-            <div class="list-panel-item">
-                <div class="list-panel-item-title">
-                    <!-- show when selected -->
-                    <span ng-show="select_notebooks" class="material-symbols-outlined notebook_icon"
-                        ng-bind="notebook_selected_state(key)"></span>
-                    <!-- notebook icon -->
-                    <span class="material-symbols-outlined icon-btn orange" ng-bind="get_notebook_icon(value)"
-                        ng-hide="select_notebooks"></span>
-
-                    <article class="selected" ng-bind="value.title"></article>
-
-                    <span class="list-sub-text" ng-bind="get_notebook_info(value)"></span>
-
-                    <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
+    <!-- notebooks list -->
+    <div ng-repeat="(group, items) in grouped_notebooks">
+        <div class="group_by_text" ng-show="items.length>0">{{ group }}</div>
+        <ul ng-show="items.length>0" class="reset_ul notebooks">
+            <li 
+                class="notebooks_li"
+                ng-repeat="notebook in items"
+                ng-click="open_notebook(notebook)" 
+                >
+                 <div class="list-panel-item">
+                    <div class="list-panel-item-title">
+                        <!-- notebook icon -->
+                        <span class="material-symbols-outlined icon-btn orange">{{get_notebook_icon(notebook)}}</span>
+                        <article class="selected">{{notebook.title}}</article>
+                        <span class="list-sub-text">{{get_notebook_info(notebook)}}</span>
+                        <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
+                    </div>
                 </div>
-            </div>
-        </li>
-    </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <div ng-repeat="(month, items) in grouped_notebooks['Older']">
+        <div class="group_by_text" ng-show="items.length>0">{{ month }}</div>
+        <ul class="reset_ul notebooks">
+            <li 
+                class="notebooks_li"
+                ng-repeat="notebook in items"
+                ng-click="open_notebook(notebook)">
+                <div class="list-panel-item">
+                    <div class="list-panel-item-title">
+                        <!-- notebook icon -->
+                        <span class="material-symbols-outlined icon-btn orange">{{get_notebook_icon(notebook)}}</span>
+                        <article class="selected">{{notebook.title}}</article>
+                        <span class="list-sub-text">{{get_notebook_info(notebook)}}</span>
+                        <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    
     <!-- empty space at last -->
     <div 
         ng-show="notebooks.length!=0" 
