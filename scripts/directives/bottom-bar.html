@@ -30,24 +30,79 @@
         </div>
 
         <!-- menu buttons -->
-        <div class="flex-row gap-1 scroll-y w-full">
+        <div class="flex-row gap-1 scroll-y w-full p-bottom-1.5">
+            <!-- insert menu select button -->
+            <div 
+                class="border flex-row relative rounded-1 text-small" 
+                style="font-size: 0.8rem;flex: 0 0 80px;">
+                <label for="submenu_item_select_insert" class="submenu_item_select_label">
+                    <span class="material-symbols-outlined textmd">draw</span>
+                    <span>Insert</span>
+                </label>
+                <select 
+                    name="submenu_item_select_insert" 
+                    id="submenu_item_select_insert"
+                    ng-change="handle_select_menu_change()"
+                    ng-click="handle_insert_menu_click()"
+                    ng-model="bottom_bar_sub_menu_selected_item"
+                    class="bottom-bar-menu-select">
+                    <option  ng-repeat="item in insert_menu_items" ng-value="item">{{item.text}}</option>
+                </select>
+            </div>
+
+             <!-- component menu select button -->
+             <div 
+             class="border flex-row relative rounded-1 text-small" 
+             style="font-size: 0.8rem;flex: 0 0 80px;">
+                <label for="submenu_item_select_component" class="submenu_item_select_label">
+                    <span class="material-symbols-outlined textmd">format_color_text</span>
+                    <span>Edit</span>
+                </label>
+                <select 
+                    name="submenu_item_select_component" 
+                    id="submenu_item_select_component"
+                    ng-change="handle_select_menu_change()"
+                    ng-model="bottom_bar_sub_menu_selected_item"
+                    class="bottom-bar-menu-select">
+                    <option  ng-repeat="item in component_menu_items" ng-value="item">{{item.text}}</option>
+                </select>
+            </div>
+            
+            <!-- system vars menu select button -->
+             <div 
+             class="border flex-row relative rounded-1 text-small" 
+             style="font-size: 0.8rem;flex: 0 0 110px;">
+                <label for="submenu_item_select_system" class="submenu_item_select_label">
+                    <span class="material-symbols-outlined textmd">deployed_code</span>
+                    <span>System vars</span>
+                </label>
+                <select 
+                    name="submenu_item_select_system" 
+                    id="submenu_item_select_system"
+                    ng-change="handle_select_system_menu_change()"
+                    ng-model="bottom_bar_sub_menu_selected_item"
+                    class="bottom-bar-menu-select">
+                    <option  ng-repeat="(key,value) in get_system_vars()" ng-value="key">{{key}}</option>
+                </select>
+            </div>
+
             <div
                 ng-repeat="item in bottom_bar_menu"
                 ng-show="true"
                 ng-class="{'chip2-selected': bottom_bar_active_menu==item.text}" 
                 ng-click="item.action(item)" 
                 class="chip2">
-                <span class="material-symbols-outlined">{{item.icon}}</span>
-                <!-- <span>{{item.text}}</span> -->
+                <span class="material-symbols-outlined textmd">{{item.icon}}</span>
+                <span class="w-max-content">{{item.text}}</span>
             </div>
         </div>
 
-        
-    
         <!-- note input -->
         <div class="note_textarea_container gap-1">
             <!-- <span class="material-symbols-outlined button-icon">description</span> -->
+             <!-- hide note content when chart dialog is visible-->
             <textarea
+                ng-hide="new_chart.show"
                 autocomplete="off"
                 ng-model="note_content"
                 ng-keyup="handle_keypress_note_input($event)"
@@ -56,38 +111,69 @@
                 placeholder={{note_content_placeholder}}
                 autofocus>
             </textarea>
-        </div>
-
-        <!-- bottom bar sub menu items -->
-        <div class="flex-row gap-1 w-full wrap scroll" style="max-height: 200px;">
-            <div
-                ng-repeat="submenu_item in current_bottom_bar_active_menu"
-                class="chip mx-1" 
-                ng-show="submenu_item.show"
-                ng-click="submenu_item.action()">
-                <span class="material-symbols-outlined">{{submenu_item.icon}}</span>
-                <span>{{submenu_item.text}}</span>
+            
+            <!-- chart dialog -->
+            <div class="flex-col gap-2" ng-show="new_chart.show">
+                <!-- chart title -->
+                <input 
+                    ng-model="new_chart.title" 
+                    class="text-input" 
+                    type="text" 
+                    max="20" 
+                    placeholder="Chart Title"/>
+                <!-- chart type -->
+                <div class="orange">Type</div>
+                <div class="flex-row gap-1">
+                    <div 
+                        ng-click="new_chart.type = 'line'"
+                        ng-class="{'grayscale':new_chart.type!='line'}"
+                        class="align-center flex-row gap-2 p-125 rounded">
+                        <span class="material-symbols-outlined list-icon">timeline</span>
+                        <span>Line Chart</span>
+                    </div> 
+                    <div 
+                        ng-click="new_chart.type = 'bar'"
+                        ng-class="{'grayscale':new_chart.type!='bar'}"
+                        class="align-center flex-row gap-2 p-125 rounded">
+                        <span class="material-symbols-outlined list-icon">bar_chart</span>
+                        <span>Bar Chart</span>
+                    </div>
+                </div>
+                <!-- chart theme color -->
+                <div class="orange">Theme</div>
+                <div class="flex-row gap-1 w-full">
+                    <label class="create-chart-theme-wrapper" ng-repeat="(key,value) in get_chart_colors()">
+                        <input
+                            ng-hide="true" 
+                            style="accent-color: {{value}}; transform:scale(1.2); opacity: 0;" 
+                            name="chart_theme" 
+                            type="radio" 
+                            ng-model="new_chart.theme" 
+                            ng-value="key">
+                        <span 
+                        class="custom-radio"
+                        style="border-color:{{value}};background-color:{{get_transparent_color(value,0.5)}};"></span>
+                    </label>
+                </div>
+                <div class="flex-row space-between">
+                    <div class="orange">X axis labels</div>
+                    <div class="orange">Y axis values</div>
+                </div>
+                <div class="flex-row space-between">
+                    <textarea ng-model="new_chart.x_labels" style="height: 200px;" class="border new-task-content rounded-1"></textarea>
+                    <textarea ng-model="new_chart.y_values" style="height: 200px;" class="border new-task-content rounded-1"></textarea>
+                </div>
+                <div class="flex-row space-between">
+                    <div ng-click="reset_new_chart_and_close()" class="button rounded-full gap-1 orange">
+                        <span>Cancel</span>
+                    </div>
+                <div ng-click="new_chart_convert_ui_to_code()" class="button rounded-full gap-1 orange">
+                    <span>Done</span>
+                    </div>
+                </div>
             </div>
-
-            <!-- show component options -->
-            <div
-                ng-if="show_component_options" 
-                class="chip">
-                <span>{{get_component_details()}}</span>
-            </div>
-
-            <!-- show system vars options -->
-            <div
-                ng-if="show_edit_options_system_vars"
-                class="chip"
-                ng-repeat="(key,value) in get_system_vars()"
-                ng-click="insertTextAtCursor('note_content',key)">
-                    <span>{{key}}</span>
-                    <span>{{option.title}}</span>
-            </div>        
         </div>
     </div>
-
 
 
     <!-- system var layout -->
@@ -147,19 +233,6 @@
      </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
      <!-- multi select options -->
       <div
         ng-show="is_note_multi_select_on"
@@ -170,6 +243,7 @@
             <div ng-click="handle_multi_select_action(CONST.REMOVE)">Remove</div>
             <div ng-click="handle_multi_select_action(CONST.CANCEL)">Cancel</div>
       </div>
+
     <!-- bottom button -->
     <div
         ng-show="bottom_bar_active_div=='null'" 
@@ -177,29 +251,34 @@
         <!-- create notebook button -->
         <div 
             ng-class="{'bg-red-pink': bottom_bar_active_div=='notebook'} "
-            ng-click="dialog_flags.show_notebook_popup=true; focus_input('.add-new-list-title')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            ng-click="dialog_flags.show_notebook_popup=true; focus_input('.add-new-list-title')" 
+            class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
             <span class="material-symbols-outlined button-icon-l;">auto_stories</span>
             <!-- <span>Notebook</span> -->
         </div>
         <!-- create note button -->
         <div 
             ng-class="{'bg-red-pink':bottom_bar_active_div=='note'}"
-            ng-click="toggle_bottom_bar_div('note')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            ng-click="toggle_bottom_bar_div('note')" 
+            class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
             <span class="material-symbols-outlined button-icon-l;">stylus_note</span>
             <!-- <span>Note</span> -->
         </div>
         <!-- system var button -->
         <div 
             ng-class="{'bg-red-pink':bottom_bar_active_div=='system'}"
-            ng-click="toggle_bottom_bar_div('system')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+            ng-click="toggle_bottom_bar_div('system')" 
+            class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
             <span class="material-symbols-outlined button-icon-l;">keyboard_command_key</span>
             <!-- <span>System</span> -->
         </div>
         <!-- view notebooks button -->
-        <div ng-hide="show_view=='notebook'" ng-click="set_view('notebook')" class="button rounded-full gap-1 icon-btn-padding  col-reverse">
+        <div 
+            ng-hide="show_view=='notebook'" 
+            ng-click="set_view('notebook')" 
+            class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
             <span class="material-symbols-outlined button-icon-l;">arrow_back</span>
             <!-- <span>Back</span> -->
         </div>
     </div>
-
 </div>

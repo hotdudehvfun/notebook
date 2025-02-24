@@ -1,5 +1,6 @@
 
 
+
 // if no data is found create demo files
 function setupDemoList() {
     //demo list
@@ -210,39 +211,36 @@ function handle_charts(text) {
     const type = lines[1].trim()
     const title = lines[2].trim()
     const id = lines[3].trim()
+    let theme = "red"
+    if(id.indexOf("#")!=-1)
+        theme = id.split("#")[1]
+
     const labels = lines[4].split(",")
     const values = lines[5].split(',').map(v => handle_calculations(v.trim()));
+    
     setTimeout(() => {
-        update_chart(labels, values, id, type, title)
+        update_chart(labels, values, id, type, title,theme)
     }, 50)
     return `<canvas style="width:100%" id="${id}"></canvas>`
 }
 
-function update_chart(_labels, values, id, _type, title) {
-    var colors = [
-        'rgba(255, 99, 132)',
-        'rgba(255, 159, 64)',
-        'rgba(255, 205, 86)',
-        'rgba(75, 192, 192)',
-        'rgba(54, 162, 235)',
-        'rgba(153, 102, 255)',
-        'rgba(201, 203, 207)'
-    ]
-
+function update_chart(_labels, values, id, _type, title,theme) {
     try {
         let chart = new Chart(id, {
             type: _type,
             data: {
-                labels: _labels,
-                tension: 0.5,
-                datasets: [{
-                    backgroundColor: colors,
-                    borderColor: ["white"],
-                    fill: false,
-                    data: values,
-                    label: title,
-
-                }]
+                    tension: 0.5,
+                    labels: _labels,
+                    datasets: [{
+                        backgroundColor: util_get_transparent_color(CHART_COLORS[theme],0.5),
+                        borderColor: CHART_COLORS[theme],
+                        borderWidth:2,
+                        fill: false,
+                        data: values,
+                        label: title,
+                        tension: 0.5,
+                        borderRadius:5
+                    }]
             },
             options: {
                 animation: false,
@@ -253,8 +251,9 @@ function update_chart(_labels, values, id, _type, title) {
                 aspectRation: 1,
                 scales: {
                     y: {
+                        beginAtZero: true,
                         ticks: {
-                            display: false,
+                            display: true,
                             maxTicksLimit: 2,
                         }
                     }

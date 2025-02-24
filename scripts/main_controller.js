@@ -765,8 +765,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.note_content = $scope.selected_note.title.trim()
         $scope.show_update_task_button = true
         $scope.close_all_dialogs()
-        // $scope.note_textarea_container_height = $scope.note_textarea_container_max_height
-        $scope.bottom_bar_active_div = 'note'
+        $scope.toggle_bottom_bar_div('note')
     }
 
     // update task in popup
@@ -1450,7 +1449,7 @@ function main_controller($scope, $timeout, db_service) {
     }
 
     //insert menu items
-    $scope.init_insert_menu_items = () => {
+    $scope.prepare_insert_menu_items = () => {
         try {
             $scope.insert_menu_items =
                 [
@@ -1542,7 +1541,10 @@ function main_controller($scope, $timeout, db_service) {
                         show: true,
                         text: "Chart",
                         action: () => {
-                            $scope.insertTextAtCursor('note_content', `@chart\npie\nTitle\nchartid\na,b\n1,2`)
+                            //$scope.insertTextAtCursor('note_content', `@chart\npie\nTitle\nchartid\na,b\n1,2`)
+                            //open chart dialog
+                            $scope.new_chart.show = true;
+                            //if update content
                         }
                     },
                     {
@@ -1555,61 +1557,58 @@ function main_controller($scope, $timeout, db_service) {
                         }
                     },
                 ]
+            return $scope.insert_menu_items;
         } catch (error) {
             console.log(error)
         }
+    }
 
+
+    //component menu
+    $scope.prepare_component_menu_items = () => {
+        try {
+            $scope.component_menu_items = [
+                {
+                    icon: "smart_toy",
+                    class: "task-more-options-item",
+                    show: true,
+                    text: "Robot",
+                    action: () => {
+                    }
+                },{
+                    icon: "pie_chart",
+                    class: "task-more-options-item",
+                    show: true,
+                    text: "Edit chart",
+                    action: () => {
+                        //code to ui
+                        if ($scope.is_valid_chart_code($scope.note_content)) {
+                            $scope.new_chart.show = true
+                        } else {
+                            alert("Invalid chart code!")
+                        }
+                    }
+                },{
+                    icon: "design_services",
+                    class: "task-more-options-item",
+                    show: true,
+                    text: "Heading with bullets",
+                    action: () => {
+                        //first line heading
+                        //rest all lines bullets
+                        $scope.convert_heading_with_bullets()
+                    }
+                },
+                
+            ]
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     //bottom bar menu
     $scope.init_bottom_bar_menu = () => {
         $scope.bottom_bar_menu = [
-            {
-                text: "Insert",
-                icon: "format_paint",
-                class: "chip2",
-                show: true,
-                action: (item) => {
-                    $scope.toggle_bottom_bar_active_menu(item.text)
-                    if ($scope.bottom_bar_active_menu == item.text) {
-                        $scope.init_insert_menu_items()
-                        $scope.current_bottom_bar_active_menu = $scope.insert_menu_items;
-                    } else {
-                        $scope.current_bottom_bar_active_menu = null;
-                    }
-                }
-            },
-            {
-                text: "Component",
-                icon: "sports_esports",
-                class: "chip2",
-                show: $scope.is_note_selected,//show component tab when a note is selected
-                action: (item) => {
-                    $scope.toggle_bottom_bar_active_menu(item.text)
-                    if ($scope.bottom_bar_active_menu == item.text) {
-                        // $scope.init_component_menu_items()
-                        $scope.current_bottom_bar_active_menu = null
-                    } else {
-                        $scope.current_bottom_bar_active_menu = null;
-                    }
-                }
-            },
-            {
-                text: "System vars",
-                icon: "deployed_code",
-                class: "chip2",
-                show: true,
-                action: (item) => {
-                    // $scope.show_edit_options_system_vars = !$scope.show_edit_options_system_vars
-                    $scope.toggle_bottom_bar_active_menu(item.text)
-                    if ($scope.bottom_bar_active_menu == item.text) {
-                        $scope.init_system_var_menu_items()
-                        $scope.current_bottom_bar_active_menu = $scope.system_var_menu_items
-                    } else {
-                        $scope.current_bottom_bar_active_menu = null;
-                    }
-                }
-            },
             {
                 text: "List mode",
                 icon: "list_alt",
@@ -1633,8 +1632,6 @@ function main_controller($scope, $timeout, db_service) {
                     $scope.add_symbol_to_selected_text("-")
                 }
             },
-            
-        
         ]
     }
     // handle bottom bar menu click
@@ -1925,6 +1922,8 @@ function main_controller($scope, $timeout, db_service) {
         $scope.bottom_bar_active_div = $scope.bottom_bar_active_div === divId ? "null" : divId;
         if (divId == 'note') {
             $scope.init_bottom_bar_menu()
+            $scope.prepare_insert_menu_items()
+            $scope.prepare_component_menu_items()
             $scope.focus_input("#note_content")
         }
     }
@@ -1991,34 +1990,177 @@ function main_controller($scope, $timeout, db_service) {
     }, true); // Deep watch to track change
 
 
+    $scope.convert_heading_with_bullets = function () {
+        try {
+            let textarea = document.getElementById("note_content");
+            if (!textarea) return;
+        
+            let lines = textarea.value.trim().split("\n");
+            if (lines.length === 0) return;
+        
+            // Convert first line to H2
+            lines[0] = "### " + lines[0];
+        
+            // Convert remaining lines to bullet points
+            for (let i = 1; i < lines.length; i++) {
+                lines[i] = "- " + lines[i];
+            }
+        
+            $scope.note_content = lines.join("\n");
+        } catch (err) {
+            console.log(er)
+        }
+    };
+    
+
 
 
     $scope.add_symbol_to_selected_text = function (symbol) {
         let textarea = document.getElementById("note_content");
         if (!textarea) return;
-    
+
         let start = textarea.selectionStart;
         let end = textarea.selectionEnd;
         let text = textarea.value;
-    
+
         if (start === end) return; // No selection
-    
+
         let selected_text = text.substring(start, end);
         let modified_text = selected_text
             .split("\n")
-            .map(line => symbol +" "+line)
+            .map(line => symbol + " " + line)
             .join("\n");
-    
+
         // Replace selected text with modified text
         let new_text = text.substring(0, start) + modified_text + text.substring(end);
-    
+
         // Update textarea
         textarea.value = new_text;
         textarea.setSelectionRange(start, start + modified_text.length);
 
         $scope.note_content = new_text;
     };
+
+    $scope.get_chart_colors = () => {
+        // let colors = Object.keys(CHART_COLORS)
+        // colors.forEach((item,index)=>{
+        //     item[0] = item[1] //bg
+        //     item[1] = get_transparent_color(item[0])//transparent
+        // })
+        return CHART_COLORS
+    }
+    $scope.get_transparent_color = (rgb, alpha) => {
+        return util_get_transparent_color(rgb, alpha)
+    }
+
+    $scope.reset_new_chart_and_close = () => {
+        //reset values
+        $scope.new_chart = {
+            title: "Untitled", // title of chart
+            type: "line", // type of chart
+            theme: "red", //theme color
+            x_labels: "", //labels
+            y_values: "", // values
+            chart_id: 0, //create id dynamically while saving
+            show: false,
+        }
+    }
+    $scope.new_chart_convert_ui_to_code = () => {
+        /*
+            @chart
+            pie
+            Title
+            chartid#theme
+            a,b
+            1,2
+        */
+        try {
+            $scope.new_chart.chart_id = new Date().getTime()
+            let new_chart_code = "";
+            new_chart_code+=`@chart`
+            new_chart_code+=`\n${$scope.new_chart.type}`
+            new_chart_code+=`\n${$scope.new_chart.title}`
+            new_chart_code+=`\n${$scope.new_chart.chart_id}#${$scope.new_chart.theme}`
+            new_chart_code+=`\n${$scope.new_chart.x_labels.split("\n").join(",")}`
+            new_chart_code+=`\n${$scope.new_chart.y_values.split("\n").join(",")}`
+            $scope.note_content = new_chart_code.trim()
+            //validate code
+            if($scope.is_valid_chart_code(new_chart_code))
+                $scope.reset_new_chart_and_close()
+            else
+                alert("Invalid chart code!")
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    $scope.is_valid_chart_code = (chart_code) => {
+        try {
+            let lines = chart_code.trim().split("\n");
+        
+            if (lines.length < 6 || lines[0].trim() !== "@chart") {
+                return false;
+            }
+        
+            let type = lines[1].trim().toLowerCase();
+            if (type !== "line" && type !== "bar") {
+                return false;
+            }
+        
+            let title = lines[2].trim();
+        
+            let chart_id_parts = lines[3].trim().split("#");
+            let chart_id = chart_id_parts[0].trim();
+            let theme = chart_id_parts[1] ? chart_id_parts[1].trim() : "blue"; // Default theme is blue
+            let x_labels = lines[4].trim().split(",")
+            let y_values = lines[5].trim().split(",")
+            if(x_labels.length!=y_values.length)
+                return false
+
+            x_labels = x_labels.map(label => label.trim()).join("\n");
+            y_values = y_values.map(value => value.trim()).join("\n");
+        
+            // Ensure x_labels and y_values are valid
+            if (!x_labels || !y_values) {
+                return false;
+            }
+            
+            
+        
+            // Set values to new_chart object
+            $scope.new_chart = {
+                title: title,
+                type: type,
+                theme: theme,
+                x_labels: x_labels,
+                y_values: y_values,
+                chart_id: chart_id,
+                show: false,
+            };
+            return true;
+        } catch (err) {
+            console.log(err)
+        }
+        return false
+    };
     
+
+    $scope.handle_select_menu_change = () => {
+        try {
+            $scope.bottom_bar_sub_menu_selected_item.action()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    $scope.handle_select_system_menu_change = () => {
+        try {
+            $scope.insertTextAtCursor('note_content',$scope.bottom_bar_sub_menu_selected_item)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
 
 
     $scope.init = () => {
@@ -2074,14 +2216,22 @@ function main_controller($scope, $timeout, db_service) {
         $scope.bottom_bar_active_div = "null" //hide or show bottom bar create divs
         $scope.bottom_bar_active_menu = "null" //hide or show bottom bar menu options
         $scope.is_list_mode_on = false // if on on enter press a symbol is inserted at start of line
-        $scope.current_list_symbol = "✅"
+        $scope.current_list_symbol = "-"
         $scope.list_symbols_array = ["✅", "⚠", "-", "*"]
         $scope.system_create_btn_title = "Create"
         $scope.is_note_multi_select_on = false // to turn on off multi select
         $scope.note_multi_select_array = [] // hold selected notes
         $scope.action_on_quick_notebook_item = $scope.CONST.OPEN
 
-
+        $scope.new_chart = {
+            title: "Untitled", // title of chart
+            type: "line", // type of chart
+            theme: "red", //theme color
+            x_labels: "", //labels
+            y_values: "", // values
+            chart_id: 0, //create id dynamically while saving
+            show: false,
+        }
 
         // by default create notebook is shown
         $scope.create_btns_arr = [false, true, false]
@@ -2149,9 +2299,6 @@ function main_controller($scope, $timeout, db_service) {
         $scope.notes = [];
         $scope.read_data();
         $scope.grouped_notebooks = $scope.get_grouped_notebooks()
-
-
-
         //more options when notebook or note is clicked
         $scope.init_notebook_more_options()
     };

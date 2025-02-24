@@ -6,6 +6,29 @@ let dialogStates =
   "viewLists": false
 }
 
+
+const CHART_COLORS = {
+  red: 'rgb(255, 99, 132)',
+  orange: 'rgb(255, 159, 64)',
+  yellow: 'rgb(255, 205, 86)',
+  green: 'rgb(75, 192, 192)',
+  blue: 'rgb(54, 162, 235)',
+  purple: 'rgb(153, 102, 255)',
+  grey: 'rgb(201, 203, 207)'
+};
+
+Number.prototype.clamp = function(min, max) {
+  return Math.min(Math.max(this, min), max);
+};
+
+
+function util_get_transparent_color(rgb, alpha) {
+  if(alpha==undefined)
+    alpha = 0.5
+  alpha = alpha.clamp(0,1)
+  return rgb.replace('rgb', 'rgba').replace(')', `, ${alpha})`);
+}
+
 let COLORS = {
   RED: "#ff6384",
   ORANGE: "#fea03e",
@@ -24,7 +47,6 @@ let COLORS = {
   PINK: "#ec4899",
   ROSE: "#f43f5e",
   ALL: ["#ff6384", "#fea03e", "#fea03e", "#4ade80", "#fea03e", "#f59e0b", "#84cc16", "#10b981", "#14b8a6", "#06b6d4", "#0ea5e9", "#6366f1", "#8b5cf6", "#a855f7", "#ec4899", "#f43f5e"]
-
 }
 
 
