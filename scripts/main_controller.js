@@ -477,15 +477,15 @@ function main_controller($scope, $timeout, db_service) {
     $scope.save_data = () => {
         try {
             const _theme = $scope.is_dark ? "dark" : "light";
-            // console.log("saving index",$scope.selectedListIndex)
+
             db_service.write(
                 {
                     notebooks: $scope.notebooks,
                     selectedListIndex: $scope.selectedListIndex,
                     theme: _theme,
-                    system_vars: system_vars
-                }, angular
-            )
+                    system_vars: system_vars,
+                    notebook_sort_by: $scope.sort_notebook_selected_item,
+                }, angular)
         } catch (err) {
             console.log("Save data error", err)
         }
@@ -501,10 +501,7 @@ function main_controller($scope, $timeout, db_service) {
             $scope.theme = data.theme;
             $scope.is_dark = $scope.theme == "dark";
             $scope.init_theme()
-            //load last notebook
-            //$scope.selectedListName = $scope.notebooks[$scope.selectedListIndex].title
-            //$scope.open_notebook($scope.notebooks[$scope.selectedListIndex])
-
+            $scope.sort_notebook_selected_item = data.notebook_sort_by
             //set up system notebooks
             $scope.init_system_notebooks()
         } catch (err) {
@@ -614,6 +611,7 @@ function main_controller($scope, $timeout, db_service) {
 
 
 
+    // remove selected task
     $scope.delete_task = () => {
         try {
             if (confirm("Are you sure you want to delete the note?")) {
@@ -771,17 +769,26 @@ function main_controller($scope, $timeout, db_service) {
     // update task in popup
     $scope.update_note = () => {
         try {
-            $scope.selected_note.title = $scope.note_content.trim()
-            $scope.show_update_task_button = false
-            $scope.note_content = ""
-            // $scope.note_textarea_container_height = 45
-            $scope.is_note_selected = false;
-            $scope.selected_note = null;
-            $scope.show_edit_options = false;
-            $scope.save_data()
-            $scope.show_toast("Note updated")
-            $scope.init_bottom_bar_menu()
-            $scope.bottom_bar_active_div = 'null'
+            if ($scope.note_content.trim().length == 0) {
+                if (confirm("Note is empty.\nDo you want to delete this note?")) {
+                    //delete selected note
+                    $scope.delete_task()
+                    $scope.bottom_bar_active_div = 'null';
+                    $scope.cancel_update_note();
+                }
+            } else {
+                $scope.selected_note.title = $scope.note_content.trim()
+                $scope.show_update_task_button = false
+                $scope.note_content = ""
+                $scope.is_note_selected = false;
+                $scope.selected_note = null;
+                $scope.show_edit_options = false;
+                $scope.save_data()
+                $scope.show_toast("Note updated")
+                $scope.init_bottom_bar_menu()
+                $scope.bottom_bar_active_div = 'null'
+            }
+
         } catch (err) {
             $scope.show_toast("Error while updating note")
             console.log("Error while updating note", err)
@@ -1454,104 +1461,69 @@ function main_controller($scope, $timeout, db_service) {
             $scope.insert_menu_items =
                 [
                     {
-                        icon: "calendar_month",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Today",
+                        text: "📆 Today",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', formatDate(new Date()))
                         }
                     },
                     {
-                        icon: "event",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Day",
+                        text: "📆 Day",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', formatDay(new Date()))
                         }
                     },
                     {
-                        icon: "schedule",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Now",
+                        text: "📆 Now",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', formatTime(new Date()))
                         }
                     },
                     {
-                        icon: "title",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Heading",
+                        text: "📝 Heading",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', "#H1")
                         }
                     },
                     {
-                        icon: "ink_highlighter",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Highlight",
+                        text: "✏️ Highlight",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', "!important!")
                         }
                     },
-
+    
                     {
-                        icon: "list",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "List",
+                        text: "✅ List",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', "* Item")
                         }
                     },
                     {
-                        icon: "sliders",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Progress bar",
+                        text: "📈 Progress bar",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', "#50%")
                         }
                     },
                     {
-                        icon: "check_box",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Split notes",
+                        text: "🧩 Split notes",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', "$ ")
                         }
                     },
                     {
-                        icon: "table",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Table",
+                        text: "🗄️ Table",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', "@table\n||a,b\n|c,d")
                         }
                     },
                     {
-                        icon: "pie_chart",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Chart",
+                        text: "🍕 Chart",
                         action: () => {
-                            //$scope.insertTextAtCursor('note_content', `@chart\npie\nTitle\nchartid\na,b\n1,2`)
                             //open chart dialog
                             $scope.new_chart.show = true;
-                            //if update content
                         }
                     },
                     {
-                        icon: "progress_activity",
-                        class: "task-more-options-item",
-                        show: true,
-                        text: "Circular Progress",
+                        text: "📖 Circular Progress",
                         action: () => {
                             $scope.insertTextAtCursor('note_content', `@circular_bars\nA, B, C\n50, 50, 50`)
                         }
@@ -1569,42 +1541,50 @@ function main_controller($scope, $timeout, db_service) {
         try {
             $scope.component_menu_items = [
                 {
-                    icon: "smart_toy",
-                    class: "task-more-options-item",
-                    show: true,
-                    text: "Robot",
+                    text: "🤖 Robot",
                     action: () => {
                     }
-                },{
-                    icon: "pie_chart",
-                    class: "task-more-options-item",
-                    show: true,
-                    text: "Edit chart",
+                }, 
+                {
+                    text: "📊 Edit chart",
                     action: () => {
-                        //code to ui
                         if ($scope.is_valid_chart_code($scope.note_content)) {
-                            $scope.new_chart.show = true
+                            $scope.new_chart.show = true;
                         } else {
-                            alert("Invalid chart code!")
+                            alert("Invalid chart code!");
                         }
                     }
-                },{
-                    icon: "design_services",
-                    class: "task-more-options-item",
-                    show: true,
-                    text: "Heading with bullets",
+                }, 
+                {
+                    text: "✅ Selection to bullets",
                     action: () => {
-                        //first line heading
-                        //rest all lines bullets
-                        $scope.convert_heading_with_bullets()
+                        $scope.add_symbol_to_selected_text("-");
+                    }
+                }, 
+                {
+                    text: "✅ All to bullets",
+                    action: () => {
+                        $scope.convert_to_bullets("-");
                     }
                 },
-                
-            ]
+                {
+                    text: "🔠 Heading with bullets",
+                    action: () => {
+                        $scope.convert_heading_with_bullets();
+                    }
+                }, 
+                {
+                    text: "🔢 Selection to numbered list",
+                    action: () => {
+                        $scope.add_numbers_to_selected_text();
+                    }
+                }
+            ];
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
+    
 
     //bottom bar menu
     $scope.init_bottom_bar_menu = () => {
@@ -1620,18 +1600,7 @@ function main_controller($scope, $timeout, db_service) {
                     $scope.is_list_mode_on = ($scope.bottom_bar_active_menu == item.text)
                     $scope.show_toast(`List mode ${bool_to_on_off($scope.is_list_mode_on)} | ${$scope.current_list_symbol}`)
                 }
-            },
-            {
-                text: "Make List",
-                icon: "checklist",
-                class: "chip2",
-                show: true,
-                action: (item) => {
-                    $scope.toggle_bottom_bar_active_menu(item.text)
-                    $scope.current_bottom_bar_active_menu = null;
-                    $scope.add_symbol_to_selected_text("-")
-                }
-            },
+            }
         ]
     }
     // handle bottom bar menu click
@@ -1945,6 +1914,8 @@ function main_controller($scope, $timeout, db_service) {
         }, 0);
     }
 
+
+    // group notebook by date
     $scope.get_grouped_notebooks = function () {
         try {
             let today = new Date();
@@ -1974,7 +1945,7 @@ function main_controller($scope, $timeout, db_service) {
                     groups['Older'][month_year].push(notebook);
                 }
             });
-            // console.log(groups)
+            console.log(groups)
             return groups;
         } catch (err) {
             console.log(err)
@@ -1982,36 +1953,92 @@ function main_controller($scope, $timeout, db_service) {
         return [];
     };
 
+
+    // group notebooks by title
+    $scope.get_grouped_notebooks_title = function () {
+        let notebooks = $scope.notebooks;
+        let grouped = {};
+
+        // Iterate over notebooks and group them by first letter
+        notebooks.forEach(notebook => {
+            let firstChar = notebook.title.charAt(0).toUpperCase();
+
+            if (!firstChar.match(/[A-Z]/)) {
+                firstChar = "#"; // Group non-alphabetic titles under "#"
+            }
+
+            if (!grouped[firstChar]) {
+                grouped[firstChar] = [];
+            }
+
+            grouped[firstChar].push(notebook);
+        });
+
+        // Sort groups alphabetically
+        let sortedGroups = Object.keys(grouped).sort((a, b) => (a === "#" ? 1 : b === "#" ? -1 : a.localeCompare(b)));
+
+        let sortedGroupedNotebooks = {};
+        sortedGroups.forEach(key => {
+            sortedGroupedNotebooks[key] = grouped[key];
+        });
+
+        console.log(sortedGroupedNotebooks)
+
+        return sortedGroupedNotebooks;
+    };
+
+
+
+
+
+
     // Watch for changes in notebooks array
     $scope.$watch('notebooks', function (new_val, old_val) {
         if (new_val !== old_val) {
-            $scope.grouped_notebooks = $scope.get_grouped_notebooks()
+            //group notebook
+            $scope.handle_group_notebooks()
         }
-    }, true); // Deep watch to track change
+    }, true);
 
 
     $scope.convert_heading_with_bullets = function () {
         try {
             let textarea = document.getElementById("note_content");
             if (!textarea) return;
-        
+
             let lines = textarea.value.trim().split("\n");
             if (lines.length === 0) return;
-        
+
             // Convert first line to H2
             lines[0] = "### " + lines[0];
-        
+
             // Convert remaining lines to bullet points
             for (let i = 1; i < lines.length; i++) {
                 lines[i] = "- " + lines[i];
             }
-        
+
             $scope.note_content = lines.join("\n");
         } catch (err) {
             console.log(er)
         }
     };
-    
+
+    $scope.convert_to_bullets = function (symbol) {
+        try {
+            let textarea = document.getElementById("note_content");
+            if (!textarea) return;
+            let lines = textarea.value.trim().split("\n");
+            if (lines.length === 0) return;
+            for (let i = 0; i < lines.length; i++) {
+                lines[i] = `${symbol} ${lines[i]}`
+            }
+            $scope.note_content = lines.join("\n");
+        } catch (err) {
+            console.log(er)
+        }
+    };
+
+
 
 
 
@@ -2040,6 +2067,35 @@ function main_controller($scope, $timeout, db_service) {
 
         $scope.note_content = new_text;
     };
+
+
+    // add 1. 2. 3. ...
+    $scope.add_numbers_to_selected_text = function () {
+        let textarea = document.getElementById("note_content");
+        if (!textarea) return;
+
+        let start = textarea.selectionStart;
+        let end = textarea.selectionEnd;
+        let text = textarea.value;
+
+        if (start === end) return; // No selection
+
+        let selected_text = text.substring(start, end);
+        let modified_text = selected_text
+            .split("\n")
+            .map((line, index) => (index + 1) + ". " + line)
+            .join("\n");
+
+        // Replace selected text with modified text
+        let new_text = text.substring(0, start) + modified_text + text.substring(end);
+
+        // Update textarea
+        textarea.value = new_text;
+        textarea.setSelectionRange(start, start + modified_text.length);
+
+        $scope.note_content = new_text;
+    };
+
 
     $scope.get_chart_colors = () => {
         // let colors = Object.keys(CHART_COLORS)
@@ -2077,15 +2133,15 @@ function main_controller($scope, $timeout, db_service) {
         try {
             $scope.new_chart.chart_id = new Date().getTime()
             let new_chart_code = "";
-            new_chart_code+=`@chart`
-            new_chart_code+=`\n${$scope.new_chart.type}`
-            new_chart_code+=`\n${$scope.new_chart.title}`
-            new_chart_code+=`\n${$scope.new_chart.chart_id}#${$scope.new_chart.theme}`
-            new_chart_code+=`\n${$scope.new_chart.x_labels.split("\n").join(",")}`
-            new_chart_code+=`\n${$scope.new_chart.y_values.split("\n").join(",")}`
+            new_chart_code += `@chart`
+            new_chart_code += `\n${$scope.new_chart.type}`
+            new_chart_code += `\n${$scope.new_chart.title}`
+            new_chart_code += `\n${$scope.new_chart.chart_id}#${$scope.new_chart.theme}`
+            new_chart_code += `\n${$scope.new_chart.x_labels.split("\n").join(",")}`
+            new_chart_code += `\n${$scope.new_chart.y_values.split("\n").join(",")}`
             $scope.note_content = new_chart_code.trim()
             //validate code
-            if($scope.is_valid_chart_code(new_chart_code))
+            if ($scope.is_valid_chart_code(new_chart_code))
                 $scope.reset_new_chart_and_close()
             else
                 alert("Invalid chart code!")
@@ -2097,36 +2153,36 @@ function main_controller($scope, $timeout, db_service) {
     $scope.is_valid_chart_code = (chart_code) => {
         try {
             let lines = chart_code.trim().split("\n");
-        
+
             if (lines.length < 6 || lines[0].trim() !== "@chart") {
                 return false;
             }
-        
+
             let type = lines[1].trim().toLowerCase();
             if (type !== "line" && type !== "bar") {
                 return false;
             }
-        
+
             let title = lines[2].trim();
-        
+
             let chart_id_parts = lines[3].trim().split("#");
             let chart_id = chart_id_parts[0].trim();
             let theme = chart_id_parts[1] ? chart_id_parts[1].trim() : "blue"; // Default theme is blue
             let x_labels = lines[4].trim().split(",")
             let y_values = lines[5].trim().split(",")
-            if(x_labels.length!=y_values.length)
+            if (x_labels.length != y_values.length)
                 return false
 
             x_labels = x_labels.map(label => label.trim()).join("\n");
             y_values = y_values.map(value => value.trim()).join("\n");
-        
+
             // Ensure x_labels and y_values are valid
             if (!x_labels || !y_values) {
                 return false;
             }
-            
-            
-        
+
+
+
             // Set values to new_chart object
             $scope.new_chart = {
                 title: title,
@@ -2143,7 +2199,7 @@ function main_controller($scope, $timeout, db_service) {
         }
         return false
     };
-    
+
 
     $scope.handle_select_menu_change = () => {
         try {
@@ -2155,11 +2211,32 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.handle_select_system_menu_change = () => {
         try {
-            $scope.insertTextAtCursor('note_content',$scope.bottom_bar_sub_menu_selected_item)
+            $scope.insertTextAtCursor('note_content', $scope.bottom_bar_sub_menu_selected_item)
         } catch (err) {
             console.log(err)
         }
     }
+
+    $scope.handle_sort_notebook_change = () => {
+        try {
+            $scope.handle_group_notebooks()
+            $scope.save_data()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    $scope.handle_group_notebooks = () => {
+        if ($scope.sort_notebook_selected_item == "date") {
+            $scope.grouped_notebooks = $scope.get_grouped_notebooks()
+        }
+
+        if ($scope.sort_notebook_selected_item == "title") {
+            $scope.grouped_notebooks = $scope.get_grouped_notebooks_title()
+        }
+    }
+
+
 
 
 
@@ -2222,7 +2299,9 @@ function main_controller($scope, $timeout, db_service) {
         $scope.is_note_multi_select_on = false // to turn on off multi select
         $scope.note_multi_select_array = [] // hold selected notes
         $scope.action_on_quick_notebook_item = $scope.CONST.OPEN
+        $scope.sort_notebook_selected_item = 'date' //sort notebooks model
 
+        // chart component 
         $scope.new_chart = {
             title: "Untitled", // title of chart
             type: "line", // type of chart
@@ -2232,6 +2311,17 @@ function main_controller($scope, $timeout, db_service) {
             chart_id: 0, //create id dynamically while saving
             show: false,
         }
+
+        // circular progress component 
+        $scope.circular_progress = {
+            heading_pos: "left", // position of heading
+            x_labels: "", //labels
+            y_values: "", // values
+            show: false,
+        }
+
+
+
 
         // by default create notebook is shown
         $scope.create_btns_arr = [false, true, false]
@@ -2297,9 +2387,13 @@ function main_controller($scope, $timeout, db_service) {
         //read saved data
         $scope.notebooks = [];
         $scope.notes = [];
+
         $scope.read_data();
-        $scope.grouped_notebooks = $scope.get_grouped_notebooks()
         //more options when notebook or note is clicked
         $scope.init_notebook_more_options()
+
+
+        //group notebooks
+        $scope.handle_group_notebooks()
     };
 }

@@ -2,7 +2,7 @@
     <!-- create note layout -->
     <div
         ng-show="bottom_bar_active_div=='note'" 
-        style="border: 1px solid var(--theme_button_border); height: 80vh;"
+        style="border: 1px solid var(--theme_button_border); height: 90vh;"
         class="flex-col gap-1 shadow drawer-rounded px-1 py-1/2">
         <!-- note buttons -->
         <div class="flex-row gap-1 space-between">
@@ -172,6 +172,68 @@
                     </div>
                 </div>
             </div>
+
+            <!-- circular progress bar -->
+            <div class="flex-col gap-2" ng-show="circular_progress.show">
+                <!-- chart title -->
+                <input 
+                    ng-model="circular_progress.title" 
+                    class="text-input" 
+                    type="text" 
+                    max="20" 
+                    placeholder="Chart Title"/>
+                <!-- chart type -->
+                <div class="orange">Type</div>
+                <div class="flex-row gap-1">
+                    <div 
+                        ng-click="circular_progress.type = 'line'"
+                        ng-class="{'grayscale':circular_progress.type!='line'}"
+                        class="align-center flex-row gap-2 p-125 rounded">
+                        <span class="material-symbols-outlined list-icon">timeline</span>
+                        <span>Line Chart</span>
+                    </div> 
+                    <div 
+                        ng-click="circular_progress.type = 'bar'"
+                        ng-class="{'grayscale':circular_progress.type!='bar'}"
+                        class="align-center flex-row gap-2 p-125 rounded">
+                        <span class="material-symbols-outlined list-icon">bar_chart</span>
+                        <span>Bar Chart</span>
+                    </div>
+                </div>
+                <!-- chart theme color -->
+                <div class="orange">Theme</div>
+                <div class="flex-row gap-1 w-full">
+                    <label class="create-chart-theme-wrapper" ng-repeat="(key,value) in get_chart_colors()">
+                        <input
+                            ng-hide="true" 
+                            style="accent-color: {{value}}; transform:scale(1.2); opacity: 0;" 
+                            name="chart_theme" 
+                            type="radio" 
+                            ng-model="circular_progress.theme" 
+                            ng-value="key">
+                        <span 
+                        class="custom-radio"
+                        style="border-color:{{value}};background-color:{{get_transparent_color(value,0.5)}};"></span>
+                    </label>
+                </div>
+                <div class="flex-row space-between">
+                    <div class="orange">X axis labels</div>
+                    <div class="orange">Y axis values</div>
+                </div>
+                <div class="flex-row space-between">
+                    <textarea ng-model="new_chart.x_labels" style="height: 200px;" class="border new-task-content rounded-1"></textarea>
+                    <textarea ng-model="new_chart.y_values" style="height: 200px;" class="border new-task-content rounded-1"></textarea>
+                </div>
+                <div class="flex-row space-between">
+                    <div ng-click="reset_new_chart_and_close()" class="button rounded-full gap-1 orange">
+                        <span>Cancel</span>
+                    </div>
+                <div ng-click="new_chart_convert_ui_to_code()" class="button rounded-full gap-1 orange">
+                    <span>Done</span>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 

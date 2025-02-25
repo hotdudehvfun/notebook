@@ -16,11 +16,14 @@ function db_service() {
             if (is_valid_json(localStorage.appData)) {
                 data.notebooks = JSON.parse(localStorage.appData)
             }
+
             data.selectedListIndex = localStorage.selectedListIndex || -1;
             data.theme = localStorage.theme || "dark";
+            
+            //save notebook sort by
+            data.notebook_sort_by = localStorage.notebook_sort_by || "date"
             return data;
         } catch (err) {
-            showToast("Error while reading data")
             console.log("Error while reading data", err)
         }
     }
@@ -41,8 +44,11 @@ function db_service() {
 
             //save system vars
             localStorage.system_vars = JSON.stringify(data.system_vars)
+
+            //save notebook sort by
+            localStorage.notebook_sort_by = data.notebook_sort_by
+
         } catch (error) {
-            showToast("Error while writing data")
             console.log("Error while writing data", err)
         }
 
