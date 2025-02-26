@@ -1,0 +1,81 @@
+<div class="new_task_popup_child text-md">
+    <!-- heading -->
+    <div class="flex-row align-center gap-1 m-2">
+        <span class="material-symbols-outlined list-icon">database</span>
+        <span>Database Management</span>
+    </div>
+
+
+    <!--Choose Operation -->
+    <div class="orange">Choose Operation</div>
+    <div class="flex-row gap-2 mt-2 justify-center">
+        <div ng-click="db_operation=CONST.IMPORT; handle_db_operation_change()"
+            ng-class="{colorful:db_operation==CONST.IMPORT}"
+            class="flex-row align-center gap-2 grayscale border rounded p-1/2">
+            <span class="material-symbols-outlined list-icon">cloud_upload</span>
+            <span>Import</span>
+        </div>
+        <div 
+            ng-click="db_operation=CONST.EXPORT; handle_db_operation_change()"
+            ng-class="{colorful:db_operation==CONST.EXPORT}"
+            class="flex-row align-center gap-2 grayscale border rounded p-1/2">
+            <span class="material-symbols-outlined list-icon">cloud_download</span>
+            <span>Export</span>
+        </div>
+    </div>
+
+     <!-- file upload -->
+     <div class="flex-col w-full">
+        <div class="flex-col w-full gap-1 mt-2">
+            <label for="fileInput" ng-show="db_operation==CONST.IMPORT"
+                class="align-center border flex-row gap-1 justify-center m-1 p-1/2 rounded shadow">
+                <span class="material-symbols-outlined">upload_file</span>
+                Choose file to import
+            </label>
+            <input
+                onChange="import_file_event_change(this)" 
+                ng-show="db_operation==CONST.IMPORT" 
+                type="file" 
+                id="fileInput" 
+                file-input="file" />
+        </div>
+    </div>
+
+    <!-- Input password -->
+    <div 
+        ng-show="db_operation==CONST.EXPORT || db_operation==CONST.IMPORT "  
+        class="orange mt-2">
+            Input password
+    </div>
+    <input
+        ng-show="db_operation==CONST.EXPORT || db_operation==CONST.IMPORT " 
+        class="password" 
+        name="password" 
+        type="password" 
+        ng-model="password" 
+        placeholder="Input password here"/>
+
+
+   
+
+     <!-- popup buttons -->
+     <div class="flex-row space-between mt-2">
+        <span 
+            ng-click="dialog_flags.show_db_popup=false; password='';"
+            class="red text">
+            Cancel
+        </span>
+        <span
+            ng-show="db_operation==CONST.EXPORT && password.length>0"
+            ng-click="export_data()"
+            class="orange">
+            Export
+        </span>
+        <span 
+            ng-show="db_operation==CONST.IMPORT && password.length>0"
+            ng-click="import_data()"
+            class="orange">
+            Import
+        </span>
+    </div>
+</div>

@@ -149,25 +149,16 @@ function main_controller($scope, $timeout, db_service) {
 
 
 
-    //get notebook icon
     $scope.get_notebook_icon = function (notebook) {
         try {
-            if (notebook.hasOwnProperty("is_locked")) {
-                if (notebook.is_locked) {
-                    return "lock"
-                }
-            }
-            if (notebook.hasOwnProperty("icon")) {
-                return notebook.icon
-            }
-            else {
-                return "folder"
-            }
+            if (notebook?.is_locked) return "lock";
+            return notebook?.icon || "folder";
         } catch (err) {
-            console.log(err)
+            console.log(err);
+            return "folder";
         }
-        return "folder"
-    }
+    };
+    
 
     $scope.insertTextAtCursor = function (id, value) {
         insertTextAtCursor(id, value)
@@ -1481,7 +1472,7 @@ function main_controller($scope, $timeout, db_service) {
                     {
                         text: "📝 Heading",
                         action: () => {
-                            $scope.insertTextAtCursor('note_content', "#H1")
+                            $scope.insertTextAtCursor('note_content', "## H2")
                         }
                     },
                     {
@@ -1610,46 +1601,38 @@ function main_controller($scope, $timeout, db_service) {
 
     $scope.handle_db_operation_change = () => {
         try {
-            if ($scope.db_operation == $scope.CONST.EXPORT) {
-                let data = JSON.stringify(localStorage)
-                $scope.db_textarea = data
-                $scope.password = ""
-            } else {
-                $scope.db_textarea = ""
-            }
+
+            console.log($scope.db_operation)
 
         } catch (err) {
-            // $scope.show_toast("Cannot export file")
             console.error(err);
         }
     }
 
-    $scope.export_db_as_file = function (textContent) {
+    $scope.export_data = ()=>{
         try {
             if ($scope.password.length == 0) {
                 alert("Protect this file with a password to continue")
                 return "";
             }
-            if (textContent.length == 0) {
-                alert("Text is missing")
-                return "";
-            }
-            textContent = encrypt_data(textContent, $scope.password)
+            let data = JSON.stringify(localStorage)
+            data = encrypt_data(data,$scope.password)
             $scope.password = ""
-            const blob = new Blob([textContent], { type: "text/plain" });
+            const blob = new Blob([data], { type: "text/plain" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "myTextFile.txt";
+            link.download = get_download_file_name()
             link.click();
             URL.revokeObjectURL(link.href);
+            $scope.dialog_flags.show_db_popup = false
+            $scope.db_operation = null
         } catch (err) {
             console.log("Error export db", err)
-            $scope.show_toast("Cannot export file")
         }
     }
 
     // sending message to angular from outside world
-    $scope.$on('update_db_textarea', function (event, newValue) {
+    $scope.$on('file_onchange', function (event, newValue) {
         $scope.db_textarea = newValue;
     });
 
@@ -1711,6 +1694,9 @@ function main_controller($scope, $timeout, db_service) {
                 $scope.db_operation = null;
                 $scope.close_all_dialogs()
                 $scope.notebooks = $scope.read_data()
+                $scope.init()
+                // location.reload();
+
             }
         }
         catch (err) {
@@ -1945,7 +1931,7 @@ function main_controller($scope, $timeout, db_service) {
                     groups['Older'][month_year].push(notebook);
                 }
             });
-            console.log(groups)
+            // console.log(groups)
             return groups;
         } catch (err) {
             console.log(err)
@@ -2320,9 +2306,6 @@ function main_controller($scope, $timeout, db_service) {
             show: false,
         }
 
-
-
-
         // by default create notebook is shown
         $scope.create_btns_arr = [false, true, false]
         $scope.show_all_create_btns = false
@@ -2367,6 +2350,7 @@ function main_controller($scope, $timeout, db_service) {
         $scope.presets_delimiters = ["new line", "#", "$", "!"]
 
 
+        // 
         $scope.proverbs = [
             "An empty vessel can hold anything.",
             "An empty mind makes progress.",

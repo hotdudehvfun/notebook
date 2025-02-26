@@ -1,8 +1,14 @@
 /* formatting classes for notes */
+.purple
+{
+    color:#9a66ff;
+}
+
 .yellow
 {
     color:#f4b424;
 }
+
 .orange
 {
     color:#ff9e40;
@@ -10,8 +16,9 @@
 .teal{
     color:teal;
 }
+
 .red {
-    color: #fd4967; 
+    color: #fd4967;
 }
 
 .green {
@@ -161,19 +168,19 @@ grid_title_bar {
     height: 4rem;
 }
 
-.textsm {
+.text-sm {
     font-size: 0.875rem; /* ~14px */
 }
 
-.textmd {
+.text-md {
     font-size: 1rem; /* ~16px (Base size) */
 }
 
-.textlg {
+.text-lg {
     font-size: 1.25rem; /* ~20px */
 }
 
-.textxl {
+.text-xl {
     font-size: 1.5rem; /* ~24px */
 }
 
@@ -200,3 +207,50 @@ grid_title_bar {
 {
     padding-bottom:1.5rem;
 }
+
+.justify-left{
+    justify-content: left;
+}
+
+.h1 {
+    font-size: 2em;
+    font-weight: bold;
+    text-transform: capitalize;
+    
+}
+
+.h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-transform: capitalize;
+    
+}
+
+.h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+    text-transform: capitalize;
+    
+}
+
+.h4 {
+    font-size: 1em;
+    font-weight: bold;
+    text-transform: capitalize;
+    
+}
+
+.h5 {
+    font-size: .83em;
+    font-weight: bold;
+    text-transform: capitalize;
+    
+}
+
+.h6 {
+    font-size: .67em;
+    font-weight: bold;
+    text-transform: capitalize;
+    
+}
+

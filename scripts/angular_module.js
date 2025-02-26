@@ -54,6 +54,15 @@ app.directive("createNotebookPopup",function(){
   }
 });
 
+//db popup
+app.directive("popupDb",function(){
+  return{
+    scope:false,
+    templateUrl:"./scripts/directives/popup-db.html"
+  }
+});
+
+
 
 //sidebar
 app.directive("sideBar",function(){

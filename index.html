@@ -26,10 +26,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- <link
-            href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-            rel="stylesheet"> -->
-
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/dark.css">
     <link rel="stylesheet" href="styles/custom_styles.css">
@@ -59,81 +55,15 @@
     </popup-rename-notebook>
 
     <!-- import popup -->
-    <div style="top: 20vh;" class="popup " ng-show="dialog_flags.show_db_popup">
-        <div class="new_task_popup_child">
-            <div class="flex-row align-center gap-1 m-2">
-                <span class="material-symbols-outlined list-icon">database</span>
-                <span>Database Management</span>
-                <!-- <select
-                name="db_operation"
-                class="select text-accent capitalize bold text-2"
-                ng-model="db_operation"
-                ng-change="handle_db_operation_change()">
-                    <option value="" selected disabled>Tap to select</option>
-                    <option value="import">Import Data</option>
-                    <option value="export">Export Data</option>
-                </select>
-                 -->
-            </div>
-            <div class="flex-col align-center w-full">
-                <div class="flex-col align-center w-full gap-1 mt-2">
-                    <div class="flex-row gap-2">
-                        <div ng-click="db_operation=CONST.IMPORT; handle_db_operation_change()"
-                            ng-class="{colorful:db_operation==CONST.IMPORT}"
-                            class="flex-row align-center gap-2 grayscale border rounded p-1/2">
-                            <span class="material-symbols-outlined list-icon">cloud_upload</span>
-                            <span>Import</span>
-                        </div>
-                        <div ng-click="db_operation=CONST.EXPORT; handle_db_operation_change()"
-                            ng-class="{colorful:db_operation==CONST.EXPORT}"
-                            class="flex-row align-center gap-2 grayscale border rounded p-1/2">
-                            <span class="material-symbols-outlined list-icon">cloud_download</span>
-                            <span>Export</span>
-                        </div>
-                    </div>
-
-                    <label for="fileInput" ng-show="db_operation==CONST.IMPORT"
-                        class="align-center border flex-row gap-1 justify-center m-1 p-1/2 rounded shadow">
-                        <span class="material-symbols-outlined">upload_file</span>
-                        Choose file to import
-                    </label>
-                    <input ng-show="db_operation==CONST.IMPORT" type="file" id="fileInput" file-input="file" />
-
-
-                    <div ng-if="db_operation==CONST.EXPORT">
-                        Set password to encrypt the file
-                    </div>
-                    <div ng-if="db_operation==CONST.IMPORT">
-                        Enter password to decrypt the uploaded file
-                    </div>
-                    <input name="password" type="password" ng-model="password"
-                        placeholder="Password for the file"></input>
-                    <textarea ng-readonly="db_operation==CONST.EXPORT" ng-model="db_textarea" id="db_textarea"
-                        class="new-task-content rounded-2" autofocus></textarea>
-                </div>
-                <div class="flex-row">
-                    <span ng-click="dialog_flags.show_db_popup=false; password=''; db_textarea='' "
-                        class="button text-red-500">Cancel</span>
-                    <span ng-if="db_operation==CONST.EXPORT && password.length>0"
-                        ng-click="export_db_as_file(db_textarea)" class="button">
-                        Encrypt and Export
-                    </span>
-                    <span ng-if="db_operation==CONST.IMPORT && password.length>0" ng-click="import_data()"
-                        class="button">
-                        Decrypt and Import
-                    </span>
-                </div>
-
-            </div>
-
-
-        </div>
-    </div>
-
+     <popup-db 
+        style="top: 20vh;"
+        class="popup" 
+        ng-show="dialog_flags.show_db_popup"></popup-db>
+    
 
 
     <!-- more options panel for note-->
-    <div id="list-more-options-container" ng-show="dialog_flags.show_note_more_options">
+    <div class="list-more-options-container" ng-show="dialog_flags.show_note_more_options">
         <div class="list-more-optionas-holder ">
             <div ng-repeat="option in note_more_options" ng-class="option.class" ng-click="option.action()"
                 ng-show="option.show">
@@ -146,7 +76,7 @@
 
 
     <!-- more options panel for notebook-->
-    <div id="list-more-options-container" ng-show="dialog_flags.show_list_more_options">
+    <div class="list-more-options-container" ng-show="dialog_flags.show_list_more_options">
         <div class="list-more-optionas-holder ">
             <div ng-repeat="option in notebook_more_options" ng-class="option.class" ng-click="option.action()"
                 ng-show="option.show">
@@ -158,7 +88,7 @@
 
 
     <!-- notebooks list for various options -->
-    <div id="list-more-options-container" ng-show="dialog_flags.show_quick_notebooks">
+    <div class="list-more-options-container" ng-show="dialog_flags.show_quick_notebooks">
         <div class="list-more-optionas-holder ">
             <div ng-repeat="notebook in notebooks" ng-click="handle_tap_on_quick_notebooks_item(notebook)"
                 class="task-more-options-item">
@@ -170,7 +100,7 @@
 
 
     <!-- blocking screen  -->
-    <div class="block_screen" ng-if="is_any_dialog_open()" ng-click="close_all_dialogs()"></div>
+    <div class="block_screen" ng-show="is_any_dialog_open()" ng-click="close_all_dialogs()"></div>
 
     <!-- toast message -->
     <div ng-class="{show:is_toast_visible}" class="toast transition text-center capitalize bg-blur">{{toast_msg}}
@@ -213,11 +143,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-    <!-- google Oauth api -->
-    <script src="https://apis.google.com/js/api.js"></script>
-
-
-
     <!-- <script type="text/javascript" src="app.js"></script> -->
     <!-- <script type="text/javascript" src="scripts/directive_file_change.js"></script> -->
     <script type="text/javascript" src="scripts/directive_create_note_layout.js"></script>
@@ -231,7 +156,6 @@
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
     <script type="text/javascript" src="scripts/wiki.js"></script>
-    <script type="text/javascript" src="scripts/html_gen.js"></script>
     <script type="text/javascript" src="scripts/utilities.js"></script>
 </body>
 

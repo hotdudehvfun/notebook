@@ -17,15 +17,15 @@ const CHART_COLORS = {
   grey: 'rgb(201, 203, 207)'
 };
 
-Number.prototype.clamp = function(min, max) {
+Number.prototype.clamp = function (min, max) {
   return Math.min(Math.max(this, min), max);
 };
 
 
 function util_get_transparent_color(rgb, alpha) {
-  if(alpha==undefined)
+  if (alpha == undefined)
     alpha = 0.5
-  alpha = alpha.clamp(0,1)
+  alpha = alpha.clamp(0, 1)
   return rgb.replace('rgb', 'rgba').replace(')', `, ${alpha})`);
 }
 
@@ -311,20 +311,6 @@ function getTranslateX(element) {
   return matrix.m41;
 }
 
-function sendNotification() {
-  var options = {
-    body: 'This is a notification.',
-    icon: '/logo.png' // Optional: Add your icon here
-  };
-  var notification = new Notification('Hello!', options);
-
-  // Optional: Add a click event to the notification
-  notification.onclick = function () {
-    window.open('https://yourwebsite.com'); // Open a URL on notification click
-  };
-}
-
-
 function split_text_into_tasks(text, delim) {
   let lines = text.trim().split(delim)
   let multiple_tasks = []
@@ -367,6 +353,8 @@ let proverbs = [
   "A full cup cannot accept more water.",
   "True understanding comes from nothingness.",
 ]
+
+
 function get_empty_proverbs() {
   try {
     const proverb = proverbs.getRandomItem()
@@ -388,21 +376,11 @@ decrypt_data = (encrypted_text, key) => {
   return decrypted_text;
 }
 
-
-document.querySelector("#fileInput").addEventListener('change', function () {
-  var fileReader = new FileReader();
-  fileReader.onload = function () {
-    // console.log(fileReader.result)
-    document.querySelector("#db_textarea").value = fileReader.result;
-    angular.element(document.body).injector().get('$rootScope').$broadcast('update_db_textarea', fileReader.result);
-  }
-  fileReader.readAsText(this.files[0]);
-})
-
-
 function clamp(min, current, max) {
   return Math.min(Math.max(current, min), max);
 }
+
+
 
 
 function greet_user(username) {
@@ -457,7 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function handleSwipe() {
   if (touch.x.end - touch.x.start > touch.x.threshold) { // Threshold to qualify as a 'right swipe'
     angular.element(document.body).injector().get('$rootScope').$broadcast(
-      'broadcast_right_swipe', 
+      'broadcast_right_swipe',
       touch);
 
 
@@ -465,7 +443,47 @@ function handleSwipe() {
 }
 
 
-function bool_to_on_off(state)
-{
-  return state?"on":"off";
+function bool_to_on_off(state) {
+  return state ? "on" : "off";
+}
+
+
+function get_download_file_name() {
+  try {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    }).replace(/ /g, "-").toLowerCase();
+    return `${formattedDate}-notebook-db.txt`;
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+
+
+
+function tell_angular_file_change_done(file_input) {
+  try {
+    var fileReader = new FileReader();
+    fileReader.readAsText(file_input.files[0]);
+    fileReader.onload = function () {
+      angular.element(document.body).injector().get('$rootScope').$broadcast('file_onchange', fileReader.result);
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+function import_file_event_change(file_input) {
+  try {
+    file_input.classList.add("green")
+    //broadcast msg to angularjs
+    tell_angular_file_change_done(file_input)
+
+  } catch (err) {
+    console.log(err)
+  }
 }

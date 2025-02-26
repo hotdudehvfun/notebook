@@ -5,14 +5,12 @@
         <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h10" />
     </svg>
 </div>
-<div class="flex-row flex gap-1 justify-center">
-    <span class="material-symbols-outlined orange">
-        {{pageIcon}}
-    </span>
-    <div class="app-title orange" ng-click="handle_click_on_notebook_title()">
-        <span>{{pageTitle}}</span>
-    </div>
+
+<div class="flex-row flex gap-1 justify-center align-center orange" ng-click="handle_click_on_notebook_title()">
+    <span class="material-symbols-outlined text-xl">{{pageIcon}}</span>
+    <span class="text-lg capitalize">{{pageTitle}}</span>
 </div>
+
 <div class="flex-row flex align-center justify-end gap-1">
     <span ng-click="show_searchbar=!show_searchbar" class="material-symbols-outlined">search
     </span>

@@ -50,7 +50,7 @@ body {
     background-color: var(--bg-color);
     color: var(--font-color);
     font-size: 1rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family:system-ui;
 }
 *,
 *::before,
@@ -93,7 +93,7 @@ body {
 }
 
 .app-title {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     text-transform: capitalize;
     font-weight: bold;
     background: transparent;
@@ -304,7 +304,7 @@ ul.notebooks li:last-child > .list-panel-item
     content: attr(placeholder);
 }
 
-div#list-more-options-container {
+.list-more-options-container {
     z-index: 999;
     display: flex;
     flex-direction: column;
@@ -341,10 +341,8 @@ div#list-more-options-container {
 
 .list-panel-item > div > article {
     text-transform: capitalize;
-    font-size: 1rem;
     width: -webkit-fill-available;
     padding: 0.5rem 0.25rem;
-    font-weight: bold;
 }
 
 .list-panel-item > article.selected {
@@ -654,7 +652,7 @@ div#list-more-options-container {
     overflow-y: scroll;
 }
 
-h1, h2, h3, h4, h5 {
+h1, h2, h3, h4, h5,h6 {
     margin: 0rem 0rem;
     text-transform: capitalize;
 }
@@ -1238,7 +1236,7 @@ input#fileInput::-webkit-file-upload-button {
     visibility: hidden;
 }
 
-.task-content-div.selected {border: 1px solid orange;z-index: 999;}
+.task-content-div.selected {border: 1px solid orange;/* z-index: 999; */}
 
 .line {
     height: 4px;
@@ -1402,9 +1400,10 @@ select:focus-visible{
     border-radius: var(--drawer-radius) var(--drawer-radius) 0px 0px;
 }
 
-.plain-text {
-    padding: 0rem 1rem;
-}
+
+
+
+
 
 td {
     max-width: 150px;
@@ -1503,3 +1502,41 @@ canvas{
     z-index: 1; /* Ensure select is above */
     opacity: 0; /* Hide select, but keep it functional */
 }
+
+.plain-text {
+    padding: 0rem 1rem;
+}
+.plain-text > .h1,
+.plain-text > .h2,
+.plain-text > .h3,
+.plain-text > .h4,
+.plain-text > .h5,
+.plain-text > .h6 {
+    margin-left: -1rem;
+}
+
+
+
+
+.password {
+    width: 100%;
+    background: none;
+    color: var(--font-color);
+    padding: .5rem;
+    font-size: 1rem;
+    border: 1px solid;
+    border-radius: 0px;
+    border-width: 0px 0px 1px 0px;
+    font-family: MONOSPACE;
+}
+
+.password:focus{
+    border: 1px solid orange;
+    border-width:0px 0px 1px 0px;
+}
+
+
+
+
+
+
