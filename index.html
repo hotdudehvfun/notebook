@@ -88,15 +88,10 @@
 
 
     <!-- notebooks list for various options -->
-    <div class="list-more-options-container" ng-show="dialog_flags.show_quick_notebooks">
-        <div class="list-more-optionas-holder ">
-            <div ng-repeat="notebook in notebooks" ng-click="handle_tap_on_quick_notebooks_item(notebook)"
-                class="task-more-options-item">
-                <span class="material-symbols-outlined">{{get_notebook_icon(notebook)}}</span>
-                <div>{{notebook.title}}</div>
-            </div>
-        </div>
-    </div>
+    <quick-notebooks 
+        class="list-more-options-container"
+        ng-init="load_quick_notebooks()"
+        ng-show="dialog_flags.show_quick_notebooks"></quick-notebooks>
 
 
     <!-- blocking screen  -->
@@ -150,7 +145,11 @@
     <script type="text/javascript" src="scripts/directive_password_popup.js"></script>
     <script type="text/javascript" src="scripts/directive_new_notebook_popup.js"></script>
     <script type="text/javascript" src="scripts/directive_rename_notebook_popup.js"></script>
-    <script type="text/javascript" src="scripts/db_service.js"></script>
+    
+    <!--load services -->
+    <script type="text/javascript" src="scripts/services/db_service.js"></script>
+    <script type="text/javascript" src="scripts/services/notebook_service.js"></script>
+    
     <script type="text/javascript" src="scripts/main_controller.js"></script>
     <script type="text/javascript" src="scripts/angular_module.js"></script>
     <script type="text/javascript" src="scripts/list.js"></script>

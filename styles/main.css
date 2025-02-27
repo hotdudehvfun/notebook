@@ -356,7 +356,7 @@ ul.notebooks li:last-child > .list-panel-item
     font-weight: bolder;
     /* background: var(--white_black); */
     color: #b3b3b3;
-    font-size: .75rem;
+    font-size: .80rem;
 }
 
 .taskMoreOptionsConatiner {

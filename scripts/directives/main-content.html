@@ -24,7 +24,7 @@
     <div class="spacer"></div>
     
     <!-- Sort notebooks -->
-    <div class="relative text-left">
+    <div class="relative text-left w-half">
        <label for="sort_notebooks" class="submenu_item_select_label justify-left">
             <h2 class="m-1">Your notebooks</h2>
             <span class="material-symbols-outlined textmd">keyboard_arrow_down</span>
@@ -59,14 +59,22 @@
             <li 
                 class="notebooks_li"
                 ng-repeat="notebook in items"
-                ng-click="open_notebook(notebook)" 
-                >
+                ng-click="open_notebook(notebook)" >
                  <div class="list-panel-item">
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
                         <span class="material-symbols-outlined icon-btn orange">{{get_notebook_icon(notebook)}}</span>
                         <article class="selected">{{notebook.title}}</article>
-                        <span class="list-sub-text">{{get_notebook_info(notebook)}}</span>
+                        
+                        <!-- completed notes status -->
+                        <span
+                            ng-show="get_completed_notes_length(notebook.taskArray)>0" 
+                            class="list-sub-text gray line-through">
+                                {{get_completed_notes_length(notebook.taskArray)}}
+                        </span>
+                        <!-- notes length -->
+                        <span class="list-sub-text">{{notebook.taskArray.length}}</span>
+
                         <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                     </div>
                 </div>
@@ -86,7 +94,14 @@
                         <!-- notebook icon -->
                         <span class="material-symbols-outlined icon-btn orange">{{get_notebook_icon(notebook)}}</span>
                         <article class="selected">{{notebook.title}}</article>
-                        <span class="list-sub-text">{{get_notebook_info(notebook)}}</span>
+                        <!-- completed notes status -->
+                        <span
+                            ng-show="get_completed_notes_length(notebook.taskArray)>0" 
+                            class="list-sub-text gray line-through">
+                                {{get_completed_notes_length(notebook.taskArray)}}
+                        </span>
+                        <!-- notes length -->
+                        <span class="list-sub-text">{{notebook.taskArray.length}}</span>
                         <span ng-show="is_sortable" class="material-symbols-outlined handle p-1/2">drag_handle</span>
                     </div>
                 </div>
@@ -162,7 +177,10 @@
     </ul>
 
     <!-- show completed tasks if any -->
-    <div ng-show="notebook_has_completed_tasks()" class="group_by_text">{{count_completed_notes()}} completed notes
+    <div 
+        ng-show="notebook_has_completed_tasks()" 
+        class="group_by_text">
+        {{get_completed_notes_length(notes)}} completed notes
     </div>
     <div ng-repeat="note in notes | filter:{isTaskCompleted:true}">
         <div class="task" ng-class="{completed: note.isTaskCompleted}">

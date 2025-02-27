@@ -52,30 +52,29 @@ let COLORS = {
 
 //date argument in milliseconds
 function timeSince(date) {
-  let minute = 60;
-  let hour = minute * 60;
-  let day = hour * 24;
-  let month = day * 30;
-  let year = day * 365;
+  if (!date || isNaN(date)) return "Invalid date";
 
-  let suffix = ' ago';
+  const secondsElapsed = Math.floor((Date.now() - date) / 1000);
+  if (secondsElapsed < 0) return "Future date";
 
-  let elapsed = Math.floor((Date.now() - date) / 1000);
+  const intervals = [
+      { label: "year", seconds: 31536000 }, // 365 * 24 * 60 * 60
+      { label: "month", seconds: 2592000 }, // 30 * 24 * 60 * 60
+      { label: "day", seconds: 86400 }, // 24 * 60 * 60
+      { label: "hour", seconds: 3600 }, // 60 * 60
+      { label: "minute", seconds: 60 }
+  ];
 
-  if (elapsed < minute) {
-    return 'just now';
+  if (secondsElapsed < 60) return "just now";
+
+  for (const { label, seconds } of intervals) {
+      const count = Math.floor(secondsElapsed / seconds);
+      if (count >= 1) {
+          return `${count} ${label}${count > 1 ? "s" : ""} ago`;
+      }
   }
-
-  // get an array in the form of [number, string]
-  let a = elapsed < hour && [Math.floor(elapsed / minute), 'minute'] ||
-    elapsed < day && [Math.floor(elapsed / hour), 'hour'] ||
-    elapsed < month && [Math.floor(elapsed / day), 'day'] ||
-    elapsed < year && [Math.floor(elapsed / month), 'month'] ||
-    [Math.floor(elapsed / year), 'year'];
-
-  // pluralise and append suffix
-  return a[0] + ' ' + a[1] + (a[0] === 1 ? '' : 's') + suffix;
 }
+
 
 
 timeToGo = (date) => {

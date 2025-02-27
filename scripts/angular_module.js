@@ -29,7 +29,11 @@ app.filter("sanitize", ['$sce', function ($sce) {
   }
 }]);
 
+
+//services for separate logics
 app.service('db_service',db_service)
+app.service('notebook_service',notebook_service)
+
 app.controller('main_controller',main_controller);
 
 
@@ -53,6 +57,15 @@ app.directive("createNotebookPopup",function(){
     templateUrl:"./scripts/directives/create-notebook-popup.html",
   }
 });
+
+//quick notebooks popup
+app.directive("quickNotebooks",function(){
+  return{
+    scope:false,
+    templateUrl:"./scripts/directives/quick-notebooks.html",
+  }
+});
+
 
 //db popup
 app.directive("popupDb",function(){

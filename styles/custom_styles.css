@@ -254,3 +254,16 @@ grid_title_bar {
     
 }
 
+.w-half
+{
+    width:50% !important;
+}
+
+
+.gray, .gray {
+    color: gray !important;
+}
+
+.line-through {
+    text-decoration: line-through !important;
+}

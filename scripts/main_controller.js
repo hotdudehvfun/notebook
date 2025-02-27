@@ -1,4 +1,13 @@
-function main_controller($scope, $timeout, db_service) {
+function main_controller($scope, $timeout, db_service,notebook_service) {
+
+    //notebook service
+    //lazy load notebooks for popup
+    $scope.quick_notebooks = [];
+    $scope.load_quick_notebooks = function () {
+        notebook_service.load_quick_notebooks($scope.notebooks, function (data) {
+            $scope.quick_notebooks = data;
+        });
+    };
 
     // custom code of note is parsed to output html content
     $scope.parse_markdown_to_html = function (text) {
@@ -24,29 +33,13 @@ function main_controller($scope, $timeout, db_service) {
         });
     }
 
-    //for searching made easy
-    // $scope.getTasksOnly = ()=> {
-    //     var allTasks = [];
-    //     $scope.notebooks.forEach(list => {
-    //         allTasks = allTasks.concat(list.notes)
-    //     });
-    //     //console.log(allTasks);
-    //     return allTasks;
-    // };
-
-
-    $scope.notebook_age = () => {
-        try {
-            if ($scope.current_notebook) {
-                let ms = $scope.current_notebook.dateCreated
-                return `${timeSince(ms)}`
-            }
-            return "Notebook is very old"
-        } catch (err) {
-            console.log("Error while getting notebook age", err)
-        }
+    
+    // get notebook age
+    $scope.notebook_age = function() {
+        return notebook_service.get_notebook_age($scope.current_notebook)
     }
 
+    // open notebook
     $scope.open_notebook = function (notebook) {
         try {
             if (notebook) {
@@ -85,11 +78,11 @@ function main_controller($scope, $timeout, db_service) {
             let left_val = state ? "0px" : "-90vw";
             $scope.sidebar_left = { left: left_val }
             $scope.dialog_flags.is_sidebar_menu_open = state
-
         } catch (err) {
             console.log("Cannot open side bar", err)
         }
     }
+
     $scope.set_view = function (view_name) {
         //available views
         /*
@@ -134,10 +127,7 @@ function main_controller($scope, $timeout, db_service) {
     $scope.handle_input_on_notebook = function (e) {
         try {
             if (e.keyCode == 13) {
-
                 $scope.handle_click_on_create_notebook_button()
-
-
                 e.target.value = "";
             } else {
                 $scope.new_notebook_icon = getIconForTitle($scope.new_list_name)
@@ -150,19 +140,14 @@ function main_controller($scope, $timeout, db_service) {
 
 
     $scope.get_notebook_icon = function (notebook) {
-        try {
-            if (notebook?.is_locked) return "lock";
-            return notebook?.icon || "folder";
-        } catch (err) {
-            console.log(err);
-            return "folder";
-        }
+        return notebook_service.get_notebook_icon(notebook)
     };
     
 
     $scope.insertTextAtCursor = function (id, value) {
         insertTextAtCursor(id, value)
     }
+
     $scope.get_system_var_length = () => {
         try {
             return Object.keys(system_vars).length
@@ -172,24 +157,9 @@ function main_controller($scope, $timeout, db_service) {
         return -1;
     }
 
-    $scope.get_notebook_info = function (notebook) {
-        try {
-            let title = notebook.title
-            if (title.toLowerCase() == "system") {
-                return $scope.get_system_var_length()
-            }
-            var completed = notebook.taskArray.filter(function (note) { return note.isTaskCompleted == true }).length;
-            if (completed == 0)
-                return notebook.taskArray.length;
-            return `${completed}/${notebook.taskArray.length}`
-        } catch (err) {
-            console.log("Failed to get notebook info", err)
-        }
-    }
-
-    $scope.count_completed_notes = () => {
-        var completed = $scope.notes.filter(function (note) { return note.isTaskCompleted == true }).length;
-        return completed
+    // get completed notes length
+    $scope.get_completed_notes_length = (notes) => {
+        return notes.filter(function (note) { return note.isTaskCompleted == true }).length;
     }
 
     $scope.handle_click_on_create_notebook_button = () => {
@@ -2223,7 +2193,7 @@ function main_controller($scope, $timeout, db_service) {
     }
 
 
-
+    //lazy load notebooks
 
 
     $scope.init = () => {

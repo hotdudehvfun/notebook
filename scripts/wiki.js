@@ -211,6 +211,7 @@ function handle_charts(text) {
     const type = lines[1].trim()
     const title = lines[2].trim()
     const id = lines[3].trim()
+    console.log(id)
     let theme = "red"
     if(id.indexOf("#")!=-1)
         theme = id.split("#")[1]

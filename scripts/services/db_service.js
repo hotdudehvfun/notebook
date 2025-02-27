@@ -51,6 +51,5 @@ function db_service() {
         } catch (error) {
             console.log("Error while writing data", err)
         }
-
     }
 }

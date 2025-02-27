@@ -1,0 +1,9 @@
+<div class="list-more-optionas-holder ">
+    <div 
+        ng-repeat="notebook in quick_notebooks" 
+        ng-click="handle_tap_on_quick_notebooks_item(notebook)"
+        class="task-more-options-item">
+        <span class="material-symbols-outlined">{{get_notebook_icon(notebook)}}</span>
+        <div>{{notebook.title}}</div>
+    </div>
+</div>
