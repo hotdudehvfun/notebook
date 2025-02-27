@@ -96,7 +96,8 @@
                 <div class="list-panel-item">
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
-                        <span class="material-symbols-outlined icon-btn orange">{{get_notebook_icon(notebook)}}</span>
+                        <!-- <span class="material-symbols-outlined icon-btn orange">{{get_notebook_icon(notebook)}}</span> -->
+                        <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
                         <article class="selected">{{notebook.title}}</article>
                         <!-- completed notes status -->
                         <span

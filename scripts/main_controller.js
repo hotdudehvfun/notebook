@@ -2206,8 +2206,8 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     }
 
     $scope.get_svg_src = (name) => {
-        const svg_path = `/img/icons/${name}.svg`;
-        return name ? svg_path : "/img/icons/leaf.fill.svg";
+        const svg_path = `./img/icons/${name}.svg`;
+        return name ? svg_path : "./img/icons/leaf.fill.svg";
     };
     
 
