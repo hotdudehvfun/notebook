@@ -241,9 +241,9 @@ function formatDay(date) {
   return date.toLocaleDateString('en-US', options);
 }
 
-
+//yes means svg file is available inside icons folder
 const iconMapping = {
-  'finance': 'savings',
+  'finance': 'savings',//yes
   'money': 'attach_money',
   'shopping': 'shopping_cart',
   'work': 'work',
@@ -252,7 +252,7 @@ const iconMapping = {
   'food': 'restaurant',
   'travel': 'flight',
   'study': 'school',
-  'music': 'music_note',
+  'music': 'music_note',//yes
   'movies': 'movie',
   'home': 'home',
   'family': 'family_restroom',
@@ -261,7 +261,7 @@ const iconMapping = {
   'events': 'event',
   'books': 'book',
   'technology': 'devices',
-  'games': 'sports_esports',
+  'games': 'sports_esports',//yes
   'hobbies': 'palette',
   'pet': 'pets',
   'shopping': 'shopping_bag',
@@ -291,8 +291,8 @@ const iconMapping = {
   'kitchen': 'kitchen',
   'party': 'celebration',
   'gifts': 'card_giftcard',
-  'todo': 'receipt_long',
-  'system': 'keyboard_command_key',
+  'todo': 'receipt_long',//yes
+  'system': 'keyboard_command_key',//yes
 };
 
 function getIconForTitle(title) {
