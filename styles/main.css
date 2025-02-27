@@ -342,7 +342,7 @@ ul.notebooks li:last-child > .list-panel-item
 .list-panel-item > div > article {
     text-transform: capitalize;
     width: -webkit-fill-available;
-    padding: 0.5rem 0.25rem;
+    padding: 0.5rem 0.75rem;
 }
 
 .list-panel-item > article.selected {
@@ -1534,6 +1534,19 @@ canvas{
     border: 1px solid orange;
     border-width:0px 0px 1px 0px;
 }
+
+.svg-icon
+{
+    width:24px;
+    height:24px;
+}
+
+.svg-icon-l
+{
+    width:36px;
+    height:36px;
+}
+
 
 
 

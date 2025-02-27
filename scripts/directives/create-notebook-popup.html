@@ -19,7 +19,8 @@
 
             <!-- title of popup -->
             <div class="flex-row align-center gap-1">
-                <span class="material-symbols-outlined list-icon">book_6</span>
+                <!-- <span class="material-symbols-outlined list-icon">book_6</span> -->
+                <img src="/img/icons/pencil.and.list.clipboard.svg" class="svg-icon">
                 <span>Open new notebook</span>
             </div>
             <!-- content of popup -->
@@ -27,7 +28,10 @@
                 <!-- icon and input -->
                 <div class="flex-row gap-1 align-center p-1">
                     <!-- icon -->
-                    <span class="material-symbols-outlined button-icon" style="font-size: 1.4rem;">{{new_notebook_icon}}</span>
+                    <span 
+                        class="material-symbols-outlined button-icon" 
+                        style="font-size: 1.4rem;">{{new_notebook_icon}}
+                    </span>
                     <!-- notebook name input -->
                     <input
                         maxlength="30"

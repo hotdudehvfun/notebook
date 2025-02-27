@@ -495,6 +495,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.handle_tap_on_note = function (note) {
         try {
+            console.log(note.is_component)
             $scope.selected_note = note
             // console.log($scope.selected_note)
             $scope.is_note_selected = true
@@ -1337,6 +1338,19 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             $scope.is_trash_open = ($scope.current_notebook.title.toLowerCase() == "trash")
             $scope.note_more_options = [
                 {
+                    text:"Edit Chart",
+                    icon:"timeline",
+                    class: "task-more-options-item",
+                    show: $scope.selected_note.component_type==COMPONENT.TYPE.CHART,
+                    action:()=>{
+                        // console.log("edit chart")
+                        $scope.open_update_task_popup();
+                        // execute edit chart option of edit menu
+                        $scope.component_menu_items[1].action()
+
+                    }
+                },
+                {
                     text: "Update note",
                     icon: "edit",
                     class: "task-more-options-item",
@@ -1503,8 +1517,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             $scope.component_menu_items = [
                 {
                     text: "🤖 Robot",
-                    action: () => {
-                    }
+                    action: () => {}
                 }, 
                 {
                     text: "📊 Edit chart",
@@ -2192,8 +2205,11 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         }
     }
 
-
-    //lazy load notebooks
+    $scope.get_svg_src = (name) => {
+        const svg_path = `/img/icons/${name}.svg`;
+        return name ? svg_path : "/img/icons/leaf.fill.svg";
+    };
+    
 
 
     $scope.init = () => {
@@ -2292,9 +2308,9 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
         //default values
         $scope.defaultPageTitle = "Notebooks";
-        $scope.default_app_icon = "eco"
+        $scope.default_app_icon = "leaf.fill"
         $scope.pageTitle = $scope.defaultPageTitle;
-        $scope.pageIcon = "eco"
+        $scope.pageIcon = "leaf.fill" //svg source
         $scope.copied_task = null
         $scope.db_operation = null
 
