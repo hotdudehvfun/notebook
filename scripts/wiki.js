@@ -13,8 +13,7 @@ function setupDemoList() {
 function bold(line) {
     return line.replace(/:(.*?)(:)/g, '<b>$1</b>')
 }
-function handle_highlight(line)
-{
+function handle_highlight(line) {
     return line.replace(/!(.*?)(!)/g, '<div class="highlight">$1</div>')
 }
 function italic(line) {
@@ -108,7 +107,7 @@ function format_currency(result) {
     let formattedResult = new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR',
-        maximumFractionDigits:0
+        maximumFractionDigits: 0
     }).format(result);
     return formattedResult;
 }
@@ -213,35 +212,35 @@ function handle_charts(text) {
     const id = lines[3].trim()
     //console.log(id)
     let theme = "red"
-    if(id.indexOf("#")!=-1)
+    if (id.indexOf("#") != -1)
         theme = id.split("#")[1]
 
     const labels = lines[4].split(",")
     const values = lines[5].split(',').map(v => handle_calculations(v.trim()));
-    
+
     setTimeout(() => {
-        update_chart(labels, values, id, type, title,theme)
+        update_chart(labels, values, id, type, title, theme)
     }, 50)
     return `<canvas style="width:100%" id="${id}"></canvas>`
 }
 
-function update_chart(_labels, values, id, _type, title,theme) {
+function update_chart(_labels, values, id, _type, title, theme) {
     try {
         let chart = new Chart(id, {
             type: _type,
             data: {
+                tension: 0.5,
+                labels: _labels,
+                datasets: [{
+                    backgroundColor: util_get_transparent_color(CHART_COLORS[theme], 0.5),
+                    borderColor: CHART_COLORS[theme],
+                    borderWidth: 2,
+                    fill: false,
+                    data: values,
+                    label: title,
                     tension: 0.5,
-                    labels: _labels,
-                    datasets: [{
-                        backgroundColor: util_get_transparent_color(CHART_COLORS[theme],0.5),
-                        borderColor: CHART_COLORS[theme],
-                        borderWidth:2,
-                        fill: false,
-                        data: values,
-                        label: title,
-                        tension: 0.5,
-                        borderRadius:5
-                    }]
+                    borderRadius: 5
+                }]
             },
             options: {
                 animation: false,
@@ -289,15 +288,15 @@ function handle_returns(text) {
         let line3_points = lines[6].split(",").map(v => handle_calculations(v.trim()));
         let id = lines[7].trim()
         setTimeout(() => {
-            update_chart_returns(titles,labels,line1_points,line2_points,line3_points,id)
+            update_chart_returns(titles, labels, line1_points, line2_points, line3_points, id)
         }, 50)
         return `<canvas style="width:100%" id="${id}"></canvas>`
     } catch (err) {
-        console.log("Error while handling returns charts",err)
+        console.log("Error while handling returns charts", err)
     }
 }
 
-function update_chart_returns(_titles,_labels,_line1_points,_line2_points,_line3_points,id) {
+function update_chart_returns(_titles, _labels, _line1_points, _line2_points, _line3_points, id) {
     try {
         let chart = new Chart(id, {
             type: "line",
@@ -306,28 +305,28 @@ function update_chart_returns(_titles,_labels,_line1_points,_line2_points,_line3
                 tension: 0.5,
                 datasets: [
                     {
-                        label:_titles[0],
-                        data:_line1_points,
+                        label: _titles[0],
+                        data: _line1_points,
                         borderColor: ["#ff4967"],
-                        fill:false,
+                        fill: false,
                     },
                     {
-                        label:_titles[1],
-                        data:_line2_points,
+                        label: _titles[1],
+                        data: _line2_points,
                         borderColor: ["#164ea6"],
-                        fill:false,
+                        fill: false,
                     },
                     {
-                        label:_titles[2],
-                        data:_line3_points,
+                        label: _titles[2],
+                        data: _line3_points,
                         borderColor: ["#4cd964"],
-                        fill:false,
+                        fill: false,
                     },
                 ]
             },
             options: {
                 animation: false,
-                title: {display: false,},
+                title: { display: false, },
                 aspectRation: 1,
                 scales: {
                     y: {
@@ -352,36 +351,36 @@ function handle_table_component(text) {
         let rows = [];
         let sumCols = [];
         let sumRow = [];
-    
+
         lines.forEach(line => {
             line = line.trim();
-    
+
             // Check for the _sum_col option
             if (line.startsWith('_sum_col')) {
                 const [, cols] = line.split('=');
                 sumCols = cols.split(',').map(col => parseInt(col.trim()) - 1); // Convert to zero-based indices
             }
-    
+
             // Check for header row (||)
             else if (line.startsWith('||')) {
                 headers = line.replace('||', '').split(',').map(cell => cell.trim());
             }
-    
+
             // Check for regular row (|)
             else if (line.startsWith('|')) {
                 const row = line.replace('|', '').split(',').map(cell => handle_calculations(cell.trim()));
                 rows.push(row);
-    
+
                 // Keep track of sums for the columns specified in _sum_col
                 sumCols.forEach(col => {
                     sumRow[col] = (sumRow[col] || 0) + parseFloat(row[col] || 0);
                 });
             }
         });
-    
+
         // Create the table element (or HTML string)
         let tableHtml = '<table>';
-    
+
         // Add header row
         if (headers.length > 0) {
             tableHtml += '<thead><tr>';
@@ -390,7 +389,7 @@ function handle_table_component(text) {
             });
             tableHtml += '</tr></thead>';
         }
-    
+
         // Add body rows
         tableHtml += '<tbody>';
         rows.forEach(row => {
@@ -400,14 +399,14 @@ function handle_table_component(text) {
             });
             tableHtml += '</tr>';
         });
-    
+
         // Add sum row if needed
         if (sumCols.length > 0) {
             tableHtml += '<tr>';
-            
+
             // Find the first sum column index
             const firstSumCol = Math.min(...sumCols);
-            
+
             // Add a merged "Total" cell spanning all non-sum columns
             if (firstSumCol > 0) {
                 tableHtml += `<td class="text-center" colspan="${firstSumCol}"><b>Total</b></td>`;
@@ -426,7 +425,7 @@ function handle_table_component(text) {
         }
 
         tableHtml += '</tbody></table>';
-    
+
         return tableHtml; // Return the generated table HTML
     } catch (err) {
         console.log(err);
@@ -435,69 +434,62 @@ function handle_table_component(text) {
 }
 
 
-function circum(r)
-{
-    return Math.PI*2*r;
+function circum(r) {
+    return Math.PI * 2 * r;
 }
 
-function calculate_dashoffset(r,p)
-{
-    return circum(r)*(1-(p/100));
+function calculate_dashoffset(r, p) {
+    return circum(r) * (1 - (p / 100));
 }
 
-function show_progress(p,that)
-{
+function show_progress(p, that) {
     try {
-        that.parentElement.querySelector(".circular_bar_text").innerHTML=`${p}`;
+        that.parentElement.querySelector(".circular_bar_text").innerHTML = `${p}`;
         // console.log(that.parentElement.querySelector(".circular_bar_text"))
     } catch (err) {
-        console.log("Failed to show progress inside text",err)
+        console.log("Failed to show progress inside text", err)
     }
 }
 
-function handle_circular_bars(text)
-{
+function handle_circular_bars(text) {
     try {
         let lines = text.split("\n")
         let texts = lines[1].split(",").map(v => handle_calculations(v.trim()));
         let p = lines[2].split(",").map(v => handle_calculations(v.trim()));
         let text_pos = "LEFT" //by default text is on left side
-        if(lines.length==4)
-        {
+        if (lines.length == 4) {
             text_pos = lines[3].trim()
         }
-    
+
         let radius = 70
         let r_gap = 20
         let size = 180
-        let svg=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform: rotate(-90deg)">`
-        let colors = ["#ff4967","#f4b424","#49dc6b","#9a66ff"]
-        for(let i=0;i<p.length;i++)
-        {
-            svg+=`
+        let svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform: rotate(-90deg)">`
+        let colors = ["#ff4967", "#f4b424", "#49dc6b", "#9a66ff"]
+        for (let i = 0; i < p.length; i++) {
+            svg += `
             <!-- back circle -->
-            <circle class="back_circle" r="${radius-r_gap*i}" cx="${size/2}" cy="${size/2}" fill="transparent" 
+            <circle class="back_circle" r="${radius - r_gap * i}" cx="${size / 2}" cy="${size / 2}" fill="transparent" 
               stroke="${colors[i]}" stroke-linecap="round" stroke-width="12">
               </circle>
     
             <!-- progress circle -->
-            <circle onclick="show_progress(${p[i]},this)" r="${radius-r_gap*i}" cx="${size/2}" cy="${size/2}" fill="transparent" 
+            <circle onclick="show_progress(${p[i]},this)" r="${radius - r_gap * i}" cx="${size / 2}" cy="${size / 2}" fill="transparent" 
               stroke="${colors[i]}" stroke-linecap="round" stroke-width="12"
-              stroke-dasharray="${circum(radius-r_gap*i)}" stroke-dashoffset="${calculate_dashoffset(radius-r_gap*i,p[i])}">
+              stroke-dasharray="${circum(radius - r_gap * i)}" stroke-dashoffset="${calculate_dashoffset(radius - r_gap * i, p[i])}">
               </circle>
             `
         }
 
-        svg+=`</svg>`
+        svg += `</svg>`
         let text_html = ``
-        texts.forEach((item,index)=>{
-            text_html+=`<div style="color:${colors[index]};" class='circular_bar_text_container_item'>${item}</div>`
+        texts.forEach((item, index) => {
+            text_html += `<div style="color:${colors[index]};" class='circular_bar_text_container_item'>${item}</div>`
         })
 
         //determine text pos
-        let flex_class="flex-row"
-        if(text_pos=="RIGHT")
-        {
+        let flex_class = "flex-row"
+        if (text_pos == "RIGHT") {
             flex_class = "flex-row-reverse"
         }
 
@@ -518,6 +510,118 @@ function handle_circular_bars(text)
 }
 
 
+function handle_component_transactions(markdown) {
+    try {
+        let transactions = [];
+        let lines = markdown.trim().split('\n');
+        if(lines.length==1)
+            return "Missing transactions!";
+        
+        let total_amounts = []
+        total_amounts["total"] = 0;
+        total_amounts["cash"] = 0;
+        total_amounts["credit"] = 0;
+        let category_amounts = []
+        let account_amounts = []
+        
+        lines.forEach((line, index) => {
+            if (index >= 1) {
+                let parts = line.split(',').map(part => part.trim());
+                if (parts.length < 6) {
+                    return(`<p>Invalid transaction format: ${line}</p>`)
+                }
+                let [desc, category, method, account, amount, date] = parts;
+                // Default values for missing or incorrect data
+                method = ["cash", "credit"].includes(method.toLowerCase()) ? method.toLowerCase() : "cash";
+                amount = isNaN(parseFloat(amount)) ? 0 : parseFloat(amount);
+                //calculating totals
+                total_amounts[method]+=amount //cash or credit
+                total_amounts["total"]+=amount
+                //categories amounts
+                if(category_amounts[category])
+                    category_amounts[category] += amount
+                else
+                    category_amounts[category] = amount
+                
+                //each account amounts
+                if(account_amounts[account])
+                    account_amounts[account] += amount
+                else
+                    account_amounts[account] = amount
+                
+                transactions.push({ desc, category, method, account, amount, date });
+            }
+        });
+
+        if(transactions.length>0)
+        {
+            // Render transactions
+            let categories_amount_div = ``
+            Object.entries(category_amounts).forEach((item)=>{
+                categories_amount_div+=`
+                    <div class="flex-row space-between gray">
+                        <div class="bullet">${item[0]}</div>
+                        <div class="amount text-sm">₹ ${item[1].toFixed(1)}</div>
+                    </div>`
+            });
+
+            let account_amount_div = ``
+            Object.entries(account_amounts).forEach((item)=>{
+                account_amount_div+=`
+                    <div class="flex-row space-between purple">
+                        <div class="bullet">${item[0]}</div>
+                        <div class="amount text-sm">₹ ${item[1].toFixed(1)}</div>
+                    </div>`
+            });
+            
+            let total_div = `
+            <div class="align-items-inherit flex-col gap-1 transaction">
+                    <div class="flex-row space-between">
+                        <div class="title">Total</div>
+                        <div class="amount">₹ ${total_amounts["total"].toFixed(1)}</div>
+                    </div>
+                    
+                    <div class="flex-row space-between red">
+                        <div class="bullet">Credit</div>
+                        <div class="amount text-sm">₹ ${total_amounts["credit"].toFixed(1)}</div>
+                    </div>
+                    
+                    <div class="flex-row space-between green">
+                        <div class="bullet">Cash</div>
+                        <div class="amount text-sm">₹ ${total_amounts["cash"].toFixed(1)}</div>
+                    </div>
+                    <span class="text-sm">Accounts</span>
+                    ${account_amount_div}
+                    <span class="text-sm">Categories</span>
+                    ${categories_amount_div}
+                </div>
+            `
+            return transactions.map(t => `
+                <div class="transaction">
+                    <div class="transaction-info">
+                        <div class="transaction-icon">
+                            <img src="./img/icons/${t.method}.svg" class="svg-icon"/>
+                        </div>
+                        <div class="transaction-text">
+                            <div class="title">${t.category}</div>
+                            <div class="description">${t.desc}</div>
+                            <div class="time">${t.date}</div>
+                        </div>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="amount green">₹ ${t.amount.toFixed(1)}</div>
+                        <div class="time">${t.account}</div>
+                    </div>
+                </div>
+            `).join('').concat(`${total_div}`);
+        }
+    } catch (error) {
+        console.log("Error processing transactions:", error);
+        return "<p>Error loading transactions.</p>";
+    }
+}
+
+
 function parseWikiTextToHTML(wikiText) {
 
     wikiText = wikiText.trim()
@@ -530,11 +634,16 @@ function parseWikiTextToHTML(wikiText) {
     if (wikiText.startsWith("@returns")) {
         return handle_returns(wikiText)
     }
-    
+
     if (wikiText.startsWith("@circular_bars")) {
         return handle_circular_bars(wikiText)
     }
-    
+    if (wikiText.startsWith("@transcations")) {
+        return handle_component_transactions(wikiText)
+
+    }
+
+
 
     let html = '';
     let lines = wikiText.split("\n")
@@ -544,16 +653,16 @@ function parseWikiTextToHTML(wikiText) {
         {
             //::text center::
             //line = center_aligned(line)
-            
+
             //:bold:
             //line = bold(line)
-            
+
             // _italic_
             //line = italic(line)
-            
+
             // !highlight!
             line = handle_highlight(line)
-            
+
             // x^y^
             line = sup(line)
             // x~y~

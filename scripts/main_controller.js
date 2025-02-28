@@ -1503,6 +1503,15 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                             $scope.insertTextAtCursor('note_content', `@circular_bars\nA, B, C\n50, 50, 50`)
                         }
                     },
+                    {
+                        text: "💰 Transactions",
+                        action: () => {
+                            $scope.insertTextAtCursor(
+                                'note_content', 
+                                `@transcations\ntype, category, cash or credit, account, amount, date`
+                            )
+                        }
+                    },
                 ]
             return $scope.insert_menu_items;
         } catch (error) {

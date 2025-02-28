@@ -28,7 +28,7 @@
 }
 
 .red {
-    color: #fd4967;
+    color: #fd4967; 
 }
 
 .green {
@@ -276,4 +276,10 @@ grid_title_bar {
 
 .line-through {
     text-decoration: line-through !important;
+}
+
+
+.align-items-inherit
+{
+    align-items:inherit !important;
 }
