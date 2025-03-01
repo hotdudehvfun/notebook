@@ -2,15 +2,10 @@
 <div ng-click="open_sidebar(true)">
     <img class="svg-icon" src="./img/icons/sidebar.left.svg" />
 </div>
-
-<div class="flex-row flex gap-1 justify-center align-center orange" ng-click="handle_click_on_notebook_title()">
-    
-    <!-- <span class="material-symbols-outlined text-xl">{{pageIcon}}</span> -->
+<div class="flex-row flex gap-1 justify-center align-center orange" ng-click="handle_click_on_notebook_title()">    
     <img class="svg-icon" ng-src="{{get_svg_src(pageIcon)}}" alt="NoteBook icon">
-
     <span class="text-lg capitalize">{{pageTitle}}</span>
 </div>
-
 <div class="flex-row align-center justify-end gap-1">
     <img
         ng-show="current_notebook" 

@@ -1,6 +1,3 @@
-
-
-
 // if no data is found create demo files
 function setupDemoList() {
     //demo list
@@ -161,9 +158,6 @@ function center_aligned(text) {
     return htmlText;
 }
 
-function box(line) {
-    return `<div class="box">${parseWikiTextToHTML(line.trim())}</div>`
-}
 
 function insert_tag(line) {
     var html = ""
@@ -643,23 +637,12 @@ function parseWikiTextToHTML(wikiText) {
 
     }
 
-
-
     let html = '';
     let lines = wikiText.split("\n")
     lines.forEach(line => {
         line = line.trim()
         //if(line.length>0)
         {
-            //::text center::
-            //line = center_aligned(line)
-
-            //:bold:
-            //line = bold(line)
-
-            // _italic_
-            //line = italic(line)
-
             // !highlight!
             line = handle_highlight(line)
 
@@ -680,37 +663,13 @@ function parseWikiTextToHTML(wikiText) {
             //handle custom class
             line = handle_insert_class(line)
 
-
-            //handle charts
-            // line = handle_charts(line)
-            // console.log(line)
-
             if (line.startsWith('#')) {
                 // Handle headings
                 const level = line.match(/^(#+)/)[0].length;
                 const text = line.replace(/#+/g, '').trim().toLocaleLowerCase();
                 html += `<h${level}>${text}</h${level}>`;
-            } else if (line.startsWith("~")) {
-                const text = line.replace(/~/g, '').trim()
-                if (text.length > 0)
-                    html += box(text)
-            }
-            else if (line.startsWith('*') || line.startsWith('-')) {
+            } else if (line.startsWith('*') || line.startsWith('-')) {
                 html += handle_list(line)
-            }
-            else if (line.startsWith("{{") && line.endsWith("}}")) {
-                //handle custom template
-                var text = line.replace(/\{\{|\}\}/g, '').trim()
-                var args = text.split("#")
-                console.log(args)
-                switch (args[0]) {
-                    case "flex":
-                        html += flex(args[1], args[2])
-                        break;
-                    case "img":
-                        html += place_img(args[1], args[2])
-                        break;
-                }
             } else if (line.startsWith(".")) {
                 html += insert_tag(line)
             }

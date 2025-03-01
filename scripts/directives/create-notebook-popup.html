@@ -8,17 +8,28 @@
                     Close
                 </div>
                 <div
+                    ng-show="create_notebook_obj.action=='create'"
                     ng-class="{'orange':new_list_name.length>1}" 
                     ng-click="handle_click_on_create_notebook_button()" 
                     class="button rounded-full gap-1 transition not-active">
                     Create
                 </div>
+                <div
+                    ng-show="create_notebook_obj.action=='rename'"
+                    ng-class="{'orange':new_list_name.length>1}" 
+                    ng-click="rename_notebook()" 
+                    class="button rounded-full gap-1 transition not-active">
+                    Rename
+                </div>
+                
             </div>
 
             <!-- title of popup -->
             <div class="flex-row align-center gap-1">
-                <img src="./img/icons/pencil.and.list.clipboard.svg" class="svg-icon">
-                <span>Open new notebook</span>
+                <img 
+                ng-src="{{get_svg_src(create_notebook_obj[create_notebook_obj.action].icon)}}"
+                class="svg-icon">
+                <span>{{create_notebook_obj[create_notebook_obj.action].title}}</span>
             </div>
             <!-- content of popup -->
             <div class="flex-col w-full gap-2">
@@ -29,8 +40,7 @@
                 ng-keyup="handle_input_on_notebook($event)"
                 class="add-new-list-title"
                 ng-model="new_list_name" 
-                ng-attr-placeholder="New NoteBook name..."
-                placeholder="New NoteBook name..."
+                ng-attr-placeholder="{{create_notebook_obj[create_notebook_obj.action].placeholder}}"
                 autofocus/>
             </div>
         </div>

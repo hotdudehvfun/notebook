@@ -1,7 +1,7 @@
 <div class="new_task_popup_child text-md">
     <!-- heading -->
     <div class="flex-row align-center gap-1 m-2">
-        <span class="material-symbols-outlined list-icon">database</span>
+        <img class="svg-icon" ng-src="{{get_svg_src('server.rack')}}" alt="NoteBook icon">
         <span>Database Management</span>
     </div>
 
@@ -12,14 +12,14 @@
         <div ng-click="db_operation=CONST.IMPORT; handle_db_operation_change()"
             ng-class="{colorful:db_operation==CONST.IMPORT}"
             class="flex-row align-center gap-2 grayscale border rounded p-1/2">
-            <span class="material-symbols-outlined list-icon">cloud_upload</span>
+            <img class="svg-icon" ng-src="{{get_svg_src('icloud.and.arrow.up')}}" alt="NoteBook icon">
             <span>Import</span>
         </div>
         <div 
             ng-click="db_operation=CONST.EXPORT; handle_db_operation_change()"
             ng-class="{colorful:db_operation==CONST.EXPORT}"
             class="flex-row align-center gap-2 grayscale border rounded p-1/2">
-            <span class="material-symbols-outlined list-icon">cloud_download</span>
+            <img class="svg-icon" ng-src="{{get_svg_src('icloud.and.arrow.down')}}" alt="NoteBook icon">
             <span>Export</span>
         </div>
     </div>
@@ -29,7 +29,7 @@
         <div class="flex-col w-full gap-1 mt-2">
             <label for="fileInput" ng-show="db_operation==CONST.IMPORT"
                 class="align-center border flex-row gap-1 justify-center m-1 p-1/2 rounded shadow">
-                <span class="material-symbols-outlined">upload_file</span>
+                <img class="svg-icon" ng-src="{{get_svg_src('icloud.and.arrow.up')}}" alt="NoteBook icon">
                 Choose file to import
             </label>
             <input

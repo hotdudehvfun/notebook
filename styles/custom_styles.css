@@ -125,13 +125,6 @@ grid_title_bar {
     gap: .5rem;
 }
 
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 600,
-  'GRAD' 0,
-  'opsz' 24
-}
 
 .bg-light-red {
     background: #ffe7eb;

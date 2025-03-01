@@ -127,8 +127,11 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     $scope.handle_input_on_notebook = function (e) {
         try {
             if (e.keyCode == 13) {
-                $scope.handle_click_on_create_notebook_button()
-                e.target.value = "";
+                if($scope.create_notebook_obj.action=="create")
+                    $scope.handle_click_on_create_notebook_button()
+                if($scope.create_notebook_obj.action=='rename')
+                    $scope.rename_notebook()
+                // e.target.value = "";
             } else {
                 $scope.new_notebook_icon = getIconForTitle($scope.new_list_name)
             }
@@ -159,7 +162,13 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     // get completed notes length
     $scope.get_completed_notes_length = (notes) => {
-        return notes.filter(function (note) { return note.isTaskCompleted == true }).length;
+        
+        try {
+            if(notes)
+                return notes.filter(function (note) { return note.isTaskCompleted == true }).length;
+        } catch (error) {
+            console.log("error while gettig length of notes")
+        }
     }
 
     $scope.handle_click_on_create_notebook_button = () => {
@@ -1181,9 +1190,11 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.handle_rename_notebook = () => {
         try {
+            //resure create notebook popup
             $scope.close_all_dialogs()
-            $scope.dialog_flags.show_rename_notebook_popup = true
-            $scope.focus_input("#rename-notebook")
+            $scope.create_notebook_obj.action="rename"
+            $scope.dialog_flags.show_notebook_popup=true; 
+            $scope.focus_input('.add-new-list-title')
         } catch (err) {
             console.log(err)
         }
@@ -1191,18 +1202,25 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.rename_notebook = () => {
         try {
-            if (!$scope.new_list_name) {
-                return $scope.show_toast("Error: Input required");
-            }
-
-            if ($scope.new_list_name.toLocaleLowerCase() === "system") {
-                return $scope.show_toast("Error: System title is reserved");
-            }
-
             if ($scope.selectedListIndex < 0) {
                 return $scope.show_toast("Error: No list is selected");
             }
 
+            if (!$scope.new_list_name) {
+                return $scope.show_toast("Error: Input required");
+            }
+
+            if ($scope.has_notebook($scope.new_list_name)) {
+                $scope.show_toast(`${$scope.new_list_name} notebook already exists`);
+                return;
+            }
+
+            if ($scope.new_list_name.toLocaleLowerCase() === "system") {
+                return $scope.show_toast("Error: System is reserved title");
+            }
+            if ($scope.new_list_name.toLocaleLowerCase() === "trash") {
+                return $scope.show_toast("Error: Trash is reserved title");
+            }
             // Update title and icon
             let selectedList = $scope.notebooks[$scope.selectedListIndex];
             selectedList.title = $scope.new_list_name;
@@ -1261,7 +1279,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             $scope.notebook_more_options = [
                 {
                     text: $scope.is_notebook_locked() ? "Unlock notebook" : "Lock notebook",
-                    icon: "password",
+                    icon: "lock.square",
                     class: "task-more-options-item",
                     show: true,
                     action: () => {
@@ -1271,61 +1289,54 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     }
                 }, {
                     text: "Paste Task",
-                    icon: "content_paste",
+                    icon: "document.on.clipboard",
                     class: "task-more-options-item",
                     show: $scope.copied_task != null,
                     action: () => { $scope.paste_task_inside_notebook() }
                 }, {
                     text: "Rename notebook",
-                    icon: "format_color_text",
+                    icon: "textformat.characters.dottedunderline",
                     class: "task-more-options-item",
                     show: true,
                     action: () => { $scope.handle_rename_notebook() }
                 }, {
                     text: "Move completed tasks",
-                    icon: "flight_takeoff",
+                    icon: "truck.box.fill",
                     class: "task-more-options-item",
                     show: $scope.notebook_has_completed_tasks(),
                     action: () => { $scope.start_bulk_move_completed_tasks() }
                 }, {
                     text: "Merge completed tasks",
-                    icon: "merge",
+                    icon: "arrow.trianglehead.merge",
                     class: "task-more-options-item",
                     show: $scope.notebook_has_completed_tasks(),
                     action: () => { $scope.merge_completed_notes() }
                 }, {
                     text: "Remove completed tasks",
-                    icon: "delete_sweep",
+                    icon: "rectangle.stack.fill.badge.minus",
                     class: "task-more-options-item",
                     show: $scope.notebook_has_completed_tasks(),
                     action: () => { $scope.handle_remove_completed_tasks() }
                 },
                 {
                     text: "Refresh",
-                    icon: "autorenew",
+                    icon: "arrow.clockwise.circle.fill",
                     class: "task-more-options-item",
                     show: true,
                     action: () => { location.reload(); }
                 }, {
                     text: "Delete all tasks",
-                    icon: "warning",
+                    icon: "exclamationmark.triangle.fill",
                     class: "task-more-options-item text-red-500",
                     show: true,
                     action: () => { $scope.purge_notebook() }
                 },
                 {
                     text: "Delete notebook",
-                    icon: "delete",
+                    icon: "trash.square.fill",
                     class: "task-more-options-item text-red-500",
                     show: true,
                     action: () => { $scope.delete_notebook() }
-                },
-                {
-                    text: "Close",
-                    icon: "cancel",
-                    class: "task-more-options-item text-red-500",
-                    show: true,
-                    action: () => { $scope.close_all_dialogs() }
                 }
             ]
         }
@@ -1339,7 +1350,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             $scope.note_more_options = [
                 {
                     text:"Edit Chart",
-                    icon:"timeline",
+                    icon:"chart.xyaxis.line",
                     class: "task-more-options-item",
                     show: $scope.selected_note.component_type==COMPONENT.TYPE.CHART,
                     action:()=>{
@@ -1352,14 +1363,14 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                 },
                 {
                     text: "Update note",
-                    icon: "edit",
+                    icon: "square.and.pencil",
                     class: "task-more-options-item",
                     show: true,
                     action: () => { $scope.open_update_task_popup() }
                 },
                 {
                     text: "Toggle complete",
-                    icon: "radio_button_checked",
+                    icon: "button.programmable",
                     class: "task-more-options-item",
                     show: true,
                     action: () => {
@@ -1370,7 +1381,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     }
                 }, {
                     text: "Select notes",
-                    icon: "check_box",
+                    icon: "checkmark.circle.fill",
                     class: "task-more-options-item",
                     show: true,
                     action: () => {
@@ -1380,13 +1391,13 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     }
                 }, {
                     text: "Restore note",
-                    icon: "restore_from_trash",
+                    icon: "arrow.uturn.backward.square",
                     class: "task-more-options-item",
                     show: $scope.is_trash_open,
                     action: () => { $scope.restore_note() }
                 }, {
                     text: "Copy note",
-                    icon: "file_copy",
+                    icon: "document.on.document.fill",
                     class: "task-more-options-item",
                     show: true,
                     action: () => {
@@ -1395,7 +1406,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     }
                 }, {
                     text: "Paste inside note",
-                    icon: "content_paste",
+                    icon: "document.on.clipboard",
                     class: "task-more-options-item",
                     show: $scope.copied_task != null,
                     action: () => {
@@ -1404,7 +1415,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     }
                 }, {
                     text: "Split note",
-                    icon: "splitscreen",
+                    icon: "square.3.layers.3d.middle.filled",
                     class: "task-more-options-item",
                     show: true,
                     action: () => {
@@ -1416,7 +1427,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     //hide delete button when split submenu is open
                     //submenu is better than popup
                     text: "Delete note",
-                    icon: "delete",
+                    icon: "trash.square.fill",
                     class: "task-more-options-item",
                     show: !$scope.show_split_note_btns,
                     action: () => {
@@ -1508,8 +1519,9 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                         action: () => {
                             $scope.insertTextAtCursor(
                                 'note_content', 
-                                `@transcations\ntype, category, cash or credit, account, amount, date`
+                                `@transcations\nDesc, category, cash or credit, account, amount, date`
                             )
+                            // $scope.new_transaction.show = true
                         }
                     },
                 ]
@@ -1574,7 +1586,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         $scope.bottom_bar_menu = [
             {
                 text: "List mode",
-                icon: "list_alt",
+                icon: "list.bullet.rectangle",
                 class: "chip2",
                 show: true,
                 action: (item) => {
@@ -2220,7 +2232,21 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     };
     
 
-
+    $scope.init_create_notebook_obj = ()=>{
+        return{
+            create:{
+                title:"Open new notebook",
+                placeholder:"New notebook name",
+                icon:"pencil.and.list.clipboard",
+            },
+            rename:{
+                title:"Rename notebook",
+                placeholder:"New name for this notebook",
+                icon:"pencil.and.list.clipboard",
+            },
+            action:"create"
+        }
+    }
     $scope.init = () => {
         //CONST values
         $scope.CONST = {
@@ -2292,6 +2318,29 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             chart_id: 0, //create id dynamically while saving
             show: false,
         }
+        // transaction component
+        $scope.new_transaction = {
+            desc:"",
+            category:"Bill",
+            categories:[
+                    "Bill",
+                    "Food",
+                    "Shopping",
+                    "Entertainment",
+                    "Travel",
+                    "Health",
+                    "Education",
+                    "Investments",
+                    "Savings",
+                    "Books",
+                    "Luxury item",
+                    "Misc"],
+            method:"cash",//cash or credit
+            account:"none",
+            date:"none",
+            amount:0,
+            show: false,
+        }
 
         // circular progress component 
         $scope.circular_progress = {
@@ -2322,6 +2371,9 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         $scope.pageIcon = "leaf.fill" //svg source
         $scope.copied_task = null
         $scope.db_operation = null
+
+        //create notebook object
+        $scope.create_notebook_obj = $scope.init_create_notebook_obj()
 
 
         //enable select notebooks

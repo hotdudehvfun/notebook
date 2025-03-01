@@ -3,7 +3,7 @@
         ng-repeat="notebook in quick_notebooks" 
         ng-click="handle_tap_on_quick_notebooks_item(notebook)"
         class="task-more-options-item">
-        <span class="material-symbols-outlined">{{get_notebook_icon(notebook)}}</span>
+        <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
         <div>{{notebook.title}}</div>
     </div>
 </div>

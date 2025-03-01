@@ -50,7 +50,7 @@ app.directive("mainContent",function(){
   }
 });
 
-//create notebook popup
+//create notebook popup and rename with same popup
 app.directive("createNotebookPopup",function(){
   return{
     scope:false,
@@ -90,22 +90,18 @@ app.directive("bottomBar",function(){
   return {
     scope: false,
     templateUrl:'./scripts/directives/bottom-bar.html'
-}
-});
+}});
+
 //top bar
 app.directive("topBar",function(){
   return {
     scope: false,
     templateUrl:'./scripts/directives/topbar.html'
-}
-});
-app.directive("popupRenameNotebook",directive_rename_notebook_popup);
-app.directive("popupCreateNotebook",directive_new_notebook_popup);
-app.directive("popupPassword",directive_password_popup);
-app.directive("createNotebookLayout",directive_create_notebook_layout);
-app.directive("createNoteLayout",directive_create_note_layout);
+}});
 
-
-
-// app.directive("dbFileChange",db_file_change);
-
+// password popup
+app.directive("popupPassword",function(){
+  return {
+    scope: false,
+    templateUrl:'./scripts/directives/popup-password.html'
+}});

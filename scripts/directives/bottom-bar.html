@@ -9,7 +9,6 @@
             <div 
                 ng-click="bottom_bar_active_div='null'; cancel_update_note();"
                 class="button rounded-full gap-1 orange">
-                <!-- <span class="material-symbols-outlined button-icon">cancel</span> -->
                 <span>Close</span>
             </div>
             <div 
@@ -17,14 +16,12 @@
                 ng-hide="show_update_task_button" 
                 ng-click="create_note()" 
                 class="button rounded-full gap-1 not-active transition">
-                <!-- <span class="material-symbols-outlined button-icon">add</span> -->
                 <span>Done</span>
             </div>
             <div 
                 ng-show="show_update_task_button" 
                 ng-click="update_note()" 
                 class="button rounded-full gap-1 orange">
-                <!-- <span class="material-symbols-outlined button-icon">edit_square</span> -->
                 <span>Done</span>
             </div>
         </div>
@@ -36,7 +33,7 @@
                 class="border flex-row relative rounded-1 text-small" 
                 style="font-size: 0.8rem;flex: 0 0 80px;">
                 <label for="submenu_item_select_insert" class="submenu_item_select_label">
-                    <span class="material-symbols-outlined text-md">draw</span>
+                    <img src="./img/icons/pencil.svg" class="svg-icon-md"/>
                     <span>Insert</span>
                 </label>
                 <select 
@@ -55,7 +52,7 @@
              class="border flex-row relative rounded-1 text-small" 
              style="font-size: 0.8rem;flex: 0 0 80px;">
                 <label for="submenu_item_select_component" class="submenu_item_select_label">
-                    <span class="material-symbols-outlined text-md">format_color_text</span>
+                    <img src="./img/icons/textformat.characters.svg" class="svg-icon-md"/>
                     <span>Edit</span>
                 </label>
                 <select 
@@ -73,7 +70,7 @@
              class="border flex-row relative rounded-1 text-small" 
              style="font-size: 0.8rem;flex: 0 0 110px;">
                 <label for="submenu_item_select_system" class="submenu_item_select_label">
-                    <span class="material-symbols-outlined text-md">deployed_code</span>
+                    <img src="./img/icons/keyboard_command_key.svg" class="svg-icon-md"/>
                     <span>System vars</span>
                 </label>
                 <select 
@@ -86,23 +83,23 @@
                 </select>
             </div>
 
+            <!-- bottom bar note edit menu buttons -->
             <div
                 ng-repeat="item in bottom_bar_menu"
                 ng-show="true"
                 ng-class="{'chip2-selected': bottom_bar_active_menu==item.text}" 
                 ng-click="item.action(item)" 
                 class="chip2">
-                <span class="material-symbols-outlined text-md">{{item.icon}}</span>
+                <img class="svg-icon-md" ng-src="{{get_svg_src(item.icon)}}" alt="icon">
                 <span class="w-max-content">{{item.text}}</span>
             </div>
         </div>
 
         <!-- note input -->
         <div class="note_textarea_container gap-1">
-            <!-- <span class="material-symbols-outlined button-icon">description</span> -->
              <!-- hide note content when chart dialog is visible-->
             <textarea
-                ng-hide="new_chart.show"
+                ng-hide="new_chart.show || new_transaction.show"
                 autocomplete="off"
                 ng-model="note_content"
                 ng-keyup="handle_keypress_note_input($event)"
@@ -128,14 +125,14 @@
                         ng-click="new_chart.type = 'line'"
                         ng-class="{'grayscale':new_chart.type!='line'}"
                         class="align-center flex-row gap-2 p-125 rounded">
-                        <span class="material-symbols-outlined list-icon">timeline</span>
+                        <img class="svg-icon" ng-src="{{get_svg_src('chart.xyaxis.line')}}" alt="icon">
                         <span>Line Chart</span>
                     </div> 
                     <div 
                         ng-click="new_chart.type = 'bar'"
                         ng-class="{'grayscale':new_chart.type!='bar'}"
                         class="align-center flex-row gap-2 p-125 rounded">
-                        <span class="material-symbols-outlined list-icon">bar_chart</span>
+                        <img class="svg-icon" ng-src="{{get_svg_src('chart.bar.xaxis')}}" alt="icon">
                         <span>Bar Chart</span>
                     </div>
                 </div>
@@ -173,67 +170,59 @@
                 </div>
             </div>
 
-            <!-- circular progress bar -->
-            <div class="flex-col gap-2" ng-show="circular_progress.show">
-                <!-- chart title -->
+            <!-- transcation dialog -->
+            <div class="flex-col gap-2" ng-show="new_transaction.show">
+                <!-- transcation title -->
                 <input 
-                    ng-model="circular_progress.title" 
+                    ng-model="new_transaction.desc" 
                     class="text-input" 
                     type="text" 
                     max="20" 
-                    placeholder="Chart Title"/>
-                <!-- chart type -->
-                <div class="orange">Type</div>
-                <div class="flex-row gap-1">
+                    placeholder="Transaction description"/>
+                
+                <!-- transaction categories -->
+                <div class="flex-row space-between">
+                    <div class="orange">Category</div>
+                    <select ng-model="new_transaction.category" class="orange">
+                        <option ng-repeat="item in new_transaction.categories" ng-value="item">{{item}}</option>
+                    </select>
+                </div>
+
+                <!-- method -->
+                <div class="orange">Cash or Credit</div>
+                <div class="flex-row gap-1 space-between">
                     <div 
-                        ng-click="circular_progress.type = 'line'"
-                        ng-class="{'grayscale':circular_progress.type!='line'}"
+                        ng-click="new_transaction.method = 'cash'"
+                        ng-class="{'grayscale':new_transaction.method!='cash'}"
                         class="align-center flex-row gap-2 p-125 rounded">
-                        <span class="material-symbols-outlined list-icon">timeline</span>
-                        <span>Line Chart</span>
+                        <img src="./img/icons/cash.svg" class="svg-icon"/>
+                        <span>Cash</span>
                     </div> 
                     <div 
-                        ng-click="circular_progress.type = 'bar'"
-                        ng-class="{'grayscale':circular_progress.type!='bar'}"
+                        ng-click="new_transaction.method = 'credit'"
+                        ng-class="{'grayscale':new_transaction.method!='credit'}"
                         class="align-center flex-row gap-2 p-125 rounded">
-                        <span class="material-symbols-outlined list-icon">bar_chart</span>
-                        <span>Bar Chart</span>
+                        <img src="./img/icons/credit.svg" class="svg-icon"/>
+                        <span>Credit</span>
                     </div>
                 </div>
-                <!-- chart theme color -->
-                <div class="orange">Theme</div>
-                <div class="flex-row gap-1 w-full">
-                    <label class="create-chart-theme-wrapper" ng-repeat="(key,value) in get_chart_colors()">
-                        <input
-                            ng-hide="true" 
-                            style="accent-color: {{value}}; transform:scale(1.2); opacity: 0;" 
-                            name="chart_theme" 
-                            type="radio" 
-                            ng-model="circular_progress.theme" 
-                            ng-value="key">
-                        <span 
-                        class="custom-radio"
-                        style="border-color:{{value}};background-color:{{get_transparent_color(value,0.5)}};"></span>
-                    </label>
-                </div>
+
+                <!-- transcation amount -->
+                <input 
+                    ng-model="new_transaction.amount" 
+                    class="text-input" 
+                    type="number" 
+                    placeholder="number"/>
+                
                 <div class="flex-row space-between">
-                    <div class="orange">X axis labels</div>
-                    <div class="orange">Y axis values</div>
-                </div>
-                <div class="flex-row space-between">
-                    <textarea ng-model="new_chart.x_labels" style="height: 200px;" class="border new-task-content rounded-1"></textarea>
-                    <textarea ng-model="new_chart.y_values" style="height: 200px;" class="border new-task-content rounded-1"></textarea>
-                </div>
-                <div class="flex-row space-between">
-                    <div ng-click="reset_new_chart_and_close()" class="button rounded-full gap-1 orange">
+                    <div ng-click="" class="button rounded-full gap-1 orange">
                         <span>Cancel</span>
                     </div>
-                <div ng-click="new_chart_convert_ui_to_code()" class="button rounded-full gap-1 orange">
-                    <span>Done</span>
+                    <div ng-click="" class="button rounded-full gap-1 orange">
+                        <span>Done</span>
                     </div>
                 </div>
             </div>
-            
         </div>
     </div>
 
@@ -248,31 +237,27 @@
             <div 
                 ng-click="bottom_bar_active_div='null'; clear_system_input_vars()"
                 class="button rounded-full gap-1">
-                <!-- <span class="material-symbols-outlined button-icon">cancel</span> -->
                 <span>Close</span>
             </div>
             <div ng-click="create_system_var();" class="button rounded-full gap-1">
-                <!-- <span class="material-symbols-outlined button-icon">add</span> -->
                 <span>{{system_create_btn_title}}</span>
             </div>
             <div 
                 ng-if="show_delete_system_var_button"
                 ng-click="bottom_bar_active_div='null'; delete_system_var();" class="button rounded-full gap-1">
-                <!-- <span class="material-symbols-outlined button-icon">delete</span> -->
                 <span>delete</span>
             </div>
         </div>
 
         <!-- title -->
         <div class="botom_bar_title orange">
-            <span class="material-symbols-outlined button-icon">keyboard_command_key</span>
+            <img class="svg-icon" ng-src="{{get_svg_src('keyboard_command_key')}}" alt="icon">
             Custom variables
         </div>
 
         <!-- create system var -->
         <div class="flex-col gap-1">
             <div class="flex-row gap-1 align-center">
-                <span class="material-symbols-outlined button-icon">graph_1</span>
                 <input
                     type="text"
                     name="system_var_name" 
@@ -281,7 +266,6 @@
                     placeholder="Variable name"/>
             </div>
             <div class="flex-row gap-1 align-center">
-                <span class="material-symbols-outlined button-icon">graph_5</span>
                 <input
                     name="system_var_value"
                     type="text"
@@ -309,11 +293,15 @@
     <!-- bottom button -->
     <div
         ng-show="bottom_bar_active_div=='null'" 
-        class="flex-row p-1/2 justify-space-between wrap gap-1">
+        class="flex-row p-1/2 justify-space-between gap-1">
         <!-- create notebook button -->
         <div 
             ng-class="{'bg-red-pink': bottom_bar_active_div=='notebook'} "
-            ng-click="dialog_flags.show_notebook_popup=true; focus_input('.add-new-list-title')" 
+            ng-click="
+                dialog_flags.show_notebook_popup=true; 
+                focus_input('.add-new-list-title');
+                create_notebook_obj.action='create';
+                " 
             class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
             <img src="./img/icons/pencil.and.list.clipboard.svg" class="svg-icon-l"/>
             <!-- <span>Notebook</span> -->
@@ -339,7 +327,6 @@
             ng-hide="show_view=='notebook'" 
             ng-click="set_view('notebook')" 
             class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
-            <!-- <span class="material-symbols-outlined button-icon-l;">arrow_back</span> -->
             <img src="./img/icons/arrowshape.left.fill.svg" class="svg-icon-l"/>
             <!-- <span>Back</span> -->
         </div>
