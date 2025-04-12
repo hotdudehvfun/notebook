@@ -105,3 +105,11 @@ app.directive("popupPassword",function(){
     scope: false,
     templateUrl:'./scripts/directives/popup-password.html'
 }});
+
+
+// system var popup
+app.directive("popupCreateVar",function(){
+  return {
+    scope: false,
+    templateUrl:'./scripts/directives/create-var-popup.html'
+}});

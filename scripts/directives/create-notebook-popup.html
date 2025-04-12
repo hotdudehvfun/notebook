@@ -1,28 +1,6 @@
     <!-- create notebook popup -->
         <div class="create-notebook-popup flex-col relative rounded-2 scroll">
-             <!-- action buttons -->
-             <div class="flex-row gap-1 space-between" style="margin-bottom: 1rem;">
-                <div 
-                    ng-click="close_all_dialogs(); new_list_name=''"
-                    class="button rounded-full gap-1">
-                    Close
-                </div>
-                <div
-                    ng-show="create_notebook_obj.action=='create'"
-                    ng-class="{'orange':new_list_name.length>1}" 
-                    ng-click="handle_click_on_create_notebook_button()" 
-                    class="button rounded-full gap-1 transition not-active">
-                    Create
-                </div>
-                <div
-                    ng-show="create_notebook_obj.action=='rename'"
-                    ng-class="{'orange':new_list_name.length>1}" 
-                    ng-click="rename_notebook()" 
-                    class="button rounded-full gap-1 transition not-active">
-                    Rename
-                </div>
-                
-            </div>
+             
 
             <!-- title of popup -->
             <div class="flex-row align-center gap-1">
@@ -42,5 +20,27 @@
                 ng-model="new_list_name" 
                 ng-attr-placeholder="{{create_notebook_obj[create_notebook_obj.action].placeholder}}"
                 autofocus/>
+            </div>
+            <!-- action buttons -->
+            <div class="flex-row gap-1 space-between mt-2">
+                <div 
+                    ng-click="close_all_dialogs(); new_list_name=''"
+                    class="button rounded-full gap-1 red">
+                    Close
+                </div>
+                <div
+                    ng-show="create_notebook_obj.action=='create'"
+                    ng-class="{'orange':new_list_name.length>1}" 
+                    ng-click="handle_click_on_create_notebook_button()" 
+                    class="button rounded-full gap-1 transition not-active">
+                    Create
+                </div>
+                <div
+                    ng-show="create_notebook_obj.action=='rename'"
+                    ng-class="{'orange':new_list_name.length>1}" 
+                    ng-click="rename_notebook()" 
+                    class="button rounded-full gap-1 transition not-active">
+                    Rename
+                </div>
             </div>
         </div>

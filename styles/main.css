@@ -95,22 +95,6 @@ body {
     padding: 0px;
 }
 
-.app-title {
-    font-size: 1.2rem;
-    text-transform: capitalize;
-    font-weight: bold;
-    background: transparent;
-    border: none;
-    display: block;
-    text-decoration: none;
-    appearance: none;
-    outline: none;
-    text-align: center;
-    text-wrap: nowrap;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
 .selected-list {
     color: white;
@@ -283,6 +267,8 @@ ul.notebooks li:last-child>.list-panel-item {
     border: none;
     resize: none;
     height: 100%;
+    background: #0b0b0b29;
+    padding: 0px;
 }
 
 .new-task-content:focus {
@@ -1104,7 +1090,7 @@ input:checked+label.toggle_label>span.toggle_span {
     align-items: center;
     height: 100%;
     width: 100%;
-    padding: 0.5rem 0.25rem;
+    /* padding: 0.5rem 0.25rem; */
 }
 
 .notebook_container {
@@ -1381,6 +1367,15 @@ select:focus-visible {
 }
 
 .create-notebook-popup {
+    background: var(--bg-color);
+    padding: 1rem 1rem;
+    z-index: 999;
+    border: 1px solid var(--theme_button_border);
+    width: 90%;
+    max-width: 512px;
+}
+
+.create-var-popup {
     background: var(--bg-color);
     padding: 1rem 1rem;
     z-index: 999;

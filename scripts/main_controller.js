@@ -13,26 +13,6 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     $scope.parse_markdown_to_html = function (text) {
         return parseWikiTextToHTML(text)
     }
-
-    $scope.handle_chart_inside_note = function (text) {
-        new Chart("myChart", {
-            type: "pie",
-            data: {
-                labels: ["Stocks", "Mutual Funds"],
-                datasets: [{
-                    backgroundColor: ["red", "blue"],
-                    data: [25, 75]
-                }]
-            },
-            options: {
-                title: {
-                    display: true,
-                    text: "Funds"
-                }
-            }
-        });
-    }
-
     
     // get notebook age
     $scope.notebook_age = function() {
@@ -222,8 +202,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.create_note = () => {
         try {
-            const task_content = $scope.note_content.trim();
-
+            const task_content = $scope.note_content.trim()
             if (is_valid_note_content(task_content)) {
                 // Create a new task
                 const new_task = new Task(task_content);
@@ -353,8 +332,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             $scope.new_var_name = key
             $scope.new_var_value = system_vars[key]
             $scope.system_create_btn_title = "Update"
-            //show input area
-            $scope.bottom_bar_active_div = "system"
+            $scope.dialog_flags.show_create_system_var_popup = true
 
         } catch (err) {
             console.log("Edit var error", err)
@@ -748,16 +726,26 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     $scope.cancel_update_note();
                 }
             } else {
-                $scope.selected_note.title = $scope.note_content.trim()
-                $scope.show_update_task_button = false
-                $scope.note_content = ""
-                $scope.is_note_selected = false;
-                $scope.selected_note = null;
-                $scope.show_edit_options = false;
-                $scope.save_data()
-                $scope.show_toast("Note updated")
-                $scope.init_bottom_bar_menu()
-                $scope.bottom_bar_active_div = 'null'
+                const index = $scope.notes.indexOf($scope.selected_note);
+                if (index !== -1) {
+                    const new_task = new Task($scope.note_content.trim());
+                    new_task.task_icon = $scope.icons.unchecked;
+                    new_task.set_is_component();
+                    new_task.set_component_type();
+                    $scope.notes[index] = new_task
+                    $scope.save_data()
+                    $scope.show_toast("Note updated")
+                    $scope.show_update_task_button = false
+                    $scope.note_content = ""
+                    $scope.is_note_selected = false;
+                    $scope.selected_note = null;
+                    $scope.show_edit_options = false;
+                    $scope.init_bottom_bar_menu()
+                    $scope.bottom_bar_active_div = 'null'
+                }else{
+                    $scope.show_toast("Cannot updated task")
+                }
+                
             }
 
         } catch (err) {
@@ -1163,8 +1151,8 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         system_vars[$scope.new_var_name] = $scope.new_var_value
         $scope.show_toast(`Variable ${$scope.system_create_btn_title}d`);
         $scope.clear_system_input_vars();
-        $scope.bottom_bar_active_div = 'null';
         $scope.save_data();
+        $scope.close_all_dialogs();
     }
 
     $scope.open_create_new_note_popup = () => {
@@ -1358,6 +1346,19 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                         $scope.open_update_task_popup();
                         // execute edit chart option of edit menu
                         $scope.component_menu_items[1].action()
+
+                    }
+                },
+                {
+                    text:"Add transaction",
+                    icon:"cash",
+                    class: "task-more-options-item",
+                    show: $scope.selected_note.component_type==COMPONENT.TYPE.TRANSCATIONS,
+                    action:()=>{
+                        // console.log("edit chart")
+                        $scope.open_update_task_popup();
+                        // execute edit chart option of edit menu
+                        // $scope.component_menu_items[1].action()
 
                     }
                 },
@@ -1650,11 +1651,11 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     // sending message to angular from outside world
     $scope.$on('broadcast_right_swipe', function (event, touch) {
         //open notebook when start x is near left end of screen
-        let left_screen_limit = window.screen.width * 0.30
-        if (touch.x.start < left_screen_limit) {
-            $scope.open_sidebar(true)
-            $scope.$apply();
-        }
+        // let left_screen_limit = window.screen.width * 0.30
+        // if (touch.x.start < left_screen_limit) {
+        //     $scope.open_sidebar(true)
+        //     $scope.$apply();
+        // }
     });
 
     $scope.copy_to_clipboard = function (textToCopy) {

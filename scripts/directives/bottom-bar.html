@@ -27,7 +27,7 @@
         </div>
 
         <!-- menu buttons -->
-        <div class="flex-row gap-1 scroll-y w-full p-bottom-1.5">
+        <div class="flex-row gap-1 w-full">
             <!-- insert menu select button -->
             <div 
                 class="border flex-row relative rounded-1 text-small" 
@@ -96,7 +96,7 @@
         </div>
 
         <!-- note input -->
-        <div class="note_textarea_container gap-1">
+        <div class="note_textarea_container">
              <!-- hide note content when chart dialog is visible-->
             <textarea
                 ng-hide="new_chart.show || new_transaction.show"
@@ -169,114 +169,11 @@
                     </div>
                 </div>
             </div>
-
-            <!-- transcation dialog -->
-            <div class="flex-col gap-2" ng-show="new_transaction.show">
-                <!-- transcation title -->
-                <input 
-                    ng-model="new_transaction.desc" 
-                    class="text-input" 
-                    type="text" 
-                    max="20" 
-                    placeholder="Transaction description"/>
-                
-                <!-- transaction categories -->
-                <div class="flex-row space-between">
-                    <div class="orange">Category</div>
-                    <select ng-model="new_transaction.category" class="orange">
-                        <option ng-repeat="item in new_transaction.categories" ng-value="item">{{item}}</option>
-                    </select>
-                </div>
-
-                <!-- method -->
-                <div class="orange">Cash or Credit</div>
-                <div class="flex-row gap-1 space-between">
-                    <div 
-                        ng-click="new_transaction.method = 'cash'"
-                        ng-class="{'grayscale':new_transaction.method!='cash'}"
-                        class="align-center flex-row gap-2 p-125 rounded">
-                        <img src="./img/icons/cash.svg" class="svg-icon"/>
-                        <span>Cash</span>
-                    </div> 
-                    <div 
-                        ng-click="new_transaction.method = 'credit'"
-                        ng-class="{'grayscale':new_transaction.method!='credit'}"
-                        class="align-center flex-row gap-2 p-125 rounded">
-                        <img src="./img/icons/credit.svg" class="svg-icon"/>
-                        <span>Credit</span>
-                    </div>
-                </div>
-
-                <!-- transcation amount -->
-                <input 
-                    ng-model="new_transaction.amount" 
-                    class="text-input" 
-                    type="number" 
-                    placeholder="number"/>
-                
-                <div class="flex-row space-between">
-                    <div ng-click="" class="button rounded-full gap-1 orange">
-                        <span>Cancel</span>
-                    </div>
-                    <div ng-click="" class="button rounded-full gap-1 orange">
-                        <span>Done</span>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
 
-    <!-- system var layout -->
-     <div
-        style="border: 1px solid var(--theme_button_border);" 
-        ng-show="bottom_bar_active_div=='system'" 
-        class="flex-col p-1/2 gap-1 drawer-rounded">
-        <!-- action button -->
-        <div class="flex-row gap-1 space-between">
-            <div 
-                ng-click="bottom_bar_active_div='null'; clear_system_input_vars()"
-                class="button rounded-full gap-1">
-                <span>Close</span>
-            </div>
-            <div ng-click="create_system_var();" class="button rounded-full gap-1">
-                <span>{{system_create_btn_title}}</span>
-            </div>
-            <div 
-                ng-if="show_delete_system_var_button"
-                ng-click="bottom_bar_active_div='null'; delete_system_var();" class="button rounded-full gap-1">
-                <span>delete</span>
-            </div>
-        </div>
-
-        <!-- title -->
-        <div class="botom_bar_title orange">
-            <img class="svg-icon" ng-src="{{get_svg_src('keyboard_command_key')}}" alt="icon">
-            Custom variables
-        </div>
-
-        <!-- create system var -->
-        <div class="flex-col gap-1">
-            <div class="flex-row gap-1 align-center">
-                <input
-                    type="text"
-                    name="system_var_name" 
-                    class="system_var_input"
-                    ng-model="new_var_name" 
-                    placeholder="Variable name"/>
-            </div>
-            <div class="flex-row gap-1 align-center">
-                <input
-                    name="system_var_value"
-                    type="text"
-                    class="system_var_input"
-                    ng-model="new_var_value" 
-                    placeholder="Variable value"/>
-            </div>
-            
-            
-    </div>
-     </div>
+    
 
 
      <!-- multi select options -->
@@ -317,7 +214,7 @@
         <!-- system var button -->
         <div 
             ng-class="{'bg-red-pink':bottom_bar_active_div=='system'}"
-            ng-click="toggle_bottom_bar_div('system')" 
+            ng-click="dialog_flags.show_create_system_var_popup=true;" 
             class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
             <img src="./img/icons/keyboard_command_key.svg" class="svg-icon-l"/>
             <!-- <span>System</span> -->

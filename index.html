@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"> -->
     <meta content="todo app" name="keywords">
-    <meta name="description" content="Author: Arun, a todo app">
+    <meta name="description" content="NoteBook app">
     <meta http-equiv="cache-control" content="max-age=8000" />
     <meta http-equiv="cache-control" content="Private" />
     <link rel="apple-touch-icon" sizes="180x180" href="img/ios/180.png">
@@ -17,9 +17,9 @@
     <link rel="manifest" href="manifest.json">
     <meta id="theme-color" name="theme-color" content="aliceblue" />
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/dark.css">
-    <link rel="stylesheet" href="styles/custom_styles.css">
+    <link rel="stylesheet" href="styles/main.min.css">
+    <link rel="stylesheet" href="styles/dark.min.css">
+    <link rel="stylesheet" href="styles/custom_styles.min.css">
 </head>
 
 <body 
@@ -35,12 +35,15 @@
         <!-- bottom bar -->
         <bottom-bar class="bottom-bar"></bottom-bar>
     </div>
-    <!-- sidebar menu -->
     <side-bar class="sidebar-menu-container" ng-style="sidebar_left"></side-bar>
 
     <!-- create-notebook-popup -->
     <create-notebook-popup style="bottom: 30vh;" class="popup" ng-show="dialog_flags.show_notebook_popup">
     </create-notebook-popup>
+
+    <!-- create-var-popup -->
+    <popup-Create-Var style="bottom: 30vh;" class="popup" ng-show="dialog_flags.show_create_system_var_popup"></popup-Create-Var>
+    </popup-Create-Var> 
 
     <!-- rename notebook dialog pop up-->
     <popup-rename-notebook style="bottom: 30vh;" ng-show="dialog_flags.show_rename_notebook_popup" class="popup">
@@ -91,6 +94,8 @@
     <!-- passwrord popup -->
     <popup-password style="bottom: 30vh;" ng-show="dialog_flags.show_password_popup;" class="popup"></popup-password>
 
+    <script src="/app.js"></script>
+
 
     <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js"
         integrity="sha512-8AwTn2Tax8NWI+SqsYAXiKT8jO11WUBzTEWRoilYgr5GWnF4fNqBRD+hCr4JRSA1eZ/qwbI+FPsM3X/PQeHgpQ=="
@@ -114,7 +119,7 @@
     <script type="text/javascript" src="scripts/services/db_service.js"></script>
     <script type="text/javascript" src="scripts/services/notebook_service.js"></script>
     
-    <script type="text/javascript" src="scripts/main_controller.js"></script>
+    <script type="text/javascript" src="scripts/main_controller.min.js"></script>
     <script type="text/javascript" src="scripts/angular_module.js"></script>
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>

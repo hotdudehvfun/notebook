@@ -1,0 +1,46 @@
+<!-- system var layout -->
+<div
+style="border: 1px solid var(--theme_button_border);"
+class="create-var-popup flex-col relative rounded-2 scroll">
+<!-- title -->
+<div class="botom_bar_title orange">
+    <img class="svg-icon" ng-src="{{get_svg_src('keyboard_command_key')}}" alt="icon">
+    Custom variables
+</div>
+
+<!-- create system var -->
+<div class="flex-col gap-1">
+    <div class="flex-row gap-1 align-center">
+        <input
+            type="text"
+            name="system_var_name" 
+            class="system_var_input"
+            ng-model="new_var_name" 
+            placeholder="Variable name"/>
+    </div>
+    <div class="flex-row gap-1 align-center">
+        <input
+            name="system_var_value"
+            type="text"
+            class="system_var_input"
+            ng-model="new_var_value" 
+            placeholder="Variable value"/>
+    </div>
+</div>
+<!-- action button -->
+<div class="flex-row gap-1 space-between mt-2">
+    <div
+        ng-click="dialog_flags.show_create_system_var_popup=false; clear_system_input_vars()"
+        class="button rounded-full gap-1 orange">
+        <span>Close</span>
+    </div>
+    <div ng-click="create_system_var();" class="button rounded-full gap-1 green">
+        <span>{{system_create_btn_title}}</span>
+    </div>
+    <div 
+        ng-if="show_delete_system_var_button"
+        ng-click="dialog_flags.show_create_system_var_popup=false; delete_system_var();" class="button rounded-full gap-1 red">
+        <span>Delete</span>
+    </div>
+</div>
+</div>
