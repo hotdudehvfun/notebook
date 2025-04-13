@@ -22,36 +22,40 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     // open notebook
     $scope.open_notebook = function (notebook) {
         try {
-            if (notebook) {
-                $scope.pageTitle = notebook.title;
-                $scope.pageIcon = $scope.get_notebook_icon(notebook)
-                $scope.current_notebook = notebook; // so that we can get age of system notebook
-                //show system vars
-                if (notebook.title.toLowerCase() == "system") {
-                    $scope.show_view = $scope.CONST.VIEW_SYSTEM
-                    console.log("opening notebook", notebook)
-                    return
-                }
-                $scope.selectedListIndex = $scope.notebooks.indexOf(notebook);
-                $scope.notes = notebook.taskArray;
-                $scope.selectedListName = notebook.title;
-                $scope.show_delete_list_option = true
-                $scope.show_purge_list_option = true
-                $scope.show_rename_list_option = true
-                $scope.is_note_selected = false;
-                $scope.show_edit_options = false;
-                $scope.selected_note = undefined
-                $scope.show_view = $scope.CONST.VIEW_NOTE
-
-                // to show icon on topbar
-                $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`
-                $scope.init_bottom_bar_menu()
-                $scope.save_data()
+            if (!notebook) return;
+    
+            $scope.pageTitle = notebook.title;
+            $scope.pageIcon = $scope.get_notebook_icon(notebook);
+            $scope.current_notebook = notebook;
+    
+            if (notebook.title.toLowerCase() === "system") {
+                $scope.show_view = $scope.CONST.VIEW_SYSTEM;
+                console.log("opening notebook", notebook);
+                return;
             }
+    
+            $scope.selectedListIndex = $scope.notebooks.indexOf(notebook);
+            $scope.notes = notebook.taskArray;
+            $scope.selectedListName = notebook.title;
+    
+            $scope.show_delete_list_option = true;
+            $scope.show_purge_list_option = true;
+            $scope.show_rename_list_option = true;
+    
+            $scope.is_note_selected = false;
+            $scope.show_edit_options = false;
+            $scope.selected_note = undefined;
+    
+            $scope.show_view = $scope.CONST.VIEW_NOTE;
+            $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`;
+    
+            $scope.init_bottom_bar_menu();
+            $scope.save_data();
         } catch (err) {
-            console.log("Error while opening notebook", err)
+            console.log("Error while opening notebook", err);
         }
-    }
+    };
+    
 
     $scope.open_sidebar = function (state) {
         try {
@@ -353,6 +357,10 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.lock_data = () => {
         try {
+            if ($scope.current_notebook.taskArray.length == 0) {
+                $scope.show_toast("No need to lock empty notebook")
+                return "";
+            }
             if ($scope.is_notebook_locked()) {
                 $scope.show_toast("Notebook is already locked")
                 return "";
@@ -380,6 +388,11 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.unlock_data = () => {
         try {
+            if($scope.current_notebook.taskArray.length==0)
+            {
+                $scope.show_toast("Notebook is empty")
+                return "";
+            }
             if ($scope.password.length == 0) {
                 $scope.show_toast("Password is required to lock notebook")
                 return "";
@@ -620,16 +633,15 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         }
     };
 
-
-
+    
     $scope.copy_task = () => {
         try {
             if ($scope.selected_note) {
                 //create new task to make a copy
                 $scope.copied_task = new Task($scope.selected_note.title)
                 //also copy to clipboard
-                let dummy = document.createElement("input")
-                dummy.setAttribute("type", "text")
+                let dummy = document.createElement("textarea")
+                // dummy.setAttribute("type", "text")
                 dummy.value = $scope.selected_note.title
                 dummy.select()
                 dummy.setSelectionRange(0, 99999)
@@ -712,10 +724,10 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     }
 
     $scope.open_update_task_popup = () => {
+        // $scope.close_all_dialogs()
+        $scope.open_create_new_note_popup()
         $scope.note_content = $scope.selected_note.title.trim()
         $scope.show_update_task_button = true
-        $scope.close_all_dialogs()
-        $scope.toggle_bottom_bar_div('note')
     }
 
     // update task in popup
@@ -1176,7 +1188,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         }
 
         $scope.close_all_dialogs()
-        $scope.dialog_flags.show_create_task_popup = true
+        $scope.dialog_flags.show_note_popup = true
         $scope.note_content = ""
         // document.querySelector("#note_content").style.height = `${$scope.textarea_default_height}px`
         document.querySelector("#note_content").focus();
@@ -1200,47 +1212,27 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         }
     }
 
+    //rename notebook
     $scope.rename_notebook = () => {
         try {
-            if (!$scope.current_notebook) {
-                return $scope.show_toast("Error: No list is selected");
-            }
-    
-            const newName = $scope.new_list_name?.trim();
-            if (!newName) {
-                return $scope.show_toast("Error: Input required");
-            }
-
-            const reservedTitles = ["system", "trash"];
-            if (reservedTitles.includes(newName.toLowerCase())) {
-                return $scope.show_toast(`Error: ${newName} is a reserved title`);
-            }
-    
-            if ($scope.has_notebook(newName)) {
-                return $scope.show_toast(`${newName} notebook already exists`);
-            }
-    
-            // Update notebook title and icon
-            $scope.current_notebook.title = newName;
-            $scope.current_notebook.icon = $scope.new_notebook_icon || "folder";
-    
-            // Save changes and reset inputs
+            const notebook = $scope.current_notebook;
+            const newName = $scope.new_list_name;
+            const newIcon = $scope.new_notebook_icon;
+            const updatedNotebook = notebook_service.rename_notebook(
+                notebook, newName, newIcon, $scope.notebooks
+            );
+            $scope.pageTitle = updatedNotebook.title;
             $scope.new_notebook_icon = "folder";
+            $scope.new_list_name = "";
             $scope.save_data();
             $scope.close_all_dialogs();
-    
-            // Update page title if in note view
-            if ($scope.show_view === $scope.CONST.VIEW_NOTE) {
-                $scope.pageTitle = newName;
-            }
-    
-            $scope.new_list_name = "";
             $scope.show_toast("Notebook renamed successfully");
         } catch (err) {
             console.error("Error while renaming notebook", err);
-            $scope.show_toast("Exception occurred while renaming notebook");
+            $scope.show_toast(`Error: ${err}`);
         }
-    }
+    };
+    
 
     $scope.notebook_has_completed_tasks = () => {
         return $scope.notes.some(note => note.isTaskCompleted === true)
@@ -1263,8 +1255,13 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     show: true,
                     action: () => {
                         $scope.close_all_dialogs();
-                        $scope.dialog_flags.show_password_popup = true;
-                        $scope.focus_input("#password")
+                        if($scope.current_notebook.taskArray.length==0)
+                        {
+                            $scope.show_toast("Cannot lock empty notebook")
+                        }else{
+                            $scope.dialog_flags.show_password_popup = true;
+                            $scope.focus_input("#password")
+                        }
                     }
                 }, {
                     text: "Paste Task",
@@ -1590,6 +1587,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             }
         ]
     }
+    
     // handle bottom bar menu click
     $scope.toggle_bottom_bar_active_menu = (menu_id) => {
         $scope.bottom_bar_active_menu = $scope.bottom_bar_active_menu === menu_id ? "null" : menu_id;
@@ -1597,9 +1595,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.handle_db_operation_change = () => {
         try {
-
             console.log($scope.db_operation)
-
         } catch (err) {
             console.error(err);
         }
@@ -2418,5 +2414,6 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
         //group notebooks
         $scope.handle_group_notebooks()
+        console.log($scope.notebooks)
     };
 }

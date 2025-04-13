@@ -185,7 +185,9 @@
      </div>
 
     <!-- empty state empty list-->
-    <div class="empty-notebook" ng-show="notes.length==0 && pageTitle.toLocaleLowerCase()!='system'">
+    <div 
+        class="empty-notebook" 
+        ng-show="notes.length==0 && pageTitle.toLocaleLowerCase()!='system' && !is_notebook_locked()">
         <div>
             <img src="img/empty.svg" class="empty_svg" />
         </div>
