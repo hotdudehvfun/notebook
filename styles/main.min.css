@@ -34,7 +34,7 @@
 html {
     height: 100%;
     overflow: hidden;
-    font-size: 14px
+    font-size: 14px;
     overscroll-behavior: none;
     touch-action: none;
 }
@@ -1273,6 +1273,18 @@ select:focus-visible {
     border: 1px solid var(--theme_button_border);
     width: 90%;
     max-width: 512px
+}
+
+.create-note-popup {
+    background: var(--bg-color);
+    /* padding: 0.5rem; */
+    z-index: 999;
+    border: 1px solid var(--theme_button_border);
+    height: 100vh;
+    /* background: black; */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .create-var-popup {

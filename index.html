@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"> -->
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <meta content="todo app" name="keywords">
     <meta name="description" content="NoteBook app">
     <meta http-equiv="cache-control" content="max-age=8000" />
@@ -33,10 +33,13 @@
         <bottom-bar class="bottom-bar"></bottom-bar>
     </div>
     <side-bar class="sidebar-menu-container" ng-style="sidebar_left"></side-bar>
-
     <!-- create-notebook-popup -->
     <create-notebook-popup style="bottom: 30vh;" class="popup" ng-show="dialog_flags.show_notebook_popup">
     </create-notebook-popup>
+
+    <!-- create-note-popup  -->
+    <create-note-popup style="top: 0px;" class="popup" ng-show="dialog_flags.show_note_popup">
+    </create-note-popup>
 
     <!-- create-var-popup -->
     <popup-Create-Var style="bottom: 30vh;" class="popup"
@@ -87,7 +90,7 @@
     <!-- passwrord popup -->
     <popup-password style="bottom: 30vh;" ng-show="dialog_flags.show_password_popup;" class="popup"></popup-password>
 
-    <script src="/app.js"></script>
+    <!-- <script src="/app.js"></script> -->
     <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js"
         integrity="sha512-8AwTn2Tax8NWI+SqsYAXiKT8jO11WUBzTEWRoilYgr5GWnF4fNqBRD+hCr4JRSA1eZ/qwbI+FPsM3X/PQeHgpQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -104,8 +107,8 @@
     <script type="text/javascript" src="scripts/services/db_service.js"></script>
     <script type="text/javascript" src="scripts/services/notebook_service.js"></script>
     
-    <!-- <script type="text/javascript" src="scripts/main_controller.js"></script> -->
-    <script type="text/javascript" src="scripts/main_controller.min.js"></script>
+    <script type="text/javascript" src="scripts/main_controller.js"></script>
+    <!-- <script type="text/javascript" src="scripts/main_controller.min.js"></script> -->
 
     <script type="text/javascript" src="scripts/angular_module.js"></script>
     <script type="text/javascript" src="scripts/list.js"></script>

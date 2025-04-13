@@ -226,7 +226,8 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                 reset_note_form();
                 $scope.save_data();
                 $scope.show_toast(msg);
-                $scope.bottom_bar_active_div = 'null'
+                $scope.dialog_flags.show_note_popup=false;
+
             } else {
                 $scope.show_toast("Invalid note content");
             }
@@ -743,7 +744,8 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     $scope.selected_note = null;
                     $scope.show_edit_options = false;
                     $scope.init_bottom_bar_menu()
-                    $scope.bottom_bar_active_div = 'null'
+                    $scope.dialog_flags.show_note_popup=false;
+
                 }else{
                     $scope.show_toast("Cannot updated task")
                 }
@@ -1865,16 +1867,16 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         return greet_user(username);
     }
 
+    $scope.open_create_note_popup = () => {
+        $scope.init_bottom_bar_menu()
+        $scope.prepare_insert_menu_items()
+        $scope.prepare_component_menu_items()
+        $scope.focus_input("#note_content");
+        $scope.dialog_flags.show_note_popup = true
+    }
 
 
     $scope.toggle_bottom_bar_div = (divId) => {
-        $scope.bottom_bar_active_div = $scope.bottom_bar_active_div === divId ? "null" : divId;
-        if (divId == 'note') {
-            $scope.init_bottom_bar_menu()
-            $scope.prepare_insert_menu_items()
-            $scope.prepare_component_menu_items()
-            $scope.focus_input("#note_content")
-        }
     }
 
     $scope.get_note_content_placeholder = () => {
@@ -2264,7 +2266,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             show_quick_notebooks: false, // show quick notebook list
             show_note_more_options: false, // show options for notes
             show_notebook_popup: false,//to show create notebook popup
-
+            show_note_popup: false,//to show create note popup
         }
 
         //button flags
