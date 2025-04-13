@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>NoteBook</title>
     <meta charset="UTF-8">
@@ -22,11 +23,7 @@
     <link rel="stylesheet" href="styles/custom_styles.min.css">
 </head>
 
-<body 
-    ng-app="notebook_app" 
-    ng-controller='main_controller' 
-    ng-init="init()" 
-    data-theme="{{is_dark?'dark':'light';}}">
+<body ng-app="notebook_app" ng-controller='main_controller' ng-init="init()" data-theme="{{is_dark?'dark':'light';}}">
     <div class="main-container">
         <!-- top bar -->
         <top-bar class="topbar bg-blur scroll"></top-bar>
@@ -42,18 +39,16 @@
     </create-notebook-popup>
 
     <!-- create-var-popup -->
-    <popup-Create-Var style="bottom: 30vh;" class="popup" ng-show="dialog_flags.show_create_system_var_popup"></popup-Create-Var>
-    </popup-Create-Var> 
+    <popup-Create-Var style="bottom: 30vh;" class="popup"
+        ng-show="dialog_flags.show_create_system_var_popup"></popup-Create-Var>
+    </popup-Create-Var>
 
     <!-- rename notebook dialog pop up-->
     <popup-rename-notebook style="bottom: 30vh;" ng-show="dialog_flags.show_rename_notebook_popup" class="popup">
     </popup-rename-notebook>
 
     <!-- import popup -->
-     <popup-db 
-        style="top: 20vh;"
-        class="popup" 
-        ng-show="dialog_flags.show_db_popup"></popup-db>
+    <popup-db style="top: 20vh;" class="popup" ng-show="dialog_flags.show_db_popup"></popup-db>
 
     <!-- more options panel for note-->
     <div class="list-more-options-container" ng-show="dialog_flags.show_note_more_options">
@@ -78,9 +73,7 @@
     </div>
 
     <!-- notebooks list for various options -->
-    <quick-notebooks 
-        class="list-more-options-container"
-        ng-init="load_quick_notebooks()"
+    <quick-notebooks class="list-more-options-container" ng-init="load_quick_notebooks()"
         ng-show="dialog_flags.show_quick_notebooks"></quick-notebooks>
 
 
@@ -95,31 +88,25 @@
     <popup-password style="bottom: 30vh;" ng-show="dialog_flags.show_password_popup;" class="popup"></popup-password>
 
     <script src="/app.js"></script>
-
-
     <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js"
         integrity="sha512-8AwTn2Tax8NWI+SqsYAXiKT8jO11WUBzTEWRoilYgr5GWnF4fNqBRD+hCr4JRSA1eZ/qwbI+FPsM3X/PQeHgpQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
-
     <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"
         integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/aes.min.js"
         integrity="sha512-UOtWWEXoMk1WLeC873Gmrkb2/dZMwvN1ViM9C1mNvNmQSeXpEr8sRzXLmUSha1X4x5V892uFmEjiZzUsYiHYiw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <!--load services -->
     <script type="text/javascript" src="scripts/services/db_service.js"></script>
     <script type="text/javascript" src="scripts/services/notebook_service.js"></script>
     
+    <!-- <script type="text/javascript" src="scripts/main_controller.js"></script> -->
     <script type="text/javascript" src="scripts/main_controller.min.js"></script>
+
     <script type="text/javascript" src="scripts/angular_module.js"></script>
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>

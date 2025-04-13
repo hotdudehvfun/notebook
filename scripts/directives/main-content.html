@@ -28,25 +28,29 @@
         <ul ng-show="items.length>0" class="reset_ul notebooks">
             <li 
                 class="notebooks_li"
-                ng-repeat="notebook in items"
-                ng-click="open_notebook(notebook)" >
+                ng-repeat="notebook in items">
                  <div class="list-panel-item">
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
                         <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
 
-                        
-                        
-                        <article class="selected">{{notebook.title}}</article>
-                        
-                        <!-- completed notes status -->
-                        <span
+                        <article 
+                        ng-click="open_notebook(notebook)"
+                        class="selected">{{notebook.title}}</article>
+                       
+                        <!-- handle click on notebook more options -->
+                        <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
+                            <!-- completed notes status -->
+                            <span
                             ng-show="get_completed_notes_length(notebook.taskArray)>0" 
                             class="list-sub-text gray line-through">
                                 {{get_completed_notes_length(notebook.taskArray)}}
-                        </span>
-                        <!-- notes length -->
-                        <span class="list-sub-text">{{notebook.taskArray.length}}</span>
+                            </span>
+                            <!-- notes length -->
+                            <span class="list-sub-text">{{notebook.taskArray.length}}</span>
+                        </div>
+                        
+                        <!-- drag button -->
                         <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}" alt="NoteBook icon">
 
                     </div>
@@ -60,21 +64,27 @@
         <ul class="reset_ul notebooks">
             <li 
                 class="notebooks_li"
-                ng-repeat="notebook in items"
-                ng-click="open_notebook(notebook)">
+                ng-repeat="notebook in items">
                 <div class="list-panel-item">
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
                         <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
-                        <article class="selected">{{notebook.title}}</article>
-                        <!-- completed notes status -->
-                        <span
+                        <article 
+                        ng-click="open_notebook(notebook)"
+                        class="selected">{{notebook.title}}</article>
+                        
+                        <!-- handle click on notebook more options -->
+                        <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
+                            <!-- completed notes status -->
+                            <span
                             ng-show="get_completed_notes_length(notebook.taskArray)>0" 
                             class="list-sub-text gray line-through">
                                 {{get_completed_notes_length(notebook.taskArray)}}
-                        </span>
-                        <!-- notes length -->
-                        <span class="list-sub-text">{{notebook.taskArray.length}}</span>
+                            </span>
+                            <!-- notes length -->
+                            <span class="list-sub-text">{{notebook.taskArray.length}}</span>
+                        </div>
+                        
                         <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}" alt="NoteBook icon">
 
                     </div>

@@ -366,7 +366,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                 data.title = encrypt_data(data.title, $scope.password)
             })
             $scope.password = ""
-            $scope.notebooks[$scope.selectedListIndex].is_locked = true;
+            $scope.current_notebook.is_locked = true;
             $scope.pageIcon = "lock"
             $scope.save_data()
             $scope.close_all_dialogs()
@@ -386,6 +386,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
             if ($scope.is_notebook_locked()) {
                 // Test password by decrypting one field without modifying it
+                $scope.notes = $scope.current_notebook.taskArray
                 const testDecryption = decrypt_data($scope.notes[0].title, $scope.password);
 
                 if (testDecryption !== null && testDecryption !== "") {
@@ -394,8 +395,9 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                         data.title = decrypt_data(data.title, $scope.password);
                     });
                     $scope.password = "";
-                    $scope.notebooks[$scope.selectedListIndex].is_locked = false;
-                    $scope.pageIcon = $scope.notebooks[$scope.selectedListIndex].icon
+                    $scope.current_notebook.is_locked = false;
+                    $scope.pageIcon = $scope.current_notebook.icon
+                    
                     $scope.save_data();
                     $scope.close_all_dialogs();
                     $scope.show_toast("Notebook unlocked");
@@ -957,12 +959,20 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         }
     }
 
-    $scope.handle_click_on_more_vert = () => {
-        if ($scope.current_notebook) {
-            $scope.close_all_dialogs();
-            $scope.init_notebook_more_options()
-            $scope.dialog_flags.show_list_more_options = true
+    $scope.handle_click_on_more_vert = (_notebook) => {
+        if(_notebook)
+        {
+            //click comes from notebooks list
+            console.log("quick")
+            $scope.current_notebook = _notebook
+        }else{
+            //click comes from notes list
+            console.log("notes")
         }
+        $scope.close_all_dialogs();
+        $scope.init_notebook_more_options()
+        $scope.dialog_flags.show_list_more_options = true
+        
     }
 
     $scope.auto_insert = (e) => {
@@ -1190,79 +1200,58 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.rename_notebook = () => {
         try {
-            if ($scope.selectedListIndex < 0) {
+            if (!$scope.current_notebook) {
                 return $scope.show_toast("Error: No list is selected");
             }
-
-            if (!$scope.new_list_name) {
+    
+            const newName = $scope.new_list_name?.trim();
+            if (!newName) {
                 return $scope.show_toast("Error: Input required");
             }
 
-            if ($scope.has_notebook($scope.new_list_name)) {
-                $scope.show_toast(`${$scope.new_list_name} notebook already exists`);
-                return;
+            const reservedTitles = ["system", "trash"];
+            if (reservedTitles.includes(newName.toLowerCase())) {
+                return $scope.show_toast(`Error: ${newName} is a reserved title`);
             }
-
-            if ($scope.new_list_name.toLocaleLowerCase() === "system") {
-                return $scope.show_toast("Error: System is reserved title");
+    
+            if ($scope.has_notebook(newName)) {
+                return $scope.show_toast(`${newName} notebook already exists`);
             }
-            if ($scope.new_list_name.toLocaleLowerCase() === "trash") {
-                return $scope.show_toast("Error: Trash is reserved title");
-            }
-            // Update title and icon
-            let selectedList = $scope.notebooks[$scope.selectedListIndex];
-            selectedList.title = $scope.new_list_name;
-            selectedList.icon = $scope.new_notebook_icon;
-            $scope.notebooks[$scope.selectedListIndex] = selectedList
-
-            // Save data and close popup
-            $scope.new_notebook_icon = "folder" //reset new notebook icon
+    
+            // Update notebook title and icon
+            $scope.current_notebook.title = newName;
+            $scope.current_notebook.icon = $scope.new_notebook_icon || "folder";
+    
+            // Save changes and reset inputs
+            $scope.new_notebook_icon = "folder";
             $scope.save_data();
-            $scope.close_all_dialogs()
-
-
-            // Update selected list and page title
-            $scope.selectedListName = $scope.new_list_name;
-            $scope.pageTitle = $scope.new_list_name;
-
-            // Clean up
+            $scope.close_all_dialogs();
+    
+            // Update page title if in note view
+            if ($scope.show_view === $scope.CONST.VIEW_NOTE) {
+                $scope.pageTitle = newName;
+            }
+    
             $scope.new_list_name = "";
-            $scope.show_toast("Notebook renamed");
+            $scope.show_toast("Notebook renamed successfully");
         } catch (err) {
-            $scope.show_toast("Exception occurred while renaming notebook");
             console.error("Error while renaming notebook", err);
+            $scope.show_toast("Exception occurred while renaming notebook");
         }
     }
 
     $scope.notebook_has_completed_tasks = () => {
-        try {
-            if ($scope.selectedListIndex >= 0 && $scope.notes.length > 0) {
-                const hasCompletedTasks = $scope.notes.some(note => note.isTaskCompleted === true);
-                return hasCompletedTasks;
-            }
-            return false;
-
-        } catch (err) {
-            console.log(err)
-        }
+        return $scope.notes.some(note => note.isTaskCompleted === true)
     }
 
 
     $scope.is_notebook_locked = () => {
-        try {
-            if ($scope.current_notebook) {
-                $scope.current_notebook = $scope.notebooks[$scope.selectedListIndex]
-                if ($scope.current_notebook.hasOwnProperty("is_locked")) {
-                    return $scope.current_notebook.is_locked
-                }
-            }
-            return false
-        } catch (err) {
-            console.log(err)
-        }
-    }
+        return $scope.current_notebook?.is_locked || false;
+    };
+    
     //notebook menu
     $scope.init_notebook_more_options = () => {
+        // console.log($scope.current_notebook)
         if ($scope.current_notebook) {
             $scope.notebook_more_options = [
                 {
