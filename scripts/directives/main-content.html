@@ -19,7 +19,7 @@
    </div>
 
     <div class="notebook_count">
-        {{get_total().total_tasks}} tasks in {{get_total().total_notebooks}} notebooks
+        {{get_total().total_tasks}} notes in {{get_total().total_notebooks}} notebooks
     </div>
 
     <!-- notebooks list -->
@@ -113,11 +113,14 @@
     </div>
     <!-- clipboard -->
     <div class="notebook_age" ng-show="copied_task!=null">
-        <img class="svg-icon" ng-src="{{get_svg_src('document.on.clipboard')}}" alt="NoteBook icon">&nbsp; 1 task
+        <img class="svg-icon" ng-src="{{get_svg_src('document.on.clipboard')}}" alt="NoteBook icon">&nbsp; 1 note
     </div>
 
-    <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">{{notes.length}} tasks
+    <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">
+        {{notes.length === 0 ? 'No notes' : notes.length + ' ' + (notes.length === 1 ? 'note' : 'notes')}}
     </div>
+    
+    
 
     <ul ng-hide="is_notebook_locked()" class="notes reset_ul">
         <li data-index="{{$index}}" ng-repeat="note in notes | filter:{isTaskCompleted:false}">
@@ -138,9 +141,6 @@
                     ng-change="save_data()"
                     ng-model="note.isTaskCompleted"
                     type="checkbox">
-                
-              
-                
                 <!-- note content -->
                 <div 
                     ng-class="{selected:selected_note==note}" 

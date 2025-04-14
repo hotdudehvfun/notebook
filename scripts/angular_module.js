@@ -33,6 +33,9 @@ app.filter("sanitize", ['$sce', function ($sce) {
 //services for separate logics
 app.service('db_service',db_service)
 app.service('notebook_service',notebook_service)
+app.service('note_service',note_service)
+
+
 
 app.controller('main_controller',main_controller);
 

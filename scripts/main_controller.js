@@ -1,4 +1,4 @@
-function main_controller($scope, $timeout, db_service,notebook_service) {
+function main_controller($scope, $timeout, db_service,notebook_service,note_service) {
 
     //notebook service
     //lazy load notebooks for popup
@@ -146,52 +146,43 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     // get completed notes length
     $scope.get_completed_notes_length = (notes) => {
-        
         try {
-            if(notes)
-                return notes.filter(function (note) { return note.isTaskCompleted == true }).length;
+            return note_service.get_completed_notes_length(notes);
         } catch (error) {
             console.log("error while gettig length of notes")
         }
     }
 
+    // create notebook using popup
     $scope.handle_click_on_create_notebook_button = () => {
         try {
-            const title = $scope.new_list_name.trim();
-            // Validate notebook name
-            if (is_valid_notebook_name(title)) {
-                if ($scope.has_notebook(title)) {
-                    $scope.show_toast(`${title} notebook already exists`);
-                    return;
-                }
-                // Create the notebook and reset the form
-                const created_notebook = $scope.create_notebook(title);
-                if (created_notebook) {
-                    reset_notebook_form();
-                    $scope.show_toast(`Notebook "${title}" created`);
-                } else {
-                    $scope.show_toast("Failed to create notebook");
-                }
-            } else {
-                $scope.show_toast("Notebook name must be between 2 and 30 characters");
+            const created_notebook = notebook_service.create_notebook(
+                $scope.new_list_name.trim(), 
+                $scope.new_notebook_icon, 
+                $scope.notebooks);
+            if (created_notebook) {
+                reset_notebook_form();
+                $scope.notebooks.push(created_notebook);
+                $scope.save_data();
+                $scope.show_toast(`Notebook created`);
             }
         } catch (err) {
             console.log(err)
+            $scope.show_toast("Error: "+err);
         }
     };
 
-    // Helper function to validate the notebook name
-    const is_valid_notebook_name = (title) => title.length > 1 && title.length <= 30;
-
-    // Create notebook function
+    // Create notebook using function
     $scope.create_notebook = (title) => {
         try {
-            const new_notebook = new List(title, $scope.new_notebook_icon || "folder");
+            //validation is done in service
+            const new_notebook = note_service.create_notebook(title, $scope.new_notebook_icon, $scope.notebooks);
             $scope.notebooks.push(new_notebook);
             $scope.save_data(); // Save immediately after creation
             return new_notebook;
         } catch (err) {
             console.log("Error while creating notebook:", err);
+            $scope.show_toast("Error: "+err);
             return null;
         }
     };
@@ -201,7 +192,6 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         $scope.new_list_name = "";
         $scope.new_notebook_icon = "folder";
         $scope.close_all_dialogs();
-        //
     };
 
     $scope.create_note = () => {
@@ -221,7 +211,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
                     msg = `Note created in ${$scope.current_notebook.title}`
                 } else {
                     // Check if "quick notes" notebook exists
-                    let quick_notes_notebook = get_or_create_quick_notes();
+                    let quick_notes_notebook = notebook_service.get_quick_notes_notebook($scope.notebooks);
                     quick_notes_notebook.taskArray.push(new_task);
                     $scope.notes = quick_notes_notebook.taskArray;
                     msg = `Note created in ${quick_notes_notebook.title}`
@@ -473,27 +463,25 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         }
     }
 
+    //delete notebook
     $scope.delete_notebook = () => {
         try {
             if ($scope.current_notebook) {
                 if (confirm("Are you sure?")) {
-                    $scope.show_toast("Notebook Deleted");
-                    let removedList = $scope.notebooks.splice($scope.selectedListIndex, 1);
-                    $scope.selectedListIndex = 0
-                    if ($scope.notebooks.length != 0) {
-                        $scope.open_notebook($scope.notebooks[$scope.selectedListIndex])
-                    } else {
-                        //all notebooks removed
-                        $scope.notes = []
-                        $scope.pageTitle = $scope.defaultPageTitle
+                    const is_removed = notebook_service.delete_notebook($scope.current_notebook, $scope.notebooks);
+                    if(is_removed) {
+                        $scope.show_toast("Notebook Deleted");
+                        $scope.show_view = $scope.CONST.VIEW_NOTEBOOK;
+                        $scope.save_data()
                     }
-                    $scope.close_all_dialogs()
+                    
                 }
             }
         } catch (err) {
-            $scope.show_toast("Failed to delete notebook")
+            $scope.show_toast("Error:"+err)
             console.log("Error while deleting notebook", err)
         }
+        $scope.close_all_dialogs()
     }
 
     $scope.handle_tap_on_note = function (note) {
@@ -657,31 +645,16 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
 
     $scope.merge_completed_notes = () => {
         try {
-            // Step 1: Filter out completed notes
-            const completedNotes = $scope.notes.filter(note => note.isTaskCompleted);
-            if (completedNotes.length === 0) {
-                $scope.show_toast("No completed notes to merge");
-                return;
+            // Merge completed notes into a single note
+            const result = note_service.merge_completed_notes($scope.notes, $scope.current_notebook);
+            if(result){
+                $scope.show_toast("Notes merged successfully");
             }
-            // Step 2: Combine their content into a single note
-            const mergedContent = completedNotes.map(note => note.title).join("\n\n");
-
-            // Step 3: Create a new merged note
-            const mergedNote = new Task(mergedContent)
-
-            // Step 4: Remove completed notes from the notebook
-            $scope.notes = $scope.notes.filter(note => !note.isTaskCompleted);
-            $scope.notes.push(mergedNote)
-
-            // Step 5: Add the new merged note
-            $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes;
-
-            // Save and provide feedback
             $scope.save_data();
             $scope.close_all_dialogs();
-            $scope.show_toast("Completed notes merged successfully");
         } catch (error) {
             console.error("Cannot merge completed notes", error);
+            $scope.show_toast("Error: " + error);
         }
     };
 
@@ -974,19 +947,17 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     }
 
     $scope.handle_click_on_more_vert = (_notebook) => {
-        if(_notebook)
-        {
-            //click comes from notebooks list
-            console.log("quick")
-            $scope.current_notebook = _notebook
-        }else{
-            //click comes from notes list
-            console.log("notes")
-        }
+        // if(_notebook)
+        // {
+        //     //click comes from notebooks list
+        //     $scope.current_notebook = _notebook
+        //     console.log($scope.current_notebook)
+        // }
+        console.log(_notebook)
+        $scope.current_notebook = _notebook
         $scope.close_all_dialogs();
         $scope.init_notebook_more_options()
         $scope.dialog_flags.show_list_more_options = true
-        
     }
 
     $scope.auto_insert = (e) => {
@@ -2083,10 +2054,13 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         // })
         return CHART_COLORS
     }
+
+    // get chart transaprent color
     $scope.get_transparent_color = (rgb, alpha) => {
         return util_get_transparent_color(rgb, alpha)
     }
 
+    // reset new chart
     $scope.reset_new_chart_and_close = () => {
         //reset values
         $scope.new_chart = {
@@ -2099,6 +2073,8 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             show: false,
         }
     }
+
+    // create new chart using chart code
     $scope.new_chart_convert_ui_to_code = () => {
         /*
             @chart
@@ -2128,6 +2104,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         }
     }
 
+    // validate chart code
     $scope.is_valid_chart_code = (chart_code) => {
         try {
             let lines = chart_code.trim().split("\n");
@@ -2204,6 +2181,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
         }
     }
 
+    // handle group notebooks
     $scope.handle_group_notebooks = () => {
         if ($scope.sort_notebook_selected_item == "date") {
             $scope.grouped_notebooks = $scope.get_grouped_notebooks()
@@ -2220,6 +2198,7 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
     };
     
 
+    // this obj handles create and rename notebook
     $scope.init_create_notebook_obj = ()=>{
         return{
             create:{
@@ -2235,6 +2214,8 @@ function main_controller($scope, $timeout, db_service,notebook_service) {
             action:"create"
         }
     }
+
+    // init everything
     $scope.init = () => {
         //CONST values
         $scope.CONST = {
