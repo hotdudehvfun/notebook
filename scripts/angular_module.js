@@ -34,6 +34,7 @@ app.filter("sanitize", ['$sce', function ($sce) {
 app.service('db_service',db_service)
 app.service('notebook_service',notebook_service)
 app.service('note_service',note_service)
+app.service('note_menu_service',note_menu_service)
 
 
 

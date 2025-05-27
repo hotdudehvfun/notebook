@@ -50,7 +50,5 @@ function note_service($timeout)
         notebook.taskArray.push(mergedNote);
         return notebook;
     };
-
-  
     
 }

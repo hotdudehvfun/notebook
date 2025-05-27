@@ -1,4 +1,10 @@
-function main_controller($scope, $timeout, db_service,notebook_service,note_service) {
+function main_controller(
+    $scope, 
+    $timeout, 
+    db_service,
+    notebook_service,
+    note_service,
+    note_menu_service) {
 
     //notebook service
     //lazy load notebooks for popup
@@ -486,7 +492,7 @@ function main_controller($scope, $timeout, db_service,notebook_service,note_serv
 
     $scope.handle_tap_on_note = function (note) {
         try {
-            console.log(note.is_component)
+            console.log("note is component = ",note.is_component)
             $scope.selected_note = note
             // console.log($scope.selected_note)
             $scope.is_note_selected = true
@@ -697,10 +703,13 @@ function main_controller($scope, $timeout, db_service,notebook_service,note_serv
     }
 
     $scope.open_update_task_popup = () => {
-        // $scope.close_all_dialogs()
-        $scope.open_create_new_note_popup()
+        //open popup to update task
+        // open_create_note_popup
+        $scope.open_create_note_popup()
+        //set selected note
         $scope.note_content = $scope.selected_note.title.trim()
         $scope.show_update_task_button = true
+        $scope.dialog_flags.show_note_more_options = false
     }
 
     // update task in popup
@@ -1157,17 +1166,11 @@ function main_controller($scope, $timeout, db_service,notebook_service,note_serv
         if ($scope.selectedListName.toLowerCase() == "system") {
             return $scope.show_toast("Cannot create note inside System");
         }
-
         $scope.close_all_dialogs()
         $scope.dialog_flags.show_note_popup = true
         $scope.note_content = ""
         // document.querySelector("#note_content").style.height = `${$scope.textarea_default_height}px`
         document.querySelector("#note_content").focus();
-        //we are in a notebook
-        if ($scope.selectedListIndex >= 0)
-            $scope.show_select_notebooks_dropdown = false
-        else
-            $scope.show_select_notebooks_dropdown = true
     }
 
 
@@ -1517,9 +1520,9 @@ function main_controller($scope, $timeout, db_service,notebook_service,note_serv
                     }
                 }, 
                 {
-                    text: "✅ All to bullets",
+                    text: "✅ All lines to bullets",
                     action: () => {
-                        $scope.convert_to_bullets("-");
+                        $scope.note_content = note_menu_service.convert_all_to_bullets("-")
                     }
                 },
                 {
@@ -1533,7 +1536,14 @@ function main_controller($scope, $timeout, db_service,notebook_service,note_serv
                     action: () => {
                         $scope.add_numbers_to_selected_text();
                     }
-                }
+                },
+                {
+                    text: "📆 Convert to Diary entry(date,time,all lines bullet)",
+                    action: () => {
+                        $scope.convert_to_diary_entry();
+                    }
+                },
+                
             ];
         } catch (error) {
             console.log(error);
@@ -2044,6 +2054,23 @@ function main_controller($scope, $timeout, db_service,notebook_service,note_serv
 
         $scope.note_content = new_text;
     };
+    // add diary entry, date, time and all lines as bullet
+    $scope.convert_to_diary_entry = function () {
+        try {
+            let textarea = document.getElementById("note_content");
+            // first make all line bullet points
+            $scope.convert_to_bullets("-");
+            // then add date and time at the top
+            let date = formatDate(new Date());
+            let time = formatTime(new Date());
+            let new_content = `### ${date} ${time}\n` + $scope.note_content;
+            textarea.value = new_content;
+            $scope.note_content = new_content;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
 
     $scope.get_chart_colors = () => {
