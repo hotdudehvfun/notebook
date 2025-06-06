@@ -261,42 +261,7 @@ function main_controller(
     }
 
     // split selected task in to multiple tasks based on delimiter
-    $scope.split_note = (delimiter) => {
-        try {
-            // show delimiters and on press split task
-            // split task based on that delimiter
-            console.log(delimiter, $scope.selected_note)
-            const taskContent = $scope.selected_note.title.trim();
-            delimiter = delimiter == "new line" ? "\n" : delimiter;
-            if (taskContent.length > 0) {
-                let tasks = split_text_into_tasks(taskContent, delimiter);
-                // Determine if adding single or multiple tasks
-                tasks = tasks.length > 0 ? tasks : [taskContent];
-                // Add tasks to the selected notebook
-                tasks.forEach(item => {
-                    let newTask = new Task(item);
-                    newTask.taskIcon = $scope.icons.unchecked;
-                    //set type of note
-                    newTask.set_is_component();
-                    newTask.set_component_type();
-                    $scope.notebooks[$scope.selectedListIndex].taskArray.push(newTask);
-                });
-                $scope.notes = $scope.notebooks[$scope.selectedListIndex].taskArray;
-
-                // Reset input and dialog states
-                $scope.note_content = "";
-                // $scope.note_textarea_container_height = $scope.note_textarea_container_default_height;
-                $scope.pageTitle = $scope.selectedListName;
-                // Save data and show toast notification
-                $scope.save_data();
-                const toastText = tasks.length > 1 ? `${tasks.length} Notes added` : "Note added";
-                $scope.show_toast(toastText);
-            }
-        } catch (err) {
-            console.error(err);
-            $scope.show_toast("Failed to split note");
-        }
-    }
+    
 
     $scope.get_system_vars = () => {
         let sortedByKey = Object.keys(system_vars)
@@ -1332,8 +1297,8 @@ function main_controller(
                     action: () => { $scope.open_update_task_popup() }
                 },
                 {
-                    text: "Toggle complete",
-                    icon: "button.programmable",
+                    text: $scope.selected_note.isTaskCompleted ? "Strike clear" : "Strike note",
+                    icon: "checkmark.square",
                     class: "task-more-options-item",
                     show: true,
                     action: () => {
@@ -1382,9 +1347,18 @@ function main_controller(
                     class: "task-more-options-item",
                     show: true,
                     action: () => {
-                        $scope.split_note("new line")
-                        $scope.save_data()
-                        $scope.close_all_dialogs()
+                        try {
+                            $scope.notebooks[$scope.selectedListIndex].taskArray = note_service.split_note(
+                                "new line",
+                                $scope.selected_note,
+                                $scope.notes)
+                            $scope.save_data()
+                            $scope.close_all_dialogs()
+                            $scope.show_toast("Note split successfully")
+                        } catch (err) {
+                            console.log("Error while splitting note", err)
+                            $scope.show_toast("Error while splitting note")
+                        }
                     }
                 }, {
                     //hide delete button when split submenu is open

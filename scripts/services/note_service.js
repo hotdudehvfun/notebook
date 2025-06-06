@@ -50,5 +50,40 @@ function note_service($timeout)
         notebook.taskArray.push(mergedNote);
         return notebook;
     };
+
+
+    // split notes
+    this.split_note = (delimiter,selected_note,notes) => {
+    try {
+        const noteIndex = notes.indexOf(selected_note);
+        if (noteIndex === -1) throw new Error("Selected note not found in taskArray");
+
+        let taskContent = selected_note.title.trim();
+        delimiter = delimiter === "new line" ? "\n" : delimiter;
+
+        if (taskContent.length === 0) throw new Error("Note content is empty");
+
+        // Split the text
+        let tasks = split_text_into_tasks(taskContent, delimiter);
+        tasks = tasks.length > 0 ? tasks : [taskContent];
+
+        const newTasks = tasks.map(text => {
+            let newTask = new Task(text);
+            newTask.taskIcon = "radio_button_unchecked";
+            newTask.set_is_component();
+            newTask.set_component_type();
+            return newTask;
+        });
+
+        // Insert new tasks below original note
+        notes.splice(noteIndex + 1, 0, ...newTasks);
+        // Remove the original note
+        notes.splice(noteIndex, 1);
+        return notes;
+    } catch (err) {
+        console.error(err);
+    }
+};
+
     
 }
