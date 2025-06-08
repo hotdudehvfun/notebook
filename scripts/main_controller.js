@@ -158,6 +158,21 @@ function main_controller(
             console.log("error while gettig length of notes")
         }
     }
+    
+    // get notes length
+    $scope.get_notes_length = (notebook) => {
+        try {
+            if(notebook.title.toLocaleLowerCase()=='system')
+            {
+                return $scope.get_system_var_length()
+            }
+            return notebook.taskArray.length
+        } catch (error) {
+            console.log("error while gettig length of notes")
+        }
+        return -1;
+    }
+    
 
     // create notebook using popup
     $scope.handle_click_on_create_notebook_button = () => {

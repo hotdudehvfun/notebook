@@ -33,7 +33,6 @@
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
                         <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
-
                         <article 
                         ng-click="open_notebook(notebook)"
                         class="selected">{{notebook.title}}</article>
@@ -46,8 +45,9 @@
                             class="list-sub-text gray line-through">
                                 {{get_completed_notes_length(notebook.taskArray)}}
                             </span>
+
                             <!-- notes length -->
-                            <span class="list-sub-text">{{notebook.taskArray.length}}</span>
+                            <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
                         </div>
                         
                         <!-- drag button -->
@@ -82,7 +82,7 @@
                                 {{get_completed_notes_length(notebook.taskArray)}}
                             </span>
                             <!-- notes length -->
-                            <span class="list-sub-text">{{notebook.taskArray.length}}</span>
+                            <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
                         </div>
                         
                         <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}" alt="NoteBook icon">
@@ -95,7 +95,7 @@
     
     <!-- empty space at last -->
     <div 
-        ng-show="notebooks.length!=0" 
+        ng-show="notebooks.length!=0"
         style="height:100px" 
         ng-click="dialog_flags.show_notebook_popup=true"
         class="align-center flex-row justify-center create-note-text">
@@ -175,14 +175,7 @@
         </div>
     </div>
 
-    <!-- empty space at last if notebook on click open new notebook dialog -->
-     <div 
-        ng-show="notes.length!=0" 
-        style="height:100px" 
-        ng-click="open_create_note_popup()"
-        class="align-center flex-row justify-center create-note-text">
-        <span>Tap here to create note in {{current_notebook.title}}</span>
-     </div>
+    
 
     <!-- empty state empty list-->
     <div 
@@ -201,6 +194,15 @@
         </div>
         <h2 class="text-center">NoteBook is locked</h2>
     </div>
+
+    <!-- empty space at last tap to create new note -->
+     <div
+        ng-hide="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'" 
+        style="height:100px" 
+        ng-click="open_create_note_popup()"
+        class="align-center flex-row justify-center create-note-text">
+        <span>Tap here to create note in {{current_notebook.title}}</span>
+     </div>
 </div>
 
  <!-- show system vars here -->
