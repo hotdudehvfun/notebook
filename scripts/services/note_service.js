@@ -1,14 +1,13 @@
-function note_service($timeout)
-{
-    
+function note_service($timeout) {
+
     // get notebook age
-    this.get_completed_notes_length = function(notes) {
+    this.get_completed_notes_length = function (notes) {
         if (!notes) return 0;
         return notes.filter(note => note.isTaskCompleted).length;
     };
 
     // get notebook icon
-    this.get_notebook_icon = function(notebook){
+    this.get_notebook_icon = function (notebook) {
         try {
             if (notebook?.is_locked)
                 return "lock";
@@ -39,7 +38,7 @@ function note_service($timeout)
     }
 
     // merge completed notes
-    this.merge_completed_notes = function(notes, notebook) {
+    this.merge_completed_notes = function (notes, notebook) {
         if (!notes || notes.length === 0)
             throw "No notes to merge";
         const completedNotes = notes.filter(note => note.isTaskCompleted);
@@ -53,37 +52,38 @@ function note_service($timeout)
 
 
     // split notes
-    this.split_note = (delimiter,selected_note,notes) => {
-    try {
-        const noteIndex = notes.indexOf(selected_note);
-        if (noteIndex === -1) throw new Error("Selected note not found in taskArray");
+    this.split_note = (delimiter, selected_note, notes) => {
+        try {
+            const noteIndex = notes.indexOf(selected_note);
+            if (noteIndex === -1) throw new Error("Selected note not found in taskArray");
 
-        let taskContent = selected_note.title.trim();
-        delimiter = delimiter === "new line" ? "\n" : delimiter;
+            let taskContent = selected_note.title.trim();
+            delimiter = delimiter === "new line" ? "\n" : delimiter;
 
-        if (taskContent.length === 0) throw new Error("Note content is empty");
+            if (taskContent.length === 0) throw new Error("Note content is empty");
 
-        // Split the text
-        let tasks = split_text_into_tasks(taskContent, delimiter);
-        tasks = tasks.length > 0 ? tasks : [taskContent];
+            // Split the text
+            let tasks = split_text_into_tasks(taskContent, delimiter);
+            tasks = tasks.length > 0 ? tasks : [taskContent];
 
-        const newTasks = tasks.map(text => {
-            let newTask = new Task(text);
-            newTask.taskIcon = "radio_button_unchecked";
-            newTask.set_is_component();
-            newTask.set_component_type();
-            return newTask;
-        });
+            const newTasks = tasks.map(text => {
+                let newTask = new Task(text);
+                newTask.taskIcon = "radio_button_unchecked";
+                newTask.set_is_component();
+                newTask.set_component_type();
+                return newTask;
+            });
 
-        // Insert new tasks below original note
-        notes.splice(noteIndex + 1, 0, ...newTasks);
-        // Remove the original note
-        notes.splice(noteIndex, 1);
-        return notes;
-    } catch (err) {
-        console.error(err);
-    }
-};
+            // Insert new tasks below original note
+            notes.splice(noteIndex + 1, 0, ...newTasks);
+            // Remove the original note
+            notes.splice(noteIndex, 1);
+            return notes;
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     
+
 }

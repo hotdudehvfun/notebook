@@ -3,20 +3,16 @@
     <div class="spacer"></div>
     <!-- Sort notebooks -->
     <div class="relative text-left">
-       <label for="sort_notebooks" class="submenu_item_select_label justify-left">
+        <label for="sort_notebooks" class="submenu_item_select_label justify-left">
             <h2 class="m-1">Your notebooks</h2>
-            <img src="./img/icons/arrow_down.svg" class="svg-icon" style="margin-top: 8px;"/>
-       </label>
-       <select 
-           name="sort_notebooks" 
-           id="sort_notebooks"
-           ng-change="handle_sort_notebook_change()"
-           ng-model="sort_notebook_selected_item"
-           class="bottom-bar-menu-select w-half">
-           <option value="date">Sort by Date</option>
-           <option value="title">Sort by Title</option>
-       </select>
-   </div>
+            <img src="./img/icons/arrow_down.svg" class="svg-icon" style="margin-top: 8px;" />
+        </label>
+        <select name="sort_notebooks" id="sort_notebooks" ng-change="handle_sort_notebook_change()"
+            ng-model="sort_notebook_selected_item" class="bottom-bar-menu-select w-half">
+            <option value="date">Sort by Date</option>
+            <option value="title">Sort by Title</option>
+        </select>
+    </div>
 
     <div class="notebook_count">
         {{get_total().total_tasks}} notes in {{get_total().total_notebooks}} notebooks
@@ -26,78 +22,67 @@
     <div ng-repeat="(group, items) in grouped_notebooks">
         <div class="group_by_text" ng-show="items.length>0">{{ group }}</div>
         <ul ng-show="items.length>0" class="reset_ul notebooks">
-            <li 
-                class="notebooks_li"
-                ng-repeat="notebook in items">
-                 <div class="list-panel-item">
-                    <div class="list-panel-item-title">
-                        <!-- notebook icon -->
-                        <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
-                        <article 
-                        ng-click="open_notebook(notebook)"
-                        class="selected">{{notebook.title}}</article>
-                       
-                        <!-- handle click on notebook more options -->
-                        <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
-                            <!-- completed notes status -->
-                            <span
-                            ng-show="get_completed_notes_length(notebook.taskArray)>0" 
-                            class="list-sub-text gray line-through">
-                                {{get_completed_notes_length(notebook.taskArray)}}
-                            </span>
-
-                            <!-- notes length -->
-                            <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
-                        </div>
-                        
-                        <!-- drag button -->
-                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}" alt="NoteBook icon">
-
-                    </div>
-                </div>
-            </li>
-        </ul>
-    </div>
-    
-    <div ng-repeat="(month, items) in grouped_notebooks['Older']">
-        <div class="group_by_text" ng-show="items.length>0">{{ month }}</div>
-        <ul class="reset_ul notebooks">
-            <li 
-                class="notebooks_li"
-                ng-repeat="notebook in items">
+            <li class="notebooks_li" ng-repeat="notebook in items">
                 <div class="list-panel-item">
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
                         <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
-                        <article 
-                        ng-click="open_notebook(notebook)"
-                        class="selected">{{notebook.title}}</article>
-                        
+                        <article ng-click="open_notebook(notebook)" class="selected">{{notebook.title}}</article>
+
                         <!-- handle click on notebook more options -->
                         <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
                             <!-- completed notes status -->
-                            <span
-                            ng-show="get_completed_notes_length(notebook.taskArray)>0" 
-                            class="list-sub-text gray line-through">
+                            <span ng-show="get_completed_notes_length(notebook.taskArray)>0"
+                                class="list-sub-text gray line-through">
                                 {{get_completed_notes_length(notebook.taskArray)}}
                             </span>
+
                             <!-- notes length -->
                             <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
                         </div>
-                        
-                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}" alt="NoteBook icon">
+
+                        <!-- drag button -->
+                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}"
+                            alt="NoteBook icon">
 
                     </div>
                 </div>
             </li>
         </ul>
     </div>
-    
+
+    <div ng-repeat="(month, items) in grouped_notebooks['Older']">
+        <div class="group_by_text" ng-show="items.length>0">{{ month }}</div>
+        <ul class="reset_ul notebooks">
+            <li class="notebooks_li" ng-repeat="notebook in items">
+                <div class="list-panel-item">
+                    <div class="list-panel-item-title">
+                        <!-- notebook icon -->
+                        <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
+                        <article ng-click="open_notebook(notebook)" class="selected">{{notebook.title}}</article>
+
+                        <!-- handle click on notebook more options -->
+                        <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
+                            <!-- completed notes status -->
+                            <span ng-show="get_completed_notes_length(notebook.taskArray)>0"
+                                class="list-sub-text gray line-through">
+                                {{get_completed_notes_length(notebook.taskArray)}}
+                            </span>
+                            <!-- notes length -->
+                            <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
+                        </div>
+
+                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}"
+                            alt="NoteBook icon">
+
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
     <!-- empty space at last -->
-    <div 
-        ng-show="notebooks.length!=0"
-        style="height:100px" 
-        ng-click="dialog_flags.show_notebook_popup=true"
+    <div ng-show="notebooks.length!=0" style="height:100px" ng-click="dialog_flags.show_notebook_popup=true"
         class="align-center flex-row justify-center create-note-text">
         <span>Tap here to open new notebook</span>
     </div>
@@ -119,68 +104,68 @@
     <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">
         {{notes.length === 0 ? 'No notes' : notes.length + ' ' + (notes.length === 1 ? 'note' : 'notes')}}
     </div>
-    
-    
+
+
 
     <ul ng-hide="is_notebook_locked()" class="notes reset_ul">
         <li data-index="{{$index}}" ng-repeat="note in notes | filter:{isTaskCompleted:false}">
             <div class="task" ng-class="{completed: note.isTaskCompleted}">
                 <!-- multi select checkbox -->
-                <input
-                    style="accent-color: orange;"
-                    class="visible_pop_animation"
+                <input 
+                    style="accent-color: orange;" 
+                    class="visible_pop_animation" 
                     ng-show="is_note_multi_select_on"
-                    ng-model="note.isSelected"
-                    ng-change="handle_tap_on_note_checkbox(note)"         
-                    type="checkbox">
-                <!-- multi select checkbox -->
-                 <!-- as we are binding direct property of note just save on ng-change -->
-                <input
-                    class="visible_pop_animation"
-                    ng-show="show_note_complete_button"
-                    ng-change="save_data()"
-                    ng-model="note.isTaskCompleted"
-                    type="checkbox">
-                <!-- note content -->
-                <div 
-                    ng-class="{selected:selected_note==note}" 
-                    class="task-content-div"
-                    ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
-                    ng-dblclick="handle_dbl_tap_on_note(note);" 
-                    ng-click="handle_tap_on_note(note);"></div>
+                    ng-model="note.isSelected" 
+                    ng-change="handle_tap_on_note_checkbox(note)" type="checkbox">
                 
+                <!-- as we are binding direct property of note just save on ng-change -->
+                 <div class="roundedOne">
+                    <input 
+                        ng-show="show_note_complete_button"
+                        ng-change="save_data()"
+                        ng-model="note.isTaskCompleted"
+                        id="{{note.dateCreated}}"
+                        type="checkbox">
+                    <label for="{{note.dateCreated}}"></label>
+                </div>
+                
+                <!-- note content -->
+                <div ng-class="{selected:selected_note==note}" class="task-content-div"
+                    ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
+                    ng-dblclick="handle_dbl_tap_on_note(note);" ng-click="handle_tap_on_note(note);"></div>
+
                 <!-- drag handle -->
-                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}" alt="NoteBook icon">
+                <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}"
+                    alt="NoteBook icon">
 
             </div>
         </li>
     </ul>
 
     <!-- show completed tasks if any -->
-    <div 
-        ng-show="notebook_has_completed_tasks()" 
-        class="group_by_text">
+    <div ng-show="notebook_has_completed_tasks()" class="group_by_text">
         {{get_completed_notes_length(notes)}} completed notes
     </div>
-    <div ng-repeat="note in notes | filter:{isTaskCompleted:true}">
+    <div ng-repeat="note in notes | filter:{isTaskCompleted:true}" class="px-1/2 my-1">
         <div class="task" ng-class="{completed: note.isTaskCompleted}">
-            <span
-                class="" 
-                ng-click="toggle_note_completed_state(note)">
-                ✅
-            </span>
+            <!-- <span class="" ng-click="toggle_note_completed_state(note)">✅</span> -->
+            <img 
+                ng-click="toggle_note_completed_state(note)"
+                src="./img/icons/check2.svg"
+                class="svg-icon-l1" 
+                alt="completed icon">
             <div class="task-content-div" ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                 ng-click="handle_tap_on_note(note);">
             </div>
         </div>
     </div>
 
-    
+
 
     <!-- empty state empty list-->
-    <div 
-        class="empty-notebook" 
-        ng-show="notes.length==0 && pageTitle.toLocaleLowerCase()!='system' && !is_notebook_locked()">
+     <!-- hide empty state if create note is open -->
+    <div class="empty-notebook"
+        ng-show="notes.length==0 && pageTitle.toLocaleLowerCase()!='system' && !is_notebook_locked() && show_note_popup==false">
         <div>
             <img src="img/empty.svg" class="empty_svg" />
         </div>
@@ -195,26 +180,153 @@
         <h2 class="text-center">NoteBook is locked</h2>
     </div>
 
+
+    <!-- create note dialog at the end of notebook -->
+    <!-- create note layout -->
+    <div class="create-note-popup" ng-show="show_note_popup">
+        <!-- menu buttons -->
+        <div class="flex-row gap-1 w-full">
+            <!-- insert menu select button -->
+            <div class=" flex-row relative rounded-1" style="flex: 0 0 20px;">
+                <label for="submenu_item_select_insert" class="submenu_item_select_label">
+                    <!-- <img src="./img/icons/pencil.svg" class="svg-icon-sm" /> -->
+                    <span class="orange">Insert</span>
+                </label>
+                <select name="submenu_item_select_insert" id="submenu_item_select_insert"
+                    ng-change="handle_select_menu_change()" ng-click="handle_insert_menu_click()"
+                    ng-model="bottom_bar_sub_menu_selected_item" class="bottom-bar-menu-select">
+                    <option ng-repeat="item in insert_menu_items" ng-value="item">{{item.text}}</option>
+                </select>
+            </div>
+
+            <!-- component menu select button -->
+            <div class=" flex-row relative rounded-1" style="flex: 0 0 20px;">
+                <label for="submenu_item_select_component" class="submenu_item_select_label">
+                    <!-- <img src="./img/icons/textformat.characters.svg" class="svg-icon-sm" /> -->
+                    <span class="orange">Edit</span>
+                </label>
+                <select name="submenu_item_select_component" id="submenu_item_select_component"
+                    ng-change="handle_select_menu_change()" ng-model="bottom_bar_sub_menu_selected_item"
+                    class="bottom-bar-menu-select">
+                    <option ng-repeat="item in component_menu_items" ng-value="item">{{item.text}}</option>
+                </select>
+            </div>
+
+            <!-- system vars menu select button -->
+            <div class=" flex-row relative rounded-1" style="flex: 0 0 20px;">
+                <label for="submenu_item_select_system" class="submenu_item_select_label">
+                    <!-- <img src="./img/icons/keyboard_command_key.svg" class="svg-icon-sm" /> -->
+                    <span class="orange">Vars</span>
+                </label>
+                <select name="submenu_item_select_system" id="submenu_item_select_system"
+                    ng-change="handle_select_system_menu_change()" ng-model="bottom_bar_sub_menu_selected_item"
+                    class="bottom-bar-menu-select">
+                    <option ng-repeat="(key,value) in get_system_vars()" ng-value="key">{{key}}</option>
+                </select>
+            </div>
+
+            <!-- bottom bar note edit menu buttons -->
+            <div ng-repeat="item in bottom_bar_menu" ng-show="true"
+                ng-class="{'chip2-selected': bottom_bar_active_menu==item.text}" ng-click="item.action(item)"
+                class="button">
+                <!-- <img class="svg-icon-sm" ng-src="{{get_svg_src(item.icon)}}" alt="icon"> -->
+                <span class="orange w-max-content">{{item.text}}</span>
+            </div>
+        </div>
+
+        <!-- note input -->
+        <div class="note_textarea_container">
+            <!-- hide note content when chart dialog is visible-->
+            <textarea ng-hide="new_chart.show || new_transaction.show" autocomplete="off" ng-model="note_content"
+                ng-keyup="handle_keypress_note_input($event)" id="note_content" class="new-task-content"
+                placeholder={{note_content_placeholder}} autofocus>
+    </textarea>
+
+            <!-- chart dialog -->
+            <div class="flex-col gap-2" ng-show="new_chart.show">
+                <!-- chart title -->
+                <input ng-model="new_chart.title" class="text-input" type="text" max="20" placeholder="Chart Title" />
+                <!-- chart type -->
+                <div class="orange">Type</div>
+                <div class="flex-row gap-1">
+                    <div ng-click="new_chart.type = 'line'" ng-class="{'grayscale':new_chart.type!='line'}"
+                        class="align-center flex-row gap-2 p-125 rounded">
+                        <img class="svg-icon" ng-src="{{get_svg_src('chart.xyaxis.line')}}" alt="icon">
+                        <span>Line Chart</span>
+                    </div>
+                    <div ng-click="new_chart.type = 'bar'" ng-class="{'grayscale':new_chart.type!='bar'}"
+                        class="align-center flex-row gap-2 p-125 rounded">
+                        <img class="svg-icon" ng-src="{{get_svg_src('chart.bar.xaxis')}}" alt="icon">
+                        <span>Bar Chart</span>
+                    </div>
+                </div>
+                <!-- chart theme color -->
+                <div class="orange">Theme</div>
+                <div class="flex-row gap-1 w-full">
+                    <label class="create-chart-theme-wrapper" ng-repeat="(key,value) in get_chart_colors()">
+                        <input ng-hide="true" style="accent-color: {{value}}; transform:scale(1.2); opacity: 0;"
+                            name="chart_theme" type="radio" ng-model="new_chart.theme" ng-value="key">
+                        <span class="custom-radio"
+                            style="border-color:{{value}};background-color:{{get_transparent_color(value,0.5)}};"></span>
+                    </label>
+                </div>
+                <div class="flex-row space-between">
+                    <div class="orange">X axis labels</div>
+                    <div class="orange">Y axis values</div>
+                </div>
+                <div class="flex-row space-between">
+                    <textarea ng-model="new_chart.x_labels" style="height: 200px;"
+                        class="border new-task-content rounded-1"></textarea>
+                    <textarea ng-model="new_chart.y_values" style="height: 200px;"
+                        class="border new-task-content rounded-1"></textarea>
+                </div>
+                <div class="flex-row space-between">
+                    <div ng-click="reset_new_chart_and_close()" class="button rounded-full gap-1 orange">
+                        <span>Cancel</span>
+                    </div>
+                    <div ng-click="new_chart_convert_ui_to_code()" class="button rounded-full gap-1 orange">
+                        <span>Done</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- note popup action buttons -->
+        <div class="flex-row gap-1 space-between">
+            <div ng-click="show_note_popup=false; cancel_update_note();"
+                class="button rounded-full gap-1 orange">
+                <span>Close</span>
+            </div>
+            <div ng-class="{'orange':note_content.length>0}" ng-hide="show_update_task_button" ng-click="create_note()"
+                class="button rounded-full gap-1 not-active transition">
+                <span>Done</span>
+            </div>
+            <div ng-show="show_update_task_button" ng-click="update_note()" class="button rounded-full gap-1 orange">
+                <span>Done</span>
+            </div>
+        </div>
+    </div>
+
     <!-- empty space at last tap to create new note -->
-     <div
-        ng-hide="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'" 
-        style="height:100px" 
-        ng-click="open_create_note_popup()"
+    <div ng-hide="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'"
+        style="height:100px" ng-click="open_create_note_popup()"
         class="align-center flex-row justify-center create-note-text">
         <span>Tap here to create note in {{current_notebook.title}}</span>
-     </div>
+    </div>
+
 </div>
 
- <!-- show system vars here -->
- <div ng-show="show_view==CONST.VIEW_SYSTEM">
+<!-- show system vars here -->
+<div ng-show="show_view==CONST.VIEW_SYSTEM">
     <div class="spacer"></div>
     <div class="notebook_age">
         <img class="svg-icon" ng-src="{{get_svg_src('hourglass')}}" alt="NoteBook icon">&nbsp; {{notebook_age()}}
     </div>
     <div class="notebook_age">
-        <img class="svg-icon" ng-src="{{get_svg_src('keyboard_command_key')}}" alt="NoteBook icon">&nbsp; {{get_system_var_length()}}
+        <img class="svg-icon" ng-src="{{get_svg_src('keyboard_command_key')}}" alt="NoteBook icon">&nbsp;
+        {{get_system_var_length()}}
     </div>
-    
+
     <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
         <div class="system_var_item">
             <div class="key">{{key}}</div>
