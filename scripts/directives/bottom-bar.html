@@ -1,8 +1,8 @@
-<div class="flex-col">
+<div class="bottom-bar-content">
      <!-- multi select options -->
       <div
         ng-show="is_note_multi_select_on"
-        class="orange flex-row space-between p-1">
+        class="orange flex-row space-between p-1 gap-2">
             <div ng-click="handle_multi_select_action(CONST.COMPLETE)">Complete</div>
             <div ng-click="handle_multi_select_action(CONST.MERGE)">Merge</div>
             <div ng-click="handle_multi_select_action(CONST.MOVE)">Move</div>
@@ -23,7 +23,7 @@
                 create_notebook_obj.action='create';
                 " 
             class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
-            <img src="./img/icons/pencil.and.list.clipboard.svg" class="svg-icon-l"/>
+            <img src="./img/icons/pencil.and.list.clipboard.svg" class="bottom-bar-icon-size"/>
             <!-- <span>Notebook</span> -->
         </div>
         <!-- create note button -->
@@ -31,7 +31,7 @@
             ng-class="{'bg-red-pink':bottom_bar_active_div=='note'}"
             ng-click="open_create_note_popup()" 
             class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
-            <img src="./img/icons/pencil.and.scribble.svg" class="svg-icon-l"/>
+            <img src="./img/icons/pencil.and.scribble.svg" class="bottom-bar-icon-size"/>
             <!-- <span>Note</span> -->
         </div>
         <!-- system var button -->
@@ -39,7 +39,7 @@
             ng-class="{'bg-red-pink':bottom_bar_active_div=='system'}"
             ng-click="dialog_flags.show_create_system_var_popup=true;" 
             class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
-            <img src="./img/icons/keyboard_command_key1.svg" class="svg-icon-l"/>
+            <img src="./img/icons/keyboard_command_key1.svg" class="bottom-bar-icon-size"/>
             <!-- <span>System</span> -->
         </div>
         <!-- view notebooks button -->
@@ -47,7 +47,7 @@
             ng-hide="show_view=='notebook'" 
             ng-click="set_view('notebook')" 
             class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
-            <img src="./img/icons/arrowshape.left.fill.svg" class="svg-icon-l"/>
+            <img src="./img/icons/arrowshape.left.fill.svg" class="bottom-bar-icon-size"/>
             <!-- <span>Back</span> -->
         </div>
     </div>

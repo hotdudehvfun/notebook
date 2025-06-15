@@ -7,8 +7,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         notebook_service.load_quick_notebooks($scope.notebooks, function(data) {
             $scope.quick_notebooks = data;
         });
-    }
-    ;
+    };
 
     // custom code of note is parsed to output html content
     $scope.parse_markdown_to_html = function(text) {
@@ -56,9 +55,9 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         } catch (err) {
             console.log("Error while opening notebook", err);
         }
-    }
-    ;
+    };
 
+    // handle sidebar open close
     $scope.open_sidebar = function(state) {
         try {
             let left_val = state ? "0px" : "-90vw";
@@ -129,8 +128,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
     $scope.get_notebook_icon = function(notebook) {
         return notebook_service.get_notebook_icon(notebook)
-    }
-    ;
+    };
 
     $scope.insertTextAtCursor = function(id, value) {
         insertTextAtCursor(id, value)
@@ -208,8 +206,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.new_list_name = "";
         $scope.new_notebook_icon = "folder";
         $scope.close_all_dialogs();
-    }
-    ;
+    };
 
     $scope.create_note = () => {
         try {
@@ -246,21 +243,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             console.error("Error while creating note:", err);
             $scope.show_toast("Failed to create note");
         }
-    }
-    ;
-
-    // Helper function to get or create the "quick notes" notebook
-    const get_or_create_quick_notes = () => {
-        let quick_notes_notebook = $scope.notebooks.find( (notebook) => notebook.title.toLowerCase() === "quick notes");
-
-        if (!quick_notes_notebook) {
-            // Create the "quick notes" notebook if it doesn't exist
-            quick_notes_notebook = $scope.create_notebook("quick notes");
-        }
-
-        return quick_notes_notebook;
-    }
-    ;
+    };
 
     const is_valid_note_content = (content) => content.length > 0;
 
@@ -270,8 +253,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         // $scope.note_textarea_container_height = $scope.note_textarea_container_default_height;
         // $scope.pageTitle = $scope.selectedListName;
     }
-
-    // split selected task in to multiple tasks based on delimiter
 
     $scope.get_system_vars = () => {
         let sortedByKey = Object.keys(system_vars).sort()// Sort keys
@@ -410,7 +391,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     $scope.save_data = () => {
         try {
             const _theme = $scope.is_dark ? "dark" : "light";
-
             db_service.write({
                 notebooks: $scope.notebooks,
                 selectedListIndex: $scope.selectedListIndex,

@@ -82,7 +82,7 @@
     </div>
 
     <!-- empty space at last -->
-    <div ng-show="notebooks.length!=0" style="height:100px" ng-click="dialog_flags.show_notebook_popup=true"
+    <div ng-show="notebooks.length!=0" style="height:100px;padding-bottom: 200px;" ng-click="dialog_flags.show_notebook_popup=true"
         class="align-center flex-row justify-center create-note-text">
         <span>Tap here to open new notebook</span>
     </div>
@@ -309,7 +309,7 @@
 
     <!-- empty space at last tap to create new note -->
     <div ng-hide="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'"
-        style="height:100px" ng-click="open_create_note_popup()"
+        style="height:100px;padding-bottom: 200px;" ng-click="open_create_note_popup()"
         class="align-center flex-row justify-center create-note-text">
         <span>Tap here to create note in {{current_notebook.title}}</span>
     </div>
