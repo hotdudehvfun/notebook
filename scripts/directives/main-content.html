@@ -82,11 +82,29 @@
     </div>
 
     <!-- empty space at last -->
-    <div ng-show="notebooks.length!=0" style="height:100px;padding-bottom: 200px;" ng-click="dialog_flags.show_notebook_popup=true"
-        class="align-center flex-row justify-center create-note-text">
+    <div ng-show="notebooks.length!=0" ng-click="dialog_flags.show_notebook_popup=true" class="create-note-text">
         <span>Tap here to open new notebook</span>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- notes -->
@@ -105,30 +123,20 @@
         {{notes.length === 0 ? 'No notes' : notes.length + ' ' + (notes.length === 1 ? 'note' : 'notes')}}
     </div>
 
-
-
     <ul ng-hide="is_notebook_locked()" class="notes reset_ul">
         <li data-index="{{$index}}" ng-repeat="note in notes | filter:{isTaskCompleted:false}">
             <div class="task" ng-class="{completed: note.isTaskCompleted}">
                 <!-- multi select checkbox -->
-                <input 
-                    style="accent-color: orange;" 
-                    class="visible_pop_animation" 
-                    ng-show="is_note_multi_select_on"
-                    ng-model="note.isSelected" 
-                    ng-change="handle_tap_on_note_checkbox(note)" type="checkbox">
-                
+                <input style="accent-color: orange;" class="visible_pop_animation" ng-show="is_note_multi_select_on"
+                    ng-model="note.isSelected" ng-change="handle_tap_on_note_checkbox(note)" type="checkbox">
+
                 <!-- as we are binding direct property of note just save on ng-change -->
-                 <div class="roundedOne">
-                    <input 
-                        ng-show="show_note_complete_button"
-                        ng-change="save_data()"
-                        ng-model="note.isTaskCompleted"
-                        id="{{note.dateCreated}}"
-                        type="checkbox">
+                <div class="roundedOne">
+                    <input ng-show="show_note_complete_button" ng-change="save_data()" ng-model="note.isTaskCompleted"
+                        id="{{note.dateCreated}}" type="checkbox">
                     <label for="{{note.dateCreated}}"></label>
                 </div>
-                
+
                 <!-- note content -->
                 <div ng-class="{selected:selected_note==note}" class="task-content-div"
                     ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
@@ -149,10 +157,7 @@
     <div ng-repeat="note in notes | filter:{isTaskCompleted:true}" class="px-1/2 my-1">
         <div class="task" ng-class="{completed: note.isTaskCompleted}">
             <!-- <span class="" ng-click="toggle_note_completed_state(note)">✅</span> -->
-            <img 
-                ng-click="toggle_note_completed_state(note)"
-                src="./img/icons/check2.svg"
-                class="svg-icon-l1" 
+            <img ng-click="toggle_note_completed_state(note)" src="./img/icons/check2.svg" class="svg-icon-l1"
                 alt="completed icon">
             <div class="task-content-div" ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                 ng-click="handle_tap_on_note(note);">
@@ -163,7 +168,7 @@
 
 
     <!-- empty state empty list-->
-     <!-- hide empty state if create note is open -->
+    <!-- hide empty state if create note is open -->
     <div class="empty-notebook"
         ng-show="notes.length==0 && pageTitle.toLocaleLowerCase()!='system' && !is_notebook_locked() && show_note_popup==false">
         <div>
@@ -240,61 +245,12 @@
             <textarea ng-hide="new_chart.show || new_transaction.show" autocomplete="off" ng-model="note_content"
                 ng-keyup="handle_keypress_note_input($event)" id="note_content" class="new-task-content"
                 placeholder={{note_content_placeholder}} autofocus>
-    </textarea>
-
-            <!-- chart dialog -->
-            <div class="flex-col gap-2" ng-show="new_chart.show">
-                <!-- chart title -->
-                <input ng-model="new_chart.title" class="text-input" type="text" max="20" placeholder="Chart Title" />
-                <!-- chart type -->
-                <div class="orange">Type</div>
-                <div class="flex-row gap-1">
-                    <div ng-click="new_chart.type = 'line'" ng-class="{'grayscale':new_chart.type!='line'}"
-                        class="align-center flex-row gap-2 p-125 rounded">
-                        <img class="svg-icon" ng-src="{{get_svg_src('chart.xyaxis.line')}}" alt="icon">
-                        <span>Line Chart</span>
-                    </div>
-                    <div ng-click="new_chart.type = 'bar'" ng-class="{'grayscale':new_chart.type!='bar'}"
-                        class="align-center flex-row gap-2 p-125 rounded">
-                        <img class="svg-icon" ng-src="{{get_svg_src('chart.bar.xaxis')}}" alt="icon">
-                        <span>Bar Chart</span>
-                    </div>
-                </div>
-                <!-- chart theme color -->
-                <div class="orange">Theme</div>
-                <div class="flex-row gap-1 w-full">
-                    <label class="create-chart-theme-wrapper" ng-repeat="(key,value) in get_chart_colors()">
-                        <input ng-hide="true" style="accent-color: {{value}}; transform:scale(1.2); opacity: 0;"
-                            name="chart_theme" type="radio" ng-model="new_chart.theme" ng-value="key">
-                        <span class="custom-radio"
-                            style="border-color:{{value}};background-color:{{get_transparent_color(value,0.5)}};"></span>
-                    </label>
-                </div>
-                <div class="flex-row space-between">
-                    <div class="orange">X axis labels</div>
-                    <div class="orange">Y axis values</div>
-                </div>
-                <div class="flex-row space-between">
-                    <textarea ng-model="new_chart.x_labels" style="height: 200px;"
-                        class="border new-task-content rounded-1"></textarea>
-                    <textarea ng-model="new_chart.y_values" style="height: 200px;"
-                        class="border new-task-content rounded-1"></textarea>
-                </div>
-                <div class="flex-row space-between">
-                    <div ng-click="reset_new_chart_and_close()" class="button rounded-full gap-1 orange">
-                        <span>Cancel</span>
-                    </div>
-                    <div ng-click="new_chart_convert_ui_to_code()" class="button rounded-full gap-1 orange">
-                        <span>Done</span>
-                    </div>
-                </div>
-            </div>
+            </textarea>
         </div>
 
         <!-- note popup action buttons -->
         <div class="flex-row gap-1 space-between">
-            <div ng-click="show_note_popup=false; cancel_update_note();"
-                class="button rounded-full gap-1 orange">
+            <div ng-click="show_note_popup=false; cancel_update_note();" class="button rounded-full gap-1 orange">
                 <span>Close</span>
             </div>
             <div ng-class="{'orange':note_content.length>0}" ng-hide="show_update_task_button" ng-click="create_note()"
@@ -305,12 +261,59 @@
                 <span>Done</span>
             </div>
         </div>
+
+        <!-- chart dialog -->
+        <div class="flex-col gap-2" ng-show="new_chart.show">
+            <!-- chart title -->
+            <input ng-model="new_chart.title" class="text-input" type="text" max="20" placeholder="Chart Title" />
+            <!-- chart type -->
+            <div class="orange">Type</div>
+            <div class="flex-row gap-1">
+                <div ng-click="new_chart.type = 'line'" ng-class="{'grayscale':new_chart.type!='line'}"
+                    class="align-center flex-row gap-2 p-125 rounded">
+                    <img class="svg-icon" ng-src="{{get_svg_src('chart.xyaxis.line')}}" alt="icon">
+                    <span>Line Chart</span>
+                </div>
+                <div ng-click="new_chart.type = 'bar'" ng-class="{'grayscale':new_chart.type!='bar'}"
+                    class="align-center flex-row gap-2 p-125 rounded">
+                    <img class="svg-icon" ng-src="{{get_svg_src('chart.bar.xaxis')}}" alt="icon">
+                    <span>Bar Chart</span>
+                </div>
+            </div>
+            <!-- chart theme color -->
+            <div class="orange">Theme</div>
+            <div class="flex-row gap-1 w-full">
+                <label class="create-chart-theme-wrapper" ng-repeat="(key,value) in get_chart_colors()">
+                    <input ng-hide="true" style="accent-color: {{value}}; transform:scale(1.2); opacity: 0;"
+                        name="chart_theme" type="radio" ng-model="new_chart.theme" ng-value="key">
+                    <span class="custom-radio"
+                        style="border-color:{{value}};background-color:{{get_transparent_color(value,0.5)}};"></span>
+                </label>
+            </div>
+            <div class="flex-row space-between">
+                <div class="orange">X axis labels</div>
+                <div class="orange">Y axis values</div>
+            </div>
+            <div class="flex-row space-between">
+                <textarea ng-model="new_chart.x_labels" style="height: 200px;"
+                    class="border new-task-content rounded-1"></textarea>
+                <textarea ng-model="new_chart.y_values" style="height: 200px;"
+                    class="border new-task-content rounded-1"></textarea>
+            </div>
+            <div class="flex-row space-between">
+                <div ng-click="reset_new_chart_and_close()" class="button rounded-full gap-1 orange">
+                    <span>Cancel</span>
+                </div>
+                <div ng-click="new_chart_convert_ui_to_code()" class="button rounded-full gap-1 orange">
+                    <span>Insert Chart</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- empty space at last tap to create new note -->
     <div ng-hide="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'"
-        style="height:100px;padding-bottom: 200px;" ng-click="open_create_note_popup()"
-        class="align-center flex-row justify-center create-note-text">
+        ng-click="open_create_note_popup()" class="create-note-text">
         <span>Tap here to create note in {{current_notebook.title}}</span>
     </div>
 

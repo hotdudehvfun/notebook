@@ -117,11 +117,3 @@ app.directive("popupCreateVar",function(){
     scope: false,
     templateUrl:'./scripts/directives/create-var-popup.html'
 }});
-
-
-// create-note popup
-app.directive("createNotePopup",function(){
-  return {
-    scope: false,
-    templateUrl:'./scripts/directives/create-note-popup.html'
-}});

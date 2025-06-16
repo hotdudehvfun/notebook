@@ -57,15 +57,13 @@ body {
 }
 
 *,::after,::before {
-    box-sizing: border-box
-}
-
-* {
     box-sizing: border-box;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none
+    
 }
+
 
 .button {
     border-radius: 1rem;
@@ -1256,7 +1254,10 @@ select:focus-visible {
 }
 
 .create-note-text {
-    color: #ccc
+    color: #ccc;
+    display: flex;
+    justify-content: center;
+    height: 200px;
 }
 
 .notes {
@@ -1347,20 +1348,20 @@ td {
     flex-flow: column;
     gap: .5rem;
     flex-grow: 1;
-    align-items: center
+    align-items: center;
+    justify-content: center;
 }
 
 input[type=radio]:checked+.custom-radio:after {
     display: block;
-    content: '\e5ca';
-    font-family: 'Material Symbols Outlined';
+    content:'⚈';
     z-index: 99;
     margin: 0;
     user-select: none;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 700;
-    color: #000
+    color: #fff
 }
 
 .custom-radio {
@@ -1370,7 +1371,7 @@ input[type=radio]:checked+.custom-radio:after {
     justify-content: center;
     align-items: center;
     border-radius: 100px;
-    border: 2px solid
+    border: 2px solid;
 }
 
 canvas {
@@ -1597,3 +1598,4 @@ canvas {
     height:32px;
     width:32px;
 }
+

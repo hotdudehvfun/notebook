@@ -38,6 +38,9 @@ function notebook_service($timeout)
         const reserved = ["system", "trash"];
         if (reserved.includes(newName.toLowerCase())) throw `${newName} is a reserved title`;
 
+        if (reserved.includes(notebook.title.toLowerCase())) throw `${notebook.title} cannot be renamed, it is a reserved notebook`;
+
+
         const exists = all_notebooks.some(n => n !== notebook && n.title.toLowerCase() === newName.toLowerCase());
         if (exists) throw `${newName} notebook already exists`;
 
