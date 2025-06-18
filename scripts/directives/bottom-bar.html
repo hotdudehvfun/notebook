@@ -1,4 +1,6 @@
-<div class="bottom-bar-content">
+<div 
+ng-class="{'rounded-24':is_note_multi_select_on}"
+class="bottom-bar-content rounded-full">
      <!-- multi select options -->
       <div
         ng-show="is_note_multi_select_on"
@@ -22,7 +24,7 @@
                 focus_input('.add-new-list-title');
                 create_notebook_obj.action='create';
                 " 
-            class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
+            class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
             <img src="./img/icons/pencil.and.list.clipboard.svg" class="bottom-bar-icon-size"/>
             <!-- <span>Notebook</span> -->
         </div>
@@ -30,7 +32,7 @@
         <div 
             ng-class="{'bg-red-pink':bottom_bar_active_div=='note'}"
             ng-click="open_create_note_popup()" 
-            class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
+            class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
             <img src="./img/icons/pencil.and.scribble.svg" class="bottom-bar-icon-size"/>
             <!-- <span>Note</span> -->
         </div>
@@ -38,7 +40,7 @@
         <div 
             ng-class="{'bg-red-pink':bottom_bar_active_div=='system'}"
             ng-click="dialog_flags.show_create_system_var_popup=true;" 
-            class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
+            class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
             <img src="./img/icons/keyboard_command_key1.svg" class="bottom-bar-icon-size"/>
             <!-- <span>System</span> -->
         </div>
@@ -46,7 +48,7 @@
         <div 
             ng-hide="show_view=='notebook'" 
             ng-click="set_view('notebook')" 
-            class="button rounded-full orange gap-1 icon-btn-padding  col-reverse">
+            class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
             <img src="./img/icons/arrowshape.left.fill.svg" class="bottom-bar-icon-size"/>
             <!-- <span>Back</span> -->
         </div>

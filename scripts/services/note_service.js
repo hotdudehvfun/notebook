@@ -38,12 +38,15 @@ function note_service($timeout) {
     }
 
     // merge completed notes
-    this.merge_completed_notes = function (notes, notebook) {
+    this.merge_completed_notes = function (notebook) {
+        let notes = notebook.taskArray;
         if (!notes || notes.length === 0)
             throw "No notes to merge";
-        const completedNotes = notes.filter(note => note.isTaskCompleted);
-        const mergedNote = new Task(completedNotes.map(note => note.content).join("\n"))
-        //remove completed notes from the original list
+        let mergedContent = notes.filter(note => note.isTaskCompleted).map(note => note.title).join("\n");
+        if (mergedContent.trim() === "") {
+            throw "No completed notes to merge";
+        }
+        const mergedNote = new Task(mergedContent.trim());
         notes = notes.filter(note => !note.isTaskCompleted);
         notes.push(mergedNote);
         notebook.taskArray.push(mergedNote);
@@ -82,6 +85,13 @@ function note_service($timeout) {
         } catch (err) {
             console.error(err);
         }
+    };
+
+    //remove completed notes
+    this.remove_completed_notes = function (notebook) {
+        if (!notebook || !notebook.taskArray) return;
+        notebook.taskArray = notebook.taskArray.filter(note => !note.isTaskCompleted);
+        return notebook;
     };
 
     

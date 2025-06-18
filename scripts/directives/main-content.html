@@ -3,7 +3,7 @@
     <div class="spacer"></div>
     <!-- Sort notebooks -->
     <div class="relative text-left">
-        <label for="sort_notebooks" class="submenu_item_select_label justify-left">
+        <label for="sort_notebooks" class="absolute align-center flex-row gap-1 h-full w-full">
             <h2 class="m-1">Your notebooks</h2>
             <img src="./img/icons/arrow_down.svg" class="svg-icon" style="margin-top: 8px;" />
         </label>
@@ -27,7 +27,7 @@
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
                         <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
-                        <article ng-click="open_notebook(notebook)" class="selected">{{notebook.title}}</article>
+                        <article ng-click="open_notebook(notebook)" class="selected clickable">{{notebook.title}}</article>
 
                         <!-- handle click on notebook more options -->
                         <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
@@ -82,7 +82,7 @@
     </div>
 
     <!-- empty space at last -->
-    <div ng-show="notebooks.length!=0" ng-click="dialog_flags.show_notebook_popup=true" class="create-note-text">
+    <div ng-show="notebooks.length!=0" ng-click="dialog_flags.show_notebook_popup=true" class="create-note-text clickable">
         <span>Tap here to open new notebook</span>
     </div>
     <!-- insert empty space at end -->
@@ -129,18 +129,33 @@
         <li data-index="{{$index}}" ng-repeat="note in notes | filter:{isTaskCompleted:false}">
             <div class="task" ng-class="{completed: note.isTaskCompleted}">
                 <!-- multi select checkbox -->
-                <input style="accent-color: orange;" class="visible_pop_animation" ng-show="is_note_multi_select_on"
-                    ng-model="note.isSelected" ng-change="handle_tap_on_note_checkbox(note)" type="checkbox">
+                <div class="roundedOne" ng-show="is_note_multi_select_on">
+                    <label 
+                    id="multi-select-{{note.dateCreated}}"
+                    ng-click="handle_tap_on_note_checkbox(note)"
+                    class="clickable">
+                        <img ng-show="!note.isSelected" src="./img/icons/circle.dashed.svg" class="svg-icon-l1"/>
+                        <img ng-show="note.isSelected" src="./img/icons/inset.filled.circle.dashed.svg" class="svg-icon-l1"/>
+                    </label>
+                </div>
+                
 
                 <!-- as we are binding direct property of note just save on ng-change -->
-                <div class="roundedOne">
-                    <input ng-show="show_note_complete_button" ng-change="save_data()" ng-model="note.isTaskCompleted"
-                        id="{{note.dateCreated}}" type="checkbox">
-                    <label for="{{note.dateCreated}}"></label>
+                <div class="roundedOne" ng-show="show_note_complete_button" >
+                    <input
+                        ng-change="save_data()" 
+                        ng-model="note.isTaskCompleted"
+                        id="complete-note-{{note.dateCreated}}" 
+                        type="checkbox">
+                    <label for="complete-note-{{note.dateCreated}}">
+                        <img src="./img/icons/circle.dashed.svg" class="svg-icon-l1"/>
+                    </label>
                 </div>
 
                 <!-- note content -->
-                <div ng-class="{selected:selected_note==note}" class="task-content-div"
+                <div
+                    ng-class="{selected:selected_note==note}" 
+                    class="task-content-div clickable"
                     ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                     ng-dblclick="handle_dbl_tap_on_note(note);" ng-click="handle_tap_on_note(note);"></div>
 
@@ -159,7 +174,10 @@
     <div ng-repeat="note in notes | filter:{isTaskCompleted:true}" class="px-1/2 my-1">
         <div class="task" ng-class="{completed: note.isTaskCompleted}">
             <!-- <span class="" ng-click="toggle_note_completed_state(note)">✅</span> -->
-            <img ng-click="toggle_note_completed_state(note)" src="./img/icons/check2.svg" class="svg-icon-l1"
+            <img 
+                ng-click="toggle_note_completed_state(note)" 
+                src="./img/icons/check2.svg" 
+                class="svg-icon-l1 clickable"
                 alt="completed icon">
             <div class="task-content-div" ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                 ng-click="handle_tap_on_note(note);">
@@ -252,14 +270,14 @@
 
         <!-- note popup action buttons -->
         <div class="flex-row gap-1 space-between">
-            <div ng-click="show_note_popup=false; cancel_update_note();" class="button rounded-full gap-1 orange">
+            <div ng-click="show_note_popup=false; cancel_update_note();" class="button rounded-full clickable gap-1 orange">
                 <span>Close</span>
             </div>
             <div ng-class="{'orange':note_content.length>0}" ng-hide="show_update_task_button" ng-click="create_note()"
-                class="button rounded-full gap-1 not-active transition">
+                class="button rounded-full clickable gap-1 not-active transition">
                 <span>Done</span>
             </div>
-            <div ng-show="show_update_task_button" ng-click="update_note()" class="button rounded-full gap-1 orange">
+            <div ng-show="show_update_task_button" ng-click="update_note()" class="button rounded-full clickable gap-1 orange">
                 <span>Done</span>
             </div>
         </div>
@@ -314,8 +332,10 @@
     </div>
 
     <!-- empty space at last tap to create new note -->
-    <div ng-hide="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'"
-        ng-click="open_create_note_popup()" class="create-note-text">
+    <div 
+        ng-hide="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'"
+        ng-click="open_create_note_popup()" 
+        class="create-note-text clickable">
         <span>Tap here to create note in {{current_notebook.title}}</span>
     </div>
 
@@ -335,7 +355,10 @@
         {{get_system_var_length()}}
     </div>
 
-    <div ng-repeat="(key,value) in get_system_vars()" ng-click="edit_var(key)">
+    <div 
+        ng-repeat="(key,value) in get_system_vars()" 
+        ng-click="edit_var(key)"
+        class="clickable">
         <div class="system_var_item">
             <div class="key">{{key}}</div>
             <div class="flex-row space-between">

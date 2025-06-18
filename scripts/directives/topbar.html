@@ -1,15 +1,17 @@
 <!-- app title -->
-<div ng-click="open_sidebar(true)" class="py-1/2">
+<div ng-click="open_sidebar(true)" class="py-1/2 clickable">
     <img class="svg-icon" src="./img/icons/sidebar.left.svg" />
 </div>
-<div class="flex-row flex gap-1 justify-center align-center orange" ng-click="handle_click_on_notebook_title()">    
+<div 
+    class="flex-row flex gap-1 justify-center align-center orange clickable" 
+    ng-click="handle_click_on_notebook_title()">    
     <img class="svg-icon" ng-src="{{get_svg_src(pageIcon)}}" alt="NoteBook icon">
     <span class="text-lg capitalize">{{pageTitle}}</span>
 </div>
 <div class="flex-row align-center justify-end gap-1">
     <img
         ng-show="current_notebook" 
-        class="svg-icon"
+        class="svg-icon clickable"
         src="./img/icons/ellipsis.svg"
         ng-click="handle_click_on_more_vert(current_notebook)"
         alt="more vert"/>

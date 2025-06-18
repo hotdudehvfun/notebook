@@ -17,16 +17,18 @@
     <link rel="manifest" href="manifest.json">
     <meta id="theme-color" name="theme-color" content="aliceblue" />
     <meta name="mobile-web-app-capable" content="yes">
+    <!-- development -->
+    <!-- <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/custom_styles.css"> -->
+    <!-- production -->
     <link rel="stylesheet" href="styles/main.min.css">
-    <link rel="stylesheet" href="styles/dark.min.css">
     <link rel="stylesheet" href="styles/custom_styles.min.css">
 </head>
 
 <body 
     ng-app="notebook_app" 
     ng-controller='main_controller' 
-    ng-init="init()" 
-    data-theme="{{is_dark?'dark':'light';}}">
+    ng-init="init()">
     <div class="main-container">
         <!-- top bar -->
         <top-bar class="topbar bg-blur scroll"></top-bar>
@@ -79,8 +81,11 @@
     </div>
 
     <!-- notebooks list for various options -->
-    <quick-notebooks class="list-more-options-container" ng-init="load_quick_notebooks()"
-        ng-show="dialog_flags.show_quick_notebooks"></quick-notebooks>
+    <quick-notebooks 
+        class="list-more-options-container" 
+        ng-init="load_quick_notebooks()"
+        ng-show="dialog_flags.show_quick_notebooks">
+    </quick-notebooks>
 
 
     <!-- blocking screen  -->
@@ -94,33 +99,39 @@
     <popup-password style="bottom: 30vh;" ng-show="dialog_flags.show_password_popup;" class="popup"></popup-password>
 
     <!-- <script src="/app.js"></script> -->
-    <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js"
-        integrity="sha512-8AwTn2Tax8NWI+SqsYAXiKT8jO11WUBzTEWRoilYgr5GWnF4fNqBRD+hCr4JRSA1eZ/qwbI+FPsM3X/PQeHgpQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-sanitize.js"></script>
-    <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"
-        integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/aes.min.js"
-        integrity="sha512-UOtWWEXoMk1WLeC873Gmrkb2/dZMwvN1ViM9C1mNvNmQSeXpEr8sRzXLmUSha1X4x5V892uFmEjiZzUsYiHYiw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./scripts/angular.min.js"></script>
+    <script defer="" src="./scripts/sortable.min.js"></script>
+    <script defer="" src="./scripts/angular-sanitize.min.js"></script>
+    <script defer="" src="./scripts/crypto-js.min.js"></script>
+    <script defer="" src="./scripts/aes.min.js"></script>
+    <script defer="" src="./scripts/chart.min.js"></script>
+    
     <!--load services -->
     <script type="text/javascript" src="scripts/services/db_service.js"></script>
     <script type="text/javascript" src="scripts/services/notebook_service.js"></script>
     <script type="text/javascript" src="scripts/services/note_service.js"></script>
     <script type="text/javascript" src="scripts/services/note_menu_service.js"></script>
     
-    <!-- <script type="text/javascript" src="scripts/main_controller.min.js"></script> -->
-
+    <!-- list and task classes -->
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
-    <script type="text/javascript" src="scripts/wiki.js"></script>
+
+
+    <!-- main js files for production and development -->
+    <!-- development -->
+    <!-- <script type="text/javascript" src="scripts/wiki.js"></script>
     <script type="text/javascript" src="scripts/utilities.js"></script>    
     <script type="text/javascript" src="scripts/main_controller.js"></script>
+     -->
+
+    <!-- production -->
+    <script type="text/javascript" src="scripts/wiki.min.js"></script>
+    <script type="text/javascript" src="scripts/utilities.min.js"></script>    
+    <script type="text/javascript" src="scripts/main_controller.min.js"></script>
+
+
+
+    <!-- angular module file -->
     <script type="text/javascript" src="scripts/angular_module.js"></script>
-
 </body>
-
 </html>

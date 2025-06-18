@@ -376,25 +376,14 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             console.log("Unlock data error:", err);
             alert("An error occurred while unlocking the notebook.");
         }
-    }
-    ;
+    };
 
-    $scope.save_theme = () => {
-        try {
-            $scope.init_theme()
-            $scope.save_data()
-        } catch (err) {
-            console.log("Save theme error:", err);
-        }
-    }
 
     $scope.save_data = () => {
         try {
-            const _theme = $scope.is_dark ? "dark" : "light";
             db_service.write({
                 notebooks: $scope.notebooks,
                 selectedListIndex: $scope.selectedListIndex,
-                theme: _theme,
                 system_vars: system_vars,
                 notebook_sort_by: $scope.sort_notebook_selected_item,
             }, angular)
@@ -408,11 +397,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             let data = db_service.read()
             $scope.notebooks = data.notebooks;
             $scope.selectedListIndex = parseInt(data.selectedListIndex);
-            // console.log("read index",$scope.selectedListIndex)
             system_vars = data.system_vars;
-            $scope.theme = data.theme;
-            $scope.is_dark = $scope.theme == "dark";
-            $scope.init_theme()
             $scope.sort_notebook_selected_item = data.notebook_sort_by
             //set up system notebooks
             $scope.init_system_notebooks()
@@ -478,14 +463,15 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
     }
 
-    $scope.handle_remove_completed_tasks = () => {
+    $scope.remove_completed_notes = () => {
         try {
-            if (confirm("Are you sure?")) {
-                $scope.notes = $scope.notes.filter(note => !note.isTaskCompleted)
-                $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes
+            if ($scope.current_notebook) {
+                const result = note_service.remove_completed_notes($scope.current_notebook);
+                $scope.notes = result.taskArray
+                // $scope.notebooks[$scope.selectedListIndex].taskArray = $scope.notes
                 $scope.save_data()
                 $scope.close_all_dialogs()
-                $scope.show_toast("Notes deleted");
+                $scope.show_toast("Completed Notes deleted");
             }
         } catch (error) {
             console.log("Cannot remove completed notes", error)
@@ -605,12 +591,16 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     $scope.merge_completed_notes = () => {
         try {
             // Merge completed notes into a single note
-            const result = note_service.merge_completed_notes($scope.notes, $scope.current_notebook);
+            // console.log($scope.notes,$scope.current_notebook.taskArray)
+            const result = note_service.merge_completed_notes($scope.current_notebook);
             if (result) {
+                $scope.current_notebook = result;
+                $scope.notes = $scope.current_notebook.taskArray;
                 $scope.show_toast("Notes merged successfully");
+                $scope.save_data();
+                $scope.close_all_dialogs();
             }
-            $scope.save_data();
-            $scope.close_all_dialogs();
+            
         } catch (error) {
             console.error("Cannot merge completed notes", error);
             $scope.show_toast("Error: " + error);
@@ -824,22 +814,23 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     }
 
     $scope.handle_tap_on_note_checkbox = (note) => {
-        if ($scope.is_note_multi_select_on) {
-            if (note.isSelected) {
+        try {
+            // console.log(note)
+            note.isSelected = !note.isSelected;
+            if(note.isSelected) {
                 $scope.note_multi_select_array.push(note)
-            } else {
-                //remove note
+            }else{
+                // remove note
                 const index = $scope.note_multi_select_array.indexOf(note);
-                if (index > -1) {
+                if (index > -1)
+                {
                     $scope.note_multi_select_array.splice(index, 1);
                 }
             }
-            console.log($scope.note_multi_select_array)
-        } else {
-            //when multi select is off 
-            // just complete notes
-            $scope.toggle_note_completed_state(note);
-        }
+            // console.log("multi select array", $scope.note_multi_select_array)
+        } catch (err) {
+            console.log("Error while selecting note", err)
+        } 
     }
 
     $scope.toggle_note_completed_state = function(note) {
@@ -869,14 +860,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
     }
 
-    $scope.init_theme = () => {
-        if ($scope.is_dark) {
-            document.querySelector("#theme-color").setAttribute("content", "#272727")
-        } else {
-            document.querySelector("#theme-color").setAttribute("content", "#ffffff")
-        }
-    }
-
+    
     $scope.load_last_notebook = () => {//check number of notebooks
     // let old_list_index = localStorage.selectedListIndex || 0;
     // if (old_list_index < 0)
@@ -899,15 +883,11 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     }
 
     $scope.handle_click_on_more_vert = (_notebook) => {
-        // if(_notebook)
-        // {
-        //     //click comes from notebooks list
-        //     $scope.current_notebook = _notebook
-        //     console.log($scope.current_notebook)
-        // }
+        // notebook is passed to handle click on more vert icon
         console.log(_notebook)
         $scope.current_notebook = _notebook
         $scope.close_all_dialogs();
+        //initialize notebook more options relies on current notebook
         $scope.init_notebook_more_options()
         $scope.dialog_flags.show_list_more_options = true
     }
@@ -1153,8 +1133,10 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     }
     ;
 
-    $scope.notebook_has_completed_tasks = () => {
-        return $scope.notes.some(note => note.isTaskCompleted === true)
+    $scope.notebook_has_completed_tasks = (_notebook) => {
+        if(_notebook)
+            return _notebook.taskArray.some(note => note.isTaskCompleted === true)
+        return false
     }
 
     $scope.is_notebook_locked = () => {
@@ -1200,7 +1182,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 text: "Move completed tasks",
                 icon: "truck.box.fill",
                 class: "task-more-options-item",
-                show: $scope.notebook_has_completed_tasks(),
+                show: $scope.notebook_has_completed_tasks($scope.current_notebook),
                 action: () => {
                     $scope.start_bulk_move_completed_tasks()
                 }
@@ -1208,7 +1190,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 text: "Merge completed tasks",
                 icon: "arrow.trianglehead.merge",
                 class: "task-more-options-item",
-                show: $scope.notebook_has_completed_tasks(),
+                show: $scope.notebook_has_completed_tasks($scope.current_notebook),
                 action: () => {
                     $scope.merge_completed_notes()
                 }
@@ -1216,9 +1198,11 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 text: "Remove completed tasks",
                 icon: "rectangle.stack.fill.badge.minus",
                 class: "task-more-options-item",
-                show: $scope.notebook_has_completed_tasks(),
+                show: $scope.notebook_has_completed_tasks($scope.current_notebook),
                 action: () => {
-                    $scope.handle_remove_completed_tasks()
+                    if(confirm("Are you sure you want to remove completed tasks?")) {
+                        $scope.remove_completed_notes()
+                    }
                 }
             }, {
                 text: "Refresh",
