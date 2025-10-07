@@ -18,11 +18,12 @@
     <meta id="theme-color" name="theme-color" content="#272727" />
     <meta name="mobile-web-app-capable" content="yes">
     <!-- development -->
-    <!-- <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/custom_styles.css"> -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/custom_styles.css">
+
     <!-- production -->
-    <link rel="stylesheet" href="styles/main.min.css">
-    <link rel="stylesheet" href="styles/custom_styles.min.css">
+    <!-- <link rel="stylesheet" href="styles/main.min.css"> -->
+    <!-- <link rel="stylesheet" href="styles/custom_styles.min.css"> -->
 </head>
 
 <body 
@@ -80,6 +81,23 @@
         </div>
     </div>
 
+
+    <!-- more options panel for create or edit menu-->
+    <div 
+        class="text-menu-container"
+        ng-show="dialog_flags.show_edit_note_more_options">
+        <div class="text-menu-container-child">
+            <div
+                ng-repeat="option in current_edit_note_more_options" 
+                ng-click="option.action(); dialog_flags.show_edit_note_more_options=false;"
+                class="text-menu-item">
+                    <div>{{option.text}}</div>
+            </div>
+        </div>
+    </div>
+
+
+
     <!-- notebooks list for various options -->
     <quick-notebooks 
         class="list-more-options-container" 
@@ -120,15 +138,15 @@
 
     <!-- main js files for production and development -->
     <!-- development -->
-    <!-- <script type="text/javascript" src="scripts/wiki.js"></script>
+    <script type="text/javascript" src="scripts/wiki.js"></script>
     <script type="text/javascript" src="scripts/utilities.js"></script>    
     <script type="text/javascript" src="scripts/main_controller.js"></script>
-     -->
+    
 
     <!-- production -->
-    <script type="text/javascript" src="scripts/wiki.min.js"></script>
+    <!-- <script type="text/javascript" src="scripts/wiki.min.js"></script>
     <script type="text/javascript" src="scripts/utilities.min.js"></script>    
-    <script type="text/javascript" src="scripts/main_controller.min.js"></script>
+    <script type="text/javascript" src="scripts/main_controller.min.js"></script> -->
     <script src="scripts/angular_module.js"></script>
 
 

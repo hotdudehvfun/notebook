@@ -27,7 +27,7 @@
     --color-btn-background: #333;
     --highlight-color: yellow;
     --highlight-bg: black;
-    --drawer-radius: 1.5rem;
+    --drawer-radius: 1.5rem
 }
 
 html {
@@ -35,7 +35,7 @@ html {
     overflow: hidden;
     font-size: 14px;
     overscroll-behavior: none;
-    touch-action: none;
+    touch-action: none
 }
 
 body {
@@ -52,7 +52,7 @@ body {
     font-size: 1rem;
     font-family: system-ui;
     overscroll-behavior: none;
-    touch-action: none;
+    touch-action: none
 }
 
 *,::after,::before {
@@ -146,8 +146,7 @@ input:focus {
     display: flex;
     word-break: break-word;
     user-select: all;
-    align-items: center;
-    /* overflow:hidden; */
+    align-items: center
 }
 
 .task:has(table) {
@@ -166,7 +165,7 @@ input:focus {
 .task .task-content-div {
     width: 100%;
     border-radius: 4px;
-    padding: 5px 8px;
+    padding: 5px 8px
 }
 
 .task-content-div li::first-letter,.task-content-div::first-letter {
@@ -227,7 +226,7 @@ input:focus {
     resize: none;
     height: 100%;
     background: #0b0b0b29;
-    padding: 0.25rem;
+    padding: .25rem
 }
 
 .new-task-content:focus {
@@ -269,9 +268,7 @@ input:focus {
     height: 100%;
     top: 0;
     left: 0;
-    z-index: 900;
-    /* -webkit-backdrop-filter: blur(1px);
-    backdrop-filter: blur(2px); */
+    z-index: 900
 }
 
 .list-panel-item>div>article {
@@ -581,13 +578,12 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .bottom-bar {
-    /* border-radius: 8px; */
     position: absolute;
     bottom: 2rem;
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center
 }
 
 .select {
@@ -773,7 +769,7 @@ h1,h2,h3,h4,h5,h6 {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 2rem 0rem;
+    padding: 2rem 0
 }
 
 .sidebar-menu-container {
@@ -1066,7 +1062,7 @@ input:checked+label.toggle_label>span.toggle_span {
     padding: 5px 10px;
     color: #fff;
     font-size: .8rem;
-    border: 1px solid var(--chip2-border);
+    border: 1px solid var(--chip2-border)
 }
 
 @keyframes chip2_icon_anim {
@@ -1091,7 +1087,7 @@ tr:nth-child(odd) {
     background-color: #fff
 }
 
-tr:nth-child(even) {
+tr:nth-child(2n) {
     background-color: #efefef
 }
 
@@ -1176,11 +1172,11 @@ ul.notebooks {
 }
 
 .chip2-selected {
-    background: var(--accent);
+    background: var(--accent)
 }
 
-.chip2-selected > span {
-    color: white !important;
+.chip2-selected>span {
+    color: #fff!important
 }
 
 .botom_bar_title {
@@ -1210,7 +1206,7 @@ ul.notebooks {
 }
 
 .icon-btn-padding {
-    padding: 0rem 1rem;
+    padding: 0 1rem
 }
 
 .not-active {
@@ -1243,8 +1239,7 @@ select:focus-visible {
 .create-note-text {
     color: #ccc;
     display: flex;
-    justify-content: center;
-    /* height: 200px; */
+    justify-content: center
 }
 
 .notes {
@@ -1270,18 +1265,11 @@ select:focus-visible {
 }
 
 .create-note-popup {
-    /* background: var(--bg-color); */
-    /* padding: 0.5rem; */
     z-index: 999;
-    /* border: 1px solid var(--theme_button_border); */
-    /* height: 100vh; */
-    /* background: black; */
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    /* width: 100%; */
-    margin: 0.5rem;
-    /* border-radius: 4px; */
+    margin: .5rem
 }
 
 .create-var-popup {
@@ -1336,7 +1324,7 @@ td {
     gap: .5rem;
     flex-grow: 1;
     align-items: center;
-    justify-content: center;
+    justify-content: center
 }
 
 input[type=radio]:checked+.custom-radio:after {
@@ -1358,11 +1346,11 @@ input[type=radio]:checked+.custom-radio:after {
     justify-content: center;
     align-items: center;
     border-radius: 100px;
-    border: 2px solid;
+    border: 2px solid
 }
 
 canvas {
-    width: 100% !important;
+    width: 100%!important
 }
 
 .bottom-bar-menu-select {
@@ -1376,11 +1364,11 @@ canvas {
     height: 30px;
     position: relative;
     z-index: 1;
-    opacity: 0;
+    opacity: 0
 }
 
 .plain-text {
-    padding: 0 1rem;
+    padding: 0 1rem
 }
 
 .plain-text>.h1,.plain-text>.h2,.plain-text>.h3,.plain-text>.h4,.plain-text>.h5,.plain-text>.h6 {
@@ -1508,43 +1496,29 @@ canvas {
 }
 
 .roundedOne {
-    /* width: 24px; */
-    /* height: 22px; */
-    /* position: relative; */
-    /* border-radius: 100px; */
     display: flex;
     justify-content: center;
-    align-items: center;
-}
-
-.roundedOne label {
-    /* width: 20px; */
-    /* height: 20px; */
-    /* border-radius: 100px; */
-    /* background: #3b3b3b; */
+    align-items: center
 }
 
 .roundedOne label:after {
-    /* content: ''; */
     width: 16px;
     height: 16px;
     position: absolute;
-    /* top: 2px; */
-    /* left: 2px; */
     opacity: 0;
-    border-radius: 50px;
+    border-radius: 50px
 }
 
 .roundedOne label:hover::after {
-    opacity: 0.3;
+    opacity: .3
 }
 
 .roundedOne input[type=checkbox] {
-    visibility: hidden;
+    visibility: hidden
 }
 
-.roundedOne input[type=checkbox]:checked + label:after {
-    opacity: 1;
+.roundedOne input[type=checkbox]:checked+label:after {
+    opacity: 1
 }
 
 .bottom-bar-content {
@@ -1553,17 +1527,17 @@ canvas {
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     display: flex;
-    flex-direction: column;
+    flex-direction: column
 }
 
 .bottom-bar-icon-size {
     height: 32px;
-    width: 32px;
+    width: 32px
 }
 
 .empty-space {
     height: 300px;
-    width: 100%;
+    width: 100%
 }
 
 thead tr {
@@ -1579,7 +1553,7 @@ tr:nth-child(odd) {
     background-color: #212121
 }
 
-tr:nth-child(even) {
+tr:nth-child(2n) {
     background-color: #292929a1
 }
 
@@ -1611,7 +1585,7 @@ tr {
 .group_by_text {
     padding: .5rem;
     font-weight: 700;
-    opacity: .2;
+    opacity: .2
 }
 
 .shadow-up {
@@ -1680,9 +1654,36 @@ tr {
 }
 
 .clickable {
-    transition: 0.2s all;
+    transition: .2s all;
 }
 
 .clickable:active {
-    transform: scale(0.9);
+    transform: scale(0.99);
+}
+
+.text-menu-container {
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: 100px;
+    align-items: center;
+    width: 100%;
+}
+
+.text-menu-container-child {
+    display: flex;
+    flex-direction: column;
+    border-radius: 1rem;
+    width: clamp(30%,90%,400px);
+    -webkit-backdrop-filter: blur(var(--more-options-blur));
+    backdrop-filter: blur(var(--more-options-blur));
+    border: 1px solid var(--more-options-border-color);
+    overflow: auto;
+    max-height: 60vh;
+}
+
+.text-menu-item
+{
+    padding:0.25rem 0.5rem;
 }

@@ -486,3 +486,17 @@ function import_file_event_change(file_input) {
     console.log(err)
   }
 }
+
+
+function remove_subset_from_array(array, subset) {
+  if (!Array.isArray(array) || !Array.isArray(subset)) {
+    throw new Error("Both arguments must be arrays");
+  }
+  return array.filter(item => !subset.includes(item));
+}
+
+
+
+
+
+

@@ -82,7 +82,8 @@
     </div>
 
     <!-- empty space at last -->
-    <div ng-show="notebooks.length!=0" ng-click="dialog_flags.show_notebook_popup=true" class="create-note-text clickable">
+    <div 
+        ng-show="notebooks.length!=0" ng-click="dialog_flags.show_notebook_popup=true" class="create-note-text clickable">
         <span>Tap here to open new notebook</span>
     </div>
     <!-- insert empty space at end -->
@@ -189,8 +190,9 @@
 
     <!-- empty state empty list-->
     <!-- hide empty state if create note is open -->
-    <div class="empty-notebook"
-        ng-show="notes.length==0 && pageTitle.toLocaleLowerCase()!='system' && !is_notebook_locked() && show_note_popup==false">
+    <div 
+        class="empty-notebook"
+        ng-if="notes.length==0 && pageTitle.toLocaleLowerCase()!='system' && !is_notebook_locked() && show_note_popup==false">
         <div>
             <img src="img/empty.svg" class="empty_svg" />
         </div>
@@ -198,7 +200,9 @@
     </div>
 
     <!-- notebook is locked-->
-    <div class="empty-notebook" ng-show="is_notebook_locked() && pageTitle.toLocaleLowerCase()!='system'">
+    <div 
+        class="empty-notebook" 
+        ng-if="is_notebook_locked() && pageTitle.toLocaleLowerCase()!='system'">
         <div>
             <img src="img/lock.svg" class="empty_svg" />
         </div>
@@ -211,60 +215,35 @@
     <div class="create-note-popup" ng-show="show_note_popup">
         <!-- menu buttons -->
         <div class="flex-row gap-1 w-full">
-            <!-- insert menu select button -->
-            <div class=" flex-row relative rounded-1" style="flex: 0 0 20px;">
-                <label for="submenu_item_select_insert" class="submenu_item_select_label">
-                    <!-- <img src="./img/icons/pencil.svg" class="svg-icon-sm" /> -->
-                    <span class="orange">Insert</span>
-                </label>
-                <select name="submenu_item_select_insert" id="submenu_item_select_insert"
-                    ng-change="handle_select_menu_change()" ng-click="handle_insert_menu_click()"
-                    ng-model="bottom_bar_sub_menu_selected_item" class="bottom-bar-menu-select">
-                    <option ng-repeat="item in insert_menu_items" ng-value="item">{{item.text}}</option>
-                </select>
-            </div>
-
-            <!-- component menu select button -->
-            <div class=" flex-row relative rounded-1" style="flex: 0 0 20px;">
-                <label for="submenu_item_select_component" class="submenu_item_select_label">
-                    <!-- <img src="./img/icons/textformat.characters.svg" class="svg-icon-sm" /> -->
-                    <span class="orange">Edit</span>
-                </label>
-                <select name="submenu_item_select_component" id="submenu_item_select_component"
-                    ng-change="handle_select_menu_change()" ng-model="bottom_bar_sub_menu_selected_item"
-                    class="bottom-bar-menu-select">
-                    <option ng-repeat="item in component_menu_items" ng-value="item">{{item.text}}</option>
-                </select>
-            </div>
-
-            <!-- system vars menu select button -->
-            <div class=" flex-row relative rounded-1" style="flex: 0 0 20px;">
-                <label for="submenu_item_select_system" class="submenu_item_select_label">
-                    <!-- <img src="./img/icons/keyboard_command_key.svg" class="svg-icon-sm" /> -->
-                    <span class="orange">Vars</span>
-                </label>
-                <select name="submenu_item_select_system" id="submenu_item_select_system"
-                    ng-change="handle_select_system_menu_change()" ng-model="bottom_bar_sub_menu_selected_item"
-                    class="bottom-bar-menu-select">
-                    <option ng-repeat="(key,value) in get_system_vars()" ng-value="key">{{key}}</option>
-                </select>
-            </div>
-
-            <!-- bottom bar note edit menu buttons -->
-            <div ng-repeat="item in bottom_bar_menu" ng-show="true"
-                ng-class="{'chip2-selected': bottom_bar_active_menu==item.text}" ng-click="item.action(item)"
+            <!-- create note menu -->
+            <div
+                ng-repeat="item in bottom_bar_menu" 
+                ng-show="true"
+                ng-class=""
+                ng-click="item.action(item)"
                 class="button">
                 <!-- <img class="svg-icon-sm" ng-src="{{get_svg_src(item.icon)}}" alt="icon"> -->
                 <span class="orange w-max-content">{{item.text}}</span>
             </div>
+            
+            <!-- show auto num list on off state  -->
+            <div 
+                class="button"
+                ng-class="auto_num_list_mode_on ? 'orange underline' : 'gray'"
+            >Auto Number List</div>
         </div>
 
         <!-- note input -->
         <div class="note_textarea_container">
             <!-- hide note content when chart dialog is visible-->
-            <textarea ng-hide="new_chart.show || new_transaction.show" autocomplete="off" ng-model="note_content"
-                ng-keyup="handle_keypress_note_input($event)" id="note_content" class="new-task-content"
-                placeholder={{note_content_placeholder}} autofocus>
+            <textarea 
+            ng-hide="new_chart.show || new_transaction.show" 
+            autocomplete="off" 
+            ng-model="note_content"
+            ng-keyup="handle_keypress_note_input($event)" 
+            id="note_content" 
+            class="new-task-content"
+            placeholder={{note_content_placeholder}} autofocus>
             </textarea>
         </div>
 
@@ -306,7 +285,8 @@
                 <label class="create-chart-theme-wrapper" ng-repeat="(key,value) in get_chart_colors()">
                     <input ng-hide="true" style="accent-color: {{value}}; transform:scale(1.2); opacity: 0;"
                         name="chart_theme" type="radio" ng-model="new_chart.theme" ng-value="key">
-                    <span class="custom-radio"
+                    <span 
+                        class="custom-radio"
                         style="border-color:{{value}};background-color:{{get_transparent_color(value,0.5)}};"></span>
                 </label>
             </div>
