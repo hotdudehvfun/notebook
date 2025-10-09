@@ -1,54 +1,36 @@
-    <!-- create notebook popup -->
-        <div class="create-notebook-popup flex-col relative rounded-2 scroll">
-             
+<!-- create/rename notebook popup -->
+<div class="create-notebook-popup flex-col relative rounded-2 scroll">
+    <!-- title of popup -->
+    <div class="flex-row align-center gap-1">
+        <img ng-src="{{get_svg_src(create_notebook_obj[create_notebook_obj.action].icon)}}" class="svg-icon">
+        <span>{{create_notebook_obj[create_notebook_obj.action].title}}</span>
+    </div>
 
-            <!-- title of popup -->
-            <div class="flex-row align-center gap-1">
-                <img 
-                    ng-src="{{get_svg_src(create_notebook_obj[create_notebook_obj.action].icon)}}"
-                    class="svg-icon">
-                <span>{{create_notebook_obj[create_notebook_obj.action].title}}</span>
-            </div>
-            <!-- content of popup -->
-            <div class="flex-col w-full gap-2 align-center">
-                <input
-                    maxlength="2"
-                    type="text"
-                    name="notebook_icon"
-                    class="list_icon_input"
-                    ng-model="new_notebook_icon" 
-                    placeholder="Icon Emoji"
-                />
-                <input
-                maxlength="30"
-                type="text"
-                name="notebook_name"
-                ng-keyup="handle_input_on_notebook($event)"
-                class="add-new-list-title"
-                ng-model="new_list_name" 
-                ng-attr-placeholder="{{create_notebook_obj[create_notebook_obj.action].placeholder}}"
-                autofocus/>
-            </div>
-            <!-- action buttons -->
-            <div class="flex-row gap-1 space-between mt-2">
-                <div 
-                    ng-click="close_all_dialogs(); new_list_name=''"
-                    class="button clickable rounded-full gap-1 red">
-                    Close
-                </div>
-                <div
-                    ng-show="create_notebook_obj.action=='create'"
-                    ng-class="{'orange':new_list_name.length>1}" 
-                    ng-click="handle_click_on_create_notebook_button()" 
-                    class="button clickable rounded-full gap-1 transition not-active">
-                    Create
-                </div>
-                <div
-                    ng-show="create_notebook_obj.action=='rename'"
-                    ng-class="{'orange':new_list_name.length>1}" 
-                    ng-click="rename_notebook()" 
-                    class="button clickable rounded-full gap-1 transition not-active">
-                    Rename
-                </div>
-            </div>
+    <!-- content of popup -->
+    <div class="flex-col w-full gap-2 align-center">
+        <!-- emoji icon for notebook -->
+        <input maxlength="2" type="text" name="notebook_icon" class="list_icon_input" ng-model="new_notebook_icon"
+            placeholder="Icon Emoji" />
+        
+        <!-- name for notebook  -->
+        <input maxlength="30" type="text" name="notebook_name" ng-keyup="handle_input_on_notebook($event)"
+            class="add-new-list-title" ng-model="new_list_name"
+            ng-attr-placeholder="{{create_notebook_obj[create_notebook_obj.action].placeholder}}" autofocus />
+    </div>
+
+    <!-- action buttons -->
+    <div class="flex-row gap-1 space-between mt-2">
+        <div ng-click="close_all_dialogs(); new_list_name=''" class="button clickable rounded-full gap-1 red">
+            Close
         </div>
+        <div ng-show="create_notebook_obj.action=='create'" ng-class="{'orange':new_list_name.length>1}"
+            ng-click="handle_click_on_create_notebook_button()"
+            class="button clickable rounded-full gap-1 transition not-active">
+            Create
+        </div>
+        <div ng-show="create_notebook_obj.action=='rename'" ng-class="{'orange':new_list_name.length>1}"
+            ng-click="rename_notebook()" class="button clickable rounded-full gap-1 transition not-active">
+            Rename
+        </div>
+    </div>
+</div>

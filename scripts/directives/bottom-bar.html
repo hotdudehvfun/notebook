@@ -13,12 +13,9 @@ class="bottom-bar-content rounded-full">
       </div>
 
     <!-- bottom button -->
-    <div
-        ng-show="bottom_bar_active_div=='null'" 
-        class="flex-row p-1/2 justify-space-between gap-1">
+    <div class="flex-row p-1/2 justify-space-between gap-1">
         <!-- create notebook button -->
         <div 
-            ng-class="{'bg-red-pink': bottom_bar_active_div=='notebook'} "
             ng-click="
                 dialog_flags.show_notebook_popup=true; 
                 focus_input('.add-new-list-title');
@@ -30,7 +27,6 @@ class="bottom-bar-content rounded-full">
         </div>
         <!-- create note button -->
         <div 
-            ng-class="{'bg-red-pink':bottom_bar_active_div=='note'}"
             ng-click="open_create_note_popup()" 
             class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
             <img src="./img/icons/pencil.and.scribble.svg" class="bottom-bar-icon-size"/>
@@ -38,7 +34,6 @@ class="bottom-bar-content rounded-full">
         </div>
         <!-- system var button -->
         <div 
-            ng-class="{'bg-red-pink':bottom_bar_active_div=='system'}"
             ng-click="dialog_flags.show_create_system_var_popup=true;" 
             class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
             <img src="./img/icons/keyboard_command_key1.svg" class="bottom-bar-icon-size"/>

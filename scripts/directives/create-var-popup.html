@@ -5,7 +5,12 @@ class="create-var-popup flex-col relative rounded-2 scroll">
 <!-- title -->
 <div class="botom_bar_title orange">
     <img class="svg-icon" ng-src="{{get_svg_src('keyboard_command_key')}}" alt="icon">
-    Custom variables
+    <span class="w-full">Custom variables</span>
+    <div 
+        ng-if="show_delete_system_var_button"
+        ng-click="dialog_flags.show_create_system_var_popup=false; delete_system_var();" class="button rounded-full gap-1 red">
+        <img class="svg-icon" ng-src="{{get_svg_src('trash')}}" alt="icon">
+    </div>
 </div>
 
 <!-- create system var -->
@@ -37,10 +42,6 @@ class="create-var-popup flex-col relative rounded-2 scroll">
     <div ng-click="create_system_var();" class="button rounded-full gap-1 green">
         <span>{{system_create_btn_title}}</span>
     </div>
-    <div 
-        ng-if="show_delete_system_var_button"
-        ng-click="dialog_flags.show_create_system_var_popup=false; delete_system_var();" class="button rounded-full gap-1 red">
-        <span>Delete</span>
-    </div>
+    
 </div>
 </div>

@@ -364,3 +364,78 @@ grid_title_bar {
     position: absolute;
     gap: .5rem;
 }
+
+.capitalize {
+    text-transform: capitalize
+}
+
+
+.space-between {
+    justify-content: space-between
+}
+
+.text-red-500 {
+    color: #ef4444
+}
+
+
+.flex-row-reverse {
+    display: flex;
+    flex-direction: row-reverse
+}
+
+.align-center {
+    align-items: center
+}
+
+.justify-space-between {
+    justify-content: space-between
+}
+
+.p-1\/2 {
+    padding: .5rem
+}
+
+.p-2 {
+    padding: 1rem
+}
+
+.m-1\/2 {
+    margin: .5rem
+}
+
+.m-1 {
+    margin: .5rem
+}
+
+.m-2 {
+    margin: 1rem
+}
+
+.rounded {
+    border-radius: .25rem
+}
+
+.rounded-1 {
+    border-radius: .5rem
+}
+
+.rounded-2 {
+    border-radius: 1rem
+}
+
+.rounded-3 {
+    border-radius: 1.5rem
+}
+
+.rounded-4 {
+    border-radius: 2rem
+}
+
+.rounded-full {
+    border-radius: 999px
+}
+
+.px-2 {
+    padding: 0 1rem
+}

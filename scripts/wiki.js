@@ -590,8 +590,8 @@ function handle_component_transactions(markdown) {
                     ${categories_amount_div}
                 </div>
             `
-            return transactions.map(t => `
-                <div class="transaction">
+            return transactions.map(t => 
+                `<div class="transaction">
                     <div class="transaction-info">
                         <div class="transaction-icon">
                             <img src="./img/icons/${t.method}.svg" class="svg-icon"/>

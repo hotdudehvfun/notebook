@@ -254,12 +254,19 @@
             <div ng-click="show_note_popup=false; cancel_update_note();" class="button rounded-full clickable gap-1 orange">
                 <span>Close</span>
             </div>
-            <div ng-class="{'orange':note_content.length>0}" ng-hide="show_update_task_button" ng-click="create_note()"
+
+            <div 
+                ng-class="{'orange':note_content.length>0}" 
+                ng-hide="show_update_task_button" 
+                ng-click="create_note()"
                 class="button rounded-full clickable gap-1 not-active transition">
-                <span>Done</span>
+                    <span>Done</span>
             </div>
-            <div ng-show="show_update_task_button" ng-click="update_note()" class="button rounded-full clickable gap-1 orange">
-                <span>Done</span>
+            <div 
+                ng-show="show_update_task_button" 
+                ng-click="update_note()" 
+                class="button rounded-full clickable gap-1 orange">
+                    <span>Done</span>
             </div>
         </div>
 
@@ -351,6 +358,8 @@
             <div class="evaluated_exp">{{evaluate_exp(value)}}</div>
         </div>
     </div>
+    <!-- insert empty space at end -->
+     <div class="empty-space"></div>
 </div>
 
 <!-- empty state no list-->

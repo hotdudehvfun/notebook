@@ -302,15 +302,15 @@ input:focus {
 }
 
 .task-more-options-item {
-    padding: .6rem;
+    padding: .2rem 0.5rem;
     margin: .25rem;
-    font-size: .9rem;
+    font-size: 1rem;
     display: flex;
     flex-direction: row;
     align-items: center;
-    border-bottom: 1px solid #d7d7d7;
+    /* border-bottom: 1px solid #6565653b; */
     touch-action: auto;
-    gap: 1rem
+    gap: 1rem;
 }
 
 .task-more-options-item:hover {
@@ -387,72 +387,6 @@ input:focus {
     border-radius: 100px;
     background: var(--list-bg);
     justify-self: flex-end
-}
-
-.flex-row {
-    display: flex;
-    flex-direction: row
-}
-
-.flex-row-reverse {
-    display: flex;
-    flex-direction: row-reverse
-}
-
-.align-center {
-    align-items: center
-}
-
-.justify-space-between {
-    justify-content: space-between
-}
-
-.p-1\/2 {
-    padding: .5rem
-}
-
-.p-2 {
-    padding: 1rem
-}
-
-.m-1\/2 {
-    margin: .5rem
-}
-
-.m-1 {
-    margin: .5rem
-}
-
-.m-2 {
-    margin: 1rem
-}
-
-.rounded {
-    border-radius: .25rem
-}
-
-.rounded-1 {
-    border-radius: .5rem
-}
-
-.rounded-2 {
-    border-radius: 1rem
-}
-
-.rounded-3 {
-    border-radius: 1.5rem
-}
-
-.rounded-4 {
-    border-radius: 2rem
-}
-
-.rounded-full {
-    border-radius: 999px
-}
-
-.px-2 {
-    padding: 0 1rem
 }
 
 .bg-list-bg {
@@ -657,17 +591,8 @@ h1,h2,h3,h4,h5,h6 {
     width: 100%
 }
 
-.space-between {
-    justify-content: space-between
-}
 
-.text-red-500 {
-    color: #ef4444
-}
 
-.capitalize {
-    text-transform: capitalize
-}
 
 .text-accent {
     color: var(--accent)
@@ -1701,6 +1626,10 @@ tr {
 
 .notebook_icon_list_view {
     font-size: 2rem;
+}
+
+.notebook_icon_quick_view {
+    font-size: 1.5rem;
 }
 
 .page_icon{

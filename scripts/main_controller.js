@@ -38,22 +38,18 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             $scope.selectedListIndex = $scope.notebooks.indexOf(notebook);
             $scope.notes = notebook.taskArray;
             $scope.selectedListName = notebook.title;
-
-            $scope.show_delete_list_option = true;
-            $scope.show_purge_list_option = true;
-            $scope.show_rename_list_option = true;
-
+            
             $scope.is_note_selected = false;
-            $scope.show_edit_options = false;
             $scope.selected_note = undefined;
 
             $scope.show_view = $scope.CONST.VIEW_NOTE;
             $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`;
 
-            $scope.init_bottom_bar_menu();
+            // save data when notebook is opened
             $scope.save_data();
         } catch (err) {
             console.log("Error while opening notebook", err);
+            alert("Cannot open notebook");
         }
     };
 
@@ -78,32 +74,35 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             vars = show list of user defined variables
         */
         $scope.show_view = view_name
+        // view all NOTEBOOKS
         if ($scope.show_view == $scope.CONST.VIEW_NOTEBOOK) {
             //reset icon and title
             $scope.pageTitle = $scope.defaultPageTitle
             $scope.pageIcon = $scope.default_app_icon
+
             //reset selected note
             $scope.selected_note = undefined;
             $scope.is_note_selected = false;
-            //recalculate bottom bar
-            $scope.init_bottom_bar_menu()
+
             //hide any open menu
             $scope.current_bottom_bar_active_menu = null
+
             //reset selected notebook
             $scope.current_notebook = null
             $scope.selectedListIndex = -1
+
             //by default quick notes will be used
             $scope.note_content_placeholder = "Create quick note"
 
         }
     }
 
+    // rename notebook
     $scope.handle_input_on_rename_notebook = function (e) {
         try {
+            //rename notebook on enter key
             if (e.keyCode == 13) {
                 $scope.rename_notebook()
-            } else {
-                $scope.new_notebook_icon = getIconForTitle($scope.new_list_name)
             }
         } catch (err) {
             console.log(err)
@@ -117,7 +116,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                     $scope.handle_click_on_create_notebook_button()
                 if ($scope.create_notebook_obj.action == 'rename')
                     $scope.rename_notebook()
-                // e.target.value = "";
             }
         } catch (err) {
             console.log(err)
@@ -206,7 +204,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         try {
             // cannot create note in trash notebook
             if ($scope.current_notebook && ($scope.current_notebook.title.toLowerCase() === "trash" || $scope.current_notebook.title.toLowerCase() === "system")) {
-                $scope.show_toast("Cannot create note in Trash notebook");
+                $scope.show_toast("Cannot create note here");
                 return;
             }
 
@@ -298,6 +296,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             console.log("Edit var error", err)
         }
     }
+
     $scope.clear_system_input_vars = () => {
         $scope.new_var_name = ""
         $scope.new_var_value = ""
@@ -443,12 +442,10 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             // console.log($scope.selected_note)
             $scope.is_note_selected = true
             //show file options when note is selected
-            // $scope.show_edit_options = true
             $scope.task_completed_state = note.isTaskCompleted
             //check if we are inside trash
             // console.log($scope.current_notebook)
             $scope.init_note_more_options()
-            $scope.init_bottom_bar_menu()
             $scope.dialog_flags.show_note_more_options = true
             // console.log()
 
@@ -534,7 +531,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             if (selected_notes.length == 1) {
                 $scope.is_note_selected = false;
                 $scope.selected_note = null;
-                $scope.show_edit_options = false;
             }
 
             $scope.save_data();
@@ -556,7 +552,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
                 $scope.is_note_selected = false;
                 $scope.selected_note = null;
-                $scope.show_edit_options = false;
+
                 $scope.save_data();
                 $scope.close_all_dialogs();
             }
@@ -642,7 +638,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             $scope.copied_task = null;
             $scope.is_note_selected = false;
             $scope.selected_note = null;
-            $scope.show_edit_options = false;
+
             $scope.show_toast("Task pasted")
         } catch (err) {
             $scope.show_toast("Failed to paste")
@@ -699,7 +695,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                     $scope.note_content = ""
                     $scope.is_note_selected = false;
                     $scope.selected_note = null;
-                    $scope.show_edit_options = false;
+
                     $scope.init_bottom_bar_menu()
                     $scope.show_note_popup = false;
 
@@ -978,7 +974,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
             // ---- Auto numbered list logic ----
             // Activate list mode when line starts with "1. "
-            console.log("cl=",current_line,key)
+            console.log("cl=", current_line, key)
             if (regex.test(current_line) && key === " ") {
                 e.preventDefault();
                 $scope.auto_num_list_mode_on = true;
@@ -1166,6 +1162,9 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         try {
             //resure create notebook popup
             $scope.close_all_dialogs()
+            //rename section gets current notebook title
+            $scope.create_notebook_obj = $scope.init_create_notebook_obj()
+            //set action to rename so that popup dialog knows what to show
             $scope.create_notebook_obj.action = "rename"
             $scope.dialog_flags.show_notebook_popup = true;
             $scope.focus_input('.add-new-list-title')
@@ -1213,7 +1212,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 text: $scope.is_notebook_locked() ? "Unlock notebook" : "Lock notebook",
                 icon: "lock.square",
                 class: "task-more-options-item",
-                show: true,
+                show: $scope.only_sys_trash($scope.current_notebook) == false,
                 action: () => {
                     $scope.close_all_dialogs();
                     if ($scope.current_notebook.taskArray.length == 0) {
@@ -1235,7 +1234,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 text: "Rename notebook",
                 icon: "textformat.characters.dottedunderline",
                 class: "task-more-options-item",
-                show: true,
+                show: $scope.only_sys_trash($scope.current_notebook) == false,
                 action: () => {
                     $scope.handle_rename_notebook()
                 }
@@ -1274,10 +1273,14 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                     location.reload();
                 }
             }, {
-                text: "Delete all tasks",
+                // show Empty Recycling Bin when trash notebook is open
+                // show Delete all notes when other notebook is open
+                // hide when system notebook is open
+                text: $scope.current_notebook.title.toLowerCase() == "trash" ? "Empty Recycling Bin" : "Delete all notes",
                 icon: "exclamationmark.triangle.fill",
                 class: "task-more-options-item text-red-500",
-                show: true,
+                // hide when system notebook is open
+                show: $scope.current_notebook.title.toLowerCase() != "system",
                 action: () => {
                     $scope.purge_notebook()
                 }
@@ -1285,7 +1288,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 text: "Delete notebook",
                 icon: "trash.square.fill",
                 class: "task-more-options-item text-red-500",
-                show: true,
+                show: $scope.only_sys_trash($scope.current_notebook) == false,
                 action: () => {
                     $scope.delete_notebook()
                 }
@@ -1522,6 +1525,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
     //bottom bar menu
     $scope.init_bottom_bar_menu = () => {
+        // call this function when you want to open create note popup
         $scope.bottom_bar_menu = [
             {
                 text: "Format",
@@ -1716,20 +1720,18 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         //System 2nd last, Trash at last
         let sys_i = -1, trash_i = -1
         $scope.notebooks.forEach((notebook, index) => {
-            if (notebook.title.toLowerCase() == "system")
-            {
+            if (notebook.title.toLowerCase() == "system") {
                 sys_i = index;
                 notebook.icon = $scope.system_icon
             }
-            if (notebook.title.toLowerCase() == "trash")
-            {
+            if (notebook.title.toLowerCase() == "trash") {
                 trash_i = index;
-                notebook.icon = $scope.trash_icon 
+                notebook.icon = $scope.trash_icon
             }
         });
-        
+
         if (sys_i == -1) {
-            $scope.notebooks.push(new List("System",$scope.system_icon))
+            $scope.notebooks.push(new List("System", $scope.system_icon))
         }
         if (trash_i == -1) {
             $scope.notebooks.push(new List("Trash", $scope.trash_icon))
@@ -1797,20 +1799,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
     }
 
-    $scope.choose_create_btn = (pos) => {
-        let toast_txts = ["Creat notes", "Create notebook", "System vars"]
-        if (!$scope.show_all_create_btns) {
-            //open all so user can choose
-            // $scope.create_btns_arr = [true,true,true]
-            $scope.show_all_create_btns = true
-        } else {
-            //all are open now user can choose one
-            $scope.create_btns_arr = [false, false, false]
-            $scope.create_btns_arr[pos] = true
-            $scope.show_toast(toast_txts[pos])
-            $scope.show_all_create_btns = false
-        }
-    }
+
 
     $scope.get_component_details = () => {
 
@@ -1841,13 +1830,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
     // open create note pop
     $scope.open_create_note_popup = () => {
-
-        // do not open popup if current notebook is Trash or System
-        if ($scope.current_notebook && ($scope.current_notebook.title.toLowerCase() === "trash" || $scope.current_notebook.title.toLowerCase() === "system")) {
-            $scope.show_toast("Cannot create note in Trash notebook");
-            return;
-        }
-
         // do not open popup if notebooks is locked
         if ($scope.show_view === $scope.CONST.VIEW_NOTE && $scope.is_notebook_locked()) {
             $scope.show_toast("Cannot create note in locked notebook");
@@ -1855,21 +1837,17 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
 
         // If in notebook list view, switch to Quick Notes notebook first
-        if ($scope.show_view === $scope.CONST.VIEW_NOTEBOOK) {
+        // or if in trash or system notebook, switch to Quick Notes notebook
+        if ($scope.show_view === $scope.CONST.VIEW_NOTEBOOK || $scope.only_sys_trash($scope.current_notebook)) {
             let quick_notes_notebook = notebook_service.get_quick_notes_notebook($scope.notebooks);
             $scope.save_data();
             $scope.open_notebook(quick_notes_notebook);
         }
         // Now open the create note popup
-        $scope.init_bottom_bar_menu();
-        $scope.prepare_insert_menu_items();
-        $scope.prepare_format_menu_items();
+        $scope.init_bottom_bar_menu()
         $scope.focus_input("#note_content");
         $scope.show_note_popup = true;
-    }
-        ;
-
-    $scope.toggle_bottom_bar_div = (divId) => { }
+    };
 
     $scope.get_note_content_placeholder = () => {
         if ($scope.current_notebook) {
@@ -2254,7 +2232,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             },
             rename: {
                 title: "Rename notebook",
-                placeholder: "New name for this notebook",
+                placeholder: `Rename "${$scope.current_notebook ? $scope.current_notebook.title : ''}" to`,
                 icon: "pencil.and.list.clipboard",
             },
             action: "create"
@@ -2291,56 +2269,34 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             show_notebook_popup: false, //to show create notebook popup
             show_edit_note_more_options: false, // show edit options for notes
         }
-        $scope.show_note_popup = false,
-            //to show create note popup
 
-            //button flags
-            $scope.show_delete_system_var_button = false
-        $scope.show_nav_more_vert_button = false
-        $scope.show_delete_list_option = false
-        $scope.show_purge_list_option = false
-        $scope.show_select_notebooks_dropdown = true
-        $scope.show_update_task_button = false
-        $scope.is_sortable = false
-        $scope.is_toast_visible = false
-        $scope.is_data_locked = false
-        $scope.is_trash_open = false
-        $scope.toast_msg = ""
-        $scope.is_note_selected = false
-        //flag to check if any note is selected
-        $scope.show_edit_options = false
-        //bottom bar note edit options
-        $scope.show_insert_options = false
-        //bottom bar note insert options
-        $scope.show_component_options = false
-        //bottom bar component options for various components
-        $scope.show_edit_options_system_vars = false
-        //bottom bar note insert system vars
-        $scope.show_note_complete_button = false
-        // show hide complete button
-        $scope.show_split_note_btns = false
-        // split note sub menu btns
-        $scope.show_view = $scope.CONST.VIEW_NOTEBOOK
-        //options can be notebooks, notes
-        $scope.bottom_bar_active_div = "null"
-        //hide or show bottom bar create divs
-        $scope.bottom_bar_active_menu = "null"
-        //hide or show bottom bar menu options
-        
+        // do not include it in dialog flags
+        $scope.show_note_popup = false; //to show create note popup
+
+        $scope.toast_msg = "" // toast message
+        $scope.show_view = $scope.CONST.VIEW_NOTEBOOK // default to show NOTEBOOK VIEW
+
+        //button flags
+        $scope.show_delete_system_var_button = false // delete button in system var popup
+        $scope.show_update_task_button = false // update button for existing note
+        $scope.is_sortable = false // checkbox to sort notes 
+        $scope.is_toast_visible = false // show hide toast
+        $scope.is_data_locked = false // check data is locked or not
+        $scope.is_trash_open = false // is trash open
+        $scope.is_note_selected = false //flag to check if any note is selected
+        $scope.show_note_complete_button = false // show hide complete button in note
+        $scope.current_list_symbol = "-" // symbol to insert when list mode is ON
         $scope.is_list_mode_on = false // if on, enter press a symbol is inserted at start of line
         $scope.auto_num_list_mode_on = false // if on, enter press a symbol is inserted at start of line with auto number
-
         
-        $scope.current_list_symbol = "-"
-        $scope.list_symbols_array = ["✅", "⚠", "-", "*"]
-        $scope.system_create_btn_title = "Create"
-        $scope.is_note_multi_select_on = false
-        // to turn on off multi select
-        $scope.note_multi_select_array = []
-        // hold selected notes
-        $scope.action_on_quick_notebook_item = $scope.CONST.OPEN
-        $scope.sort_notebook_selected_item = 'date'
-        //sort notebooks model
+
+
+        $scope.list_symbols_array = ["✅", "⚠", "-", "*"] // available sysbols to insert when list mode is ON
+        $scope.system_create_btn_title = "Create" // create or update title is changed
+        $scope.is_note_multi_select_on = false // select multiple notes
+        $scope.note_multi_select_array = [] // hold selected notes
+        $scope.action_on_quick_notebook_item = $scope.CONST.OPEN // what to do when quick notebook item is clicked
+        $scope.sort_notebook_selected_item = 'date' // sort notebooks default is DATE
 
         // chart component 
         $scope.new_chart = {
@@ -2358,6 +2314,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             //create id dynamically while saving
             show: false,
         }
+
         // transaction component
         $scope.new_transaction = {
             desc: "",
@@ -2383,8 +2340,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
 
         // by default create notebook is shown
-        $scope.create_btns_arr = [false, true, false]
-        $scope.show_all_create_btns = false
         $scope.show_searchbar = false
         $scope.textarea_default_height = 64
         $scope.textarea_max_height = 200
