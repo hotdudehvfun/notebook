@@ -26,7 +26,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 return;
 
             $scope.pageTitle = notebook.title;
-            $scope.pageIcon = $scope.get_notebook_icon(notebook);
+            $scope.pageIcon = notebook_service.get_notebook_icon(notebook)
             $scope.current_notebook = notebook;
 
             if (notebook.title.toLowerCase() === "system") {
@@ -118,17 +118,11 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 if ($scope.create_notebook_obj.action == 'rename')
                     $scope.rename_notebook()
                 // e.target.value = "";
-            } else {
-                $scope.new_notebook_icon = getIconForTitle($scope.new_list_name)
             }
         } catch (err) {
             console.log(err)
         }
     }
-
-    $scope.get_notebook_icon = function (notebook) {
-        return notebook_service.get_notebook_icon(notebook)
-    };
 
     $scope.insertTextAtCursor = function (id, value) {
         insertTextAtCursor(id, value)
@@ -204,7 +198,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     // Helper function to reset the form after creating a notebook
     const reset_notebook_form = () => {
         $scope.new_list_name = "";
-        $scope.new_notebook_icon = "folder";
+        $scope.new_notebook_icon = "📜";
         $scope.close_all_dialogs();
     };
 
@@ -338,7 +332,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             )
             $scope.password = ""
             $scope.current_notebook.is_locked = true;
-            $scope.pageIcon = "lock"
+            $scope.pageIcon = "🔐"
             $scope.save_data()
             $scope.close_all_dialogs()
             $scope.show_toast("Notebook is locked")
@@ -1188,7 +1182,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             const newIcon = $scope.new_notebook_icon;
             const updatedNotebook = notebook_service.rename_notebook(notebook, newName, newIcon, $scope.notebooks);
             $scope.pageTitle = updatedNotebook.title;
-            $scope.new_notebook_icon = "folder";
+            $scope.new_notebook_icon = "📜";
             $scope.new_list_name = "";
             $scope.save_data();
             $scope.close_all_dialogs();
@@ -1720,20 +1714,25 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     $scope.init_system_notebooks = () => {
         //notebooks must contain System and Trash notebooks
         //System 2nd last, Trash at last
-        let sys_i = -1
-            , trash_i = -1
+        let sys_i = -1, trash_i = -1
         $scope.notebooks.forEach((notebook, index) => {
             if (notebook.title.toLowerCase() == "system")
+            {
                 sys_i = index;
+                notebook.icon = $scope.system_icon
+            }
             if (notebook.title.toLowerCase() == "trash")
+            {
                 trash_i = index;
-        }
-        )
+                notebook.icon = $scope.trash_icon 
+            }
+        });
+        
         if (sys_i == -1) {
-            $scope.notebooks.push(new List("System", "keyboard_command_key"))
+            $scope.notebooks.push(new List("System",$scope.system_icon))
         }
         if (trash_i == -1) {
-            $scope.notebooks.push(new List("Trash", "recycling"))
+            $scope.notebooks.push(new List("Trash", $scope.trash_icon))
         }
     }
 
@@ -2389,7 +2388,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.show_searchbar = false
         $scope.textarea_default_height = 64
         $scope.textarea_max_height = 200
-        $scope.new_notebook_icon = "folder"
+        $scope.new_notebook_icon = "📜"
         //show this icon on create notebook and update it automatically
 
         //icons
@@ -2400,9 +2399,11 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
         //default values
         $scope.defaultPageTitle = "Notebooks";
-        $scope.default_app_icon = "leaf.fill"
+        $scope.default_app_icon = "☘️"
+        $scope.system_icon = "⚙️"
+        $scope.trash_icon = "🗑️"
         $scope.pageTitle = $scope.defaultPageTitle;
-        $scope.pageIcon = "leaf.fill"
+        $scope.pageIcon = $scope.default_app_icon
         //svg source
         $scope.copied_task = null
         $scope.db_operation = null

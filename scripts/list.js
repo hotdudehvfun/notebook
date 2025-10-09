@@ -6,7 +6,7 @@ class List {
     this.dateCreated = Date.now();
     this.is_locked = false;
     if(icon==undefined)
-      this.icon = "folder"
+      this.icon = "📜"
     else
       this.icon = icon
   }

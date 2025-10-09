@@ -26,7 +26,8 @@
                 <div class="list-panel-item">
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
-                        <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
+                        <!-- <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon"> -->
+                        <span class="notebook_icon_list_view">{{notebook.icon}}</span>
                         <article ng-click="open_notebook(notebook)" class="selected clickable">{{notebook.title}}</article>
 
                         <!-- handle click on notebook more options -->
@@ -58,7 +59,8 @@
                 <div class="list-panel-item">
                     <div class="list-panel-item-title">
                         <!-- notebook icon -->
-                        <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon">
+                        <!-- <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon"> -->
+                         <span class="notebook_icon_list_view">{{notebook.icon}}</span>
                         <article ng-click="open_notebook(notebook)" class="selected">{{notebook.title}}</article>
 
                         <!-- handle click on notebook more options -->

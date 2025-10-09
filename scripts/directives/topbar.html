@@ -5,7 +5,8 @@
 <div 
     class="flex-row flex gap-1 justify-center align-center orange clickable" 
     ng-click="handle_click_on_notebook_title()">    
-    <img class="svg-icon" ng-src="{{get_svg_src(pageIcon)}}" alt="NoteBook icon">
+    <!-- <img class="svg-icon" ng-src="{{get_svg_src(pageIcon)}}" alt="NoteBook icon"> -->
+    <span class="page_icon">{{pageIcon}}</span>
     <span class="text-lg capitalize">{{pageTitle}}</span>
 </div>
 <div class="flex-row align-center justify-end gap-1">

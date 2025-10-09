@@ -20,11 +20,11 @@ function notebook_service($timeout)
     this.get_notebook_icon = function(notebook){
         try {
             if (notebook?.is_locked)
-                return "lock";
-            return notebook?.icon || "folder";
+                return "🔐";
+            return notebook?.icon || "📜";
         } catch (err) {
             console.log(err);
-            return "folder";
+            return "📜";
         }
     }
 
@@ -64,7 +64,7 @@ function notebook_service($timeout)
         const exists = all_notebooks.some(n => n.title.toLowerCase() === newName.toLowerCase());
         if (exists) throw `${newName} notebook already exists`;
 
-        return new List(title, icon || "folder");
+        return new List(title, icon || "📜");
 
     }
 
@@ -73,7 +73,7 @@ function notebook_service($timeout)
         const quickNotes = notebooks.find(n => n.title.toLowerCase() === "quick notes");
         if (quickNotes) return quickNotes;
 
-        const newNotebook = new List("Quick Notes", "folder");
+        const newNotebook = new List("Quick Notes", "🗒️");
         notebooks.push(newNotebook);
         return newNotebook;
     }

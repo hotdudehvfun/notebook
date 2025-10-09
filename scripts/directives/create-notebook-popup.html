@@ -5,12 +5,20 @@
             <!-- title of popup -->
             <div class="flex-row align-center gap-1">
                 <img 
-                ng-src="{{get_svg_src(create_notebook_obj[create_notebook_obj.action].icon)}}"
-                class="svg-icon">
+                    ng-src="{{get_svg_src(create_notebook_obj[create_notebook_obj.action].icon)}}"
+                    class="svg-icon">
                 <span>{{create_notebook_obj[create_notebook_obj.action].title}}</span>
             </div>
             <!-- content of popup -->
-            <div class="flex-col w-full gap-2">
+            <div class="flex-col w-full gap-2 align-center">
+                <input
+                    maxlength="2"
+                    type="text"
+                    name="notebook_icon"
+                    class="list_icon_input"
+                    ng-model="new_notebook_icon" 
+                    placeholder="Icon Emoji"
+                />
                 <input
                 maxlength="30"
                 type="text"
