@@ -38,9 +38,18 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         console.log("create note dialog is opned")
         //get either quick notes or currently opened notebook
         $scope.current_notebook = $scope.get_current_notebook();
+        $scope.show_dialog = true;
+        $scope.init_menu();
+        shared_service.set("show_view", "create_note")
+    });
+
+    
+    // open create notebook popup
+    $scope.$on('open_edit_note_popup', function (event, data) {
+        console.log("edit note dialog is opned")
+        $scope.current_notebook = shared_service.get("current_notebook");
         $scope.current_note = shared_service.get("current_note");
         $scope.show_dialog = true;
-        // console.log("current note",$scope.current_note)
         if ($scope.current_note)
             document.getElementById("note_content").value = $scope.current_note.title || "";
 
@@ -88,72 +97,80 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
     $scope.create_note = () => {
         try {
             // cannot create note in trash notebook
-            if ($scope.current_notebook &&
-                ($scope.current_notebook.title.toLowerCase() === "trash" || $scope.current_notebook.title.toLowerCase() === "system")) {
-                //emit show toast event
-                shared_service.set("show_toast", `Cannot create note in this notebook`);
+            if ($scope.current_notebook.title.toLowerCase() === "trash") {
+                shared_service.set("show_toast", `Cannot create note Trash`);
                 return;
             }
-
-            // cannot create note in locked notebook
-            if ($scope.is_notebook_locked()) {
-                shared_service.set("show_toast", `Notebook is locked`);
+            if ($scope.current_notebook.title.toLowerCase() === "system") {
+                shared_service.set("show_toast", `Cannot create note System`);
+                return;
+            }
+            if (!$scope.current_notebook) {
+                shared_service.set("show_toast", `Cannot find notebook`);
+                return;
+            }
+            if ($scope.current_notebook.is_locked) {
+                shared_service.set("show_toast", `Cannot create note in locked Notebook`);
                 return;
             }
 
             const task_content = document.getElementById("note_content").value.trim();
-            if (is_valid_note_content(task_content)) {
-                // Create a new task
-                const new_task = new Task(task_content);
-                new_task.parent_id = $scope.current_notebook.id
-                new_task.task_icon = $scope.icons.unchecked;
-                new_task.set_is_component();
-                new_task.set_component_type();
-                let msg = ""
-                if ($scope.current_notebook) {
-                    // if selected note is not null, we are updating existing note
-                    // find and update the note
-                    if ($scope.current_note) {
-                        let index = $scope.current_notebook.taskArray.findIndex(t => t.id === $scope.current_note.id);
-                        if (index !== -1) {
-                            $scope.current_notebook.taskArray[index] = new_task;
-                        }
-                    } else {
-                        $scope.current_notebook.taskArray.push(new_task);
-                        $scope.notes = $scope.current_notebook.taskArray;
-                    }
-                }
-                //clean up when note is saved
-                $scope.show_dialog = false;
-                $scope.note_content.value = ""
-                document.getElementById("note_content").value = ""
-                $scope.current_note = null
-                shared_service.set("current_note", null)
-                db_service.write_notebook($scope.current_notebook);
-                shared_service.set("current_notebook", $scope.current_notebook);
-                shared_service.set("show_view", "note")
-                shared_service.set("show_toast", `Note saved`);
-
-            } else {
-                shared_service.set("show_toast", `Invalid note content`);
-            }
-
+            $scope.current_notebook = notebook_service.add_note($scope.current_notebook, task_content);
+            //clean up when note is saved
+            $scope.note_content.value = ""
+            document.getElementById("note_content").value = ""
+            shared_service.set("current_notebook", $scope.current_notebook);
+            shared_service.set("show_view", "note")
+            shared_service.set("show_toast", `Note saved`);
+            $scope.show_dialog = false;
         } catch (err) {
             console.error("Error while creating note:", err);
         }
     };
-    const is_valid_note_content = (content) =>{
-        if(content==null || content==undefined)
-            return false
-        if(content.length==0)
-            return false
-        if(content.length>=999)
-            return false
-    }
-    
-    $scope.is_notebook_locked = function () {
-        return $scope.current_notebook?.is_locked;
-    }
+
+
+    $scope.edit_note = () => {
+        try {
+            // cannot create note in trash notebook
+            if ($scope.current_notebook.title.toLowerCase() === "trash") {
+                shared_service.set("show_toast", `Cannot create note Trash`);
+                return;
+            }
+            if ($scope.current_notebook.title.toLowerCase() === "system") {
+                shared_service.set("show_toast", `Cannot create note System`);
+                return;
+            }
+            if (!$scope.current_notebook) {
+                shared_service.set("show_toast", `Cannot find notebook`);
+                return;
+            }
+
+            if (!$scope.current_note) {
+                shared_service.set("show_toast", `Cannot find current note`);
+                return;
+            }
+
+            if ($scope.current_notebook.is_locked) {
+                shared_service.set("show_toast", `Cannot create note in locked Notebook`);
+                return;
+            }
+
+            const task_content = document.getElementById("note_content").value.trim();
+            $scope.current_notebook = notebook_service.edit_note($scope.current_notebook, $scope.current_note, task_content);
+            //clean up when note is saved
+            $scope.note_content.value = ""
+            document.getElementById("note_content").value = ""
+            shared_service.set("current_notebook", $scope.current_notebook);
+            shared_service.set("show_view", "note")
+            shared_service.set("show_toast", `Note saved`);
+            $scope.show_dialog = false;
+        } catch (err) {
+            console.error("Error while editing note:", err);
+        }
+    };
+
+
+
 
     //bottom bar menu
     $scope.init_menu = () => {

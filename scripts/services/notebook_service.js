@@ -117,7 +117,7 @@ function notebook_service($timeout, db_service) {
     this.paste_task_inside_notebook = (notebook, task) => {
         if (!notebook)
             throw "No notebook selected";
-        if(!task)
+        if (!task)
             throw "No note to paste"
         notebook.taskArray.push(task);
         db_service.write_notebook(notebook);
@@ -213,30 +213,30 @@ function notebook_service($timeout, db_service) {
         return from_notebook;
     }
 
-    this.ensure_single_trash_notebook = (all_notebooks)=> {
-    // Find all trash notebooks (case-insensitive)
-    let trash_notebooks = all_notebooks.filter(n => 
-        n.title && n.title.toLowerCase() === "trash"
-    );
+    this.ensure_single_trash_notebook = (all_notebooks) => {
+        // Find all trash notebooks (case-insensitive)
+        let trash_notebooks = all_notebooks.filter(n =>
+            n.title && n.title.toLowerCase() === "trash"
+        );
 
-    if (trash_notebooks.length === 0) {
-        return -1; // or create a trash notebook here if required
-    }
+        if (trash_notebooks.length === 0) {
+            return -1; // or create a trash notebook here if required
+        }
 
-    // If multiple trash notebooks exist: remove all except the first
-    if (trash_notebooks.length > 1) {
-        let first_trash_id = trash_notebooks[0].id;
-        // Keep only first trash notebook, filter out others
-        all_notebooks = all_notebooks.filter(n => 
-            !(n.title && n.title.toLowerCase() === "trash" && n.id !== first_trash_id)
+        // If multiple trash notebooks exist: remove all except the first
+        if (trash_notebooks.length > 1) {
+            let first_trash_id = trash_notebooks[0].id;
+            // Keep only first trash notebook, filter out others
+            all_notebooks = all_notebooks.filter(n =>
+                !(n.title && n.title.toLowerCase() === "trash" && n.id !== first_trash_id)
+            );
+        }
+
+        // Return the index of the remaining/first trash notebook
+        return all_notebooks.findIndex(n =>
+            n.title && n.title.toLowerCase() === "trash"
         );
     }
-
-    // Return the index of the remaining/first trash notebook
-    return all_notebooks.findIndex(n => 
-        n.title && n.title.toLowerCase() === "trash"
-    );
-}
 
 
     this.get_trash_index = () => {
@@ -277,9 +277,9 @@ function notebook_service($timeout, db_service) {
         if (!note) throw "No note selected";
 
         const all_notebooks = db_service.read_notebooks();
-        const parent_notebook = all_notebooks.filter(n => n.id==note.parent_id)
+        const parent_notebook = all_notebooks.filter(n => n.id == note.parent_id)
 
-        if(parent_notebook.length==0)
+        if (parent_notebook.length == 0)
             throw "Parent notebook not found"
 
         const p_n = parent_notebook[0]
@@ -291,7 +291,7 @@ function notebook_service($timeout, db_service) {
         p_n.taskArray.push(note)
         db_service.write_notebook(p_n)
         console.log(db_service.read_notebooks())
-        return [notebook,p_n];
+        return [notebook, p_n];
     };
 
     this.move_notes_to_notebook = (from_notebook, to_notebook) => {
@@ -306,7 +306,7 @@ function notebook_service($timeout, db_service) {
 
             // deselect moved notes
             selected_notes.forEach(note => note.isSelected = false);
-            
+
             // move selected notes
             to_notebook.taskArray.push(...selected_notes);
             // save changes
@@ -318,6 +318,51 @@ function notebook_service($timeout, db_service) {
             console.error("Error moving notes:", err);
         }
     };
+
+    const is_valid_note_content = (content) => {
+        if (content == null || content == undefined)
+            return false
+        if (content.length == 0)
+            return false
+        if (content.length > 999)
+            return false
+
+        return true
+    }
+
+    this.add_note = (notebook, content) => {
+        try {
+            if (!notebook) throw "Notebook not found"
+            if (!is_valid_note_content(content)) throw "Note content is invalid"
+            //create new note
+            const new_task = new Task(content);
+            new_task.parent_id = notebook.id
+            new_task.set_is_component();
+            new_task.set_component_type();
+
+            notebook.taskArray.push(new_task)
+            db_service.write_notebook(notebook)
+            return notebook;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    this.edit_note = (notebook, old_note,content) => {
+        try {
+            if (!notebook) throw "Notebook not found"
+            if (!is_valid_note_content(content)) throw "Note content is invalid"
+            if(!old_note) throw "Current note not found"
+
+            const index = notebook.taskArray.findIndex(note=>note.id==old_note.id)
+            if(index==-1) throw "Unable to find note inside notebook"
+            notebook.taskArray[index].title = content;
+            db_service.write_notebook(notebook)
+            return notebook;
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
 
 

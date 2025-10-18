@@ -82,7 +82,7 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
             const actions = {
                 edit: () => {
                     set_shared("current_note", note);
-                    $rootScope.$broadcast("open_create_note_popup");
+                    $rootScope.$broadcast("open_edit_note_popup");
                 },
                 done: () => {
                     note.isTaskCompleted = true; //updated by reference
