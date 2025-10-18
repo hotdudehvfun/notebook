@@ -1,0 +1,109 @@
+<!-- controller: create note controller -->
+<div class="flex-row gap-2 justify-center mt-2">
+    <div 
+        class="align-center flex-col" 
+        ng-click="open_quick_notebooks()">
+        <span class="create_note_notebook_icon ng-binding">{{current_notebook.icon}}</span>
+        <div class="chip">
+            {{current_notebook.title}}
+        </div>
+
+    </div>
+</div>
+
+
+<!-- menu buttons -->
+<div class="flex-row gap-1 w-full scroll-y mt-2 px-1">
+    <!-- create note menu -->
+    <div 
+        ng-repeat="item in menu" 
+        ng-show="true" 
+        ng-class="" 
+        ng-click="item.action(item)" 
+        class="chip">
+        <!-- <img class="svg-icon-sm" ng-src="{{get_svg_src(item.icon)}}" alt="icon"> -->
+        {{item.text}}
+    </div>
+
+    <!-- show auto num list on off state  -->
+    <div class="button" ng-class="auto_num_list_mode_on ? 'orange underline' : 'gray'">Auto List</div>
+</div>
+
+<!-- note input -->
+<div class="note_textarea_container">
+    <!-- hide note content when chart dialog is visible-->
+    <textarea
+        ng-hide="new_chart.show || new_transaction.show" 
+        autocomplete="off" 
+        ng-model="note_content"
+        ng-keyup="handle_keypress_note_input($event)" 
+        id="note_content" 
+        class="new-task-content"
+        placeholder={{note_content_placeholder}} autofocus>
+            </textarea>
+</div>
+
+<!-- note popup action buttons -->
+<div class="flex-row gap-1 space-between mt-2">
+    <div 
+        ng-click="close_create_note_dialog()" 
+        class="button rounded-full clickable gap-1 orange">
+        <span>Close</span>
+    </div>
+
+    <div
+        ng-hide="show_update_task_button"
+        ng-click="create_note()"
+        class="button clickable gap-1 ">
+        <span>Done</span>
+    </div>
+</div>
+
+
+<!-- chart dialog -->
+<div class="flex-col gap-2" ng-show="new_chart.show">
+    <!-- chart title -->
+    <input ng-model="new_chart.title" class="text-input" type="text" max="20" placeholder="Chart Title" />
+    <!-- chart type -->
+    <div class="orange">Type</div>
+    <div class="flex-row gap-1">
+        <div ng-click="new_chart.type = 'line'" ng-class="{'grayscale':new_chart.type!='line'}"
+            class="align-center flex-row gap-2 p-125 rounded">
+            <img class="svg-icon" ng-src="{{get_svg_src('chart.xyaxis.line')}}" alt="icon">
+            <span>Line Chart</span>
+        </div>
+        <div ng-click="new_chart.type = 'bar'" ng-class="{'grayscale':new_chart.type!='bar'}"
+            class="align-center flex-row gap-2 p-125 rounded">
+            <img class="svg-icon" ng-src="{{get_svg_src('chart.bar.xaxis')}}" alt="icon">
+            <span>Bar Chart</span>
+        </div>
+    </div>
+    <!-- chart theme color -->
+    <div class="orange">Theme</div>
+    <div class="flex-row gap-1 w-full">
+        <label class="create-chart-theme-wrapper" ng-repeat="(key,value) in get_chart_colors()">
+            <input ng-hide="true" style="accent-color: {{value}}; transform:scale(1.2); opacity: 0;" name="chart_theme"
+                type="radio" ng-model="new_chart.theme" ng-value="key">
+            <span class="custom-radio"
+                style="border-color:{{value}};background-color:{{get_transparent_color(value,0.5)}};"></span>
+        </label>
+    </div>
+    <div class="flex-row space-between">
+        <div class="orange">X axis labels</div>
+        <div class="orange">Y axis values</div>
+    </div>
+    <div class="flex-row space-between">
+        <textarea ng-model="new_chart.x_labels" style="height: 200px;"
+            class="border new-task-content rounded-1"></textarea>
+        <textarea ng-model="new_chart.y_values" style="height: 200px;"
+            class="border new-task-content rounded-1"></textarea>
+    </div>
+    <div class="flex-row space-between">
+        <div ng-click="reset_new_chart_and_close()" class="button rounded-full gap-1 orange">
+            <span>Cancel</span>
+        </div>
+        <div ng-click="new_chart_convert_ui_to_code()" class="button rounded-full gap-1 orange">
+            <span>Insert Chart</span>
+        </div>
+    </div>
+</div>

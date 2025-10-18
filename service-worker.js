@@ -120,7 +120,6 @@ const urlsToCache = [
     "/scripts/wiki.js",
     "/scripts/main_controller.js",
     "/scripts/services/notebook_service.js",
-    "/scripts/services/note_menu_service.js",
     "/scripts/services/db_service.js",
 ];
 

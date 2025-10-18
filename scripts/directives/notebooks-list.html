@@ -1,0 +1,97 @@
+<!-- notebooks -->
+<div ng-show="show_view==CONST.VIEW_NOTEBOOK">
+    <div class="spacer"></div>
+    
+    <!-- Sort notebooks -->
+    <div class="relative text-left">
+        <label for="sort_notebooks" class="absolute align-center flex-row gap-1 h-full w-full">
+            <h2 class="m-1">Your notebooks</h2>
+            <img src="./img/icons/arrow_down.svg" class="svg-icon" style="margin-top: 8px;" />
+        </label>
+        <select name="sort_notebooks" id="sort_notebooks" ng-change="handle_sort_notebook_change()"
+            ng-model="sort_notebook_selected_item" class="bottom-bar-menu-select w-half">
+            <option value="date">Sort by Date</option>
+            <option value="title">Sort by Title</option>
+            <option value="tag">Sort by Tags</option>
+        </select>
+    </div>
+
+    <div class="notebook_count">
+        {{get_total().total_tasks}} notes in {{get_total().total_notebooks}} notebooks
+    </div>
+
+    <!-- notebooks list -->
+    <div ng-repeat="(group, items) in grouped_notebooks">
+        <div class="group_by_text" ng-show="items.length>0">{{ group }}</div>
+        <ul ng-show="items.length>0" class="reset_ul notebooks">
+            <li class="notebooks_li" ng-repeat="notebook in items">
+                <div class="list-panel-item">
+                    <div class="list-panel-item-title">
+                        <!-- notebook icon -->
+                        <!-- <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon"> -->
+                        <span class="notebook_icon_list_view">{{notebook.icon}}</span>
+                        <article ng-click="open_notebook(notebook)" class="selected clickable">{{notebook.title}}</article>
+
+                        <!-- handle click on notebook more options -->
+                        <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
+                            <!-- completed notes status -->
+                            <span ng-show="get_completed_notes_length(notebook.taskArray)>0"
+                                class="list-sub-text gray line-through">
+                                {{get_completed_notes_length(notebook.taskArray)}}
+                            </span>
+
+                            <!-- notes length -->
+                            <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
+                        </div>
+
+                        <!-- drag button -->
+                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}"
+                            alt="NoteBook icon">
+
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div ng-repeat="(month, items) in grouped_notebooks['Older']">
+        <div class="group_by_text" ng-show="items.length>0">{{ month }}</div>
+        <ul class="reset_ul notebooks">
+            <li class="notebooks_li" ng-repeat="notebook in items">
+                <div class="list-panel-item">
+                    <div class="list-panel-item-title">
+                        <!-- notebook icon -->
+                        <!-- <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon"> -->
+                         <span class="notebook_icon_list_view">{{notebook.icon}}</span>
+                        <article ng-click="open_notebook(notebook)" class="selected">{{notebook.title}}</article>
+
+                        <!-- handle click on notebook more options -->
+                        <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
+                            <!-- completed notes status -->
+                            <span ng-show="get_completed_notes_length(notebook.taskArray)>0"
+                                class="list-sub-text gray line-through">
+                                {{get_completed_notes_length(notebook.taskArray)}}
+                            </span>
+                            <!-- notes length -->
+                            <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
+                        </div>
+
+                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}"
+                            alt="NoteBook icon">
+
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- empty space at last -->
+    <div 
+        ng-show="notebooks.length!=0" ng-click="dialog_flags.show_notebook_popup=true" class="create-note-text clickable">
+        <span>Tap here to open new notebook</span>
+    </div>
+     
+     
+    
+
+</div>

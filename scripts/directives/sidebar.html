@@ -1,56 +1,20 @@
+<div 
+    class="create-notebook-popup flex-col relative rounded-2 scroll gap-2 popup_style"
+    ng-click="$event.stopPropagation()">
+    <div class="flex-col gap-1 align-center">
+        <div style="font-size: 2rem;">☘️</div>
+        <h3>{{greet_user('528491')}}</h3>
+    </div>
 
-<div class="flex-col gap-1 align-center">
-    <!-- <img src="./img/user.svg" class="user-logo" /> -->
-    <svg class="user-logo shadow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-        fill="currentColor" viewBox="0 0 24 24">
-        <path fill-rule="evenodd"
-            d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
-            clip-rule="evenodd" />
-    </svg>
-    <h2>{{greet_user('528491')}}</h2>
-</div>
 <!-- settings -->
-<div class="flex-col rounded-3/4  m-1/2 gap-1">
-    <h2 class="mt-2">Settings</h2>
-    <div class="flex-row space-between align-center">
-        <h4>App Size</h4>
-        <h4 class="orange">{{app_size()}}</h4>
+<div class="flex-row wrap rounded-3/4  m-1/2 gap-1">
+    <div
+        class="sidebar_item"
+        ng-repeat="item in items"
+        ng-click="item.action()">
+        <div class="white">{{item.p_t}}</div>
+        <div class="gray">{{item.s_t}}</div>
     </div>
 
-    
-    <div class="flex-row space-between align-center">
-        <h4>Show complete button</h4>
-        <div style="transform: scale(.65);">
-            <!-- hide multi select and show complete note input -->
-            <input ng-change="is_note_multi_select_on=false" ng-model="show_note_complete_button" type="checkbox" id="type3" class="toggle_checkbox" />
-            <label for="type3" class="toggle_label">
-                <span class="toggle_span"></span>
-            </label>
-        </div>
-    </div>
-    
-    <div class="flex-row space-between align-center">
-        <h4>Rearrange notebooks and notes</h4>
-        <div style="transform: scale(.65);">
-            <input ng-model="is_sortable" type="checkbox" id="type4" class="toggle_checkbox" />
-            <label for="type4" class="toggle_label">
-                <span class="toggle_span"></span>
-            </label>
-        </div>
-    </div>
-
-    <div class="flex-row space-between align-center">
-        <h4>List symbol</h4>
-        <select
-            ng-model="current_list_symbol" ng-options="item for item in list_symbols_array">
-        </select>
-    </div>
-    
-
-    <div class="flex-row space-between align-center">
-        <h4>Manage Database</h4>
-        <div ng-click="close_all_dialogs(); dialog_flags.show_db_popup = true;" class="button clickable orange">Open Database
-        </div>
-    </div>
-
+</div>
 </div>

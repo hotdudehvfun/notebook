@@ -1,10 +1,9 @@
-<div class="list-more-optionas-holder ">
+<div class="list-more-optionas-holder popup_style">
     <div 
-        ng-repeat="notebook in quick_notebooks" 
-        ng-click="handle_tap_on_quick_notebooks_item(notebook)"
+        ng-repeat="notebook in notebooks" 
+        ng-click="quick_notebooks_item_onclick(notebook)"
         class="task-more-options-item">
-        <!-- <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon"> -->
-         <span class="notebook_icon_quick_view">{{notebook.icon}}</span>
+         <span class="text-xl">{{notebook.icon}}</span>
         <div class="capitalize">{{notebook.title}}</div>
     </div>
 </div>

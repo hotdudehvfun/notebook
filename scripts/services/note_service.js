@@ -1,9 +1,9 @@
-function note_service($timeout) {
+function note_service($timeout,db_service) {
 
     // get notebook age
     this.get_completed_notes_length = function (notes) {
         if (!notes) return 0;
-        return notes.filter(note => note.isTaskCompleted).length;
+        return notes.filter(note => note?.isTaskCompleted).length;
     };
 
     // get notebook icon
@@ -42,13 +42,17 @@ function note_service($timeout) {
         let notes = notebook.taskArray;
         if (!notes || notes.length === 0)
             throw "No notes to merge";
+
         let mergedContent = notes.filter(note => note.isTaskCompleted).map(note => note.title).join("\n");
+
         if (mergedContent.trim() === "") {
             throw "No completed notes to merge";
         }
+
         const mergedNote = new Task(mergedContent.trim());
         notes = notes.filter(note => !note.isTaskCompleted);
-        notes.push(mergedNote);
+        mergedNote.isTaskCompleted = true;
+        notebook.taskArray = notes;
         notebook.taskArray.push(mergedNote);
         return notebook;
     };
@@ -89,11 +93,28 @@ function note_service($timeout) {
 
     //remove completed notes
     this.remove_completed_notes = function (notebook) {
-        if (!notebook || !notebook.taskArray) return;
+        if (!notebook || !notebook.taskArray)
+            throw "No notebook selected";
         notebook.taskArray = notebook.taskArray.filter(note => !note.isTaskCompleted);
         return notebook;
     };
 
-    
+    this.remove_all_notes = function (notebook) {
+        if (!notebook || !notebook.taskArray)
+            throw "No notebook selected";
+        notebook.taskArray = [];
+        return notebook;
+    }
+
+
+    this.restore_note = (note) => {
+        // remove from trash
+        // find its parent using .parent_id
+        // push it to its parent
+    }
+            
+
+
+
 
 }

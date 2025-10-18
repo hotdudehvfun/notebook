@@ -1,0 +1,72 @@
+<!-- spacer -->
+<div class="spacer"></div>
+<!-- menu buttons -->
+<div class="flex-row gap-1 w-full scroll-y" style="padding: .75rem 0rem;">
+    <!-- create note menu -->
+    <div 
+        class="chip" 
+        ng-click="show_dialog=true">
+        + New tag
+    </div>
+    <!-- show created tags -->
+    <div
+        ng-repeat="tag in tag_arr"
+        ng-click="load_notebooks_with_tag(tag)"
+        class="chip notebook_tag_chip"
+        ng-class="{'selected':tag==selected_tag}">
+            {{tag}}
+    </div>
+</div>
+
+<!-- notebooks in selected group -->
+<div
+    class="gray h2 text-center" 
+    ng-show="selected_tag==null && tag_arr.length!=0" 
+    style="margin-top: 8rem;">
+    Select a tag to view notebooks
+</div>
+<div
+    class="gray h2 text-center"
+    ng-show="tag_arr.length==0"
+    style="margin-top: 8rem;">
+        Create a new tag to group notebooks
+</div>
+
+
+<div class="h3 green text-center" ng-show="selected_tag!=null">Notebooks in "{{selected_tag}}"</div>
+<!-- notebooks in tag  -->
+<div class="flex-row justify-center mt-2 wrap">
+    <div 
+        ng-show="notebooks_inside_selected_tag.length==0" 
+        class="gray text-center mt-2">
+            You have not added any notebooks to this tag yet.
+    </div>
+    <div
+        ng-repeat="notebook in notebooks_inside_selected_tag" 
+        ng-click="remove_notebook_from_tag(notebook)"
+        class="group-notebook-item">
+        <span class="group-notebook-item-icon">{{notebook.icon}}</span>
+        <div class="capitalize">{{notebook.title}}</div>
+    </div>
+</div>
+
+<div
+    ng-show="selected_tag!=null"  
+    class="h3 purple text-center mt-2">Notebooks you can add to "{{selected_tag}}"</div>
+<!-- All notebooks -->
+<div class="flex-row justify-center mt-2 wrap" ng-show="selected_tag!=null">
+    <div
+        ng-repeat="notebook in all_notebooks | filter:notInSelectedTag"
+        ng-click="add_notebook_to_tag(notebook)"
+        class="group-notebook-item">
+    <span class="group-notebook-item-icon">{{notebook.icon}}</span>
+    <div class="capitalize">{{notebook.title}}</div>
+</div>
+</div>
+
+
+<div ng-show="selected_tag!=null"  class="h3 red text-center">Danger Zone</div>
+<div
+    ng-show="selected_tag!=null" 
+    class="gradient-text-orange h3 mt-2 ng-binding text-center" 
+    ng-click="remove_notebook_tag()">Remove "{{selected_tag}} tag?"</div>

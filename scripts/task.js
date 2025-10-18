@@ -11,12 +11,15 @@ class Task {
   constructor(note_content) {
     try {
       // data
+      this.id = this.generate_id()
+      this.parent_id = 0;
       this.title = (note_content || "").trim();
       this.dateCreated = Date.now();
       this.isTaskCompleted = false;
       this.taskIcon = "radio_button_unchecked";
       this.is_component = false;
       this.component_type = COMPONENT.TYPE.TEXT;
+      this.isSelected = false;
 
       //methods
       this.set_is_component();
@@ -25,6 +28,11 @@ class Task {
       console.error("Task initialization failed:", e);
     }
   }
+  
+  generate_id() {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+  }
+
 
   set_is_component() {
     this.is_component = this.title.startsWith("@");

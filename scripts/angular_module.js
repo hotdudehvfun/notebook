@@ -34,11 +34,29 @@ app.filter("sanitize", ['$sce', function ($sce) {
 app.service('db_service',db_service)
 app.service('notebook_service',notebook_service)
 app.service('note_service',note_service)
-app.service('note_menu_service',note_menu_service)
+app.service('graph_service',graph_service)
+app.service('tag_service',tag_service)
+app.service('shared_service',shared_service);
 
 
 
 app.controller('main_controller',main_controller);
+app.controller('dialog_controller',dialog_controller);
+app.controller('create_notebook_dialog_controller',create_notebook_dialog_controller);
+app.controller('notebook_more_options_controller',notebook_more_options_controller);
+app.controller('note_more_options_controller',note_more_options_controller);
+app.controller('passwrord_popup_controller',passwrord_popup_controller);
+app.controller("create_note_controller",create_note_controller);
+app.controller('create_note_menu_controller',create_note_menu_controller);
+app.controller('quick_notebooks_controller',quick_notebooks_controller);
+app.controller('db_controller',db_controller);
+app.controller('tag_controller',tag_controller);
+app.controller('sidebar_controller',sidebar_controller);
+
+
+
+
+
 
 
 // main content
@@ -49,7 +67,7 @@ app.directive("mainContent",function(){
     link:function(scope,element,attrs){
       //make notebook and notes sortable
       // scope.init_sortable_list(".notebooks", "notebooks");
-      scope.init_sortable_list(".notes", "notes");
+      //scope.init_sortable_list(".notes", "notes");
     }
   }
 });
@@ -117,3 +135,49 @@ app.directive("popupCreateVar",function(){
     scope: false,
     templateUrl:'./scripts/directives/create-var-popup.html'
 }});
+
+// create and manage tags popup
+app.directive("tagsList",function(){
+  return {
+    scope: false,
+    templateUrl:'./scripts/directives/tags-list.html'
+}});
+
+// notebooks list
+app.directive("notebooksList",function(){
+  return {
+    scope: false,
+    templateUrl:'./scripts/directives/notebooks-list.html'
+}});
+
+// notes list
+app.directive("notesList",function(){
+  return {
+    scope: false,
+    templateUrl:'./scripts/directives/notes-list.html'
+}});
+
+// create and manage tags popup
+app.directive("systemVarList",function(){
+  return {
+    scope: false,
+    templateUrl:'./scripts/directives/system-var-list.html'
+}});
+
+
+//create notebook popup and rename with same popup
+app.directive("popupCreateTag",function(){
+  return{
+    scope:false,
+    templateUrl:"./scripts/directives/create-tag-popup.html",
+  }
+});
+
+//create note view
+app.directive("createNoteView",function(){
+  return{
+    scope:false,
+    templateUrl:"./scripts/directives/create-note-view.html",
+  }
+});
+

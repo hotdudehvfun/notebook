@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>NoteBook</title>
     <meta charset="UTF-8">
@@ -20,117 +21,138 @@
     <!-- development -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/custom_styles.css">
-
-    <!-- production -->
-    <!-- <link rel="stylesheet" href="styles/main.min.css"> -->
-    <!-- <link rel="stylesheet" href="styles/custom_styles.min.css"> -->
 </head>
 
-<body 
-    ng-app="notebook_app" 
-    ng-controller='main_controller' 
-    ng-init="init()">
+<body ng-app="notebook_app" ng-controller='main_controller' ng-init="init()">
     <div class="main-container">
         <!-- top bar -->
-        <top-bar class="topbar bg-blur scroll"></top-bar>
+        <top-bar class="topbar bg-blur" ng-show="show_topbar()"></top-bar>
         <!-- content bar -->
-        <main-content class="content "></main-content>
+        <div class="content">
+            <notebooks-list ng-show="show_view==CONST.VIEW_NOTEBOOK"></notebooks-list>
+            <notes-list ng-show="show_view==CONST.VIEW_NOTE"></notes-list>
+            <system-var-list ng-show="show_view==CONST.VIEW_SYSTEM"></system-var-list>
+            <!-- manage notebook tags -->
+
+            <div ng-controller="tag_controller">
+                <tags-list ng-show="show_tag_list"></tags-list>
+                <popup-create-tag style="bottom: 30vh;" ng-show="show_dialog" class="popup">
+                </popup-create-tag>
+            </div>
+
+            <create-note-view ng-init="init()" ng-controller="create_note_controller" ng-show="show_dialog">
+            </create-note-view>
+            <!-- insert empty space at end -->
+            <div class="empty-space"></div>
+        </div>
     </div>
+
     <!-- bottom bar -->
     <bottom-bar class="bottom-bar"></bottom-bar>
-    
-    <side-bar class="sidebar-menu-container" ng-style="sidebar_left"></side-bar>
+
+
+    <!-- DIALOG CONTROLLER WILL CONTROL POPUPS AND SIDEBARS -->
+    <div ng-controller="dialog_controller" ng-init="init()">
+
+
+
+        <!-- create-var-popup -->
+        <popup-Create-Var style="bottom: 30vh;" class="popup"
+            ng-show="dialog_flags.show_create_system_var_popup"></popup-Create-Var>
+        </popup-Create-Var>
+
+        <!-- rename notebook dialog pop up-->
+        <popup-rename-notebook style="bottom: 30vh;" ng-show="dialog_flags.show_rename_notebook_popup" class="popup">
+        </popup-rename-notebook>
+
+        <!-- toast message -->
+        <div ng-class="{show:is_toast_visible}" class="toast transition text-center capitalize bg-blur">{{toast_msg}}
+        </div>
+    </div>
+    <!-- end of dialog controller -->
+    <!-- sidebar -->
+    <side-bar
+        ng-controller="sidebar_controller"
+        ng-show="show_dialog" 
+        ng-click="show_dialog=false;"
+        class="popup">
+    </side-bar>
+
+
+
+    <!-- import/export db popup -->
+    <popup-db ng-controller="db_controller" style="top: 20vh;" class="popup" ng-show="show_dialog">
+    </popup-db>
+
+    <!-- passwrord popup -->
+    <popup-password style="bottom: 30vh;" ng-show="show_dialog" ng-click="show_dialog=false;"
+        ng-controller="passwrord_popup_controller" ng-init="init()" class="popup">
+    </popup-password>
+
     <!-- create-notebook-popup -->
-    <create-notebook-popup style="bottom: 30vh;" class="popup" ng-show="dialog_flags.show_notebook_popup">
+    <create-notebook-popup ng-init="init()" ng-controller="create_notebook_dialog_controller" style="bottom: 30vh;"
+        class="popup" ng-show="show_dialog" ng-click="show_dialog=false;">
     </create-notebook-popup>
 
-    <!-- create-note-popup  -->
-    <!-- <create-note-popup style="top: 0px;" class="popup" ng-show="dialog_flags.show_note_popup"></create-note-popup> -->
-
-    <!-- create-var-popup -->
-    <popup-Create-Var style="bottom: 30vh;" class="popup"
-        ng-show="dialog_flags.show_create_system_var_popup"></popup-Create-Var>
-    </popup-Create-Var>
-
-    <!-- rename notebook dialog pop up-->
-    <popup-rename-notebook style="bottom: 30vh;" ng-show="dialog_flags.show_rename_notebook_popup" class="popup">
-    </popup-rename-notebook>
-
-    <!-- import popup -->
-    <popup-db style="top: 20vh;" class="popup" ng-show="dialog_flags.show_db_popup"></popup-db>
+    <!-- more options panel for notebook-->
+    <div ng-init="init()" ng-controller="notebook_more_options_controller" class="list-more-options-container"
+        ng-show="show_dialog" ng-click="show_dialog=false;">
+        <div class="list-more-optionas-holder popup_style">
+            <div ng-repeat="option in notebook_more_options" ng-click="option.action()" class="task-more-options-item">
+                <div>{{option.text}}</div>
+            </div>
+        </div>
+    </div>
 
     <!-- more options panel for note-->
-    <div class="list-more-options-container" ng-show="dialog_flags.show_note_more_options">
-        <div class="list-more-optionas-holder ">
-            <div ng-repeat="option in note_more_options" ng-class="option.class" ng-click="option.action()"
-                ng-show="option.show">
-                <img class="svg-icon" ng-src="{{get_svg_src(option.icon)}}" alt="icon">
+    <div ng-init="init()" ng-controller="note_more_options_controller" class="list-more-options-container"
+        ng-click="show_dialog=false;" ng-show="show_dialog">
+        <div class="list-more-optionas-holder popup_style">
+            <div ng-repeat="option in note_more_options" ng-click="option.action()" class="task-more-options-item">
                 <div>{{option.text}}</div>
             </div>
         </div>
     </div>
 
-    <!-- more options panel for notebook-->
-    <div class="list-more-options-container" ng-show="dialog_flags.show_list_more_options">
-        <div class="list-more-optionas-holder ">
-            <div ng-repeat="option in notebook_more_options" ng-class="option.class" ng-click="option.action()"
-                ng-show="option.show">
-                <img class="svg-icon" ng-src="{{get_svg_src(option.icon)}}" alt="icon">
+    <!-- create note menu -->
+    <div ng-init="init()" ng-controller="create_note_menu_controller" class="text-menu-container" ng-show="show_dialog"
+        ng-click="show_dialog=false;">
+        <div class="text-menu-container-child popup_style">
+            <div ng-repeat="option in sub_menu"
+                ng-click="option.action(); dialog_flags.show_edit_note_more_options=false;" class="text-menu-item">
                 <div>{{option.text}}</div>
             </div>
         </div>
     </div>
-
-
-    <!-- more options panel for create or edit menu-->
-    <div 
-        class="text-menu-container"
-        ng-show="dialog_flags.show_edit_note_more_options">
-        <div class="text-menu-container-child">
-            <div
-                ng-repeat="option in current_edit_note_more_options" 
-                ng-click="option.action(); dialog_flags.show_edit_note_more_options=false;"
-                class="text-menu-item">
-                    <div>{{option.text}}</div>
-            </div>
-        </div>
-    </div>
-
 
 
     <!-- notebooks list for various options -->
-    <quick-notebooks 
-        class="list-more-options-container" 
-        ng-init="load_quick_notebooks()"
-        ng-show="dialog_flags.show_quick_notebooks">
+    <quick-notebooks class="list-more-options-container" ng-controller="quick_notebooks_controller" ng-init="init()"
+        ng-show="show_dialog" ng-click="show_dialog=false">
     </quick-notebooks>
 
 
-    <!-- blocking screen  -->
-    <div class="block_screen" ng-show="is_any_dialog_open()" ng-click="close_all_dialogs()"></div>
 
-    <!-- toast message -->
-    <div ng-class="{show:is_toast_visible}" class="toast transition text-center capitalize bg-blur">{{toast_msg}}
-    </div>
 
-    <!-- passwrord popup -->
-    <popup-password style="bottom: 30vh;" ng-show="dialog_flags.show_password_popup;" class="popup"></popup-password>
+
 
     <!-- <script src="/app.js"></script> -->
-     <!-- angular module file -->
+    <!-- angular module file -->
     <script src="./scripts/angular.min.js"></script>
     <script defer="" src="./scripts/sortable.min.js"></script>
     <script defer="" src="./scripts/angular-sanitize.min.js"></script>
     <script defer="" src="./scripts/crypto-js.min.js"></script>
     <script defer="" src="./scripts/aes.min.js"></script>
     <script defer="" src="./scripts/chart.min.js"></script>
-    
+
     <!--load services -->
     <script type="text/javascript" src="scripts/services/db_service.js"></script>
     <script type="text/javascript" src="scripts/services/notebook_service.js"></script>
     <script type="text/javascript" src="scripts/services/note_service.js"></script>
-    <script type="text/javascript" src="scripts/services/note_menu_service.js"></script>
-    
+    <script type="text/javascript" src="scripts/services/graph_service.js"></script>
+    <script type="text/javascript" src="scripts/services/tag_service.js"></script>
+
+
     <!-- list and task classes -->
     <script type="text/javascript" src="scripts/list.js"></script>
     <script type="text/javascript" src="scripts/task.js"></script>
@@ -139,19 +161,30 @@
     <!-- main js files for production and development -->
     <!-- development -->
     <script type="text/javascript" src="scripts/wiki.js"></script>
-    <script type="text/javascript" src="scripts/utilities.js"></script>    
+    <script type="text/javascript" src="scripts/utilities.js"></script>
     <script type="text/javascript" src="scripts/main_controller.js"></script>
-    
+    <script type="text/javascript" src="scripts/dialog_controller.js">
+    </script>
+    <script type="text/javascript" src="scripts/create_notebook_dialog_controller.js"></script>
+    <script type="text/javascript" src="scripts/notebook_more_options_controller.js"></script>
+    <script type="text/javascript" src="scripts/share_service.js"></script>
+    <script type="text/javascript" src="scripts/password_popup_controller.js"></script>
+    <script type="text/javascript" src="scripts/note_more_options_controller.js"></script>
+    <script type="text/javascript" src="scripts/create_note_menu_controller.js"></script>
+    <script type="text/javascript" src="scripts/create_note_controller.js"></script>
+    <script type="text/javascript" src="scripts/quick_notebooks_controller.js"></script>
+    <script type="text/javascript" src="scripts/db_controller.js"></script>
+    <script type="text/javascript" src="scripts/tag_controller.js"></script>
+    <script type="text/javascript" src="scripts/sidebar_controller.js"></script>
+
+
+
 
     <!-- production -->
     <!-- <script type="text/javascript" src="scripts/wiki.min.js"></script>
     <script type="text/javascript" src="scripts/utilities.min.js"></script>    
     <script type="text/javascript" src="scripts/main_controller.min.js"></script> -->
     <script src="scripts/angular_module.js"></script>
-
-
-
-
-    
 </body>
+
 </html>

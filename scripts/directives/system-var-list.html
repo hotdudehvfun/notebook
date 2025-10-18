@@ -1,0 +1,28 @@
+<!-- show system vars here -->
+<div ng-show="show_view==CONST.VIEW_SYSTEM">
+    <div class="spacer"></div>
+    <div class="notebook_age">
+        <img class="svg-icon" ng-src="{{get_svg_src('hourglass')}}" alt="NoteBook icon">&nbsp; {{notebook_age()}}
+    </div>
+    <div class="notebook_age">
+        <img class="svg-icon" ng-src="{{get_svg_src('keyboard_command_key')}}" alt="NoteBook icon">&nbsp;
+        {{get_system_var_length()}}
+    </div>
+
+    <div 
+        ng-repeat="(key,value) in get_system_vars()" 
+        ng-click="edit_var(key)"
+        class="clickable">
+        <div class="system_var_item">
+            <div class="key">{{key}}</div>
+            <div class="flex-row space-between">
+                <div class="light-gray">Formula</div>
+                <div class="value">{{value}}</div>
+            </div>
+            <div class="light-gray">Evaluated expression</div>
+            <div class="evaluated_exp">{{evaluate_exp(value)}}</div>
+        </div>
+    </div>
+    <!-- insert empty space at end -->
+     <div class="empty-space"></div>
+</div>

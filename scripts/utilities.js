@@ -219,7 +219,7 @@ function insertTextAtCursor(textareaId, text) {
 
 
   let newValue = document.querySelector("#note_content").value
-  console.log(newValue)
+  // console.log(newValue)
   angular.element(document.body).injector().get('$rootScope').$broadcast('update_note_content_from_outside', newValue);
 }
 
@@ -496,7 +496,18 @@ function remove_subset_from_array(array, subset) {
 }
 
 
+//reset scroll position
+function reset_scroll(element) {
+  try {
+    element.scrollTop = 0; // For vertical scroll
+    element.scrollLeft = 0; // For horizontal scroll
+  } catch (err) {
+    console.log(err)
+  }
+};
 
 
 
-
+function generate_id() {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+  }
