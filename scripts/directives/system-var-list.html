@@ -1,5 +1,5 @@
 <!-- show system vars here -->
-<div ng-show="show_view==CONST.VIEW_SYSTEM">
+<div>
     <div class="spacer"></div>
     <div class="notebook_age">
         <img class="svg-icon" ng-src="{{get_svg_src('hourglass')}}" alt="NoteBook icon">&nbsp; {{notebook_age()}}
@@ -9,10 +9,15 @@
         {{get_system_var_length()}}
     </div>
 
+    <div class="empty-notebook" ng-show="get_system_var_length()==0">
+        <span class="lock_icon">📭</span>
+        <span class="lock_text">Create custom variables here</span>
+    </div>
+
     <div 
-        ng-repeat="(key,value) in get_system_vars()" 
-        ng-click="edit_var(key)"
-        class="clickable">
+        ng-repeat="(key,value) in system_vars"
+        class="clickable"
+        ng-click="handle_click_on_var(key)">
         <div class="system_var_item">
             <div class="key">{{key}}</div>
             <div class="flex-row space-between">
@@ -21,6 +26,10 @@
             </div>
             <div class="light-gray">Evaluated expression</div>
             <div class="evaluated_exp">{{evaluate_exp(value)}}</div>
+            <div ng-show="show_more_options==key" class="flex-row justify-space-between m-2">
+                <span ng-click="delete_var(key)" class="red">🗑️ Delete</span>
+                <span ng-click="open_edit_var_popup(key)" class="orange">📝 Edit</span>
+            </div>
         </div>
     </div>
     <!-- insert empty space at end -->

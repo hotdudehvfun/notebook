@@ -106,11 +106,14 @@ function tag_controller($scope, notebook_service, shared_service, db_service, ta
     };
 
     //tag list view is opened
-    $scope.$on("show_tag_list", function (e, d) {
-        console.log("show tag view")
-        $scope.show_tag_list = true;
-        $scope.load_tags()
-        $scope.all_notebooks = db_service.read_notebooks()
+    $scope.$on("show_tag_list_changed", function (e, state) {
+        console.log("show tag list changed",state)
+        $scope.show_tag_list = state;
+        if(state)
+        {
+            $scope.load_tags()
+            $scope.all_notebooks = db_service.read_notebooks()
+        }
     })
 
     //close

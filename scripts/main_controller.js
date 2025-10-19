@@ -21,11 +21,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             $scope.current_notebook = notebook;
             reset_scroll(document.querySelector(".content"))
 
-            if (notebook.title.toLowerCase() === "system") {
-                $scope.show_view = $scope.CONST.VIEW_SYSTEM;
-                return;
-            }
-
             $scope.selectedListIndex = $scope.notebooks.indexOf(notebook);
             $scope.notes = notebook.taskArray;
             $scope.selectedListName = notebook.title;
@@ -33,7 +28,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             $scope.is_note_selected = false;
             $scope.selected_note = undefined;
 
-            $scope.show_view = $scope.CONST.VIEW_NOTE;
+            $scope.set_view($scope.CONST.VIEW_NOTE)
             $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`;
 
             // save data when notebook is opened
@@ -62,30 +57,24 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         );
     }
 
-
     $scope.set_view = function (view_name) {
-        //available views
-        /*
-            notebook = list of notebooks
-            note = notes inside notebook
-            var = show list of user defined variables
-            tag = tag manager
-        */
         $scope.show_view = view_name
+        console.log("set current view = ",$scope.show_view)
         reset_scroll(document.querySelector(".content"))
         // view all NOTEBOOKS
         if ($scope.show_view == $scope.CONST.VIEW_NOTEBOOK) {
             //reset icon and title
             $scope.pageTitle = $scope.defaultPageTitle
             $scope.pageIcon = $scope.default_app_icon
-
             //reset selected notebook
             shared_service.set("current_notebook", null)
             shared_service.set("current_note", null)
-            $scope.$broadcast('close_create_note_popup');
-            $scope.$broadcast('close_tag_list');
+
+            shared_service.set('create_note_popup',false);
+            shared_service.set('show_tag_list',false);
+            shared_service.set("show_var_list",false);
+            
             $scope.notebooks = db_service.read_notebooks();
-            // call group notebook again
             $scope.handle_group_notebooks()
         }
 
@@ -93,32 +82,40 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         if ($scope.show_view == $scope.CONST.VIEW_NOTE) {
             $scope.pageTitle = $scope.current_notebook.title
             $scope.pageIcon = $scope.current_notebook.icon
-            $scope.$broadcast('close_tag_list');
+            
+            shared_service.set('create_note_popup',false);
+            shared_service.set('show_tag_list',false);
+            shared_service.set("show_var_list",false);
         }
 
         // tag manager
         if ($scope.show_view == $scope.CONST.VIEW_TAG) {
-            shared_service.set("open_sidebar",false)
+            console.log("open tag list")
             $scope.pageTitle = "Group Notebooks"
             $scope.pageIcon = "📚"
-            $scope.$broadcast("show_tag_list", true)
+            shared_service.set('create_note_popup',false);
+            shared_service.set('show_tag_list',true);
+            shared_service.set("show_var_list",false);
         }
 
         //create note
         if ($scope.show_view == $scope.CONST.VIEW_CREATE_NOTE) {
-            $scope.$broadcast('close_tag_list');
+            shared_service.set('create_note_popup',true);
+            shared_service.set('show_tag_list',false);
+            shared_service.set("show_var_list",false);
         }
 
-    }
+        //show system vars list
+        if($scope.show_view == $scope.CONST.VIEW_SYSTEM)
+        {
+            console.log("view system vars")
+            $scope.pageTitle = "System Vars"
+            $scope.pageIcon = "⚙️"
 
-
-    $scope.get_system_var_length = () => {
-        try {
-            return Object.keys(system_vars).length
-        } catch (err) {
-            console.log(err)
+            shared_service.set('create_note_popup',false);
+            shared_service.set('show_tag_list',false);
+            shared_service.set("show_var_list",true);
         }
-        return -1;
     }
 
     // get completed notes length
@@ -145,60 +142,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         return -1;
     }
 
-    $scope.get_system_vars = () => {
-        let sortedByKey = Object.keys(system_vars).sort()// Sort keys
-            .reduce((result, key) => {
-                result[key] = system_vars[key];
-                return result;
-            }
-                , {});
-        return sortedByKey
-    }
-
-    $scope.init_system_var_menu_items = () => {
-        $scope.system_var_menu_items = []
-        for (const key in system_vars) {
-            if (system_vars.hasOwnProperty(key)) {
-                $scope.system_var_menu_items.push({
-                    icon: "calculate",
-                    show: true,
-                    text: key,
-                    action: () => {
-                        $scope.insertTextAtCursor('note_content', key)
-                    }
-                })
-            }
-        }
-    }
-
-    $scope.edit_var = function (key, value) {
-        try {
-            $scope.show_delete_system_var_button = true
-            $scope.new_var_name = key
-            $scope.new_var_value = system_vars[key]
-            $scope.system_create_btn_title = "Update"
-            $scope.dialog_flags.show_create_system_var_popup = true
-
-        } catch (err) {
-            console.log("Edit var error", err)
-        }
-    }
-
-    $scope.clear_system_input_vars = () => {
-        $scope.new_var_name = ""
-        $scope.new_var_value = ""
-        $scope.system_create_btn_title = "Create"
-        $scope.show_delete_system_var_button = false
-    }
-
-    $scope.insert_system_var_at_cursor = () => {
-        //console.log($scope.selected_system_var)
-        insertTextAtCursor('note_content', $scope.selected_system_var)
-    }
-
-
-
-
+    
     $scope.save_data = () => {
         try {
             db_service.write({
@@ -257,69 +201,10 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     }
 
 
-    $scope.open_create_system_var_popup = () => {
-        $scope.dialog_flags.show_create_system_var_popup = true
-        $scope.new_var_name = ""
-        $scope.new_var_value = ""
-        $scope.system_var_popup_title = "Create Variable"
-        $scope.system_var_popup_create_button_text = "Create"
-        $scope.dialog_flags.show_delete_system_var_button = false
-    }
+    //used by notes list
+    
 
-    $scope.evaluate_exp = function (value) {
-        // Recursive function to evaluate expressions
-        function evaluate(value) {
-            return value.replace(/\b[a-zA-Z_]\w*\b/g, function (match) {
-                if (system_vars.hasOwnProperty(match)) {
-                    // If the match is an expression, evaluate it recursively
-                    let expr = system_vars[match];
-                    if (typeof expr === 'string') {
-                        return evaluate(expr);
-                    } else {
-                        return expr;
-                    }
-                }
-                return match;
-            });
-        }
-
-        try {
-            // Evaluate the expression and return the result
-            let result = eval(evaluate(value))
-            result = result % 1 == 0 ? result : result.toFixed(2);
-            return result;
-        } catch (error) {
-            console.error("Invalid expression: ", error);
-            return "Invalid expression";
-        }
-    }
-
-    $scope.delete_system_var = () => {
-        if (confirm("Are you sure?")) {
-            delete system_vars[$scope.new_var_name]
-            $scope.dialog_flags.show_delete_system_var_button = false
-            $scope.save_data()
-            $scope.show_toast("System var removed")
-            $scope.new_var_name = ""
-            $scope.new_var_value = ""
-        }
-    }
-
-    $scope.create_system_var = () => {
-        if ($scope.new_var_name.trim() != "" && $scope.new_var_value.trim() != "") {
-            //clean vars
-            $scope.new_var_name = $scope.new_var_name.trim().toLocaleLowerCase()
-            $scope.new_var_value = $scope.new_var_value.trim().toLocaleLowerCase()
-        } else {
-            $scope.show_toast("Varibale name and value are required");
-            return;
-        }
-        system_vars[$scope.new_var_name] = $scope.new_var_value
-        $scope.show_toast(`Variable ${$scope.system_create_btn_title}d`);
-        $scope.clear_system_input_vars();
-        $scope.save_data();
-
-    }
+    
 
     $scope.notebook_has_completed_tasks = () => {
         let _notebook = shared_service.get("current_notebook")
@@ -338,22 +223,13 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     $scope.init_system_notebooks = () => {
         //notebooks must contain System and Trash notebooks
         //System 2nd last, Trash at last
-        let sys_i = -1, trash_i = -1
+        let trash_i = -1
         $scope.notebooks.forEach((notebook, index) => {
-            if (notebook.title.toLowerCase() == "system") {
-                sys_i = index;
-                notebook.icon = $scope.system_icon
-            }
             if (notebook.title.toLowerCase() == "trash") {
                 trash_i = index;
                 notebook.icon = $scope.trash_icon
             }
         });
-
-        if (sys_i == -1) {
-            let system = new List("System", $scope.system_icon)
-            $scope.notebooks.push(system)
-        }
         if (trash_i == -1) {
             let trash = new List("Trash", $scope.trash_icon)
             $scope.notebooks.push(trash)
@@ -544,7 +420,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             sortedGrouped[key] = grouped[key];
         });
 
-        console.log(sortedGrouped);
+        // console.log(sortedGrouped);
         return sortedGrouped;
     };
 
@@ -775,6 +651,17 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
     }
 
+    //from bottom bar
+    $scope.open_create_var_popup = function () {
+        try {
+            //broadcast event to open note more options dialog
+            //when create note is opened from bottom bar
+            shared_service.set("show_var_popup",true);
+        } catch (err) {
+            console.log("Error", err)
+        }
+    }
+
 
 
 
@@ -882,6 +769,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         console.log("handle_quick_notebook_change_event")
         const notebook = shared_service.get("quick_notebook")
         const action = shared_service.get("quick_notebooks_action")
+        console.log("get action",action)
         try {
             switch (action) {
                 case shared_service.CONST.MOVE:
@@ -890,12 +778,11 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                     $scope.is_note_multi_select_on = false
                     break;
                 case shared_service.CONST.OPEN:
-                    //open notebook
                     $scope.open_notebook(notebook)
                     break;
             }
         } catch (error) {
-            console.log("Cannot bulk move completed notes", error);
+            console.log("handle quick notebook tap event", error);
         }
     };
 
@@ -1054,8 +941,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
         $scope.selected_note = null;
         $scope.note_content_placeholder = "Create quick note"
-        $scope.new_var_name = ""
-        $scope.new_var_value = ""
+        
         $scope.max_notebook_title_len = 20
         $scope.note_textarea_container_default_height = 35
         $scope.note_textarea_container_height = 35

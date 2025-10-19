@@ -178,31 +178,55 @@ function db_service() {
             console.log("App size error", err)
         }
     }
-    
-    
+
+
     this.read_tags = () => {
         try {
             //{"tag":[],"tag 2":[]}
-            if(is_valid_json(localStorage.notebook_tags))
-            {
+            if (is_valid_json(localStorage.notebook_tags)) {
                 const tags_obj = JSON.parse(localStorage.notebook_tags);
-                return tags_obj;         
-            }else{
+                return tags_obj;
+            } else {
                 return {}
             }
         } catch (err) {
-            console.log("error file reading tags",err)
+            console.log("error file reading tags", err)
             return {}
         }
     }
 
-    this.write_tags = (tags)=>{
+    this.write_tags = (tags) => {
         try {
             localStorage.notebook_tags = angular.toJson(tags)
         } catch (err) {
-            console.log("Failed to write tags",err)
+            console.log("Failed to write tags", err)
         }
     }
+
+    //return {}
+    this.read_vars = () => {
+        try {
+            let vars = JSON.parse(localStorage.system_vars || "{}");
+            let sorted_keys = Object.keys(vars).sort();
+            let sorted_obj = {};
+            sorted_keys.forEach(key => {
+                sorted_obj[key] = vars[key];
+            });
+            return sorted_obj;
+        } catch (err) {
+            console.log("Error while reading system vars")
+            return {}
+        }
+    }
+
+    this.write_vars = (vars) => {
+        try {
+            localStorage.system_vars = JSON.stringify(vars)
+        } catch (err) {
+            console.log("Failed to write var", err)
+        }
+    }
+
 
 
 }

@@ -17,6 +17,9 @@ function shared_service($rootScope) {
         OPEN: "open",
         CREATE_NOTE: "create_note",
         GET:"get",
+        VIEW_NOTEBOOK: "notebook",
+        VIEW_NOTE: "note",
+        VIEW_SYSTEM: "system_var",
         VIEW_TAG: "tag",
     }
     this.CONST = CONST;

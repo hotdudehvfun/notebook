@@ -1,5 +1,5 @@
 <div 
-    class="create-notebook-popup flex-col relative rounded-2 scroll gap-2 popup_style"
+    class="create-notebook-popup popup_style"
     ng-click="$event.stopPropagation()">
     <div class="flex-col gap-1 align-center">
         <div style="font-size: 2rem;">☘️</div>
@@ -7,13 +7,14 @@
     </div>
 
 <!-- settings -->
-<div class="flex-row wrap rounded-3/4  m-1/2 gap-1">
+<div class="sidebar-items-container">
     <div
         class="sidebar_item"
         ng-repeat="item in items"
         ng-click="item.action()">
-        <div class="white">{{item.p_t}}</div>
-        <div class="gray">{{item.s_t}}</div>
+        <span class="icon">{{item.s_t}}</span>
+        <div class="text">{{item.p_t}}</div>
+        
     </div>
 
 </div>

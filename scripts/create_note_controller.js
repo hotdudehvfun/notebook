@@ -13,12 +13,13 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
     $scope.current_list_symbol = "-"; // to hold current list symbol
     $scope.menu = [];
     $scope.note_content_placeholder = "Enter note content here...";
+    $scope.show_create_button = true;
 
     //dialog flag
     $scope.show_dialog = false;
     //listen to close all dialogs event from shared service
-    $scope.$on("close_create_note_popup", function (e, data) {
-        $scope.show_dialog = false;
+    $scope.$on("create_note_popup_changed", function (e, state) {
+        $scope.show_dialog = state
     })
 
     //listen to close all dialogs event from shared service
@@ -35,28 +36,42 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
 
     // open create notebook popup
     $scope.$on('open_create_note_popup', function (event, data) {
-        console.log("create note dialog is opned")
-        //get either quick notes or currently opened notebook
-        $scope.current_notebook = $scope.get_current_notebook();
-        $scope.show_dialog = true;
-        $scope.init_menu();
-        shared_service.set("show_view", "create_note")
+        try {
+            console.log("create note dialog is opned")
+            //get either quick notes or currently opened notebook
+            $scope.current_notebook = $scope.get_current_notebook();
+            $scope.current_note = null
+            $scope.show_dialog = true;
+            $scope.init_menu();
+            shared_service.set("show_view", "create_note")
+            $scope.show_create_button = true;
+        } catch (err) {
+            console.log(err)
+            $scope.$emit("show_toast", `Failed to create note`);
+        }
     });
 
     
     // open create notebook popup
     $scope.$on('open_edit_note_popup', function (event, data) {
-        console.log("edit note dialog is opned")
-        $scope.current_notebook = shared_service.get("current_notebook");
-        $scope.current_note = shared_service.get("current_note");
-        $scope.show_dialog = true;
-        if ($scope.current_note)
-            document.getElementById("note_content").value = $scope.current_note.title || "";
-
-        $scope.init_menu();
-        shared_service.set("show_view", "create_note")
+        try {
+            console.log("edit note dialog is opned")
+            $scope.current_notebook = shared_service.get("current_notebook");
+            $scope.current_note = shared_service.get("current_note");
+            $scope.show_dialog = true;
+            if ($scope.current_note)
+                document.getElementById("note_content").value = $scope.current_note.title || "";
+    
+            $scope.init_menu();
+            shared_service.set("show_view", "create_note")
+            $scope.show_create_button = false;
+        } catch (err) {
+            console.log(err)
+            $scope.$emit("show_toast", `Failed to edit note`);
+        }
     });
 
+    //handle create note in which notebook
     $scope.$on("quick_notebook_changed", function (e, d) {
         if (shared_service.get("quick_notebooks_action") == shared_service.CONST.CREATE_NOTE) {
             $scope.current_notebook = shared_service.get("quick_notebook")
@@ -168,6 +183,8 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
             console.error("Error while editing note:", err);
         }
     };
+
+
 
 
 

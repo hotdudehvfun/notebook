@@ -52,6 +52,8 @@ app.controller('quick_notebooks_controller',quick_notebooks_controller);
 app.controller('db_controller',db_controller);
 app.controller('tag_controller',tag_controller);
 app.controller('sidebar_controller',sidebar_controller);
+app.controller('var_controller',var_controller);
+
 
 
 

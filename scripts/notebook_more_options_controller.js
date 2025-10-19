@@ -151,13 +151,13 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
             },
             {
                 text: "📚 Delete notebook",
-                show: !$scope.only_sys_trash(notebook),
+                show: !is_trash,
                 action: () => {
                     if (confirm("Delete this notebook?")) {
                         db_service.remove_notebook(notebook);
                         set_shared("current_notebook", null);
                         $scope.$emit("notebook_deleted");
-                        emit_toast("Notebook moved to Trash");
+                        emit_toast("Notebook deleted");
                     }
                 }
             }

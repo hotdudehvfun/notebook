@@ -33,7 +33,7 @@
 html {
     height: 100%;
     overflow: hidden;
-    font-size: 14px;
+    font-size: 16px;
     overscroll-behavior: none;
     touch-action: none
 }
@@ -1156,11 +1156,8 @@ select:focus-visible {
 }
 
 .create-notebook-popup {
-    background: var(--bg-color);
-    padding: 1rem 1rem;
+    padding: 1rem 2rem;
     z-index: 999;
-    border: 1px solid var(--theme_button_border);
-    width: 90%;
     max-width: 512px
 }
 
@@ -1173,11 +1170,8 @@ select:focus-visible {
 }
 
 .create-var-popup {
-    background: var(--bg-color);
-    padding: 1rem 1rem;
+    padding: 1rem 2rem;
     z-index: 999;
-    border: 1px solid var(--theme_button_border);
-    width: 90%;
     max-width: 512px
 }
 
@@ -1762,19 +1756,25 @@ span.lock_text {
     box-shadow: 0px 1px 2px #0a0a0a;
 }
 
-.sidebar_item {
-    border: 1px solid gray;
-    border-radius: 8px;
-    width: 47%;
+.sidebar-items-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: .5rem;
+    margin: 1rem 0rem;
+}
+
+.sidebar_item {
+    display: flex;
+    width: 100%;
     align-items: center;
-    min-height: 72px;
-    font-size: .85rem;
-    background: linear-gradient(154deg, #313131, #161616);
-    gap: 4px;
+    gap: 1rem;
 }
-.sidebar_item>div{
-    text-align:center;
+
+.sidebar_item>.icon{
+    font-size: 1.5rem;
 }
+.sidebar_item>.text{
+    font-size: 1.2rem;
+}
+
+
