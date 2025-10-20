@@ -1,4 +1,4 @@
-function tag_controller($scope, notebook_service, shared_service, db_service, tag_service) {
+function tag_controller($scope, notebook_service, shared_service, db_service) {
     const set_shared = (k, v) => shared_service.set(k, v);
     const emit_toast = msg => $scope.$emit("show_toast", msg);
 
@@ -15,9 +15,8 @@ function tag_controller($scope, notebook_service, shared_service, db_service, ta
 
     $scope.create_tag = () => {
         try {
-            $scope.tags = tag_service.create_tag($scope.tags, $scope.new_tag_name.toLocaleLowerCase())
+            $scope.tags = db_service.create_tag($scope.new_tag_name.toLowerCase())
             $scope.new_tag_name = ""
-            db_service.write_tags($scope.tags)
             emit_toast("Tag created")
             $scope.show_dialog = false;
             $scope.load_tags();
@@ -31,16 +30,21 @@ function tag_controller($scope, notebook_service, shared_service, db_service, ta
         try {
             $scope.selected_tag = tag
             console.log("Load notebooks with tag", tag, $scope.selected_tag)
-            $scope.notebooks_inside_selected_tag = tag_service.get_notebooks_in_tag($scope.tags, $scope.selected_tag)
+            $scope.notebooks_inside_selected_tag = db_service.get_notebooks_in_tag($scope.tags[tag])
+            console.log($scope.notebooks_inside_selected_tag)
         } catch (err) {
             console.log(err)
         }
     }
 
     $scope.load_tags = () => {
-        $scope.tags = db_service.read_tags()
-        $scope.tag_arr = tag_service.get_tags_arr($scope.tags)
-        console.log($scope.tag_arr)
+        try {
+            $scope.tags = db_service.read_tags()
+            $scope.tag_arr = db_service.get_tags_arr($scope.tags)
+            console.log($scope.tags)
+        } catch (err) {
+             console.log(err)
+        }
     }
 
     $scope.remove_notebook_from_tag = (notebook) => {
@@ -48,7 +52,7 @@ function tag_controller($scope, notebook_service, shared_service, db_service, ta
             //remove it from notebooks inside current tag array
             $scope.notebooks_inside_selected_tag = $scope.notebooks_inside_selected_tag.filter(n => n.id != notebook.id)
             //update tags
-            $scope.tags = tag_service.remove_notebook_from_tag($scope.tags, $scope.selected_tag, notebook.id)
+            $scope.tags = db_service.remove_notebook_from_tag($scope.tags, $scope.selected_tag, notebook.id)
 
             //write database
             db_service.write_tags($scope.tags)
@@ -71,14 +75,12 @@ function tag_controller($scope, notebook_service, shared_service, db_service, ta
                 return;
             }
             console.log("Toggle notebook from tag", notebook, $scope.selected_tag)
-            console.log(notebook)
-            $scope.tags = tag_service.add_notebook_to_tag($scope.tags, $scope.selected_tag, notebook.id)
-            emit_toast(`Notebook added to ${$scope.selected_tag}`)
-
+            console.log("Adding to tag",notebook)
+            $scope.tags[$scope.selected_tag].push(notebook.id)
             db_service.write_tags($scope.tags)
+            emit_toast(`Notebook added to ${$scope.selected_tag}`)
             //update notebooks_inside_selected_tag
             $scope.load_notebooks_with_tag($scope.selected_tag)
-
         } catch (err) {
             console.log(err)
             $scope.show_toast(err)
@@ -93,7 +95,7 @@ function tag_controller($scope, notebook_service, shared_service, db_service, ta
             return;
         }
         if (confirm(`Remove tag: ${$scope.selected_tag}?`)) {
-            $scope.tags = tag_service.remove_tag($scope.tags, $scope.selected_tag)
+            $scope.tags = db_service.remove_tag($scope.tags, $scope.selected_tag)
             $scope.selected_tag = null
             $scope.notebooks_inside_selected_tag = []
             db_service.write_tags($scope.tags)

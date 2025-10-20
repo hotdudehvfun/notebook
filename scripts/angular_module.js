@@ -35,7 +35,6 @@ app.service('db_service',db_service)
 app.service('notebook_service',notebook_service)
 app.service('note_service',note_service)
 app.service('graph_service',graph_service)
-app.service('tag_service',tag_service)
 app.service('shared_service',shared_service);
 
 

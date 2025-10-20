@@ -1,4 +1,4 @@
-function main_controller($scope, $timeout, db_service, notebook_service, note_service, graph_service, tag_service, shared_service) {
+function main_controller($scope, $timeout, db_service, notebook_service, note_service, graph_service, shared_service) {
     // custom code of note is parsed to output html content
     $scope.parse_markdown_to_html = function (text) {
         return parseWikiTextToHTML(text)
@@ -32,7 +32,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`;
 
             // save data when notebook is opened
-            $scope.save_data();
+            // $scope.save_data();
         } catch (err) {
             console.log("Error while opening notebook", err);
             alert("Cannot open notebook");
@@ -145,6 +145,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     
     $scope.save_data = () => {
         try {
+            console.log("saving data")
             db_service.write({
                 notebooks: $scope.notebooks,
                 selectedListIndex: $scope.selectedListIndex,
@@ -551,7 +552,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     $scope.handle_sort_notebook_change = () => {
         try {
             $scope.handle_group_notebooks()
-            $scope.save_data()
+            localStorage.notebook_sort_by = $scope.sort_notebook_selected_item
         } catch (err) {
             console.log(err)
         }
