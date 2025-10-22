@@ -20,7 +20,7 @@ class Task {
       this.is_component = false;
       this.component_type = COMPONENT.TYPE.TEXT;
       this.isSelected = false;
-
+      this.isDeleted = false
       //methods
       this.set_is_component();
       this.set_component_type();

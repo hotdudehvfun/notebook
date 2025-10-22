@@ -48,8 +48,8 @@ function notebook_service($timeout, db_service) {
 
         notebook.title = newName;
         notebook.icon = new_icon || "📜";
-
-        return db_service.write_notebook(notebook);
+        db_service.write_notebook(notebook);
+        return notebook;
     }
 
 
@@ -75,7 +75,7 @@ function notebook_service($timeout, db_service) {
         let new_list = new List(title, icon || "📜");
         all_notebooks.push(new_list);
         db_service.write_notebooks(all_notebooks);
-        return all_notebooks;
+        return new_list
     }
 
     // Helper function to get or create the "quick notes" notebook
@@ -257,18 +257,10 @@ function notebook_service($timeout, db_service) {
         if (!note) throw "No note selected";
 
         // remove note from current notebook
-        notebook.taskArray = notebook.taskArray.filter(n => n.id !== note.id);
-        db_service.write_notebook(notebook)
-
-        const all_notebooks = db_service.read_notebooks();
-        const trash_index = this.get_trash_index();
-        // move to trash if not already there
-        if (notebook.title.toLowerCase() !== "trash") {
-            let trash = all_notebooks[trash_index];
-            trash.taskArray = trash.taskArray || [];
-            trash.taskArray.push(note);
-        }
-        db_service.write_notebooks(all_notebooks)
+        note.isDeleted = true;
+        note.parent_id = notebook.id
+        const all_notebooks = db_service.write_notebook(notebook)
+        // console.log(all_notebooks)
         return notebook;
     };
 
@@ -348,14 +340,14 @@ function notebook_service($timeout, db_service) {
         }
     }
 
-    this.edit_note = (notebook, old_note,content) => {
+    this.edit_note = (notebook, old_note, content) => {
         try {
             if (!notebook) throw "Notebook not found"
             if (!is_valid_note_content(content)) throw "Note content is invalid"
-            if(!old_note) throw "Current note not found"
+            if (!old_note) throw "Current note not found"
 
-            const index = notebook.taskArray.findIndex(note=>note.id==old_note.id)
-            if(index==-1) throw "Unable to find note inside notebook"
+            const index = notebook.taskArray.findIndex(note => note.id == old_note.id)
+            if (index == -1) throw "Unable to find note inside notebook"
             notebook.taskArray[index].title = content;
             db_service.write_notebook(notebook)
             return notebook;
@@ -364,8 +356,132 @@ function notebook_service($timeout, db_service) {
         }
     }
 
+    this.get_notes_in_bin=()=> {
+        try {
+            const all_notebooks = db_service.read_notebooks(); // array of notebooks
+            let deleted_notes = [];
+            all_notebooks.forEach(notebook => {
+                if (notebook.taskArray && Array.isArray(notebook.taskArray)) {
+                    deleted_notes = deleted_notes.concat(
+                        notebook.taskArray.filter(note => note.isDeleted === true)
+                    );
+                }
+            });
+
+            return deleted_notes;
+        } catch (error) {
+            console.error("Error reading deleted notes:", error);
+            return []; // return empty array for safety
+        }
+    }
 
 
 
+    this.get_grouped_notebooks_date = (notebooks)=>{
+        try {
+            let today = new Date();
+            let groups = {
+                'Recently Created': [],
+                'This Month': [],
+                'Older': {}
+            };
+
+            notebooks.forEach(notebook => {
+                let created_date = new Date(notebook.dateCreated);
+                let diff_days = Math.floor((today - created_date) / (1000 * 60 * 60 * 24));
+
+                if (diff_days <= 7) {
+                    groups['Recently Created'].push(notebook);
+                } else if (created_date.getFullYear() === today.getFullYear() && created_date.getMonth() === today.getMonth()) {
+                    groups['This Month'].push(notebook);
+                } else {
+                    let month_year = created_date.toLocaleString('default', {
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    if (!groups['Older'][month_year]) {
+                        groups['Older'][month_year] = [];
+                    }
+                    groups['Older'][month_year].push(notebook);
+                }
+            }
+            );
+            return groups;
+        } catch (err) {
+            console.log(err)
+        }
+        return [];
+    }
+
+
+    // group notebooks by title
+    this.get_grouped_notebooks_title = function (notebooks) {
+        let grouped = {};
+        // Iterate over notebooks and group them by first letter
+        notebooks.forEach(notebook => {
+            let firstChar = notebook.title.charAt(0).toUpperCase();
+            if (!firstChar.match(/[A-Z]/)) {
+                firstChar = "#";
+                // Group non-alphabetic titles under "#"
+            }
+            if (!grouped[firstChar]) {
+                grouped[firstChar] = [];
+            }
+            grouped[firstChar].push(notebook);
+        });
+        // Sort groups alphabetically
+        let sortedGroups = Object.keys(grouped).sort((a, b) => (a === "#" ? 1 : b === "#" ? -1 : a.localeCompare(b)));
+
+        let sortedGroupedNotebooks = {};
+        sortedGroups.forEach(key => {
+            sortedGroupedNotebooks[key] = grouped[key];
+        });
+        // console.log(sortedGroupedNotebooks)
+        return sortedGroupedNotebooks;
+    };
+
+
+    this.get_grouped_notebooks_tag = function (notebooks) {
+        let tags = db_service.read_tags() || {};
+        let grouped = {};
+
+        // Step 1: Create a map from dateCreated to notebook
+        let notebook_map = {};
+        notebooks.forEach(nb => {
+            notebook_map[nb.id] = nb;
+        });
+
+        // Step 2: Group notebooks based on tags
+        for (let tag in tags) {
+            let arr = tags[tag];
+            grouped[tag] = [];
+
+            arr.forEach(id => {
+                if (notebook_map[id]) {
+                    grouped[tag].push(notebook_map[id]);
+                }
+            });
+        }
+
+        // Step 3: Handle notebooks not in any tag
+        let all_tagged = new Set(Object.values(tags).flat());
+        let ungrouped = notebooks.filter(nb => !all_tagged.has(nb.id));
+        if (ungrouped.length > 0) {
+            grouped["Ungrouped"] = ungrouped;
+        }
+
+        // Step 4: Sort tags alphabetically (Ungrouped always last)
+        let sortedKeys = Object.keys(grouped).sort((a, b) =>
+            a === "Ungrouped" ? 1 : b === "Ungrouped" ? -1 : a.localeCompare(b)
+        );
+
+        let sortedGrouped = {};
+        sortedKeys.forEach(key => {
+            sortedGrouped[key] = grouped[key];
+        });
+
+        // console.log(sortedGrouped);
+        return sortedGrouped;
+    };
 
 }

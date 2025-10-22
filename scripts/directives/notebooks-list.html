@@ -37,11 +37,13 @@
                             <!-- completed notes status -->
                             <span ng-show="get_completed_notes_length(notebook.taskArray)>0"
                                 class="list-sub-text gray line-through">
-                                {{get_completed_notes_length(notebook.taskArray)}}
+                                {{get_completed_notes_len(notebook.taskArray)}}
                             </span>
 
                             <!-- notes length -->
-                            <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
+                            <span class="list-sub-text">            
+                                {{get_total_notes_len(notebook.taskArray)}}
+                            </span>
                         </div>
 
                         <!-- drag button -->

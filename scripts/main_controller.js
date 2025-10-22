@@ -40,140 +40,91 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     };
 
     // handle sidebar open close
-    $scope.open_sidebar = function (e,state) {
-        console.log("open side bar")
-        shared_service.set("open_sidebar",true)
-        // $scope.$broadcast("open_side_bar")
+    $scope.open_sidebar = function (e, state) {
+        shared_service.set("open_sidebar", true)
     }
 
     // open notebook popup
     $scope.open_notebook_popup = function (action) {
         //action=create,rename
-        $scope.$broadcast(
-            'open_notebook_popup',
-            {
-                action: action
-            }
-        );
+        $scope.$broadcast('open_notebook_popup', action);
     }
 
+
+    //USE THIS FUNCTION SET VIEW FROM ANYWHERE IN APP
+    //TELL MAIN CONTROLLER WHAT TO OPEN
     $scope.set_view = function (view_name) {
-        $scope.show_view = view_name
-        console.log("set current view = ",$scope.show_view)
-        reset_scroll(document.querySelector(".content"))
-        // view all NOTEBOOKS
-        if ($scope.show_view == $scope.CONST.VIEW_NOTEBOOK) {
-            //reset icon and title
-            $scope.pageTitle = $scope.defaultPageTitle
-            $scope.pageIcon = $scope.default_app_icon
-            //reset selected notebook
-            shared_service.set("current_notebook", null)
-            shared_service.set("current_note", null)
+        $scope.show_view = view_name;
+        console.log("set current view =", view_name);
+        reset_scroll(document.querySelector(".content"));
 
-            shared_service.set('create_note_popup',false);
-            shared_service.set('show_tag_list',false);
-            shared_service.set("show_var_list",false);
-            
-            $scope.notebooks = db_service.read_notebooks();
-            $scope.handle_group_notebooks()
+        // Default UI reset for every view
+        shared_service.set('create_note_popup', false);
+        shared_service.set('show_tag_list', false);
+        shared_service.set('show_var_list', false);
+        shared_service.set('show_bin', false);
+
+
+        switch (view_name) {
+            case shared_service.CONST.VIEW_NOTEBOOK:
+                $scope.pageTitle = $scope.defaultPageTitle;
+                $scope.pageIcon = $scope.default_app_icon;
+
+                shared_service.set("current_notebook", null);
+                shared_service.set("current_note", null);
+
+                $scope.notebooks = db_service.read_notebooks();
+                $scope.handle_group_notebooks();
+                break;
+
+            case shared_service.CONST.VIEW_NOTE:
+                $scope.pageTitle = $scope.current_notebook.title;
+                $scope.pageIcon = $scope.current_notebook.icon;
+                break;
+
+            case shared_service.CONST.VIEW_TAG:
+                console.log("open tag list");
+                $scope.pageTitle = "Group Notebooks";
+                $scope.pageIcon = "📚";
+                shared_service.set('show_tag_list', true);
+                break;
+
+            case shared_service.CONST.VIEW_CREATE_NOTE:
+                console.log("opening create note")
+                shared_service.set('create_note_popup', true);
+                break;
+
+            case shared_service.CONST.VIEW_SYSTEM:
+                console.log("view system vars");
+                $scope.pageTitle = "System Vars";
+                $scope.pageIcon = "⚙️";
+                shared_service.set('show_var_list', true);
+                break;
+
+            case shared_service.CONST.VIEW_BIN:
+                console.log("view bin");
+                $scope.pageTitle = "Recyle Bin"
+                $scope.pageIcon = "🗑️";
+                shared_service.set('show_bin', true);
+                break;
         }
-
-        // view all NOTES inside notebook
-        if ($scope.show_view == $scope.CONST.VIEW_NOTE) {
-            $scope.pageTitle = $scope.current_notebook.title
-            $scope.pageIcon = $scope.current_notebook.icon
-            
-            shared_service.set('create_note_popup',false);
-            shared_service.set('show_tag_list',false);
-            shared_service.set("show_var_list",false);
-        }
-
-        // tag manager
-        if ($scope.show_view == $scope.CONST.VIEW_TAG) {
-            console.log("open tag list")
-            $scope.pageTitle = "Group Notebooks"
-            $scope.pageIcon = "📚"
-            shared_service.set('create_note_popup',false);
-            shared_service.set('show_tag_list',true);
-            shared_service.set("show_var_list",false);
-        }
-
-        //create note
-        if ($scope.show_view == $scope.CONST.VIEW_CREATE_NOTE) {
-            shared_service.set('create_note_popup',true);
-            shared_service.set('show_tag_list',false);
-            shared_service.set("show_var_list",false);
-        }
-
-        //show system vars list
-        if($scope.show_view == $scope.CONST.VIEW_SYSTEM)
-        {
-            console.log("view system vars")
-            $scope.pageTitle = "System Vars"
-            $scope.pageIcon = "⚙️"
-
-            shared_service.set('create_note_popup',false);
-            shared_service.set('show_tag_list',false);
-            shared_service.set("show_var_list",true);
-        }
-    }
-
-    // get completed notes length
-    $scope.get_completed_notes_length = (notes) => {
-        try {
-            return note_service.get_completed_notes_length(notes);
-        } catch (error) {
-            console.log("error ", error)
-        }
-    }
+    };
 
     // get notes length
     $scope.get_notes_length = (notebook) => {
         try {
             if (notebook) {
-                if (notebook?.title.toLocaleLowerCase() == 'system') {
-                    return $scope.get_system_var_length()
-                }
                 return notebook?.taskArray.length
             }
         } catch (error) {
-            // console.log(error, "error while gettig length of notes")
+            console.log(error, "error while gettig length of notes")
         }
         return -1;
     }
 
-    
-    $scope.save_data = () => {
-        try {
-            console.log("saving data")
-            db_service.write({
-                notebooks: $scope.notebooks,
-                selectedListIndex: $scope.selectedListIndex,
-                system_vars: system_vars,
-                notebook_sort_by: $scope.sort_notebook_selected_item
-            }, angular)
-        } catch (err) {
-            console.log("Save data error", err)
-        }
-    }
-
-    $scope.read_data = () => {
-        try {
-            let data = db_service.read()
-            $scope.notebooks = data.notebooks;
-            $scope.selectedListIndex = parseInt(data.selectedListIndex);
-            system_vars = data.system_vars;
-            $scope.sort_notebook_selected_item = data.notebook_sort_by
-            //set up system notebooks
-            $scope.init_system_notebooks()
-        } catch (err) {
-            console.log("Read data error", err)
-        }
-    }
-
     //open menu for note
     //if multi select is on , just select notes
-    $scope.handle_tap_on_note = function (note) {
+    $scope.handle_tap_on_note = function (note,type) {
         try {
             //broadcast event to open note more options dialog
             if ($scope.is_note_multi_select_on) {
@@ -181,7 +132,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             } else {
                 $scope.selected_note = note;
                 shared_service.set("current_note", note)
-                $scope.$broadcast('open_note_more_options_menu');
+                $scope.$broadcast('open_note_more_options_menu',type);
             }
         } catch (err) {
             console.log("Error", err)
@@ -189,24 +140,19 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     }
 
     //used in sidebar
-    
-
-
     $scope.handle_click_on_more_vert = (_notebook) => {
         // notebook is passed to handle click on more vert icon
         // console.log(_notebook)
         if (_notebook) {
             shared_service.set("current_notebook", _notebook)
+        }else{
+            console.log("notebook not available")
         }
         $scope.$broadcast("open_notebook_more_options_menu")
     }
 
 
     //used by notes list
-    
-
-    
-
     $scope.notebook_has_completed_tasks = () => {
         let _notebook = shared_service.get("current_notebook")
         return notebook_service.notebook_has_completed_tasks(_notebook);
@@ -216,26 +162,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         let notebook = shared_service.get("current_notebook")
         return notebook?.is_locked || false;
     };
-
-
-
-
-    //TODO: MOVE TO NOTEBOOK SERVICE
-    $scope.init_system_notebooks = () => {
-        //notebooks must contain System and Trash notebooks
-        //System 2nd last, Trash at last
-        let trash_i = -1
-        $scope.notebooks.forEach((notebook, index) => {
-            if (notebook.title.toLowerCase() == "trash") {
-                trash_i = index;
-                notebook.icon = $scope.trash_icon
-            }
-        });
-        if (trash_i == -1) {
-            let trash = new List("Trash", $scope.trash_icon)
-            $scope.notebooks.push(trash)
-        }
-    }
 
     // receive broadcast to show toast
     // call directly
@@ -259,26 +185,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             toast_timer_id = $timeout(() => {
                 $scope.is_toast_visible = false
                 // console.log("clear toast")
-            }
-                , 2000)
-        }
-    }
-
-    // filter to show all but system and trash notebook: Optimized
-    $scope.exclude_sys_trash = function (notebook) {
-        return notebook.title.toLowerCase() !== 'system' && notebook.title.toLowerCase() !== 'trash';
-    }
-
-    // filter to show only system and trash notebook: Optimized
-    $scope.only_sys_trash = function (notebook) {
-        return notebook.title.toLowerCase() == 'system' || notebook.title.toLowerCase() == 'trash';
-    }
-
-    $scope.toggle_lock_on_notebook = () => {
-        console.log()
-        let notebook = $scope.notebooks[$scope.selectedListIndex];
-        if (notebook.hasOwnProperty('is_locked')) {//toggle lock
-        } else {//create property lock
+            }, 4000)
         }
     }
 
@@ -304,250 +211,8 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
     }
 
-    $scope.greet_user = (username) => {
-        return greet_user(username);
-    }
-
-    // group notebook by date
-    $scope.get_grouped_notebooks = function () {
-        try {
-            let today = new Date();
-            let notebooks = $scope.notebooks;
-            let groups = {
-                'Recently Created': [],
-                'This Month': [],
-                'Older': {}
-            };
-
-            notebooks.forEach(notebook => {
-                let created_date = new Date(notebook.dateCreated);
-                let diff_days = Math.floor((today - created_date) / (1000 * 60 * 60 * 24));
-
-                if (diff_days <= 7) {
-                    groups['Recently Created'].push(notebook);
-                } else if (created_date.getFullYear() === today.getFullYear() && created_date.getMonth() === today.getMonth()) {
-                    groups['This Month'].push(notebook);
-                } else {
-                    let month_year = created_date.toLocaleString('default', {
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                    if (!groups['Older'][month_year]) {
-                        groups['Older'][month_year] = [];
-                    }
-                    groups['Older'][month_year].push(notebook);
-                }
-            }
-            );
-            // console.log(groups)
-            return groups;
-        } catch (err) {
-            console.log(err)
-        }
-        return [];
-    };
-
-    // group notebooks by title
-    $scope.get_grouped_notebooks_title = function () {
-        let notebooks = $scope.notebooks;
-        let grouped = {};
-
-        // Iterate over notebooks and group them by first letter
-        notebooks.forEach(notebook => {
-            let firstChar = notebook.title.charAt(0).toUpperCase();
-
-            if (!firstChar.match(/[A-Z]/)) {
-                firstChar = "#";
-                // Group non-alphabetic titles under "#"
-            }
-
-            if (!grouped[firstChar]) {
-                grouped[firstChar] = [];
-            }
-
-            grouped[firstChar].push(notebook);
-        }
-        );
-
-        // Sort groups alphabetically
-        let sortedGroups = Object.keys(grouped).sort((a, b) => (a === "#" ? 1 : b === "#" ? -1 : a.localeCompare(b)));
-
-        let sortedGroupedNotebooks = {};
-        sortedGroups.forEach(key => {
-            sortedGroupedNotebooks[key] = grouped[key];
-        });
-        // console.log(sortedGroupedNotebooks)
-        return sortedGroupedNotebooks;
-    };
 
 
-    $scope.get_grouped_notebooks_tag = function () {
-        let notebooks = $scope.notebooks || [];
-        let tags = db_service.read_tags() || {};
-        let grouped = {};
-
-        // Step 1: Create a map from dateCreated to notebook
-        let notebook_map = {};
-        notebooks.forEach(nb => {
-            notebook_map[nb.id] = nb;
-        });
-
-        // Step 2: Group notebooks based on tags
-        for (let tag in tags) {
-            let arr = tags[tag];
-            grouped[tag] = [];
-
-            arr.forEach(id => {
-                if (notebook_map[id]) {
-                    grouped[tag].push(notebook_map[id]);
-                }
-            });
-        }
-
-        // Step 3: Handle notebooks not in any tag
-        let all_tagged = new Set(Object.values(tags).flat());
-        let ungrouped = notebooks.filter(nb => !all_tagged.has(nb.id));
-        if (ungrouped.length > 0) {
-            grouped["Ungrouped"] = ungrouped;
-        }
-
-        // Step 4: Sort tags alphabetically (Ungrouped always last)
-        let sortedKeys = Object.keys(grouped).sort((a, b) =>
-            a === "Ungrouped" ? 1 : b === "Ungrouped" ? -1 : a.localeCompare(b)
-        );
-
-        let sortedGrouped = {};
-        sortedKeys.forEach(key => {
-            sortedGrouped[key] = grouped[key];
-        });
-
-        // console.log(sortedGrouped);
-        return sortedGrouped;
-    };
-
-
-    // Watch for changes in notebooks array
-    // for grouping purposes
-    $scope.$watch('notebooks', function (new_val, old_val) {
-        if (new_val !== old_val) {
-            //group notebook
-            $scope.handle_group_notebooks()
-        }
-    }, true);
-
-    $scope.get_chart_colors = () => {
-        // let colors = Object.keys(CHART_COLORS)
-        // colors.forEach((item,index)=>{
-        //     item[0] = item[1] //bg
-        //     item[1] = get_transparent_color(item[0])//transparent
-        // })
-        return CHART_COLORS
-    }
-
-    // get chart transaprent color
-    $scope.get_transparent_color = (rgb, alpha) => {
-        return util_get_transparent_color(rgb, alpha)
-    }
-
-    // reset new chart
-    $scope.reset_new_chart_and_close = () => {
-        //reset values
-        $scope.new_chart = {
-            title: "Untitled",
-            // title of chart
-            type: "line",
-            // type of chart
-            theme: "red",
-            //theme color
-            x_labels: "",
-            //labels
-            y_values: "",
-            // values
-            chart_id: 0,
-            //create id dynamically while saving
-            show: false,
-        }
-    }
-
-    // create new chart using chart code
-    $scope.new_chart_convert_ui_to_code = () => {
-        /*
-            @chart
-            pie
-            Title
-            chartid#theme
-            a,b
-            1,2
-        */
-        try {
-            $scope.new_chart.chart_id = new Date().getTime()
-            let new_chart_code = "";
-            new_chart_code += `@chart`
-            new_chart_code += `\n${$scope.new_chart.type}`
-            new_chart_code += `\n${$scope.new_chart.title}`
-            new_chart_code += `\n${$scope.new_chart.chart_id}#${$scope.new_chart.theme}`
-            new_chart_code += `\n${$scope.new_chart.x_labels.split("\n").join(",")}`
-            new_chart_code += `\n${$scope.new_chart.y_values.split("\n").join(",")}`
-            $scope.note_content = new_chart_code.trim()
-            //validate code
-            if ($scope.is_valid_chart_code(new_chart_code))
-                $scope.reset_new_chart_and_close()
-            else
-                alert("Invalid chart code!")
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    // validate chart code
-    $scope.is_valid_chart_code = (chart_code) => {
-        try {
-            let lines = chart_code.trim().split("\n");
-
-            if (lines.length < 6 || lines[0].trim() !== "@chart") {
-                return false;
-            }
-
-            let type = lines[1].trim().toLowerCase();
-            if (type !== "line" && type !== "bar") {
-                return false;
-            }
-
-            let title = lines[2].trim();
-
-            let chart_id_parts = lines[3].trim().split("#");
-            let chart_id = chart_id_parts[0].trim();
-            let theme = chart_id_parts[1] ? chart_id_parts[1].trim() : "blue";
-            // Default theme is blue
-            let x_labels = lines[4].trim().split(",")
-            let y_values = lines[5].trim().split(",")
-            if (x_labels.length != y_values.length)
-                return false
-
-            x_labels = x_labels.map(label => label.trim()).join("\n");
-            y_values = y_values.map(value => value.trim()).join("\n");
-
-            // Ensure x_labels and y_values are valid
-            if (!x_labels || !y_values) {
-                return false;
-            }
-
-            // Set values to new_chart object
-            $scope.new_chart = {
-                title: title,
-                type: type,
-                theme: theme,
-                x_labels: x_labels,
-                y_values: y_values,
-                chart_id: chart_id,
-                show: false,
-            };
-            return true;
-        } catch (err) {
-            console.log(err)
-        }
-        return false
-    };
 
     $scope.handle_sort_notebook_change = () => {
         try {
@@ -558,21 +223,21 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
     }
 
+
     // handle group notebooks
     $scope.handle_group_notebooks = () => {
+        // console.trace("Grouping Function called from:");
         if ($scope.sort_notebook_selected_item == "date") {
-            $scope.grouped_notebooks = $scope.get_grouped_notebooks()
+            $scope.grouped_notebooks = notebook_service.get_grouped_notebooks_date($scope.notebooks);
         }
 
         if ($scope.sort_notebook_selected_item == "title") {
-            $scope.grouped_notebooks = $scope.get_grouped_notebooks_title()
+            $scope.grouped_notebooks = notebook_service.get_grouped_notebooks_title($scope.notebooks);
         }
 
         if ($scope.sort_notebook_selected_item == "tag") {
-            $scope.grouped_notebooks = $scope.get_grouped_notebooks_tag()
+            $scope.grouped_notebooks = notebook_service.get_grouped_notebooks_tag($scope.notebooks);
         }
-
-
     }
 
     $scope.get_svg_src = (name) => {
@@ -584,25 +249,30 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         return graph_service.create_bar_graph();
     }
 
-
-
-
- 
-
-    
-    // recieve update notebook event from create notebook popup
-    $scope.$on('notebooks_updated', function (event, data) {
+    // NOTEBOOK CREATED
+    // call from only create
+    $scope.$on('notebooks_updated', function (event, new_notebook) {
         try {
-            $scope.notebooks = data.notebooks;
-            $scope.current_notebook = shared_service.get("current_notebook");
-            $scope.pageIcon = $scope.current_notebook.icon
-            $scope.pageTitle = $scope.current_notebook.title
+            $scope.notebooks = db_service.read_notebooks()
+            $scope.current_notebook = null
+            $scope.handle_group_notebooks()
         } catch (err) {
             console.log(err)
         }
     });
 
-    //
+    // NOTEBOOK RENAMED
+    $scope.$on('notebook_renamed', function (event, new_notebook) {
+        try {
+            $scope.current_notebook = new_notebook;
+            $scope.pageTitle = $scope.current_notebook.title
+            $scope.pageIcon = $scope.current_notebook.icon
+        } catch (err) {
+            console.log(err)
+        }
+    });
+
+    //NOTEBOOK DELETED
     $scope.$on('notebook_deleted', function (e, d) {
         try {
             $scope.set_view($scope.CONST.VIEW_NOTEBOOK)
@@ -642,11 +312,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     //from bottom bar
     $scope.open_create_note_popup = function () {
         try {
-            //broadcast event to open note more options dialog
-            //when create note is opened from bottom bar
-            shared_service.set("current_note", $scope.CONST.VIEW_CREATE_NOTE)
             $scope.set_view($scope.CONST.VIEW_CREATE_NOTE)
-            $scope.$broadcast('open_create_note_popup');
         } catch (err) {
             console.log("Error", err)
         }
@@ -657,7 +323,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         try {
             //broadcast event to open note more options dialog
             //when create note is opened from bottom bar
-            shared_service.set("show_var_popup",true);
+            shared_service.set("show_var_popup", true);
         } catch (err) {
             console.log("Error", err)
         }
@@ -723,15 +389,19 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         //REMOVE ACTION
         if ($scope.CONST.REMOVE == action_code) {
             try {
-                const selected_notes = $scope.notes.filter(n => n.isSelected)
-                const unselected_notes = $scope.notes.filter(n => !n.isSelected)
-                selected_notes.forEach(note => note.isSelected = false);
-                $scope.notes = unselected_notes // current notebooks is also updated by reference
+                let count = 0
+                $scope.notes.filter((note) => {
+                    if (note.isSelected) {
+                        note.isSelected = false;
+                        note.isDeleted = true;
+                        count += 1
+                    }
+                })
                 $scope.current_notebook.taskArray = $scope.notes
                 db_service.write_notebook($scope.current_notebook)
                 shared_service.set("current_notebook", $scope.current_notebook)
                 $scope.is_note_multi_select_on = false;
-                $scope.show_toast("Notes removed")
+                $scope.show_toast(`${count} Notes moved to Bin`)
             } catch (error) {
                 console.error(error);
             }
@@ -770,7 +440,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         console.log("handle_quick_notebook_change_event")
         const notebook = shared_service.get("quick_notebook")
         const action = shared_service.get("quick_notebooks_action")
-        console.log("get action",action)
+        console.log("get action", action)
         try {
             switch (action) {
                 case shared_service.CONST.MOVE:
@@ -805,8 +475,33 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         db_service.write_notebook($scope.current_notebook)
     }
 
+    $scope.get_total_notes_len = (notes) => {
+        //return notes not deleted length
+        return notes.filter(note => !note.isDeleted).length;
+    }
+
+    $scope.get_completed_notes_len = (notes) => {
+        try {
+            return notes.filter((note) => {
+                if (!note.isDeleted && note.isTaskCompleted)
+                    return note;
+            }).length
+        } catch (error) {
+            console.log("error ", error)
+        }
+        return -1;
+    }
+
+    $scope.show_empty_notebook_state = () => {
+        if ($scope.get_total_notes_len($scope.notes) == 0)
+            return true
+        return false
+    }
+
+
     // init everything
     $scope.init = () => {
+        console.log("init called")
         //CONST values
         $scope.CONST = {
             IMPORT: "import",
@@ -816,6 +511,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             VIEW_SYSTEM: "system_var",
             VIEW_TAG: "tag",
             VIEW_CREATE_NOTE: "create_note",
+            VIEW_BIN: "bin",
             COMPLETE: 1,
             MOVE: 2,
             MERGE: 3,
@@ -871,22 +567,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.action_on_quick_notebook_item = $scope.CONST.OPEN // what to do when quick notebook item is clicked
         $scope.sort_notebook_selected_item = 'date' // sort notebooks default is DATE
 
-        // chart component 
-        $scope.new_chart = {
-            title: "Untitled",
-            // title of chart
-            type: "line",
-            // type of chart
-            theme: "red",
-            //theme color
-            x_labels: "",
-            //labels
-            y_values: "",
-            // values
-            chart_id: 0,
-            //create id dynamically while saving
-            show: false,
-        }
+
 
         // transaction component
         $scope.new_transaction = {
@@ -942,7 +623,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
         $scope.selected_note = null;
         $scope.note_content_placeholder = "Create quick note"
-        
+
         $scope.max_notebook_title_len = 20
         $scope.note_textarea_container_default_height = 35
         $scope.note_textarea_container_height = 35
@@ -958,14 +639,19 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.empty_notebook_msg = getRandomItem($scope.proverbs)
 
         //read saved data
-        $scope.notebooks = [];
-        $scope.notes = [];
-
-        $scope.read_data();
+        $scope.notebooks = db_service.read_notebooks();
+        $scope.notes = []
         //group notebooks
+        //date, title, tags
+        $scope.sort_notebook_selected_item = localStorage.notebook_sort_by || "title"
         $scope.handle_group_notebooks()
         // console.log($scope.notebooks)
         // $scope.show_view = $scope.CONST.VIEW_TAG
 
     };
+
+    $scope.$on('$viewContentLoaded', function () {
+        $scope.init();
+    });
+
 }

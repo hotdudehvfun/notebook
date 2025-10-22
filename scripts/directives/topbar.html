@@ -1,19 +1,18 @@
 <!-- app title -->
-<div ng-click="open_sidebar(true)" class="py-1/2 clickable">
+<div ng-click="open_sidebar(true)" class="blur_icon_btn clickable">
     <img class="svg-icon" src="./img/icons/sidebar.left.svg" />
 </div>
-<div 
-    class="flex-row flex gap-1 justify-center align-center orange clickable" 
-    ng-click="handle_click_on_notebook_title()">    
-    <!-- <img class="svg-icon" ng-src="{{get_svg_src(pageIcon)}}" alt="NoteBook icon"> -->
-    <span class="page_icon">{{pageIcon}}</span>
-    <span class="text-lg capitalize">{{pageTitle}}</span>
+<div class="app_icon_title" 
+    ng-click="handle_click_on_notebook_title()">
+        <span class="page_icon">{{pageIcon}}</span>
+        <span class="text-lg capitalize">{{pageTitle}}</span>
 </div>
-
 <!-- more options button -->
-<div class="flex-row align-center justify-end gap-1">
+<div
+    ng-show="show_view==CONST.VIEW_NOTE"
+    style="right: 1rem;"
+    class="blur_icon_btn clickable">
     <img
-        ng-show="show_view==CONST.VIEW_NOTE" 
         class="svg-icon clickable"
         src="./img/icons/ellipsis.svg"
         ng-click="handle_click_on_more_vert(current_notebook)"

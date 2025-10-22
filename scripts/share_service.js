@@ -15,12 +15,13 @@ function shared_service($rootScope) {
         MOVE: "move",
         MOVE_COMPLETED:"move completed",
         OPEN: "open",
-        CREATE_NOTE: "create_note",
+        VIEW_CREATE_NOTE: "create_note",
         GET:"get",
         VIEW_NOTEBOOK: "notebook",
         VIEW_NOTE: "note",
         VIEW_SYSTEM: "system_var",
         VIEW_TAG: "tag",
+        VIEW_BIN:"bin"
     }
     this.CONST = CONST;
 

@@ -100,7 +100,7 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
             {
                 text: "📘 Rename notebook",
                 show: is_user_notebook,
-                action: () => $rootScope.$broadcast("open_notebook_popup", { action: "rename" })
+                action: () => $rootScope.$broadcast("open_notebook_popup","rename")
             },
             {
                 text: "🚕 Move completed tasks",
@@ -151,11 +151,13 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
             },
             {
                 text: "📚 Delete notebook",
-                show: !is_trash,
+                show: true,
                 action: () => {
                     if (confirm("Delete this notebook?")) {
                         db_service.remove_notebook(notebook);
                         set_shared("current_notebook", null);
+                        // on notebook delete
+                        //show all notebooks
                         $scope.$emit("notebook_deleted");
                         emit_toast("Notebook deleted");
                     }

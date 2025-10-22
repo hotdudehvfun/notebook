@@ -1,0 +1,44 @@
+<!-- notes -->
+<div ng-show="show_view==CONST.VIEW_BIN">
+
+    <div class="flex-row">
+        <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">
+            {{notes.length}} notes in Recycle bin
+        </div>
+
+    </div>
+
+    <!--notes inside notebook  -->
+    <ul class="notes reset_ul">
+        <li ng-repeat="note in notes">
+            <div class="task">
+                <!-- note content -->
+                <div ng-class="{selected:selected_note==note}" class="task-content-div clickable"
+                    ng-bind-html="parse_markdown_to_html(note.title) | sanitize" ng-click="tap(note)">
+                </div>
+            </div>
+            <div ng-show="selected_note==note" class="flex-row justify-space-between m-2">
+                <span ng-click="delete_note(note)" class="red">
+                    🗑️ Delete
+                </span>
+                <span ng-click="restore_note(note)" class="orange">
+                    ♻️ Restore it
+                </span>
+            </div>
+        </li>
+        <div ng-show="notes.length>0">
+            <div class="h3 red text-center">
+                Danger Zone
+            </div>
+            <div class="gradient-text-orange h3 mt-2 ng-binding text-center" ng-click="empty_bin()">
+                Tap to Empty Recyle Bin!!!
+            </div>
+        </div>
+    </ul>
+    <!-- empty state empty list-->
+    <!-- hide empty state if create note is open -->
+    <div class="empty-notebook" ng-if="notes.length==0">
+        <span class="lock_icon">📭</span>
+        <span class="lock_text">It's all empty here</span>
+    </div>
+</div>

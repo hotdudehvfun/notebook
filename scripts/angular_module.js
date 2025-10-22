@@ -52,6 +52,7 @@ app.controller('db_controller',db_controller);
 app.controller('tag_controller',tag_controller);
 app.controller('sidebar_controller',sidebar_controller);
 app.controller('var_controller',var_controller);
+app.controller('bin_controller',bin_controller);
 
 
 
@@ -181,4 +182,14 @@ app.directive("createNoteView",function(){
     templateUrl:"./scripts/directives/create-note-view.html",
   }
 });
+
+
+//create note view
+app.directive("viewBin",function(){
+  return{
+    scope:false,
+    templateUrl:"./scripts/directives/view_bin.html",
+  }
+});
+
 

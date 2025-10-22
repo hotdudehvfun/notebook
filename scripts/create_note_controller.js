@@ -1,5 +1,16 @@
 function create_note_controller($scope, $rootScope, notebook_service, shared_service, db_service) {
 
+    // chart component 
+    $scope.new_chart = {
+        title: "Untitled",// title of chart
+        type: "line",// type of chart
+        theme: "red",//theme color
+        x_labels: "",//labels
+        y_values: "",// values
+        chart_id: 0,//create id dynamically while saving
+        show: false,
+    }
+
     //icons
     $scope.icons = {
         checked: "radio_button_checked",
@@ -19,8 +30,43 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
     $scope.show_dialog = false;
     //listen to close all dialogs event from shared service
     $scope.$on("create_note_popup_changed", function (e, state) {
+        console.log("create_note_popup_changed", state)
         $scope.show_dialog = state
+        //set current note when edit button is clicked
+        $scope.current_note = shared_service.get("current_note")
+        $scope.current_notebook = $scope.get_current_notebook();
+        if (state) {
+            if($scope.current_note)
+            {
+                //open for edit
+                $scope.open_edit_note_popup()
+            }else{
+                //open for new 
+                $scope.note_content = ""
+                document.getElementById("note_content").value = ""
+                $scope.show_create_button = true;
+            }
+            $scope.init_menu();
+        }
     })
+
+    // open create notebook popup
+    $scope.open_edit_note_popup = ()=>{
+        try {
+            console.log("edit note dialog is opned")
+            $scope.current_notebook = shared_service.get("current_notebook");
+            $scope.current_note = shared_service.get("current_note");
+            $scope.show_dialog = true;
+            if ($scope.current_note)
+                document.getElementById("note_content").value = $scope.current_note.title || "";
+
+            $scope.init_menu();
+            $scope.show_create_button = false;
+        } catch (err) {
+            console.log(err)
+            $scope.$emit("show_toast", `Failed to edit note`);
+        }
+    };
 
     //listen to close all dialogs event from shared service
     $scope.$on("current_notebook_changed", function (e, data) {
@@ -32,44 +78,13 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         $scope.show_dialog = false;
         shared_service.set("current_notebook", $scope.current_notebook);
         shared_service.set("show_view", "note")
+        $scope.current_note = null
+        shared_service.set("current_note",null)
     }
 
-    // open create notebook popup
-    $scope.$on('open_create_note_popup', function (event, data) {
-        try {
-            console.log("create note dialog is opned")
-            //get either quick notes or currently opened notebook
-            $scope.current_notebook = $scope.get_current_notebook();
-            $scope.current_note = null
-            $scope.show_dialog = true;
-            $scope.init_menu();
-            shared_service.set("show_view", "create_note")
-            $scope.show_create_button = true;
-        } catch (err) {
-            console.log(err)
-            $scope.$emit("show_toast", `Failed to create note`);
-        }
-    });
+
 
     
-    // open create notebook popup
-    $scope.$on('open_edit_note_popup', function (event, data) {
-        try {
-            console.log("edit note dialog is opned")
-            $scope.current_notebook = shared_service.get("current_notebook");
-            $scope.current_note = shared_service.get("current_note");
-            $scope.show_dialog = true;
-            if ($scope.current_note)
-                document.getElementById("note_content").value = $scope.current_note.title || "";
-    
-            $scope.init_menu();
-            shared_service.set("show_view", "create_note")
-            $scope.show_create_button = false;
-        } catch (err) {
-            console.log(err)
-            $scope.$emit("show_toast", `Failed to edit note`);
-        }
-    });
 
     //handle create note in which notebook
     $scope.$on("quick_notebook_changed", function (e, d) {
@@ -202,8 +217,6 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         },
         {
             text: "Insert",
-            icon: "plus.circle",
-            class: "chip2",
             show: true,
             action: (item) => {
                 console.log("insert menu clicked")
@@ -211,15 +224,10 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
             }
         },
         {
-            text: "List mode",
-            icon: "list.bullet.rectangle",
-            class: "chip2",
+            text: "Charts",
             show: true,
             action: (item) => {
-                $scope.toggle_bottom_bar_active_menu(item.text)
-                $scope.current_bottom_bar_active_menu = null;
-                $scope.is_list_mode_on = ($scope.bottom_bar_active_menu == item.text)
-                $scope.show_toast(`List mode ${bool_to_on_off($scope.is_list_mode_on)} | ${$scope.current_list_symbol}`)
+                $scope.open_chart_ui_changed(true)
             }
         },
         ]
@@ -285,13 +293,127 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         }
     };
 
+    $scope.get_chart_colors = () => {
+        return CHART_COLORS
+    }
 
+    // get chart transaprent color
+    $scope.get_transparent_color = (rgb, alpha) => {
+        return util_get_transparent_color(rgb, alpha)
+    }
 
-    $scope.init = () => {
+    // reset new chart
+    $scope.reset_new_chart_and_close = () => {
+        //reset values
+        $scope.new_chart = {
+            title: "Untitled",
+            // title of chart
+            type: "line",
+            // type of chart
+            theme: "red",
+            //theme color
+            x_labels: "",
+            //labels
+            y_values: "",
+            // values
+            chart_id: 0,
+            //create id dynamically while saving
+            show: false,
+        }
+    }
 
+    // create new chart using chart code
+    $scope.new_chart_convert_ui_to_code = () => {
+        /*
+            @chart
+            pie
+            Title
+            chartid#theme
+            a,b
+            1,2
+        */
+        try {
+            $scope.new_chart.chart_id = new Date().getTime()
+            let new_chart_code = "";
+            new_chart_code += `@chart`
+            new_chart_code += `\n${$scope.new_chart.type}`
+            new_chart_code += `\n${$scope.new_chart.title}`
+            new_chart_code += `\n${$scope.new_chart.chart_id}#${$scope.new_chart.theme}`
+            new_chart_code += `\n${$scope.new_chart.x_labels.split("\n").join(",")}`
+            new_chart_code += `\n${$scope.new_chart.y_values.split("\n").join(",")}`
+            $scope.note_content = new_chart_code.trim()
+            //validate code
+            if ($scope.is_valid_chart_code(new_chart_code))
+                $scope.reset_new_chart_and_close()
+            else
+                alert("Invalid chart code!")
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    // validate chart code
+    $scope.is_valid_chart_code = (chart_code) => {
+        try {
+            let lines = chart_code.trim().split("\n");
+
+            if (lines.length < 6 || lines[0].trim() !== "@chart") {
+                return false;
+            }
+
+            let type = lines[1].trim().toLowerCase();
+            if (type !== "line" && type !== "bar") {
+                return false;
+            }
+
+            let title = lines[2].trim();
+
+            let chart_id_parts = lines[3].trim().split("#");
+            let chart_id = chart_id_parts[0].trim();
+            let theme = chart_id_parts[1] ? chart_id_parts[1].trim() : "blue";
+            // Default theme is blue
+            let x_labels = lines[4].trim().split(",")
+            let y_values = lines[5].trim().split(",")
+            if (x_labels.length != y_values.length)
+                return false
+
+            x_labels = x_labels.map(label => label.trim()).join("\n");
+            y_values = y_values.map(value => value.trim()).join("\n");
+
+            // Ensure x_labels and y_values are valid
+            if (!x_labels || !y_values) {
+                return false;
+            }
+
+            // Set values to new_chart object
+            $scope.new_chart = {
+                title: title,
+                type: type,
+                theme: theme,
+                x_labels: x_labels,
+                y_values: y_values,
+                chart_id: chart_id,
+                show: false,
+            };
+            return true;
+        } catch (err) {
+            console.log(err)
+        }
+        return false
+    };
+
+    $scope.open_chart_ui_changed=(state)=>{
+        $scope.new_chart.show = state;
     }
 
 
 
 
+
+
+
+
+
+
+    
 }

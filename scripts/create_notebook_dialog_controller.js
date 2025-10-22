@@ -12,10 +12,11 @@ function create_notebook_dialog_controller($scope, notebook_service, shared_serv
     })
 
     // open create notebook popup
-    $scope.$on('open_notebook_popup', function (event, data) {
+    //action create or rename
+    $scope.$on('open_notebook_popup', function (event,action) {
         $scope.current_notebook = shared_service.get("current_notebook");
         $scope.create_notebook_obj = $scope.init_create_notebook_obj()
-        $scope.create_notebook_obj.action = data.action;
+        $scope.create_notebook_obj.action = action;
         $scope.show_dialog = true;
     });
 
@@ -32,17 +33,17 @@ function create_notebook_dialog_controller($scope, notebook_service, shared_serv
             const notebook = $scope.current_notebook;
             const newName = $scope.new_notebook_name;
             const newIcon = $scope.new_notebook_icon;
-            const updated_notebooks = notebook_service.rename_notebook(notebook, newName, newIcon);
+            const updated_notebook = notebook_service.rename_notebook(notebook, newName, newIcon);
 
             $scope.new_notebook_icon = "📜";
             $scope.new_notebook_name = "";
 
-            // broadcast event to update notebook in main controller
-            $scope.$emit("notebooks_updated", {
-                notebooks: updated_notebooks
-            });
             $scope.show_dialog = false;
-            $scope.$emit('show_toast', "Notebook renamed successfully");
+
+
+            // broadcast event to update notebook in main controller
+            $scope.$emit("notebook_renamed",notebook);
+            shared_service.set("show_toast","Notebook renamed successfully")
 
         } catch (err) {
             console.error("Error while renaming notebook", err);
@@ -52,12 +53,12 @@ function create_notebook_dialog_controller($scope, notebook_service, shared_serv
     // create notebook using popup
     $scope.handle_click_on_create_notebook_button = () => {
         try {
-            const all_notebooks = notebook_service.create_notebook(
+            const new_notebook = notebook_service.create_notebook(
                 $scope.new_notebook_name.trim(),
                 $scope.new_notebook_icon
             );
             // tell main controller to refresh notebooks
-            $scope.$emit('notebooks_updated', { notebooks: all_notebooks });
+            $scope.$emit('notebooks_updated',new_notebook);
             $scope.new_notebook_icon = "📜";
             $scope.new_notebook_name = "";
             $scope.show_dialog = false;

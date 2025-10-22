@@ -17,8 +17,6 @@ function create_note_menu_controller($scope, shared_service) {
     //     shared_service.broadcast("close_all_dialogs", {});
     // };
 
-
-
     $scope.insertTextAtCursor = (id, content) => {
         insertTextAtCursor(id, content);
         $scope.show_dialog = false;
@@ -34,7 +32,6 @@ function create_note_menu_controller($scope, shared_service) {
             list: "- Item",
             progress: "#50%",
             table: "@table\n||a,b\n|c,d",
-            chart: "@chart",
             circular: "@circular_bars\nA, B, C\n50, 50, 50",
         };
         const menu_items = [
@@ -46,7 +43,6 @@ function create_note_menu_controller($scope, shared_service) {
             ["✅ List", "list"],
             ["📈 Progress bar", "progress"],
             ["🗄️ Table", "table"],
-            ["🍕 Chart", "chart"],
             ["📖 Circular Progress", "circular"],
         ];
 

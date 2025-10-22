@@ -23,10 +23,10 @@
     <link rel="stylesheet" href="styles/custom_styles.css">
 </head>
 
-<body ng-app="notebook_app" ng-controller='main_controller' ng-init="init()">
+<body ng-app="notebook_app" ng-controller='main_controller'>
     <div class="main-container">
         <!-- top bar -->
-        <top-bar class="topbar bg-blur" ng-show="show_topbar()"></top-bar>
+        <top-bar class="topbar" ng-show="show_topbar()"></top-bar>
         <!-- content bar -->
         <div class="content">
             <notebooks-list ng-show="show_view==CONST.VIEW_NOTEBOOK"></notebooks-list>
@@ -46,8 +46,15 @@
                 </popup-create-tag>
             </div>
 
+            <!-- create note view -->
             <create-note-view ng-init="init()" ng-controller="create_note_controller" ng-show="show_dialog">
             </create-note-view>
+
+            <view-bin
+                ng-controller="bin_controller"
+                ng-show="show_dialog">
+            </view-bin>
+
             <!-- insert empty space at end -->
             <div class="empty-space"></div>
         </div>
@@ -55,10 +62,7 @@
 
     <!-- bottom bar -->
     <bottom-bar class="bottom-bar"></bottom-bar>
-
-
-
-
+    
     <!-- rename notebook dialog pop up-->
     <popup-rename-notebook style="bottom: 30vh;" ng-show="dialog_flags.show_rename_notebook_popup" class="popup">
     </popup-rename-notebook>
@@ -176,6 +180,8 @@
     <script type="text/javascript" src="scripts/tag_controller.js"></script>
     <script type="text/javascript" src="scripts/sidebar_controller.js"></script>
     <script type="text/javascript" src="scripts/var_controller.js"></script>
+    <script type="text/javascript" src="scripts/bin_controller.js"></script>
+
     <script src="scripts/angular_module.js"></script>
 </body>
 

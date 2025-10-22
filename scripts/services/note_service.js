@@ -1,9 +1,12 @@
 function note_service($timeout,db_service) {
 
-    // get notebook age
+    
     this.get_completed_notes_length = function (notes) {
         if (!notes) return 0;
-        return notes.filter(note => note?.isTaskCompleted).length;
+        return notes.filter((note)=>{
+            if(!note.isDeleted && note.isTaskCompleted)
+                return note
+        }).length;
     };
 
     // get notebook icon

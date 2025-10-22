@@ -3,7 +3,8 @@ function db_service() {
     this.read_notebooks = function () {
         try {
             const data = localStorage.getItem('appData');
-            return is_valid_json(data) ? JSON.parse(data) : [];
+            let all_notebooks = is_valid_json(data) ? JSON.parse(data) : [];
+            return this.ensure_all_ids(all_notebooks)
         } catch (e) {
             console.error('Error reading notebooks:', e);
             return [];
@@ -45,6 +46,13 @@ function db_service() {
 
 
     this.write_notebook = function (notebook) {
+
+        //move completed notes at the bottom
+        notebook.taskArray = notebook.taskArray.sort((a, b) => {
+            return a.isTaskCompleted - b.isTaskCompleted;
+        });
+
+
         let all_notebooks = this.read_notebooks();
         let idx = all_notebooks.findIndex(n => n.id === notebook.id);
         if (idx !== -1) {
@@ -146,6 +154,7 @@ function db_service() {
         }
     }
 
+    //ensure important props
     this.ensure_all_ids = (all_notebooks) => {
         all_notebooks.forEach(notebook => {
             if (!notebook.id) {
@@ -158,6 +167,9 @@ function db_service() {
                         note.id = generate_id();
                     }
                     note.isSelected = false;
+                    note.parent_id = notebook.id
+                    if (!note.hasOwnProperty("isDeleted"))
+                        note.isDeleted = false;
                 });
             }
         });

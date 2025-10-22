@@ -13,6 +13,10 @@ function sidebar_controller($scope, notebook_service,shared_service,db_service) 
         }
     });
 
+    $scope.greet_user = (username) => {
+        return greet_user(username);
+    }
+
     $scope.app_size = () => { return db_service.db_size() }
     $scope.init_items = ()=>{
         try {
@@ -21,12 +25,15 @@ function sidebar_controller($scope, notebook_service,shared_service,db_service) 
                 ["Manage Database","db"],
                 ["Manage Tags","tags"],
                 ["System Vars","system_vars"],
+                ["Recyle bin","bin"],
+
             ];
             const secondary_texts = {
                 size:"📚",
                 db:"💾",
                 tags:"🗃",
                 system_vars:"⚙️",
+                bin:"🗑️"
             }
     
             const actions = {
@@ -39,6 +46,9 @@ function sidebar_controller($scope, notebook_service,shared_service,db_service) 
                 },
                 system_vars:()=>{
                     shared_service.set("show_view",shared_service.CONST.VIEW_SYSTEM)
+                },
+                bin:()=>{
+                    shared_service.set("show_view",shared_service.CONST.VIEW_BIN)
                 }
             }
     
