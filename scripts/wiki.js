@@ -1,467 +1,464 @@
-// if no data is found create demo files
-function setupDemoList() {
-    //demo list
-    let list = new List("First Notebook");
-    let task = new Task("We have added first note!");
-    list.taskArray.push(task);
-    return [list];
-}
+function wiki_service($rootScope,db_service, shared_service) {
+    // if no data is found create demo files
+    this.setupDemoList = () => {
+        //demo list
+        let list = new List("First Notebook");
+        let task = new Task("We have added first note!");
+        list.taskArray.push(task);
+        return [list];
+    }
 
-function bold(line) {
-    return line.replace(/:(.*?)(:)/g, '<b>$1</b>')
-}
-function handle_highlight(line) {
-    return line.replace(/!(.*?)(!)/g, '<div class="highlight">$1</div>')
-}
-function italic(line) {
-    return line.replace(/_(.*?)(_)/g, '<i>$1</i>')
-}
-function sup(line) {
-    return line.replace(/\^(.*?)(\^)/g, '<sup>$1</sup>')
-}
-function sub(line) {
-    return line.replace(/\~(.*?)(\~)/g, '<sub>$1</sub>')
-}
+    this.bold = (line) => {
+        return line.replace(/:(.*?)(:)/g, '<b>$1</b>')
+    }
+    this.handle_highlight = (line) => {
+        return line.replace(/!(.*?)(!)/g, '<div class="highlight">$1</div>')
+    }
+    this.italic = (line) => {
+        return line.replace(/_(.*?)(_)/g, '<i>$1</i>')
+    }
+    this.sup = (line) => {
+        return line.replace(/\^(.*?)(\^)/g, '<sup>$1</sup>')
+    }
+    this.sub = (line) => {
+        return line.replace(/\~(.*?)(\~)/g, '<sub>$1</sub>')
+    }
 
-function progress_bar(text) {
-    // #80% default color = green
-    // #90,red% color = red
-    try {
-        text = text.trim()
-        if (text.startsWith("#") && text.endsWith("%")) {
-            text = text.replace(/[ #%]/g, '').trim().split(",")
-            let p1 = clamp(0, parseFloat(text[0]), 100);
-            let color = text.length == 2 ? text[1] : "green";
-            return `
+    this.progress_bar = (text) => {
+        // #80% default color = green
+        // #90,red% color = red
+        try {
+            text = text.trim()
+            if (text.startsWith("#") && text.endsWith("%")) {
+                text = text.replace(/[ #%]/g, '').trim().split(",")
+                let p1 = clamp(0, parseFloat(text[0]), 100);
+                let color = text.length == 2 ? text[1] : "green";
+                return `
             <div class="progress-bar-container">
                 <div class="progress-bar bg-${color}" style="width: ${p1}%;">
                     <span class="progress-text">${p1}%</span>
                 </div>
             </div>`;
+            }
+            return text;
+        } catch (err) {
+            console.log("Error in progress bar component", err)
+            return text
         }
-        return text;
-    } catch (err) {
-        console.log("Error in progress bar component", err)
+    }
+
+    this.check_for_line = (text) => {
+        if (text.trim().startsWith("---")) {
+            return `<div class="line"></div>`
+        }
         return text
     }
-}
-
-function check_for_line(text) {
-    if (text.trim().startsWith("---")) {
-        return `<div class="line"></div>`
-    }
-    return text
-}
 
 
 
-function multi_progress_bar(text) {
-    const regex = /#((\d{1,3}(,\d{1,3})*)%)/g;
-    return text.replace(regex, (match, p1) => {
-        const percentages = p1.split(',').map(value => value.trim().replace("%", ""));
-        const progressBars = percentages.map(percentage => {
-            return `
+    this.multi_progress_bar = (text) => {
+        const regex = /#((\d{1,3}(,\d{1,3})*)%)/g;
+        return text.replace(regex, (match, p1) => {
+            const percentages = p1.split(',').map(value => value.trim().replace("%", ""));
+            const progressBars = percentages.map(percentage => {
+                return `
                 <div class="progress" style="width:${percentage}%;">
                     ${percentage}%
                 </div>`;
-        }).join('');
-        return `
+            }).join('');
+            return `
         <div class="progress_bar">
             ${progressBars}
         </div>`;
-    });
-}
-
-
-
-function check_for_system_vars(value) {
-    // Recursive function to evaluate expressions
-    function evaluate(value) {
-        return value.replace(/\b[a-zA-Z_]\w*\b/g, function (match) {
-            if (system_vars.hasOwnProperty(match)) {
-                // If the match is an expression, evaluate it recursively
-                let expr = system_vars[match];
-                if (typeof expr === 'string') {
-                    return evaluate(expr);
-                } else {
-                    return expr;
-                }
-            }
-            return match;
         });
     }
 
-    try {
-        // Evaluate the expression and return the result
-        return eval(evaluate(value));
-    } catch (error) {
-        console.error("Invalid expression: ", error);
-        return "Invalid expression";
-    }
-}
 
-function format_currency(result) {
-    let formattedResult = new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0
-    }).format(result);
-    return formattedResult;
-}
-
-
-function handle_calculations(text) {
-    // Create a regex to match {expression} and optionally detect the ":c" flag
-    const regex = /{([^}:]+)(:c)?}/g;
-
-    // Use replace with a callback to dynamically insert the match
-    return text.replace(regex, (match, expression, isCurrency) => {
-        try {
-            // Replace variable names with values if needed
-            expression = check_for_system_vars(expression);
-
-            // Evaluate the expression
-            let result = eval(expression);
-
-            // If result is a floating-point number, round it to 1 decimal place
-            result = result % 1 == 0 ? result : result.toFixed(1);
-
-            // If ":c" flag is present, format the result as currency
-            if (isCurrency) {
-                result = format_currency(result)
-            }
-            return result;
-        } catch (e) {
-            console.log(`Error evaluating expression:`, e);
-            return "INVALID EXPRESSION"; // Return the original match if there's an error
-        }
-    });
-}
-
-
-function handle_list(line) {
-    // Handle lists
-    // if a single line contains many * it will be converted to list items
-    // it means * cannot be used in text if a line starts with *
-    let html = ""
-    line.split("*").forEach((item) => {
-        let text = item.replace(/[\*\-]/g, '').trim();
-        if (text.length > 0)
-            html += `<li>${text}</li>`
-    })
-    return html
-}
-
-function center_aligned(text) {
-    const centerAlignedRegex = /::(.*?)::/g;
-    const htmlText = text.replace(centerAlignedRegex, '<div class="text-center">$1</div>');
-    return htmlText;
-}
-
-
-function insert_tag(line) {
-    var html = ""
-    try {
-        // start tag len = 2
-        // end tag len = 3
-        // .ol ..ol
-        var arr = line.split(".")
-        var tag = arr[arr.length - 1]
-        if (arr.length == 2)
-            html = `<${tag}>`
-        else
-            html = `</${tag}>`
-    } catch (error) {
-        html = "ERROR"
-    }
-    return html
-}
-
-//_class1_class2_class3
-function handle_insert_class(input) {
-    // Regular expression to match lines starting with _class1_class2_... followed by text
-    if (input.startsWith("_")) {
-        return input.replace(/^_([\w_]+)\s(.+)/gm, function (match, classes, text) {
-            // Replace underscores with spaces to separate class names
-            const classList = classes.replace(/_/g, ' ');
-            return `<span class="${classList}">${text}</span>`;
-        });
-    }
-    return input
-
-}
-
-function handle_charts(text) {
-    /*
-    @chart
-    pie
-    Title
-    chart2
-    a,b
-    1,2
-    */
-    const lines = text.split("\n")
-    const type = lines[1].trim()
-    const title = lines[2].trim()
-    const id = lines[3].trim()
-    //console.log(id)
-    let theme = "red"
-    if (id.indexOf("#") != -1)
-        theme = id.split("#")[1]
-
-    const labels = lines[4].split(",")
-    const values = lines[5].split(',').map(v => handle_calculations(v.trim()));
-
-    setTimeout(() => {
-        update_chart(labels, values, id, type, title, theme)
-    }, 50)
-    return `<canvas style="width:100%" id="${id}"></canvas>`
-}
-
-function update_chart(_labels, values, id, _type, title, theme) {
-    try {
-        let chart = new Chart(id, {
-            type: _type,
-            data: {
-                tension: 0.5,
-                labels: _labels,
-                datasets: [{
-                    backgroundColor: util_get_transparent_color(CHART_COLORS[theme], 0.5),
-                    borderColor: CHART_COLORS[theme],
-                    borderWidth: 2,
-                    fill: false,
-                    data: values,
-                    label: title,
-                    tension: 0.5,
-                    borderRadius: 5
-                }]
-            },
-            options: {
-                animation: false,
-                title: {
-                    display: false,
-                    text: title
-                },
-                aspectRation: 1,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            display: true,
-                            maxTicksLimit: 2,
-                        }
+    this.check_for_system_vars = (value) => {
+        // Recursive this.to evaluate expressions
+        const system_vars =  shared_service.get("system_vars")
+        let evaluate = (value) => {
+            return value.replace(/\b[a-zA-Z_]\w*\b/g, (match) => {
+                if (system_vars.hasOwnProperty(match)) {
+                    // If the match is an expression, evaluate it recursively
+                    let expr = system_vars[match];
+                    if (typeof expr === 'string') {
+                        return evaluate(expr);
+                    } else {
+                        return expr;
                     }
                 }
+                return match;
+            });
+        }
+        try {
+            // Evaluate the expression and return the result
+            return eval(evaluate(value));
+        } catch (error) {
+            console.error("Invalid expression: ", error);
+            return "Invalid expression";
+        }
+    }
+
+    this.format_currency=(result)=> {
+        let formattedResult = new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 0
+        }).format(result);
+        return formattedResult;
+    }
+
+
+    this.handle_calculations=(text)=> {
+        // Create a regex to match {expression} and optionally detect the ":c" flag
+        const regex = /{([^}:]+)(:c)?}/g;
+
+        // Use replace with a callback to dynamically insert the match
+        return text.replace(regex, (match, expression, isCurrency) => {
+            try {
+                // Replace variable names with values if needed
+                expression = this.check_for_system_vars(expression);
+
+                // Evaluate the expression
+                let result = eval(expression);
+
+                // If result is a floating-point number, round it to 1 decimal place
+                result = result % 1 == 0 ? result : result.toFixed(1);
+
+                // If ":c" flag is present, format the result as currency
+                if (isCurrency) {
+                    result = this.format_currency(result)
+                }
+                return result;
+            } catch (e) {
+                console.log(`Error evaluating expression:`, e);
+                return "INVALID EXPRESSION"; // Return the original match if there's an error
             }
         });
-    } catch (err) {
-        console.log(err)
     }
-}
 
 
+    this.handle_list=(line)=> {
+        // Handle lists
+        // if a single line contains many * it will be converted to list items
+        // it means * cannot be used in text if a line starts with *
+        let html = ""
+        line.split("*").forEach((item) => {
+            let text = item.replace(/[\*\-]/g, '').trim();
+            if (text.length > 0)
+                html += `<li>${text}</li>`
+        })
+        return html
+    }
 
-function handle_returns(text) {
-    /*
-    @returns
-    3 //how many lines
-    Title1,Title2,Title3 //3 lines
-    label1,lable2 //common labels
-    20, 30
-    10, 40
-    20, 40 // 3 lines with two data points
-    chartid
-    */
-    try {
-        const lines = text.split("\n");
-        let total_lines = parseInt(lines[1].trim())
-        let titles = lines[2].split(",")
-        let labels = lines[3].split(",")
-        let line1_points = lines[4].split(",").map(v => handle_calculations(v.trim()));
-        let line2_points = lines[5].split(",").map(v => handle_calculations(v.trim()));
-        let line3_points = lines[6].split(",").map(v => handle_calculations(v.trim()));
-        let id = lines[7].trim()
+    this.center_aligned=(text)=> {
+        const centerAlignedRegex = /::(.*?)::/g;
+        const htmlText = text.replace(centerAlignedRegex, '<div class="text-center">$1</div>');
+        return htmlText;
+    }
+
+
+    this.insert_tag=(line)=>{
+        var html = ""
+        try {
+            // start tag len = 2
+            // end tag len = 3
+            // .ol ..ol
+            var arr = line.split(".")
+            var tag = arr[arr.length - 1]
+            if (arr.length == 2)
+                html = `<${tag}>`
+            else
+                html = `</${tag}>`
+        } catch (error) {
+            html = "ERROR"
+        }
+        return html
+    }
+
+    //_class1_class2_class3
+    this.handle_insert_class=(input)=>{
+        // Regular expression to match lines starting with _class1_class2_... followed by text
+        if (input.startsWith("_")) {
+            return input.replace(/^_([\w_]+)\s(.+)/gm,(match, classes, text)=> {
+                // Replace underscores with spaces to separate class names
+                const classList = classes.replace(/_/g, ' ');
+                return `<span class="${classList}">${text}</span>`;
+            });
+        }
+        return input
+
+    }
+
+    this.handle_charts=(text)=>{
+        /*
+        @chart
+        pie
+        Title
+        chart2
+        a,b
+        1,2
+        */
+        const lines = text.split("\n")
+        const type = lines[1].trim()
+        const title = lines[2].trim()
+        const id = lines[3].trim()
+        //console.log(id)
+        let theme = "red"
+        if (id.indexOf("#") != -1)
+            theme = id.split("#")[1]
+
+        const labels = lines[4].split(",")
+        const values = lines[5].split(',').map(v => this.handle_calculations(v.trim()));
+
         setTimeout(() => {
-            update_chart_returns(titles, labels, line1_points, line2_points, line3_points, id)
+            this.update_chart(labels, values, id, type, title, theme)
         }, 50)
         return `<canvas style="width:100%" id="${id}"></canvas>`
-    } catch (err) {
-        console.log("Error while handling returns charts", err)
     }
-}
 
-function update_chart_returns(_titles, _labels, _line1_points, _line2_points, _line3_points, id) {
-    try {
-        let chart = new Chart(id, {
-            type: "line",
-            data: {
-                labels: _labels,
-                tension: 0.5,
-                datasets: [
-                    {
-                        label: _titles[0],
-                        data: _line1_points,
-                        borderColor: ["#ff4967"],
+    this.update_chart=(_labels, values, id, _type, title, theme)=>{
+        try {
+            let chart = new Chart(id, {
+                type: _type,
+                data: {
+                    tension: 0.5,
+                    labels: _labels,
+                    datasets: [{
+                        backgroundColor: util_get_transparent_color(CHART_COLORS[theme], 0.5),
+                        borderColor: CHART_COLORS[theme],
+                        borderWidth: 2,
                         fill: false,
+                        data: values,
+                        label: title,
+                        tension: 0.5,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    animation: false,
+                    title: {
+                        display: false,
+                        text: title
                     },
-                    {
-                        label: _titles[1],
-                        data: _line2_points,
-                        borderColor: ["#164ea6"],
-                        fill: false,
-                    },
-                    {
-                        label: _titles[2],
-                        data: _line3_points,
-                        borderColor: ["#4cd964"],
-                        fill: false,
-                    },
-                ]
-            },
-            options: {
-                animation: false,
-                title: { display: false, },
-                aspectRation: 1,
-                scales: {
-                    y: {
-                        ticks: {
-                            display: false,
-                            maxTicksLimit: 2,
+                    aspectRation: 1,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                display: true,
+                                maxTicksLimit: 2,
+                            }
                         }
                     }
                 }
-            }
-        });
-    } catch (err) {
-        console.log(err)
-    }
-}
-
-
-function handle_table_component(text) {
-    try {
-        const lines = text.split('\n'); // Split the text by new lines
-        let headers = [];
-        let rows = [];
-        let sumCols = [];
-        let sumRow = [];
-
-        lines.forEach(line => {
-            line = line.trim();
-
-            // Check for the _sum_col option
-            if (line.startsWith('_sum_col')) {
-                const [, cols] = line.split('=');
-                sumCols = cols.split(',').map(col => parseInt(col.trim()) - 1); // Convert to zero-based indices
-            }
-
-            // Check for header row (||)
-            else if (line.startsWith('||')) {
-                headers = line.replace('||', '').split(',').map(cell => cell.trim());
-            }
-
-            // Check for regular row (|)
-            else if (line.startsWith('|')) {
-                const row = line.replace('|', '').split(',').map(cell => handle_calculations(cell.trim()));
-                rows.push(row);
-
-                // Keep track of sums for the columns specified in _sum_col
-                sumCols.forEach(col => {
-                    sumRow[col] = (sumRow[col] || 0) + parseFloat(row[col] || 0);
-                });
-            }
-        });
-
-        // Create the table element (or HTML string)
-        let tableHtml = '<table>';
-
-        // Add header row
-        if (headers.length > 0) {
-            tableHtml += '<thead><tr>';
-            headers.forEach(header => {
-                tableHtml += `<th>${header}</th>`;
             });
-            tableHtml += '</tr></thead>';
+        } catch (err) {
+            console.log(err)
         }
+    }
 
-        // Add body rows
-        tableHtml += '<tbody>';
-        rows.forEach(row => {
-            tableHtml += '<tr>';
-            row.forEach(cell => {
-                tableHtml += `<td>${cell}</td>`;
-            });
-            tableHtml += '</tr>';
-        });
+    this.handle_returns=(text)=>{
+        /*
+        @returns
+        3 //how many lines
+        Title1,Title2,Title3 //3 lines
+        label1,lable2 //common labels
+        20, 30
+        10, 40
+        20, 40 // 3 lines with two data points
+        chartid
+        */
+        try {
+            const lines = text.split("\n");
+            let total_lines = parseInt(lines[1].trim())
+            let titles = lines[2].split(",")
+            let labels = lines[3].split(",")
+            let line1_points = lines[4].split(",").map(v => this.handle_calculations(v.trim()));
+            let line2_points = lines[5].split(",").map(v => this.handle_calculations(v.trim()));
+            let line3_points = lines[6].split(",").map(v => this.handle_calculations(v.trim()));
+            let id = lines[7].trim()
+            setTimeout(() => {
+                update_chart_returns(titles, labels, line1_points, line2_points, line3_points, id)
+            }, 50)
+            return `<canvas style="width:100%" id="${id}"></canvas>`
+        } catch (err) {
+            console.log("Error while handling returns charts", err)
+        }
+    }
 
-        // Add sum row if needed
-        if (sumCols.length > 0) {
-            tableHtml += '<tr>';
-
-            // Find the first sum column index
-            const firstSumCol = Math.min(...sumCols);
-
-            // Add a merged "Total" cell spanning all non-sum columns
-            if (firstSumCol > 0) {
-                tableHtml += `<td class="text-center" colspan="${firstSumCol}"><b>Total</b></td>`;
-            }
-
-            // Add sum values in their respective columns
-            for (let i = firstSumCol; i < headers.length; i++) {
-                if (sumCols.includes(i)) {
-                    tableHtml += `<td><b>${sumRow[i] !== undefined ? sumRow[i] : ''}</b></td>`;
-                } else {
-                    tableHtml += `<td></td>`; // Empty cell for non-sum columns
+    this.update_chart_returns=(_titles, _labels, _line1_points, _line2_points, _line3_points, id)=>{
+        try {
+            let chart = new Chart(id, {
+                type: "line",
+                data: {
+                    labels: _labels,
+                    tension: 0.5,
+                    datasets: [
+                        {
+                            label: _titles[0],
+                            data: _line1_points,
+                            borderColor: ["#ff4967"],
+                            fill: false,
+                        },
+                        {
+                            label: _titles[1],
+                            data: _line2_points,
+                            borderColor: ["#164ea6"],
+                            fill: false,
+                        },
+                        {
+                            label: _titles[2],
+                            data: _line3_points,
+                            borderColor: ["#4cd964"],
+                            fill: false,
+                        },
+                    ]
+                },
+                options: {
+                    animation: false,
+                    title: { display: false, },
+                    aspectRation: 1,
+                    scales: {
+                        y: {
+                            ticks: {
+                                display: false,
+                                maxTicksLimit: 2,
+                            }
+                        }
+                    }
                 }
+            });
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    this.handle_table_component=(text)=>{
+        try {
+            const lines = text.split('\n'); // Split the text by new lines
+            let headers = [];
+            let rows = [];
+            let sumCols = [];
+            let sumRow = [];
+
+            lines.forEach(line => {
+                line = line.trim();
+
+                // Check for the _sum_col option
+                if (line.startsWith('_sum_col')) {
+                    const [, cols] = line.split('=');
+                    sumCols = cols.split(',').map(col => parseInt(col.trim()) - 1); // Convert to zero-based indices
+                }
+
+                // Check for header row (||)
+                else if (line.startsWith('||')) {
+                    headers = line.replace('||', '').split(',').map(cell => cell.trim());
+                }
+
+                // Check for regular row (|)
+                else if (line.startsWith('|')) {
+                    const row = line.replace('|', '').split(',').map(cell => this.handle_calculations(cell.trim()));
+                    rows.push(row);
+
+                    // Keep track of sums for the columns specified in _sum_col
+                    sumCols.forEach(col => {
+                        sumRow[col] = (sumRow[col] || 0) + parseFloat(row[col] || 0);
+                    });
+                }
+            });
+
+            // Create the table element (or HTML string)
+            let tableHtml = '<table>';
+
+            // Add header row
+            if (headers.length > 0) {
+                tableHtml += '<thead><tr>';
+                headers.forEach(header => {
+                    tableHtml += `<th>${header}</th>`;
+                });
+                tableHtml += '</tr></thead>';
             }
 
-            tableHtml += '</tr>';
+            // Add body rows
+            tableHtml += '<tbody>';
+            rows.forEach(row => {
+                tableHtml += '<tr>';
+                row.forEach(cell => {
+                    tableHtml += `<td>${cell}</td>`;
+                });
+                tableHtml += '</tr>';
+            });
+
+            // Add sum row if needed
+            if (sumCols.length > 0) {
+                tableHtml += '<tr>';
+
+                // Find the first sum column index
+                const firstSumCol = Math.min(...sumCols);
+
+                // Add a merged "Total" cell spanning all non-sum columns
+                if (firstSumCol > 0) {
+                    tableHtml += `<td class="text-center" colspan="${firstSumCol}"><b>Total</b></td>`;
+                }
+
+                // Add sum values in their respective columns
+                for (let i = firstSumCol; i < headers.length; i++) {
+                    if (sumCols.includes(i)) {
+                        tableHtml += `<td><b>${sumRow[i] !== undefined ? sumRow[i] : ''}</b></td>`;
+                    } else {
+                        tableHtml += `<td></td>`; // Empty cell for non-sum columns
+                    }
+                }
+
+                tableHtml += '</tr>';
+            }
+
+            tableHtml += '</tbody></table>';
+
+            return tableHtml; // Return the generated table HTML
+        } catch (err) {
+            console.log(err);
+            return "INVALID EXPRESSION IN TABLE COMPONENT";
         }
-
-        tableHtml += '</tbody></table>';
-
-        return tableHtml; // Return the generated table HTML
-    } catch (err) {
-        console.log(err);
-        return "INVALID EXPRESSION IN TABLE COMPONENT";
     }
-}
 
 
-function circum(r) {
-    return Math.PI * 2 * r;
-}
-
-function calculate_dashoffset(r, p) {
-    return circum(r) * (1 - (p / 100));
-}
-
-function show_progress(p, that) {
-    try {
-        that.parentElement.querySelector(".circular_bar_text").innerHTML = `${p}`;
-        // console.log(that.parentElement.querySelector(".circular_bar_text"))
-    } catch (err) {
-        console.log("Failed to show progress inside text", err)
+    this.circum=(r)=>{
+        return Math.PI * 2 * r;
     }
-}
 
-function handle_circular_bars(text) {
-    try {
-        let lines = text.split("\n")
-        let texts = lines[1].split(",").map(v => handle_calculations(v.trim()));
-        let p = lines[2].split(",").map(v => handle_calculations(v.trim()));
-        let text_pos = "LEFT" //by default text is on left side
-        if (lines.length == 4) {
-            text_pos = lines[3].trim()
+    this.calculate_dashoffset=(r, p)=>{
+        return circum(r) * (1 - (p / 100));
+    }
+
+    this.show_progress=(p, that)=>{
+        try {
+            that.parentElement.querySelector(".circular_bar_text").innerHTML = `${p}`;
+            // console.log(that.parentElement.querySelector(".circular_bar_text"))
+        } catch (err) {
+            console.log("Failed to show progress inside text", err)
         }
+    }
 
-        let radius = 70
-        let r_gap = 20
-        let size = 180
-        let svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform: rotate(-90deg)">`
-        let colors = ["#ff4967", "#f4b424", "#49dc6b", "#9a66ff"]
-        for (let i = 0; i < p.length; i++) {
-            svg += `
+    this.handle_circular_bars=(text)=>{
+        try {
+            let lines = text.split("\n")
+            let texts = lines[1].split(",").map(v => this.handle_calculations(v.trim()));
+            let p = lines[2].split(",").map(v => this.handle_calculations(v.trim()));
+            let text_pos = "LEFT" //by default text is on left side
+            if (lines.length == 4) {
+                text_pos = lines[3].trim()
+            }
+
+            let radius = 70
+            let r_gap = 20
+            let size = 180
+            let svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform: rotate(-90deg)">`
+            let colors = ["#ff4967", "#f4b424", "#49dc6b", "#9a66ff"]
+            for (let i = 0; i < p.length; i++) {
+                svg += `
             <!-- back circle -->
             <circle class="back_circle" r="${radius - r_gap * i}" cx="${size / 2}" cy="${size / 2}" fill="transparent" 
               stroke="${colors[i]}" stroke-linecap="round" stroke-width="12">
@@ -473,21 +470,21 @@ function handle_circular_bars(text) {
               stroke-dasharray="${circum(radius - r_gap * i)}" stroke-dashoffset="${calculate_dashoffset(radius - r_gap * i, p[i])}">
               </circle>
             `
-        }
+            }
 
-        svg += `</svg>`
-        let text_html = ``
-        texts.forEach((item, index) => {
-            text_html += `<div style="color:${colors[index]};" class='circular_bar_text_container_item'>${item}</div>`
-        })
+            svg += `</svg>`
+            let text_html = ``
+            texts.forEach((item, index) => {
+                text_html += `<div style="color:${colors[index]};" class='circular_bar_text_container_item'>${item}</div>`
+            })
 
-        //determine text pos
-        let flex_class = "flex-row"
-        if (text_pos == "RIGHT") {
-            flex_class = "flex-row-reverse"
-        }
+            //determine text pos
+            let flex_class = "flex-row"
+            if (text_pos == "RIGHT") {
+                flex_class = "flex-row-reverse"
+            }
 
-        let html = `
+            let html = `
         <div class="${flex_class} align-center justify-center">
             <div class='circular_bar_text_container'>
                 ${text_html}
@@ -496,79 +493,78 @@ function handle_circular_bars(text) {
 
         </div>
         `
-        return html;
-    } catch (err) {
-        console.log("Error");
+            return html;
+        } catch (err) {
+            console.log("Error");
+        }
+        return "Error while handling circular progress"
     }
-    return "Error while handling circular progress"
-}
 
 
-function handle_component_transactions(markdown) {
-    try {
-        let transactions = [];
-        let lines = markdown.trim().split('\n');
-        if(lines.length==1)
-            return "Missing transactions!";
-        
-        let total_amounts = []
-        total_amounts["total"] = 0;
-        total_amounts["cash"] = 0;
-        total_amounts["credit"] = 0;
-        let category_amounts = []
-        let account_amounts = []
-        
-        lines.forEach((line, index) => {
-            if (index >= 1) {
-                let parts = line.split(',').map(part => part.trim());
-                if (parts.length < 6) {
-                    return(`<p>Invalid transaction format: ${line}</p>`)
+    this.handle_component_transactions=(markdown)=>{
+        try {
+            let transactions = [];
+            let lines = markdown.trim().split('\n');
+            if (lines.length == 1)
+                return "Missing transactions!";
+
+            let total_amounts = []
+            total_amounts["total"] = 0;
+            total_amounts["cash"] = 0;
+            total_amounts["credit"] = 0;
+            let category_amounts = []
+            let account_amounts = []
+
+            lines.forEach((line, index) => {
+                if (index >= 1) {
+                    let parts = line.split(',').map(part => part.trim());
+                    if (parts.length < 6) {
+                        return (`<p>Invalid transaction format: ${line}</p>`)
+                    }
+                    let [desc, category, method, account, amount, date] = parts;
+                    // Default values for missing or incorrect data
+                    method = ["cash", "credit"].includes(method.toLowerCase()) ? method.toLowerCase() : "cash";
+                    amount = isNaN(parseFloat(amount)) ? 0 : parseFloat(amount);
+                    //calculating totals
+                    total_amounts[method] += amount //cash or credit
+                    total_amounts["total"] += amount
+                    //categories amounts
+                    if (category_amounts[category])
+                        category_amounts[category] += amount
+                    else
+                        category_amounts[category] = amount
+
+                    //each account amounts
+                    if (account_amounts[account])
+                        account_amounts[account] += amount
+                    else
+                        account_amounts[account] = amount
+
+                    transactions.push({ desc, category, method, account, amount, date });
                 }
-                let [desc, category, method, account, amount, date] = parts;
-                // Default values for missing or incorrect data
-                method = ["cash", "credit"].includes(method.toLowerCase()) ? method.toLowerCase() : "cash";
-                amount = isNaN(parseFloat(amount)) ? 0 : parseFloat(amount);
-                //calculating totals
-                total_amounts[method]+=amount //cash or credit
-                total_amounts["total"]+=amount
-                //categories amounts
-                if(category_amounts[category])
-                    category_amounts[category] += amount
-                else
-                    category_amounts[category] = amount
-                
-                //each account amounts
-                if(account_amounts[account])
-                    account_amounts[account] += amount
-                else
-                    account_amounts[account] = amount
-                
-                transactions.push({ desc, category, method, account, amount, date });
-            }
-        });
+            });
 
-        if(transactions.length>0)
-        {
-            // Render transactions
-            let categories_amount_div = ``
-            Object.entries(category_amounts).forEach((item)=>{
-                categories_amount_div+=`
+            if (transactions.length > 0) {
+                // Render transactions
+                let categories_amount_div = ``
+                Object.entries(category_amounts).forEach((item) => {
+                    categories_amount_div += `
                     <div class="flex-row space-between gray">
                         <div class="bullet">${item[0]}</div>
                         <div class="amount text-sm">₹ ${item[1].toFixed(1)}</div>
                     </div>`
-            });
+                });
 
-            let account_amount_div = ``
-            Object.entries(account_amounts).forEach((item)=>{
-                account_amount_div+=`
+                let account_amount_div = ``
+                Object.entries(account_amounts).forEach((item) => {
+                    account_amount_div += `
                     <div class="flex-row space-between purple">
                         <div class="bullet">${item[0]}</div>
                         <div class="amount text-sm">₹ ${item[1].toFixed(1)}</div>
                     </div>`
-            });
-            
-            let total_div = `
+                });
+
+                let total_div = `
             <div class="align-items-inherit flex-col gap-1 transaction">
                     <div class="flex-row space-between">
                         <div class="title">Total</div>
@@ -590,8 +586,8 @@ function handle_component_transactions(markdown) {
                     ${categories_amount_div}
                 </div>
             `
-            return transactions.map(t => 
-                `<div class="transaction">
+                return transactions.map(t =>
+                    `<div class="transaction">
                     <div class="transaction-info">
                         <div class="transaction-icon">
                             <img src="./img/icons/${t.method}.svg" class="svg-icon"/>
@@ -608,79 +604,81 @@ function handle_component_transactions(markdown) {
                     </div>
                 </div>
             `).join('').concat(`${total_div}`);
-        }
-    } catch (error) {
-        console.log("Error processing transactions:", error);
-        return "<p>Error loading transactions.</p>";
-    }
-}
-
-
-function parseWikiTextToHTML(wikiText) {
-
-    wikiText = wikiText.trim()
-    if (wikiText.startsWith("@table")) {
-        return handle_table_component(wikiText)
-    }
-    if (wikiText.startsWith("@chart")) {
-        return handle_charts(wikiText)
-    }
-    if (wikiText.startsWith("@returns")) {
-        return handle_returns(wikiText)
-    }
-
-    if (wikiText.startsWith("@circular_bars")) {
-        return handle_circular_bars(wikiText)
-    }
-    if (wikiText.startsWith("@transcations")) {
-        return handle_component_transactions(wikiText)
-
-    }
-
-    let html = '';
-    let lines = wikiText.split("\n")
-    lines.forEach(line => {
-        line = line.trim()
-        //if(line.length>0)
-        {
-            // !highlight!
-            line = handle_highlight(line)
-
-            // x^y^
-            line = sup(line)
-            // x~y~
-            line = sub(line)
-
-            // handle {2+2} eval expression
-            line = handle_calculations(line)
-
-            // progress bar #20%
-            line = progress_bar(line)
-
-            //--- means a line
-            line = check_for_line(line)
-
-            //handle custom class
-            line = handle_insert_class(line)
-
-            if (line.startsWith('#')) {
-                // Handle headings
-                const level = line.match(/^(#+)/)[0].length;
-                const text = line.replace(/#+/g, '').trim().toLocaleLowerCase();
-                html += `<h${level}>${text}</h${level}>`;
-            } else if (line.startsWith('*') || line.startsWith('-')) {
-                html += handle_list(line)
-            } else if (line.startsWith(".")) {
-                html += insert_tag(line)
             }
-            else {
-                // Handle regular text
-                if (line.length > 0) {
-                    html += `<div class='plain-text'>${line}</div>`;
-                    // console.log(html)
+        } catch (error) {
+            console.log("Error processing transactions:", error);
+            return "<p>Error loading transactions.</p>";
+        }
+    }
+
+
+    this.parseWikiTextToHTML=(wikiText)=>{
+
+        wikiText = wikiText.trim()
+        if (wikiText.startsWith("@table")) {
+            return this.handle_table_component(wikiText)
+        }
+        if (wikiText.startsWith("@chart")) {
+            return this.handle_charts(wikiText)
+        }
+        if (wikiText.startsWith("@returns")) {
+            return this.handle_returns(wikiText)
+        }
+
+        if (wikiText.startsWith("@circular_bars")) {
+            return this.handle_circular_bars(wikiText)
+        }
+        if (wikiText.startsWith("@transcations")) {
+            return this.handle_component_transactions(wikiText)
+
+        }
+
+        let html = '';
+        let lines = wikiText.split("\n")
+        lines.forEach(line => {
+            line = line.trim()
+            //if(line.length>0)
+            {
+                // !highlight!
+                line = this.handle_highlight(line)
+
+                // x^y^
+                line = this.sup(line)
+                // x~y~
+                line = this.sub(line)
+
+                // handle {2+2} eval expression
+                line = this.handle_calculations(line)
+
+                // progress bar #20%
+                line = this.progress_bar(line)
+
+                //--- means a line
+                line = this.check_for_line(line)
+
+                //handle custom class
+                line = this.handle_insert_class(line)
+
+                if (line.startsWith('#')) {
+                    // Handle headings
+                    const level = line.match(/^(#+)/)[0].length;
+                    const text = line.replace(/#+/g, '').trim().toLocaleLowerCase();
+                    html += `<h${level}>${text}</h${level}>`;
+                } else if (line.startsWith('*') || line.startsWith('-')) {
+                    html += this.handle_list(line)
+                } else if (line.startsWith(".")) {
+                    html += this.insert_tag(line)
+                }
+                else {
+                    // Handle regular text
+                    if (line.length > 0) {
+                        html += `<div class='plain-text'>${line}</div>`;
+                        // console.log(html)
+                    }
                 }
             }
-        }
-    });
-    return `${html}`;
+        });
+        return `${html}`;
+    }
+
 }

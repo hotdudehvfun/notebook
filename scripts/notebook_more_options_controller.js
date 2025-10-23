@@ -153,13 +153,17 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                 text: "📚 Delete notebook",
                 show: true,
                 action: () => {
-                    if (confirm("Delete this notebook?")) {
-                        db_service.remove_notebook(notebook);
-                        set_shared("current_notebook", null);
-                        // on notebook delete
-                        //show all notebooks
-                        $scope.$emit("notebook_deleted");
-                        emit_toast("Notebook deleted");
+                    try {
+                        if (confirm("Delete this notebook?")) {
+                            db_service.remove_notebook(notebook);
+                            set_shared("current_notebook", null);
+                            // on notebook delete
+                            //show all notebooks
+                            $scope.$emit("notebook_deleted");
+                            emit_toast("Notebook deleted");
+                        }
+                    } catch (err) {
+                        console.log(err)
                     }
                 }
             }

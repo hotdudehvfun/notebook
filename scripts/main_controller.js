@@ -1,7 +1,7 @@
-function main_controller($scope, $timeout, db_service, notebook_service, note_service, graph_service, shared_service) {
+function main_controller($scope, $timeout, db_service, notebook_service, note_service, graph_service, shared_service,wiki_service) {
     // custom code of note is parsed to output html content
     $scope.parse_markdown_to_html = function (text) {
-        return parseWikiTextToHTML(text)
+        return wiki_service.parseWikiTextToHTML(text)
     }
 
     // get notebook age
@@ -16,6 +16,8 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                 return;
             console.log("opening notebook")
             shared_service.set("current_notebook", notebook)
+            shared_service.set("system_vars", db_service.read_vars())
+
             $scope.pageTitle = notebook.title;
             $scope.pageIcon = notebook_service.get_notebook_icon(notebook)
             $scope.current_notebook = notebook;
@@ -645,9 +647,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         //date, title, tags
         $scope.sort_notebook_selected_item = localStorage.notebook_sort_by || "title"
         $scope.handle_group_notebooks()
-        // console.log($scope.notebooks)
-        // $scope.show_view = $scope.CONST.VIEW_TAG
-
     };
 
     $scope.$on('$viewContentLoaded', function () {

@@ -16,7 +16,8 @@ function db_service() {
         if (!all_notebooks || all_notebooks.length === 0) throw "No notebooks to delete";
         if (!notebook) throw "No notebook selected";
 
-        const index = all_notebooks.findIndex(n => n.id === notebook.id);
+        const index = all_notebooks.findIndex(n => n.id == notebook.id);
+        console.log(notebook.id,index,all_notebooks)
         if (index === -1) throw "Notebook not found";
 
         all_notebooks.splice(index, 1);
@@ -46,12 +47,10 @@ function db_service() {
 
 
     this.write_notebook = function (notebook) {
-
         //move completed notes at the bottom
         notebook.taskArray = notebook.taskArray.sort((a, b) => {
             return a.isTaskCompleted - b.isTaskCompleted;
         });
-
 
         let all_notebooks = this.read_notebooks();
         let idx = all_notebooks.findIndex(n => n.id === notebook.id);
@@ -158,6 +157,7 @@ function db_service() {
     this.ensure_all_ids = (all_notebooks) => {
         all_notebooks.forEach(notebook => {
             if (!notebook.id) {
+                console.log("notebook id not found,generating new one")
                 notebook.id = generate_id();
             }
             // Ensure each note has id
@@ -173,6 +173,7 @@ function db_service() {
                 });
             }
         });
+        this.write_notebooks(all_notebooks)
         return all_notebooks;
     };
 

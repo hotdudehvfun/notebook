@@ -36,6 +36,8 @@ app.service('notebook_service',notebook_service)
 app.service('note_service',note_service)
 app.service('graph_service',graph_service)
 app.service('shared_service',shared_service);
+app.service('wiki_service',wiki_service);
+
 
 
 
