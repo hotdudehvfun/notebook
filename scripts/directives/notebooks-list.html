@@ -1,7 +1,6 @@
 <!-- notebooks -->
-<div ng-show="show_view==CONST.VIEW_NOTEBOOK">
+<div ng-show="show_dialog">
     <div class="spacer"></div>
-    
     <!-- Sort notebooks -->
     <div class="relative text-left">
         <label for="sort_notebooks" class="absolute align-center flex-row gap-1 h-full w-full">
@@ -17,7 +16,7 @@
     </div>
 
     <div class="notebook_count">
-        {{get_total().total_tasks}} notes in {{get_total().total_notebooks}} notebooks
+        {{notebooks.length}} notebooks
     </div>
 
     <!-- notebooks list -->
@@ -34,21 +33,11 @@
 
                         <!-- handle click on notebook more options -->
                         <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
-                            <!-- completed notes status -->
-                            <span ng-show="get_completed_notes_length(notebook.taskArray)>0"
-                                class="list-sub-text gray line-through">
-                                {{get_completed_notes_len(notebook.taskArray)}}
-                            </span>
-
                             <!-- notes length -->
-                            <span class="list-sub-text">            
+                            <span class="list-sub-text">
                                 {{get_total_notes_len(notebook.taskArray)}}
                             </span>
                         </div>
-
-                        <!-- drag button -->
-                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}"
-                            alt="NoteBook icon">
 
                     </div>
                 </div>
@@ -69,18 +58,9 @@
 
                         <!-- handle click on notebook more options -->
                         <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
-                            <!-- completed notes status -->
-                            <span ng-show="get_completed_notes_length(notebook.taskArray)>0"
-                                class="list-sub-text gray line-through">
-                                {{get_completed_notes_length(notebook.taskArray)}}
-                            </span>
                             <!-- notes length -->
                             <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
                         </div>
-
-                        <img ng-show="is_sortable" class="svg-icon handle" ng-src="{{get_svg_src('drag_handle')}}"
-                            alt="NoteBook icon">
-
                     </div>
                 </div>
             </li>
@@ -89,10 +69,19 @@
 
     <!-- empty space at last -->
     <div 
-        ng-show="notebooks.length!=0" ng-click="dialog_flags.show_notebook_popup=true" class="create-note-text clickable">
+        ng-show="notebooks.length!=0" ng-click="open_notebook_popup('create');" class="create-note-text clickable">
         <span>Tap here to open new notebook</span>
     </div>
-     
+
+    
+
+
+
+
+
+
+
+    
      
     
 

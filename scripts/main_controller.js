@@ -1,45 +1,5 @@
-function main_controller($scope, $timeout, db_service, notebook_service, note_service, graph_service, shared_service,wiki_service) {
-    // custom code of note is parsed to output html content
-    $scope.parse_markdown_to_html = function (text) {
-        return wiki_service.parseWikiTextToHTML(text)
-    }
-
-    // get notebook age
-    $scope.notebook_age = function () {
-        return notebook_service.get_notebook_age($scope.current_notebook)
-    }
-
-    // open notebook
-    $scope.open_notebook = function (notebook) {
-        try {
-            if (!notebook)
-                return;
-            console.log("opening notebook")
-            shared_service.set("current_notebook", notebook)
-            shared_service.set("system_vars", db_service.read_vars())
-
-            $scope.pageTitle = notebook.title;
-            $scope.pageIcon = notebook_service.get_notebook_icon(notebook)
-            $scope.current_notebook = notebook;
-            reset_scroll(document.querySelector(".content"))
-
-            $scope.selectedListIndex = $scope.notebooks.indexOf(notebook);
-            $scope.notes = notebook.taskArray;
-            $scope.selectedListName = notebook.title;
-
-            $scope.is_note_selected = false;
-            $scope.selected_note = undefined;
-
-            $scope.set_view($scope.CONST.VIEW_NOTE)
-            $scope.note_content_placeholder = `Create note in ${$scope.selectedListName}`;
-
-            // save data when notebook is opened
-            // $scope.save_data();
-        } catch (err) {
-            console.log("Error while opening notebook", err);
-            alert("Cannot open notebook");
-        }
-    };
+function main_controller($scope, $timeout, db_service, notebook_service, note_service, graph_service, shared_service, wiki_service) {
+    const set_shared = (k, v) => shared_service.set(k, v);
 
     // handle sidebar open close
     $scope.open_sidebar = function (e, state) {
@@ -65,6 +25,9 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         shared_service.set('show_tag_list', false);
         shared_service.set('show_var_list', false);
         shared_service.set('show_bin', false);
+        shared_service.set('show_notebook_list', false);
+        shared_service.set('show_note_list', false);
+
 
 
         switch (view_name) {
@@ -74,14 +37,14 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
                 shared_service.set("current_notebook", null);
                 shared_service.set("current_note", null);
-
-                $scope.notebooks = db_service.read_notebooks();
-                $scope.handle_group_notebooks();
+                shared_service.set("show_notebook_list", true)
                 break;
 
             case shared_service.CONST.VIEW_NOTE:
+                $scope.current_notebook = shared_service.get("current_notebook")
                 $scope.pageTitle = $scope.current_notebook.title;
                 $scope.pageIcon = $scope.current_notebook.icon;
+                shared_service.set("show_note_list", true)
                 break;
 
             case shared_service.CONST.VIEW_TAG:
@@ -112,58 +75,17 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
     };
 
-    // get notes length
-    $scope.get_notes_length = (notebook) => {
-        try {
-            if (notebook) {
-                return notebook?.taskArray.length
-            }
-        } catch (error) {
-            console.log(error, "error while gettig length of notes")
-        }
-        return -1;
-    }
-
-    //open menu for note
-    //if multi select is on , just select notes
-    $scope.handle_tap_on_note = function (note,type) {
-        try {
-            //broadcast event to open note more options dialog
-            if ($scope.is_note_multi_select_on) {
-                note.isSelected = !note.isSelected;
-            } else {
-                $scope.selected_note = note;
-                shared_service.set("current_note", note)
-                $scope.$broadcast('open_note_more_options_menu',type);
-            }
-        } catch (err) {
-            console.log("Error", err)
-        }
-    }
-
-    //used in sidebar
+    //from top bar
     $scope.handle_click_on_more_vert = (_notebook) => {
         // notebook is passed to handle click on more vert icon
         // console.log(_notebook)
         if (_notebook) {
             shared_service.set("current_notebook", _notebook)
-        }else{
+        } else {
             console.log("notebook not available")
         }
         $scope.$broadcast("open_notebook_more_options_menu")
     }
-
-
-    //used by notes list
-    $scope.notebook_has_completed_tasks = () => {
-        let _notebook = shared_service.get("current_notebook")
-        return notebook_service.notebook_has_completed_tasks(_notebook);
-    };
-
-    $scope.is_notebook_locked = () => {
-        let notebook = shared_service.get("current_notebook")
-        return notebook?.is_locked || false;
-    };
 
     // receive broadcast to show toast
     // call directly
@@ -187,58 +109,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             toast_timer_id = $timeout(() => {
                 $scope.is_toast_visible = false
                 // console.log("clear toast")
-            }, 4000)
-        }
-    }
-
-    $scope.get_component_details = () => {
-        if ($scope.selected_note) {
-            /* 
-            component types:
-            @table
-            @chart
-            @returns
-            @circular_bars
-            @label_and_bars
-            */
-            if ($scope.selected_note.title.trim().startsWith("@")) {
-                let component_name = $scope.selected_note.title.trim().split("\n")[0]
-                component_name = component_name.split("@")[1]
-                return `Component Detected:${component_name}`
-            } else {
-                return "Component Detected:Text"
-            }
-        } else {
-            return "Note not selected"
-        }
-    }
-
-
-
-
-    $scope.handle_sort_notebook_change = () => {
-        try {
-            $scope.handle_group_notebooks()
-            localStorage.notebook_sort_by = $scope.sort_notebook_selected_item
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-
-    // handle group notebooks
-    $scope.handle_group_notebooks = () => {
-        // console.trace("Grouping Function called from:");
-        if ($scope.sort_notebook_selected_item == "date") {
-            $scope.grouped_notebooks = notebook_service.get_grouped_notebooks_date($scope.notebooks);
-        }
-
-        if ($scope.sort_notebook_selected_item == "title") {
-            $scope.grouped_notebooks = notebook_service.get_grouped_notebooks_title($scope.notebooks);
-        }
-
-        if ($scope.sort_notebook_selected_item == "tag") {
-            $scope.grouped_notebooks = notebook_service.get_grouped_notebooks_tag($scope.notebooks);
+            }, 2000)
         }
     }
 
@@ -247,17 +118,11 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         return name ? svg_path : "./img/icons/leaf.fill.svg";
     };
 
-    $scope.return_bar_graph = () => {
-        return graph_service.create_bar_graph();
-    }
-
     // NOTEBOOK CREATED
     // call from only create
     $scope.$on('notebooks_updated', function (event, new_notebook) {
         try {
-            $scope.notebooks = db_service.read_notebooks()
-            $scope.current_notebook = null
-            $scope.handle_group_notebooks()
+            $scope.set_view($scope.CONST.VIEW_NOTEBOOK);
         } catch (err) {
             console.log(err)
         }
@@ -283,22 +148,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
     });
 
-    // EVENT: CURRENT NOTEBOOK IS CHANGED
-    $scope.$on('current_notebook_changed', function (event, notebook) {
-        try {
-            if (notebook) {
-                //notebook is updated from two services
-                //notebook service and note service
-                console.log("current notebook changed", notebook)
-                $scope.current_notebook = notebook;
-                $scope.notes = $scope.current_notebook.taskArray
-                // $scope.set_view($scope.CONST.VIEW_NOTE)
-            }
-        } catch (err) {
-            console.log(err)
-        }
-    });
-
     // EVENT: CHANGE VIEW
     $scope.$on('show_view_changed', function (event, view) {
         try {
@@ -314,6 +163,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     //from bottom bar
     $scope.open_create_note_popup = function () {
         try {
+            shared_service.set("create_note_source", "create")
             $scope.set_view($scope.CONST.VIEW_CREATE_NOTE)
         } catch (err) {
             console.log("Error", err)
@@ -333,101 +183,10 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
 
 
-
-
-    //leave multi select options in main controller
-    $scope.handle_multi_select_action = (action_code) => {
-        //COMPLETE ACTION
-        // isSelected is property available in note
-        // js can also create dynamic props
-        if ($scope.CONST.COMPLETE == action_code) {
-            try {
-                $scope.notes.forEach((note, index) => {
-                    if (note.isSelected) {
-                        note.isTaskCompleted = true;
-                        note.isSelected = false;
-                    }
-                })
-                db_service.write_notebook($scope.current_notebook)
-                shared_service.set("current_notebook", $scope.current_notebook)
-                $scope.is_note_multi_select_on = false;
-                $scope.show_toast("Selected notes completed")
-            } catch (err) {
-                console.log(err)
-                $scope.show_toast("Failed to complete")
-            }
-            return;
-        }
-
-        // MOVE ACTION
-        // this opens quick notebook dialog
-        // based on quick notebook action, isSelected notes are moved to selected notebook
-        // using notebook service
-        if ($scope.CONST.MOVE == action_code) {
-            //show quick notebooks
-            //listen for quick_notebook_change event to do something
-            shared_service.set("quick_notebooks_action", shared_service.CONST.MOVE)
-            $scope.$broadcast("show_quick_notebooks")
-            return;
-        }
-        // MERGE ACTION
-        if ($scope.CONST.MERGE == action_code) {
-            try {
-                const selected_notes = $scope.notes.filter(n => n.isSelected)
-                const unselected_notes = $scope.notes.filter(n => !n.isSelected)
-                selected_notes.forEach(note => note.isSelected = false);
-                $scope.notes = unselected_notes // current notebooks is also updated by reference
-                $scope.notes.push(new Task(selected_notes.map(note => note.title).join("\n\n")))
-                $scope.current_notebook.taskArray = $scope.notes
-                db_service.write_notebook($scope.current_notebook)
-                shared_service.set("current_notebook", $scope.current_notebook)
-                $scope.is_note_multi_select_on = false;
-                $scope.show_toast("Notes merged")
-            } catch (error) {
-                console.error("Cannot merge completed notes", error);
-            }
-            return;
-        }
-        //REMOVE ACTION
-        if ($scope.CONST.REMOVE == action_code) {
-            try {
-                let count = 0
-                $scope.notes.filter((note) => {
-                    if (note.isSelected) {
-                        note.isSelected = false;
-                        note.isDeleted = true;
-                        count += 1
-                    }
-                })
-                $scope.current_notebook.taskArray = $scope.notes
-                db_service.write_notebook($scope.current_notebook)
-                shared_service.set("current_notebook", $scope.current_notebook)
-                $scope.is_note_multi_select_on = false;
-                $scope.show_toast(`${count} Notes moved to Bin`)
-            } catch (error) {
-                console.error(error);
-            }
-            return;
-        }
-        //cancel 
-        if ($scope.CONST.CANCEL == action_code) {
-            try {
-                $scope.is_note_multi_select_on = false
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    }
-
-    //changed from note menu
-    $scope.$on("note_multi_select_on_changed", function (e, value) {
-        $scope.is_note_multi_select_on = value
-    });
-
     $scope.handle_click_on_notebook_title = () => {
         try {
             shared_service.set("quick_notebooks_action", shared_service.CONST.OPEN)
-            $scope.$broadcast("show_quick_notebooks")
+            shared_service.set("show_quick_notebooks", true)
         } catch (error) {
             console.log(error)
         }
@@ -446,12 +205,14 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         try {
             switch (action) {
                 case shared_service.CONST.MOVE:
-                    let updated_notebook = notebook_service.move_notes_to_notebook($scope.current_notebook, notebook)
+                    const current_notebook = shared_service.get("current_notebook")
+                    let updated_notebook = notebook_service.move_notes_to_notebook(current_notebook, notebook)
                     shared_service.set("current_notebook", updated_notebook)
-                    $scope.is_note_multi_select_on = false
+                    $scope.set_view($scope.CONST.VIEW_NOTE)
                     break;
                 case shared_service.CONST.OPEN:
-                    $scope.open_notebook(notebook)
+                    shared_service.set("current_notebook", notebook)
+                    $scope.set_view($scope.CONST.VIEW_NOTE)
                     break;
             }
         } catch (error) {
@@ -469,41 +230,35 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     }
 
 
-
-    //clicked from notes list
-    $scope.toggle_note_completed_state = (note) => {
-        note.isTaskCompleted = !note.isTaskCompleted
-        shared_service.set("current_notebook", $scope.current_notebook)
-        db_service.write_notebook($scope.current_notebook)
-    }
-
-    $scope.get_total_notes_len = (notes) => {
-        //return notes not deleted length
-        return notes.filter(note => !note.isDeleted).length;
-    }
-
-    $scope.get_completed_notes_len = (notes) => {
-        try {
-            return notes.filter((note) => {
-                if (!note.isDeleted && note.isTaskCompleted)
-                    return note;
-            }).length
-        } catch (error) {
-            console.log("error ", error)
-        }
-        return -1;
-    }
-
     $scope.show_empty_notebook_state = () => {
         if ($scope.get_total_notes_len($scope.notes) == 0)
             return true
         return false
     }
 
+    $scope.$on("note_multi_select_on_changed", (e, state) => {
+        $scope.is_note_multi_select_on = state;
+    })
+
+    //FROM: bottom bar
+    //TO: note controller
+    $scope.bulk_action = (action) => {
+        $scope.is_note_multi_select_on = false;
+        $scope.$broadcast("handle_multi_select_action", action)
+    }
+
+    $scope.start_unlock = () => {
+        set_shared("show_password_popup", true)
+    }
+
+    $scope.is_create_note_view_open = () => {
+        return shared_service.get('create_note_popup') || false;
+    }
+
 
     // init everything
     $scope.init = () => {
-        console.log("init called")
+        console.log("INIT CALLED")
         //CONST values
         $scope.CONST = {
             IMPORT: "import",
@@ -522,19 +277,8 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             CANCEL: 6,
             CREATE_NOTEBOOK: 7,
         }
-
-        //dialog flags
         $scope.dialog_flags = {
-            is_sidebar_menu_open: false,
-            show_list_more_options: false, // show options for notebooks
-            show_db_popup: false, // show import export popup
-            show_create_system_var_popup: false, // 
-            show_password_popup: false, // show password popup
-            show_quick_notebooks: false, // show quick notebook list
-            show_note_more_options: false, // show options for notes
-            show_notebook_popup: false, //to show create notebook popup
-            show_edit_note_more_options: false, // show edit options for notes
-            show_create_tag_popup: false, // show create tag popup
+            show_edit_note_more_options:false,
         }
 
         // do not include it in dialog flags
@@ -567,7 +311,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.group_notebook_right_panel_array = [] //holds selected notebooks in left panel to move inside a group
 
         $scope.action_on_quick_notebook_item = $scope.CONST.OPEN // what to do when quick notebook item is clicked
-        $scope.sort_notebook_selected_item = 'date' // sort notebooks default is DATE
 
 
 
@@ -635,18 +378,12 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         // default delimiter is new line
         $scope.presets_delimiters = ["new line", "#", "$", "!"]
 
-        // 
-        $scope.proverbs = ["An empty vessel can hold anything.", "An empty mind makes progress.", "Emptiness is the beginning of all things.", "An empty mind is a clear mind.", "The empty pot makes the loudest noise.", "The less you carry, the farther you go.", "Only when the cup is empty can it be filled.", "In the void, possibilities are endless.", "Silence is a source of great strength.", "Emptiness is the path to wisdom.", "A full cup cannot accept more water.", "True understanding comes from nothingness.",]
-
-        $scope.empty_notebook_msg = getRandomItem($scope.proverbs)
-
         //read saved data
-        $scope.notebooks = db_service.read_notebooks();
         $scope.notes = []
         //group notebooks
         //date, title, tags
-        $scope.sort_notebook_selected_item = localStorage.notebook_sort_by || "title"
-        $scope.handle_group_notebooks()
+        //view notebooks by default
+        $scope.set_view($scope.CONST.VIEW_NOTEBOOK)
     };
 
     $scope.$on('$viewContentLoaded', function () {

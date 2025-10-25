@@ -1,7 +1,5 @@
 <!-- notes -->
-<div
-    ng-if="!is_notebook_locked()"
-    ng-show="show_view==CONST.VIEW_NOTE">
+<div ng-if="!is_notebook_locked()" ng-show="show_view==CONST.VIEW_NOTE">
     <div class="spacer"></div>
     <!-- notebook age -->
     <div class="notebook_age">
@@ -12,50 +10,34 @@
         📋 1 note
     </div>
 
-   <div class="flex-row">
-     <div
-        ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">
-        {{get_total_notes_len(notes)}} notes
+    <div class="flex-row">
+        <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">
+            {{get_total_notes_len(notes)}} notes
+        </div>
+        <div ng-show="notebook_has_completed_tasks()" class="group_by_text">
+            {{get_completed_notes_len(notes)}} completed
+        </div>
     </div>
-    <div 
-        ng-show="notebook_has_completed_tasks()"
-        class="group_by_text">
-        {{get_completed_notes_len(notes)}} completed
-    </div>
-   </div>
 
     <!--notes inside notebook  -->
-   <ul class="notes reset_ul">
-        <li
-            ng-if="!note.isDeleted"
-            data-index="{{$index}}" 
-            ng-repeat="note in notes">
-            <div 
-                class="task" 
-                ng-class="{'completed':note.isTaskCompleted}">
+    <ul class="notes reset_ul">
+        <li ng-if="!note.isDeleted" data-index="{{$index}}" ng-repeat="note in notes">
+            <div class="task" ng-class="{'completed':note.isTaskCompleted}">
                 <!-- multi select checkbox -->
                 <div class="roundedOne" ng-show="is_note_multi_select_on">
                     <label id="multi-select-{{note.id}}" class="clickable">
-                        <img 
-                            ng-show="!note.isSelected" 
-                            src="./img/icons/circle.dashed.svg" 
-                            class="svg-icon-md"/>
-                        <img 
-                            ng-show="note.isSelected" 
-                            src="./img/icons/inset.filled.circle.dashed.svg" 
-                            class="svg-icon-md"/>
+                        <img ng-show="!note.isSelected" src="./img/icons/circle.dashed.svg" class="svg-icon-md" />
+                        <img ng-show="note.isSelected" src="./img/icons/inset.filled.circle.dashed.svg"
+                            class="svg-icon-md" />
                     </label>
                 </div>
                 <!-- note content -->
-                <div
-                    ng-class="{selected:selected_note==note}" 
-                    class="task-content-div clickable"
+                <div ng-class="{selected:selected_note==note}" class="task-content-div clickable"
                     ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                     ng-click="handle_tap_on_note(note,'note');"></div>
             </div>
             <!-- show more options when chart is clicked -->
-            <div
-                ng-show="note.component_type=='chart'" class="flex-row justify-content-end m-2">
+            <div ng-show="note.component_type=='chart'" class="flex-row justify-content-end m-2">
                 <span ng-click="handle_tap_on_note(note,'more');" class="orange">
                     🍕 More
                 </span>
@@ -64,30 +46,30 @@
     </ul>
 
     <!-- show completed tasks if any -->
-    
+
 
     <!-- empty state empty list-->
     <!-- hide empty state if create note is open -->
-    <div 
-        class="empty-notebook"
-        ng-if="show_empty_notebook_state()">
-        <span class="lock_icon">📭</span>
-        <span class="lock_text">It's all empty here</span>
+    <div class="empty-notebook" ng-if="show_empty_notebook_state()">
+        <div class="empty_container">
+            <span class="text-xxxl">📭</span>
+            <span class="gray">No notes</span>
+            <span class="chip orange" ng-click="open_create_note_popup()">+ Create note</span>
+        </div>
     </div>
 
     <!-- empty space at last tap to create new note -->
-    <div 
-        ng-if="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'"
-        ng-click="open_create_note_popup()" 
-        class="create-note-text clickable">
+    <div ng-if="is_notebook_locked() || pageTitle.toLocaleLowerCase()=='system' || pageTitle.toLocaleLowerCase()=='trash'"
+        ng-click="open_create_note_popup()" class="create-note-text clickable">
         <span>Tap here to create note in {{current_notebook.title}}</span>
     </div>
 </div>
 
 <!-- notebook is locked-->
-<div 
-    class="empty-notebook" 
-    ng-if="is_notebook_locked()">
-    <span class="lock_icon">🔐</span>
-    <span class="lock_text">NoteBook is locked</span>
+<div class="empty-notebook" ng-if="is_notebook_locked()">
+    <div class="empty_container">
+        <span class="text-xxxl">🔐</span>
+        <span class="gray">Notebook Locked</span>
+        <span class="chip orange" ng-click="start_unlock()">Tap to unlock</span>
+    </div>
 </div>

@@ -37,8 +37,14 @@
     </ul>
     <!-- empty state empty list-->
     <!-- hide empty state if create note is open -->
-    <div class="empty-notebook" ng-if="notes.length==0">
-        <span class="lock_icon">📭</span>
-        <span class="lock_text">It's all empty here</span>
+    <div
+        class="empty-notebook" ng-if="notes.length==0">
+        <div class="empty_container">
+            <span class="text-xxxl">📭</span>
+            <span class="gray">Bin is empty</span>
+            <span class="orange">
+                Deleted notes will be here.
+            </span>
+        </div>
     </div>
 </div>

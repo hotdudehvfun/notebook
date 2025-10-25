@@ -106,6 +106,7 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
             const actions = {
                 edit: () => {
                     set_shared("current_note", note);
+                    shared_service.set("create_note_source","edit")
                     set_shared("show_view", shared_service.CONST.VIEW_CREATE_NOTE)
                 },
                 done: () => {

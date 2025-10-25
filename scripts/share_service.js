@@ -1,15 +1,25 @@
 function shared_service($rootScope) {
     //define keys for shared state
-    let state = { 
+    let state = {
+            //VIEWS
+            create_note_popup:false,
+            show_tag_list:false,
+            show_var_list:false,
+            show_bin:false,
+            show_notebook_list:false,
+            show_note_list:false,
+            show_sidebar:false,
+            show_password_popup: false,
+            //STATES
             current_notebook: null, 
             current_note: null,
-            show_password_popup: false,
             quick_notebooks_action: null,
             quick_notebook:null,
             note_multi_select_on:false,
             copied_task:null,
             show_toast:"",
-            show_sidebar:false,
+            create_note_source:"create",
+
     };
     let CONST = {
         MOVE: "move",
@@ -21,7 +31,8 @@ function shared_service($rootScope) {
         VIEW_NOTE: "note",
         VIEW_SYSTEM: "system_var",
         VIEW_TAG: "tag",
-        VIEW_BIN:"bin"
+        VIEW_BIN:"bin",
+        
     }
     this.CONST = CONST;
 

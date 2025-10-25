@@ -2,7 +2,7 @@ function quick_notebooks_controller($scope,$rootScope,shared_service,db_service)
     $scope.notebooks = []
     //listen to close all dialogs event from shared service
     $scope.show_dialog = false;
-    $scope.$on("show_quick_notebooks", function (e,data) {
+    $scope.$on("show_quick_notebooks_changed", function (e,data) {
         console.log("open q n")
         $scope.show_dialog = true;
         $scope.load_notebooks()

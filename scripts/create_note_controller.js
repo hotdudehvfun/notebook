@@ -35,12 +35,13 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         //set current note when edit button is clicked
         $scope.current_note = shared_service.get("current_note")
         $scope.current_notebook = $scope.get_current_notebook();
+        //create or edit
+        const create_note_source = shared_service.get("create_note_source")
         if (state) {
-            if($scope.current_note)
-            {
+            if (create_note_source == "edit") {
                 //open for edit
                 $scope.open_edit_note_popup()
-            }else{
+            } else {
                 //open for new 
                 $scope.note_content = ""
                 document.getElementById("note_content").value = ""
@@ -50,8 +51,10 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         }
     })
 
+
+
     // open create notebook popup
-    $scope.open_edit_note_popup = ()=>{
+    $scope.open_edit_note_popup = () => {
         try {
             console.log("edit note dialog is opned")
             $scope.current_notebook = shared_service.get("current_notebook");
@@ -79,12 +82,12 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         shared_service.set("current_notebook", $scope.current_notebook);
         shared_service.set("show_view", "note")
         $scope.current_note = null
-        shared_service.set("current_note",null)
+        shared_service.set("current_note", null)
     }
 
 
 
-    
+
 
     //handle create note in which notebook
     $scope.$on("quick_notebook_changed", function (e, d) {
@@ -126,15 +129,6 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
 
     $scope.create_note = () => {
         try {
-            // cannot create note in trash notebook
-            if ($scope.current_notebook.title.toLowerCase() === "trash") {
-                shared_service.set("show_toast", `Cannot create note Trash`);
-                return;
-            }
-            if ($scope.current_notebook.title.toLowerCase() === "system") {
-                shared_service.set("show_toast", `Cannot create note System`);
-                return;
-            }
             if (!$scope.current_notebook) {
                 shared_service.set("show_toast", `Cannot find notebook`);
                 return;
@@ -143,9 +137,9 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
                 shared_service.set("show_toast", `Cannot create note in locked Notebook`);
                 return;
             }
-
             const task_content = document.getElementById("note_content").value.trim();
             $scope.current_notebook = notebook_service.add_note($scope.current_notebook, task_content);
+            console.log($scope.current_notebook)
             //clean up when note is saved
             $scope.note_content.value = ""
             document.getElementById("note_content").value = ""
@@ -352,6 +346,16 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         }
     }
 
+    $scope.$on("open_chart_edit_window_changed", (e, state) => {
+        const code = document.getElementById("note_content").value;
+        // console.log(code)
+        if ($scope.is_valid_chart_code(code)) {
+            $scope.new_chart.show = true;
+        } else {
+            alert("Chart code invalid.")
+        }
+    })
+
     // validate chart code
     $scope.is_valid_chart_code = (chart_code) => {
         try {
@@ -384,7 +388,7 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
             if (!x_labels || !y_values) {
                 return false;
             }
-
+            
             // Set values to new_chart object
             $scope.new_chart = {
                 title: title,
@@ -402,7 +406,7 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
         return false
     };
 
-    $scope.open_chart_ui_changed=(state)=>{
+    $scope.open_chart_ui_changed = (state) => {
         $scope.new_chart.show = state;
     }
 
@@ -415,5 +419,5 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
 
 
 
-    
+
 }

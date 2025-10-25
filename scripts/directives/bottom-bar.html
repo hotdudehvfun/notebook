@@ -1,47 +1,44 @@
-<div 
-ng-class="{'rounded-24':is_note_multi_select_on}"
-class="bottom-bar-content rounded-full">
-     <!-- multi select options -->
-      <div
-        ng-show="is_note_multi_select_on"
-        class="orange flex-row space-between p-1 gap-2">
-            <div ng-click="handle_multi_select_action(CONST.COMPLETE)">Complete</div>
-            <div ng-click="handle_multi_select_action(CONST.MERGE)">Merge</div>
-            <div ng-click="handle_multi_select_action(CONST.MOVE)">Move</div>
-            <div ng-click="handle_multi_select_action(CONST.REMOVE)">Remove</div>
-            <div ng-click="handle_multi_select_action(CONST.CANCEL)">Cancel</div>
-      </div>
+<div style="display: flex;
+    width: -webkit-fill-available;
+    justify-content: end;
+    margin-right: 1rem;
+    margin-bottom: .5rem;">
+    <!-- multi select options -->
+    <div ng-show="is_note_multi_select_on" class="flex-col gap-1 orange p-1 popup_style">
+        <div ng-click="bulk_action(CONST.COMPLETE)">✅ Complete</div>
+        <div ng-click="bulk_action(CONST.MERGE)">🔀 Merge</div>
+        <div ng-click="bulk_action(CONST.MOVE)">🚚 Move</div>
+        <div ng-click="bulk_action(CONST.REMOVE)">🗑️ Remove</div>
+        <div ng-click="bulk_action(CONST.CANCEL)">❌ Cancel</div>
+    </div>
+</div>
 
-    <!-- bottom button -->
-    <div class="flex-row p-1/2 justify-space-between gap-1">
-        <!-- create notebook button -->
-        <div 
-            ng-click="open_notebook_popup('create');" 
-            class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
-            <img src="./img/icons/pencil.and.list.clipboard.svg" class="bottom-bar-icon-size"/>
-            <!-- <span>Notebook</span> -->
-        </div>
-        <!-- create note button -->
-        <div 
-            ng-click="open_create_note_popup()" 
-            class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
-            <img src="./img/icons/pencil.and.scribble.svg" class="bottom-bar-icon-size"/>
-            <!-- <span>Note</span> -->
-        </div>
-        <!-- system var button -->
-        <div 
-            ng-click="open_create_var_popup()" 
-            class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
-            <img src="./img/icons/keyboard_command_key1.svg" class="bottom-bar-icon-size"/>
-            <!-- <span>System</span> -->
-        </div>
-        <!-- view notebooks button -->
-        <div 
-            ng-hide="show_view=='notebook'" 
-            ng-click="set_view('notebook')" 
-            class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
-            <img src="./img/icons/arrowshape.left.fill.svg" class="bottom-bar-icon-size"/>
-            <!-- <span>Back</span> -->
-        </div>
+<!-- bottom button -->
+<div 
+ng-show="!is_note_multi_select_on"
+class="flex-row p-1/2 justify-space-between gap-1 rounded-full border blur">
+    <!-- create notebook button -->
+    <div ng-click="open_notebook_popup('create');"
+        class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
+        <img src="./img/icons/pencil.and.list.clipboard.svg" class="bottom-bar-icon-size" />
+        <!-- <span>Notebook</span> -->
+    </div>
+    <!-- create note button -->
+    <div ng-click="open_create_note_popup()"
+        class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
+        <img src="./img/icons/pencil.and.scribble.svg" class="bottom-bar-icon-size" />
+        <!-- <span>Note</span> -->
+    </div>
+    <!-- system var button -->
+    <div ng-click="open_create_var_popup()"
+        class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
+        <img src="./img/icons/keyboard_command_key1.svg" class="bottom-bar-icon-size" />
+        <!-- <span>System</span> -->
+    </div>
+    <!-- view notebooks button -->
+    <div ng-hide="show_view=='notebook'" ng-click="set_view('notebook')"
+        class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
+        <img src="./img/icons/arrowshape.left.fill.svg" class="bottom-bar-icon-size" />
+        <!-- <span>Back</span> -->
     </div>
 </div>

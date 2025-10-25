@@ -95,6 +95,7 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                     const updated = notebook_service.paste_task_inside_notebook(notebook, copied_task);
                     set_shared("current_notebook", updated);
                     set_shared("copied_task", null);
+                    set_shared("show_view",shared_service.CONST.VIEW_NOTE)
                 }
             },
             {
@@ -118,6 +119,7 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                     db_service.write_notebook(updated);
                     set_shared("current_notebook", updated);
                     emit_toast("Merged completed tasks successfully");
+                    set_shared("show_view",shared_service.CONST.VIEW_NOTE)
                 }
             },
             {
@@ -129,6 +131,7 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                         db_service.write_notebook(updated);
                         set_shared("current_notebook", updated);
                         emit_toast("Completed notes removed");
+                        set_shared("show_view",shared_service.CONST.VIEW_NOTE)
                     }
                 }
             },
@@ -146,6 +149,7 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                         db_service.write_notebook(updated);
                         set_shared("current_notebook", updated);
                         emit_toast("All notes removed");
+                        set_shared("show_view",shared_service.CONST.VIEW_NOTE)
                     }
                 }
             },

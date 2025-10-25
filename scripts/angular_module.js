@@ -42,7 +42,6 @@ app.service('wiki_service',wiki_service);
 
 
 app.controller('main_controller',main_controller);
-app.controller('dialog_controller',dialog_controller);
 app.controller('create_notebook_dialog_controller',create_notebook_dialog_controller);
 app.controller('notebook_more_options_controller',notebook_more_options_controller);
 app.controller('note_more_options_controller',note_more_options_controller);
@@ -55,6 +54,8 @@ app.controller('tag_controller',tag_controller);
 app.controller('sidebar_controller',sidebar_controller);
 app.controller('var_controller',var_controller);
 app.controller('bin_controller',bin_controller);
+app.controller('notebook_controller',notebook_controller);
+app.controller('note_controller',note_controller);
 
 
 

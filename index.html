@@ -28,9 +28,17 @@
         <!-- top bar -->
         <top-bar class="topbar" ng-show="show_topbar()"></top-bar>
         <!-- content bar -->
-        <div class="content">
-            <notebooks-list ng-show="show_view==CONST.VIEW_NOTEBOOK"></notebooks-list>
-            <notes-list ng-show="show_view==CONST.VIEW_NOTE"></notes-list>
+        <div
+            class="content"
+            ng-class="{'pt-4':!is_create_note_view_open()}">
+            <notebooks-list
+                ng-controller="notebook_controller"
+                ng-show="show_dialog">
+            </notebooks-list>
+            <notes-list 
+                ng-controller="note_controller"
+                ng-show="show_dialog">
+            </notes-list>
 
             <div ng-controller="var_controller">
                 <system-var-list ng-show="show_var_list">
@@ -47,7 +55,8 @@
             </div>
 
             <!-- create note view -->
-            <create-note-view ng-init="init()" ng-controller="create_note_controller" ng-show="show_dialog">
+            <create-note-view
+            ng-init="init()" ng-controller="create_note_controller" ng-show="show_dialog">
             </create-note-view>
 
             <view-bin
@@ -62,10 +71,6 @@
 
     <!-- bottom bar -->
     <bottom-bar class="bottom-bar"></bottom-bar>
-
-    <!-- rename notebook dialog pop up-->
-    <popup-rename-notebook style="bottom: 30vh;" ng-show="dialog_flags.show_rename_notebook_popup" class="popup">
-    </popup-rename-notebook>
 
     <!-- toast message -->
     <div ng-class="{show:is_toast_visible}" class="toast transition text-center capitalize bg-blur">{{toast_msg}}
@@ -166,8 +171,6 @@
     <script type="text/javascript" src="scripts/wiki.js"></script>
     <script type="text/javascript" src="scripts/utilities.js"></script>
     <script type="text/javascript" src="scripts/main_controller.js"></script>
-    <script type="text/javascript" src="scripts/dialog_controller.js">
-    </script>
     <script type="text/javascript" src="scripts/create_notebook_dialog_controller.js"></script>
     <script type="text/javascript" src="scripts/notebook_more_options_controller.js"></script>
     <script type="text/javascript" src="scripts/share_service.js"></script>
@@ -182,6 +185,9 @@
     <script type="text/javascript" src="scripts/var_controller.js"></script>
     <script type="text/javascript" src="scripts/bin_controller.js"></script>
     <script type="text/javascript" src="scripts/wiki.js"></script>
+    <script type="text/javascript" src="scripts/notebook_controller.js"></script>
+    <script type="text/javascript" src="scripts/note_controller.js"></script>
+
     
 
     <script src="scripts/angular_module.js"></script>

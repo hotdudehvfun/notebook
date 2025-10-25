@@ -1,9 +1,19 @@
 function db_service() {
 
+    this.setupDemoList = () => {
+        //demo list
+        let list = new List("First Notebook");
+        let task = new Task("We have added first note!");
+        list.taskArray.push(task);
+        return [list];
+    }
+
     this.read_notebooks = function () {
         try {
-            const data = localStorage.getItem('appData');
+            const data = localStorage.getItem('appData') || "[]";
             let all_notebooks = is_valid_json(data) ? JSON.parse(data) : [];
+            if(all_notebooks.length==0)
+                all_notebooks = this.setupDemoList()
             return this.ensure_all_ids(all_notebooks)
         } catch (e) {
             console.error('Error reading notebooks:', e);

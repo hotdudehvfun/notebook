@@ -1,5 +1,5 @@
 <!-- controller: create note controller -->
-<div class="flex-row gap-2 justify-center mt-2">
+<div class="flex-row gap-2 justify-center">
     <div class="align-center flex-col" ng-click="open_quick_notebooks()">
         <span class="create_note_notebook_icon ng-binding">{{current_notebook.icon}}</span>
         <div class="chip">
@@ -25,8 +25,11 @@
     <!-- note input -->
     <div class="note_textarea_container">
         <!-- hide note content when chart dialog is visible-->
-        <textarea autocomplete="off" ng-model="note_content" ng-keyup="handle_keypress_note_input($event)"
-            id="note_content" class="new-task-content" placeholder={{note_content_placeholder}} autofocus>
+        <textarea
+            autocomplete="off"
+            ng-model="note_content" ng-keyup="handle_keypress_note_input($event)"
+            id="note_content" 
+            class="new-task-content" placeholder={{note_content_placeholder}} autofocus>
         </textarea>
     </div>
 
@@ -50,7 +53,13 @@
 <!-- chart dialog -->
 <div class="flex-col gap-2" ng-show="new_chart.show">
     <!-- chart title -->
-    <input ng-model="new_chart.title" class="text-input" type="text" max="20" placeholder="Chart Title" />
+    <input
+        name="new-chart-title"
+        ng-model="new_chart.title"
+        class="text-input"
+        type="text"
+        max="20"
+        placeholder="Chart Title" />
     <!-- chart type -->
     <div class="orange">Type</div>
     <div class="flex-row gap-1">
@@ -80,9 +89,15 @@
         <div class="orange">Y axis values</div>
     </div>
     <div class="flex-row space-between">
-        <textarea ng-model="new_chart.x_labels" style="height: 200px;"
+        <textarea
+            name="chart-x-lables" 
+            ng-model="new_chart.x_labels" 
+            style="height: 200px;"
             class="border new-task-content rounded-1"></textarea>
-        <textarea ng-model="new_chart.y_values" style="height: 200px;"
+        <textarea
+            name="chart-y-lables" 
+            ng-model="new_chart.y_values" 
+            style="height: 200px;"
             class="border new-task-content rounded-1"></textarea>
     </div>
     <div class="flex-row space-between">

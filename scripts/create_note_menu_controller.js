@@ -12,11 +12,7 @@ function create_note_menu_controller($scope, shared_service) {
         $scope.show_dialog = true;
     });
 
-    // $scope.close_all_dialogs = () => {
-    //     $scope.show_dialog = false;
-    //     shared_service.broadcast("close_all_dialogs", {});
-    // };
-
+    
     $scope.insertTextAtCursor = (id, content) => {
         insertTextAtCursor(id, content);
         $scope.show_dialog = false;
@@ -184,18 +180,15 @@ function create_note_menu_controller($scope, shared_service) {
         }
     }
 
+    $scope.edit_chart = ()=>{
+        shared_service.set("open_chart_edit_window",true)
+    }
+
     //component menu
     $scope.get_format_menu = () => {
         try {
             const actions = {
-                edit_chart: () => {
-                    if ($scope.is_valid_chart_code($scope.note_content)) {
-                        // $scope.new_chart.show = true;
-                        // tell create note dialog to open chart dialog
-                    } else {
-                        alert("Invalid chart code!");
-                    }
-                },
+                edit_chart: () => $scope.edit_chart(),
                 add_bullets: () => $scope.add_bullets("-"),
                 add_num_bullets: () => $scope.add_num_bullets(),
                 heading_with_bullets: () => $scope.convert_heading_with_bullets(),
