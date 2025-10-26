@@ -21,6 +21,7 @@ function sidebar_controller($scope, notebook_service,shared_service,db_service) 
     $scope.init_items = ()=>{
         try {
             const primary_texts = [
+                [`Version info:4.0.0`,"version"],
                 [`App Size:${$scope.app_size()}`,"size"],
                 ["Manage Database","db"],
                 ["Manage Tags","tags"],
@@ -29,6 +30,7 @@ function sidebar_controller($scope, notebook_service,shared_service,db_service) 
 
             ];
             const secondary_texts = {
+                version:"📱",
                 size:"📚",
                 db:"💾",
                 tags:"🗃",

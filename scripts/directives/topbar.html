@@ -1,6 +1,6 @@
 <!-- app title -->
 <div ng-click="open_sidebar(true)" class="blur_icon_btn clickable">
-    <img class="svg-icon" src="./img/icons/sidebar.left.svg" />
+    <span class="text-lg bold orange">☰</span>
 </div>
 <div class="app_icon_title" 
     ng-click="handle_click_on_notebook_title()">
@@ -11,10 +11,7 @@
 <div
     ng-show="show_view==CONST.VIEW_NOTE"
     style="right: 1rem;"
+    ng-click="handle_click_on_more_vert(current_notebook)"
     class="blur_icon_btn clickable">
-    <img
-        class="svg-icon clickable"
-        src="./img/icons/ellipsis.svg"
-        ng-click="handle_click_on_more_vert(current_notebook)"
-        alt="more vert"/>
+    <span class="bold text-lg">📚</span>
 </div>

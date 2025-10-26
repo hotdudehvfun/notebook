@@ -1,18 +1,25 @@
 <!-- show system vars here -->
 <div>
-    <div class="spacer"></div>
     <div class="notebook_age">
-        <img class="svg-icon" ng-src="{{get_svg_src('hourglass')}}" alt="NoteBook icon">&nbsp; {{notebook_age()}}
-    </div>
-    <div class="notebook_age">
-        <img class="svg-icon" ng-src="{{get_svg_src('keyboard_command_key')}}" alt="NoteBook icon">&nbsp;
+        <span>Total variables:</span>
         {{get_system_var_length()}}
     </div>
 
-    <div class="empty-notebook" ng-show="get_system_var_length()==0">
-        <span class="lock_icon">📭</span>
-        <span class="lock_text">Create custom variables here</span>
+
+    <div
+        class="empty-notebook" ng-show="get_system_var_length()==0">
+        <div class="empty_container">
+            <span class="text-xxxl">📭</span>
+            <span class="gray">No custom variables</span>
+            <span class="chip orange"
+            ng-click="open_create_var_popup()">+ Create variable</span>
+        </div>
     </div>
+
+
+
+
+
 
     <div 
         ng-repeat="(key,value) in system_vars"

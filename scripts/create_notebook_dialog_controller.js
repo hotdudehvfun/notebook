@@ -1,7 +1,7 @@
 function create_notebook_dialog_controller($scope, notebook_service, shared_service) {
 
     //notebook data
-    $scope.new_notebook_icon = "📜"
+    $scope.new_notebook_icon = "📖"
     $scope.new_notebook_name = ""
 
     //dialog flag

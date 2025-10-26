@@ -4,7 +4,6 @@ let patchApplied = false;
 let toast_timer_id = null;
 
 console.log(`
-> App version: 3.9.0
 > Added progress bar code:#20%
 > Copy and Paste Tasks
 > Delete Tasks

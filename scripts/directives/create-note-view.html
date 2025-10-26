@@ -65,12 +65,12 @@
     <div class="flex-row gap-1">
         <div ng-click="new_chart.type = 'line'" ng-class="{'grayscale':new_chart.type!='line'}"
             class="align-center flex-row gap-2 p-125 rounded">
-            <img class="svg-icon" ng-src="{{get_svg_src('chart.xyaxis.line')}}" alt="icon">
+            <span class="text-lg">📈</span>
             <span>Line Chart</span>
         </div>
         <div ng-click="new_chart.type = 'bar'" ng-class="{'grayscale':new_chart.type!='bar'}"
             class="align-center flex-row gap-2 p-125 rounded">
-            <img class="svg-icon" ng-src="{{get_svg_src('chart.bar.xaxis')}}" alt="icon">
+            <span class="text-lg">📊</span>
             <span>Bar Chart</span>
         </div>
     </div>
