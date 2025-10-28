@@ -13,6 +13,7 @@ class Task {
       // data
       this.id = this.generate_id()
       this.parent_id = 0;
+      this.position = 0;
       this.title = (note_content || "").trim();
       this.dateCreated = Date.now();
       this.isTaskCompleted = false;

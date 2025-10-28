@@ -7,7 +7,6 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
     $scope.is_note_multi_select_on = false
     $scope.show_note_complete_button = false
 
-
     //listen to close all dialogs event from shared service
     $scope.show_dialog = false;
     $scope.is_user_notebook = function (notebook) {
@@ -91,6 +90,7 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
             const menu_items = [
                 ["📝 Edit", "edit"],
                 [is_completed ? "↩️ Mark Undo" : "✅ Mark Done", is_completed ? "not_done" : "done"],
+                ["🔄 Sort", "sort"],
                 ["🎳 Split", "split"],
                 ["☑️ Select Notes", "select"],
                 ["📋 Copy", "copy"],
@@ -111,6 +111,9 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
                 },
                 done: () => {
                     note.isTaskCompleted = true; //updated by reference
+                    //move complete tasks to bottom
+                    //update positions of tasks
+                    $scope.current_notebook.taskArray = note_service.set_positions($scope.current_notebook.taskArray)
                     db_service.write_notebook($scope.current_notebook)
                     set_shared("current_notebook", $scope.current_notebook);
                     set_shared("show_toast", "Note completed")
@@ -120,6 +123,10 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
                     db_service.write_notebook($scope.current_notebook)
                     set_shared("current_notebook", $scope.current_notebook);
                     set_shared("show_toast", "Note unmarked")
+                },
+                sort: () => {
+                    //enable sorting
+                    set_shared("sorting_mode",true)
                 },
                 split: () => {
                     try {
@@ -185,24 +192,5 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
             console.log("Error initializing note options:", err);
         }
     };
-
-
-
-
-
-    $scope.init = () => {
-        try {
-
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-
-
-
-
-
-
 
 }

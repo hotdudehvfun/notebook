@@ -511,3 +511,18 @@ function reset_scroll(element) {
 function generate_id() {
     return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
   }
+
+
+function to_capitalize_case(str) {
+    return str
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+
+
+function clean_string(str) {
+    return str.replace(/[@=+]/g, '').trim();
+}

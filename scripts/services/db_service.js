@@ -57,11 +57,6 @@ function db_service() {
 
 
     this.write_notebook = function (notebook) {
-        //move completed notes at the bottom
-        notebook.taskArray = notebook.taskArray.sort((a, b) => {
-            return a.isTaskCompleted - b.isTaskCompleted;
-        });
-
         let all_notebooks = this.read_notebooks();
         let idx = all_notebooks.findIndex(n => n.id === notebook.id);
         if (idx !== -1) {
@@ -164,6 +159,8 @@ function db_service() {
     }
 
     //ensure important props
+    //id is required
+    //position is required
     this.ensure_all_ids = (all_notebooks) => {
         all_notebooks.forEach(notebook => {
             if (!notebook.id) {
@@ -172,9 +169,13 @@ function db_service() {
             }
             // Ensure each note has id
             if (Array.isArray(notebook.taskArray)) {
-                notebook.taskArray.forEach(note => {
+                notebook.taskArray.forEach((note,index) => {
                     if (!note.id) {
                         note.id = generate_id();
+                    }
+                    if(!note.position)
+                    {
+                        note.position = index     
                     }
                     note.isSelected = false;
                     note.parent_id = notebook.id

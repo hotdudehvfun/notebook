@@ -1,9 +1,10 @@
 function note_controller($scope,$rootScope, $timeout, db_service, notebook_service, note_service, graph_service, shared_service, wiki_service) {
-
+    const set_shared = (k, v) => shared_service.set(k, v);
     $scope.current_notebook = []
     $scope.notes = []
     $scope.is_note_selected = false;
     $scope.selected_note = null;
+    $scope.sorting_mode = false;
     $scope.is_note_multi_select_on = false
     $scope.CONST = {
             IMPORT: "import",
@@ -199,6 +200,7 @@ function note_controller($scope,$rootScope, $timeout, db_service, notebook_servi
             if (state) {
                 $scope.current_notebook = shared_service.get("current_notebook")
                 $scope.notes = $scope.current_notebook.taskArray
+                $scope.notes = note_service.set_positions($scope.notes)
                 console.log($scope.current_notebook)
                 $scope.is_note_multi_select_on = false
                 reset_scroll(document.querySelector(".content"))
@@ -207,6 +209,24 @@ function note_controller($scope,$rootScope, $timeout, db_service, notebook_servi
             console.log(err)
         }
     });
+
+    $scope.close_sorting_mode = ()=>{
+        set_shared("sorting_mode",false)
+    }
+
+    $scope.$on("sorting_mode_changed",(e,state)=>{
+        $scope.sorting_mode = state;
+    })
+
+    $scope.sort_note = (note,dir)=>{
+        try {
+            $scope.current_notebook = note_service.sort_note($scope.current_notebook,note,dir)
+        } catch (err) {
+            console.log(err)
+            shared_service.set("show_toast",err)
+            
+        }
+    }
 
     $scope.open_create_note_popup = ()=>{
         try {

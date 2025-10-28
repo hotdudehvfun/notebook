@@ -1,6 +1,5 @@
 <!-- notes -->
 <div ng-if="!is_notebook_locked()" ng-show="show_view==CONST.VIEW_NOTE">
-    <div class="spacer"></div>
     <!-- notebook age -->
     <div class="notebook_age">
         ⏰&nbsp; {{notebook_age()}}
@@ -8,6 +7,10 @@
     <!-- clipboard -->
     <div class="notebook_age" ng-show="!is_clipboard_empty()">
         📋 1 note
+    </div>
+    <!-- sorting mode  -->
+     <div class="notebook_age" ng-show="sorting_mode" ng-click="close_sorting_mode()">
+        🔄 Close sorting mode
     </div>
 
     <div class="flex-row">
@@ -35,6 +38,20 @@
                 <div ng-class="{selected:selected_note==note}" class="task-content-div clickable"
                     ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                     ng-click="handle_tap_on_note(note,'note');"></div>
+
+                <!-- show sorting button -->
+                <div ng-show="sorting_mode" class="flex-col m-2">
+                    <span
+                        ng-click="sort_note(note,-1)"
+                        class="text-lg">
+                        ⬆️
+                    </span>
+                    <span
+                        ng-click="sort_note(note,1)"
+                        class="text-lg">
+                        ⬇️
+                    </span>
+                </div>
             </div>
             <!-- show more options when chart is clicked -->
             <div ng-show="note.component_type=='chart'" class="flex-row justify-content-end m-2">

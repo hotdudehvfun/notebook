@@ -1,10 +1,10 @@
-function note_service($timeout,db_service) {
+function note_service($timeout, db_service) {
 
-    
+
     this.get_completed_notes_length = function (notes) {
         if (!notes) return 0;
-        return notes.filter((note)=>{
-            if(!note.isDeleted && note.isTaskCompleted)
+        return notes.filter((note) => {
+            if (!note.isDeleted && note.isTaskCompleted)
                 return note
         }).length;
     };
@@ -57,6 +57,8 @@ function note_service($timeout,db_service) {
         mergedNote.isTaskCompleted = true;
         notebook.taskArray = notes;
         notebook.taskArray.push(mergedNote);
+        //reset positions
+        notebook.taskArray = this.set_positions(notebook.taskArray)
         return notebook;
     };
 
@@ -88,6 +90,8 @@ function note_service($timeout,db_service) {
             notes.splice(noteIndex + 1, 0, ...newTasks);
             // Remove the original note
             notes.splice(noteIndex, 1);
+            //reset positions
+            notes = this.set_positions(notes)
             return notes;
         } catch (err) {
             console.error(err);
@@ -99,6 +103,8 @@ function note_service($timeout,db_service) {
         if (!notebook || !notebook.taskArray)
             throw "No notebook selected";
         notebook.taskArray = notebook.taskArray.filter(note => !note.isTaskCompleted);
+        //reset position
+        notebook.taskArray = this.set_positions(notebook.taskArray)
         return notebook;
     };
 
@@ -110,13 +116,59 @@ function note_service($timeout,db_service) {
     }
 
 
-    this.restore_note = (note) => {
-        // remove from trash
-        // find its parent using .parent_id
-        // push it to its parent
-    }
-            
+    this.sort_note = (notebook, note, dir) => {
+        try {
+            // Ensure notes are sorted
+            notebook.taskArray.sort((a, b) => a.position - b.position);
+    
+            let index = notebook.taskArray.findIndex(n=> n.id==note.id)
+            let targetIndex = index + dir;
+    
+            // If out of bounds, do nothing
+            if (targetIndex < 0 || targetIndex >= notebook.taskArray.length) {
+                throw "Cannot move note further"
+            }
+    
+            let targetNote = notebook.taskArray[targetIndex];
+            console.log(note,targetIndex,targetNote)
+    
+            // Swap positions
+            let temp = note.position;
+            note.position = targetNote.position;
+            targetNote.position = temp;
+    
+            // Re-sort the notebook after swap
+            notebook.taskArray.sort((a, b) => a.position - b.position);
+    
+            db_service.write_notebook(notebook)
+            return notebook
+        } catch (err) {
+            console.log(err)
+        }
+    };
 
+
+    this.set_positions = (notes)=>{
+        try {
+            notes = this.move_completed_notes_to_bottom(notes)
+            notes.forEach((note,index) => {
+                note.position = index
+                if(note.isDeleted)
+                    note.position = -1;
+            });
+        } catch (error) {
+            console.log(error)
+        }
+        return notes;
+    }
+
+    this.move_completed_notes_to_bottom = (notes)=>{
+        //move completed notes at the bottom
+        notes = notes.sort((a, b) => {
+            return a.isTaskCompleted - b.isTaskCompleted;
+        });
+        return notes;
+    }
 
 
 

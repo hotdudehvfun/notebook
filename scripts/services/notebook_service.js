@@ -1,4 +1,4 @@
-function notebook_service($timeout, db_service) {
+function notebook_service($timeout,note_service, db_service) {
     //lazy load quick notebooks
     this.load_quick_notebooks = function (notebooks, callback) {
         $timeout(() => {
@@ -120,6 +120,8 @@ function notebook_service($timeout, db_service) {
         if (!task)
             throw "No note to paste"
         notebook.taskArray.push(task);
+        //reset positions
+        notebook.taskArray = note_service.set_positions(notebook.taskArray)
         db_service.write_notebook(notebook);
         return notebook;
     }
@@ -207,49 +209,16 @@ function notebook_service($timeout, db_service) {
         // Remove completed tasks from the source notebook
         from_notebook.taskArray = from_notebook.taskArray.filter(note => note.isTaskCompleted !== true);
 
+        //reset positions
+        from_notebook.taskArray = note_service.set_positions(from_notebook.taskArray)
+        //reset positions
+        to_notebook.taskArray = note_service.set_positions(to_notebook.taskArray)
+
         db_service.write_notebook(from_notebook);
         db_service.write_notebook(to_notebook);
 
         return from_notebook;
     }
-
-    this.ensure_single_trash_notebook = (all_notebooks) => {
-        // Find all trash notebooks (case-insensitive)
-        let trash_notebooks = all_notebooks.filter(n =>
-            n.title && n.title.toLowerCase() === "trash"
-        );
-
-        if (trash_notebooks.length === 0) {
-            return -1; // or create a trash notebook here if required
-        }
-
-        // If multiple trash notebooks exist: remove all except the first
-        if (trash_notebooks.length > 1) {
-            let first_trash_id = trash_notebooks[0].id;
-            // Keep only first trash notebook, filter out others
-            all_notebooks = all_notebooks.filter(n =>
-                !(n.title && n.title.toLowerCase() === "trash" && n.id !== first_trash_id)
-            );
-        }
-
-        // Return the index of the remaining/first trash notebook
-        return all_notebooks.findIndex(n =>
-            n.title && n.title.toLowerCase() === "trash"
-        );
-    }
-
-
-    this.get_trash_index = () => {
-        let all_notebooks = db_service.read_notebooks();
-        let index = this.ensure_single_trash_notebook(all_notebooks)
-        if (index === -1) {
-            let trash = new List("Trash", "🗑️");
-            all_notebooks.push(trash);
-            db_service.write_notebooks(all_notebooks);
-            return all_notebooks.length - 1; // new trash index
-        }
-        return index;
-    };
 
 
     this.delete_note = (notebook, note) => {
@@ -259,32 +228,14 @@ function notebook_service($timeout, db_service) {
         // remove note from current notebook
         note.isDeleted = true;
         note.parent_id = notebook.id
+        note.position = -1;
+        //reset positions
+        notebook.taskArray = note_service.set_positions(notebook.taskArray)
         const all_notebooks = db_service.write_notebook(notebook)
         // console.log(all_notebooks)
         return notebook;
     };
 
-    this.restore_note = (notebook, note) => {
-        if (!notebook) throw "No notebook selected";
-        if (!note) throw "No note selected";
-
-        const all_notebooks = db_service.read_notebooks();
-        const parent_notebook = all_notebooks.filter(n => n.id == note.parent_id)
-
-        if (parent_notebook.length == 0)
-            throw "Parent notebook not found"
-
-        const p_n = parent_notebook[0]
-
-        // remove note from current notebook
-        notebook.taskArray = notebook.taskArray.filter(n => n.id !== note.id);
-        db_service.write_notebook(notebook)
-        //move it to parent
-        p_n.taskArray.push(note)
-        db_service.write_notebook(p_n)
-        console.log(db_service.read_notebooks())
-        return [notebook, p_n];
-    };
 
     this.move_notes_to_notebook = (from_notebook, to_notebook) => {
         try {
@@ -301,6 +252,10 @@ function notebook_service($timeout, db_service) {
 
             // move selected notes
             to_notebook.taskArray.push(...selected_notes);
+            //reset positions
+            from_notebook.taskArray = note_service.set_positions(from_notebook.taskArray)
+            //reset positions
+            to_notebook.taskArray = note_service.set_positions(to_notebook.taskArray)
             // save changes
             db_service.write_notebook(from_notebook);
             db_service.write_notebook(to_notebook);
@@ -331,8 +286,9 @@ function notebook_service($timeout, db_service) {
             new_task.parent_id = notebook.id
             new_task.set_is_component();
             new_task.set_component_type();
-
             notebook.taskArray.push(new_task)
+            //reset positions
+            notebook.taskArray = note_service.set_positions(notebook.taskArray)
             db_service.write_notebook(notebook)
             return notebook;
         } catch (error) {
@@ -356,7 +312,7 @@ function notebook_service($timeout, db_service) {
         }
     }
 
-    this.get_notes_in_bin=()=> {
+    this.get_notes_in_bin = () => {
         try {
             const all_notebooks = db_service.read_notebooks(); // array of notebooks
             let deleted_notes = [];
@@ -377,7 +333,7 @@ function notebook_service($timeout, db_service) {
 
 
 
-    this.get_grouped_notebooks_date = (notebooks)=>{
+    this.get_grouped_notebooks_date = (notebooks) => {
         try {
             let today = new Date();
             let groups = {

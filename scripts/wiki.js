@@ -1,4 +1,6 @@
-function wiki_service($rootScope,db_service, shared_service) {
+function wiki_service($rootScope, db_service, shared_service) {
+    this.chart_instances = this.chart_instances || {};
+
     // if no data is found create demo files
     this.setupDemoList = () => {
         //demo list
@@ -76,7 +78,7 @@ function wiki_service($rootScope,db_service, shared_service) {
 
     this.check_for_system_vars = (value) => {
         // Recursive this.to evaluate expressions
-        const system_vars =  shared_service.get("system_vars")
+        const system_vars = shared_service.get("system_vars")
         let evaluate = (value) => {
             return value.replace(/\b[a-zA-Z_]\w*\b/g, (match) => {
                 if (system_vars.hasOwnProperty(match)) {
@@ -100,7 +102,7 @@ function wiki_service($rootScope,db_service, shared_service) {
         }
     }
 
-    this.format_currency=(result)=> {
+    this.format_currency = (result) => {
         let formattedResult = new Intl.NumberFormat('en-IN', {
             style: 'currency',
             currency: 'INR',
@@ -110,7 +112,7 @@ function wiki_service($rootScope,db_service, shared_service) {
     }
 
 
-    this.handle_calculations=(text)=> {
+    this.handle_calculations = (text) => {
         // Create a regex to match {expression} and optionally detect the ":c" flag
         const regex = /{([^}:]+)(:c)?}/g;
 
@@ -139,7 +141,7 @@ function wiki_service($rootScope,db_service, shared_service) {
     }
 
 
-    this.handle_list=(line)=> {
+    this.handle_list = (line) => {
         // Handle lists
         // if a single line contains many * it will be converted to list items
         // it means * cannot be used in text if a line starts with *
@@ -152,14 +154,14 @@ function wiki_service($rootScope,db_service, shared_service) {
         return html
     }
 
-    this.center_aligned=(text)=> {
+    this.center_aligned = (text) => {
         const centerAlignedRegex = /::(.*?)::/g;
         const htmlText = text.replace(centerAlignedRegex, '<div class="text-center">$1</div>');
         return htmlText;
     }
 
 
-    this.insert_tag=(line)=>{
+    this.insert_tag = (line) => {
         var html = ""
         try {
             // start tag len = 2
@@ -178,10 +180,10 @@ function wiki_service($rootScope,db_service, shared_service) {
     }
 
     //_class1_class2_class3
-    this.handle_insert_class=(input)=>{
+    this.handle_insert_class = (input) => {
         // Regular expression to match lines starting with _class1_class2_... followed by text
         if (input.startsWith("_")) {
-            return input.replace(/^_([\w_]+)\s(.+)/gm,(match, classes, text)=> {
+            return input.replace(/^_([\w_]+)\s(.+)/gm, (match, classes, text) => {
                 // Replace underscores with spaces to separate class names
                 const classList = classes.replace(/_/g, ' ');
                 return `<span class="${classList}">${text}</span>`;
@@ -191,7 +193,7 @@ function wiki_service($rootScope,db_service, shared_service) {
 
     }
 
-    this.handle_charts=(text)=>{
+    this.handle_charts = (text) => {
         /*
         @chart
         pie
@@ -218,8 +220,13 @@ function wiki_service($rootScope,db_service, shared_service) {
         return `<canvas style="width:100%" id="${id}"></canvas>`
     }
 
-    this.update_chart=(_labels, values, id, _type, title, theme)=>{
+    this.update_chart = (_labels, values, id, _type, title, theme) => {
         try {
+            // If a chart exists on this id, destroy it first
+            if (this.chart_instances[id]) {
+                this.chart_instances[id].destroy();
+            }
+
             let chart = new Chart(id, {
                 type: _type,
                 data: {
@@ -254,12 +261,13 @@ function wiki_service($rootScope,db_service, shared_service) {
                     }
                 }
             });
+            this.chart_instances[id] = chart;
         } catch (err) {
             console.log(err)
         }
     }
 
-    this.handle_returns=(text)=>{
+    this.handle_returns = (text) => {
         /*
         @returns
         3 //how many lines
@@ -288,7 +296,7 @@ function wiki_service($rootScope,db_service, shared_service) {
         }
     }
 
-    this.update_chart_returns=(_titles, _labels, _line1_points, _line2_points, _line3_points, id)=>{
+    this.update_chart_returns = (_titles, _labels, _line1_points, _line2_points, _line3_points, id) => {
         try {
             let chart = new Chart(id, {
                 type: "line",
@@ -335,105 +343,180 @@ function wiki_service($rootScope,db_service, shared_service) {
         }
     }
 
-    this.handle_table_component=(text)=>{
+    this.table_code_to_data = (text) => {
         try {
-            const lines = text.split('\n'); // Split the text by new lines
-            let headers = [];
-            let rows = [];
-            let sumCols = [];
-            let sumRow = [];
+            // CODE
+            // @table
+            // @S. no, Product, =qty, =price
+            // apple, 2, 50
+            // orange, 3, 30
+            // grape, 5, 20
 
-            lines.forEach(line => {
-                line = line.trim();
 
-                // Check for the _sum_col option
-                if (line.startsWith('_sum_col')) {
-                    const [, cols] = line.split('=');
-                    sumCols = cols.split(',').map(col => parseInt(col.trim()) - 1); // Convert to zero-based indices
-                }
+            // OUTPUT
+            // S.No  | Product | Qty | Price
+            // ------+---------+-----+------
+            // 1     | Apple   | 2   | 50
+            // 2     | Orange  | 3   | 30
+            // 3     | Grapes  | 5   | 20
+            // 	Total          | 10  | 100
+            let table = []
+            let lines = text.split("\n");
+            let headers = lines[1]
+                .split(",")
+                .map(item => item.trim())
 
-                // Check for header row (||)
-                else if (line.startsWith('||')) {
-                    headers = line.replace('||', '').split(',').map(cell => cell.trim());
-                }
+            let auto_num = headers[0].startsWith("@")
+            let sum_pos = headers
+                .map((item, index) => item.trim().startsWith("=") ? index : null)
+                .filter(index => index !== null);
+            //create sums array with 0
+            let sums = Array(sum_pos.length).fill(0)
+            let has_sum_row = false
+            //clean headers
+            headers = headers
+                .map(item => clean_string(item))
 
-                // Check for regular row (|)
-                else if (line.startsWith('|')) {
-                    const row = line.replace('|', '').split(',').map(cell => this.handle_calculations(cell.trim()));
-                    rows.push(row);
+            table.push(headers)
+            //read code line by line
+            for (var i = 2; i < lines.length; i++) {
+                let line = lines[i];
+                line = this.handle_calculations(line.trim())
+                if (auto_num)
+                    line = `${i - 1}.,${line}`
+                line = line.split(",").map(item => item.trim())
 
-                    // Keep track of sums for the columns specified in _sum_col
-                    sumCols.forEach(col => {
-                        sumRow[col] = (sumRow[col] || 0) + parseFloat(row[col] || 0);
-                    });
-                }
-            });
-
-            // Create the table element (or HTML string)
-            let tableHtml = '<table>';
-
-            // Add header row
-            if (headers.length > 0) {
-                tableHtml += '<thead><tr>';
-                headers.forEach(header => {
-                    tableHtml += `<th>${header}</th>`;
-                });
-                tableHtml += '</tr></thead>';
+                //sum numbers using sum_pos 
+                sum_pos.forEach((pos, index) => {
+                    sums[index] += parseInt(line[pos])
+                })
+                table.push(line)
             }
-
-            // Add body rows
-            tableHtml += '<tbody>';
-            rows.forEach(row => {
-                tableHtml += '<tr>';
-                row.forEach(cell => {
-                    tableHtml += `<td>${cell}</td>`;
-                });
-                tableHtml += '</tr>';
-            });
-
-            // Add sum row if needed
-            if (sumCols.length > 0) {
-                tableHtml += '<tr>';
-
-                // Find the first sum column index
-                const firstSumCol = Math.min(...sumCols);
-
-                // Add a merged "Total" cell spanning all non-sum columns
-                if (firstSumCol > 0) {
-                    tableHtml += `<td class="text-center" colspan="${firstSumCol}"><b>Total</b></td>`;
-                }
-
-                // Add sum values in their respective columns
-                for (let i = firstSumCol; i < headers.length; i++) {
-                    if (sumCols.includes(i)) {
-                        tableHtml += `<td><b>${sumRow[i] !== undefined ? sumRow[i] : ''}</b></td>`;
-                    } else {
-                        tableHtml += `<td></td>`; // Empty cell for non-sum columns
-                    }
-                }
-
-                tableHtml += '</tr>';
+            if (sum_pos.length != 0) {
+                sums = ["Total", ...sums]
+                table.push(sums)
+                has_sum_row = true;
             }
-
-            tableHtml += '</tbody></table>';
-
-            return tableHtml; // Return the generated table HTML
+            return [table, has_sum_row];
         } catch (err) {
-            console.log(err);
-            return "INVALID EXPRESSION IN TABLE COMPONENT";
+            console.error(err);
+            return null
         }
     }
 
+    this.table_data_to_grid = (table, has_sum_row) => {
+        if (!Array.isArray(table) || table.length === 0) return "";
+        //S.No  | Product | Qty | Price
+        // ------+---------+-----+------
+        // 1     | Apple   | 2   | 50
+        // 2     | Orange  | 3   | 30
+        // 3     | Grapes  | 5   | 20
+        // 	Total          | 10  | 100
+        let m = table.length
+        let n = table[0].length
+        let html = `<div
+        class="table"
+        style="
+            grid-template-rows: repeat(${m},1fr);
+            grid-template-columns: repeat(${n},1fr);
+            "
+        >`;
 
-    this.circum=(r)=>{
+        let total = ""
+        const end = n - (table[m - 1].length - 1 - 1);
+        table.forEach((row, index) => {
+            const header = index == 0 ? "heading" : "";
+            let row_mid = row.map((item, pos) => {
+                if (index == m - 1 && pos == 0 && has_sum_row) {
+                    total = `
+                        grid-column:1/${end};
+                        text-align: center;
+                        color:orange;
+                        `
+                } else {
+                    total = ""
+                }
+                return `
+                    <div
+                        style='${total}'
+                        class='cell ${header}'>
+                        ${item}
+                    </div>
+                    `;
+            }).join("\n");
+            html += `${row_mid}`
+        })
+        return html;
+    };
+
+    this.table_data_to_ascii = (table, has_sum_row) => {
+        if (!Array.isArray(table) || table.length === 0) return "";
+        /*
+        - Apple     10
+        - Cat       10
+        - Fruits    10
+        - Total =   30
+
+        */
+        let m = table.length
+        let n = table[0].length
+        let html = `<table class="simple_table">`;
+        let total = ""
+        const end = n - (table[m - 1].length - 1);
+        table.forEach((row, index) => {
+            const header = index == 0 ? "heading" : "";
+            const total_row = (index == m-1 && has_sum_row)?"total_row":"";
+            let row_mid = row.map((item, pos) => {
+                if (index == m - 1 && pos == 0 && has_sum_row) {
+                    total = `
+                        colspan = '${end}'
+                        class = 'simple_cell total'
+                        `
+                } else {
+                    total = `class='simple_cell'`
+                }
+                return `
+                    <td ${total}>${item}</td>
+                    `;
+            }).join("\n");
+            html += `<tr class='simple_row  ${header} ${total_row}'>
+                        ${row_mid}
+                    </tr>
+            `
+        })
+        html+="</table>"
+        return html;
+    };
+    
+
+    this.handle_table_component = (text) => {
+        try {
+            //table is 2D array
+            let [table, has_sum_row] = this.table_code_to_data(text)
+            let html = this.table_data_to_ascii(table, has_sum_row)
+            // console.log(html)
+            return html
+        } catch (error) {
+            console.log(error)
+            return "Invalid Table Code"
+        }
+
+    }
+
+
+
+
+
+
+    this.circum = (r) => {
         return Math.PI * 2 * r;
     }
 
-    this.calculate_dashoffset=(r, p)=>{
+    this.calculate_dashoffset = (r, p) => {
         return circum(r) * (1 - (p / 100));
     }
 
-    this.show_progress=(p, that)=>{
+    this.show_progress = (p, that) => {
         try {
             that.parentElement.querySelector(".circular_bar_text").innerHTML = `${p}`;
             // console.log(that.parentElement.querySelector(".circular_bar_text"))
@@ -442,7 +525,7 @@ function wiki_service($rootScope,db_service, shared_service) {
         }
     }
 
-    this.handle_circular_bars=(text)=>{
+    this.handle_circular_bars = (text) => {
         try {
             let lines = text.split("\n")
             let texts = lines[1].split(",").map(v => this.handle_calculations(v.trim()));
@@ -501,7 +584,7 @@ function wiki_service($rootScope,db_service, shared_service) {
     }
 
 
-    this.handle_component_transactions=(markdown)=>{
+    this.handle_component_transactions = (markdown) => {
         try {
             let transactions = [];
             let lines = markdown.trim().split('\n');
@@ -612,7 +695,7 @@ function wiki_service($rootScope,db_service, shared_service) {
     }
 
 
-    this.parseWikiTextToHTML=(wikiText)=>{
+    this.parseWikiTextToHTML = (wikiText) => {
 
         wikiText = wikiText.trim()
         if (wikiText.startsWith("@table")) {
