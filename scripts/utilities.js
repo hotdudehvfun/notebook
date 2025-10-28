@@ -526,3 +526,8 @@ function to_capitalize_case(str) {
 function clean_string(str) {
     return str.replace(/[@=+]/g, '').trim();
 }
+
+
+function getType(value) {
+    return Object.prototype.toString.call(value).slice(8, -1);
+}

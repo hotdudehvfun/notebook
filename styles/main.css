@@ -764,7 +764,7 @@ img.empty_svg {
     font-family: monospace;
     font-weight: 600;
     shape-rendering: geometricprecision;
-    color: #49dc6b
+    color: #747474;
 }
 
 .mt-2 {
@@ -1754,6 +1754,5 @@ td.simple_cell.total {
 }
 
 tr.simple_row.total_row {
-    /* color: #49dc6b; */
-    color:orange;
+    color: #f3217a;
 }

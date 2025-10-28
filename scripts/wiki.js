@@ -117,6 +117,8 @@ function wiki_service($rootScope, db_service, shared_service) {
         const regex = /{([^}:]+)(:c)?}/g;
 
         // Use replace with a callback to dynamically insert the match
+        if(getType(text)!='String')
+            return text;
         return text.replace(regex, (match, expression, isCurrency) => {
             try {
                 // Replace variable names with values if needed
@@ -134,6 +136,7 @@ function wiki_service($rootScope, db_service, shared_service) {
                 }
                 return result;
             } catch (e) {
+                console.log("Error while checking",text)
                 console.log(`Error evaluating expression:`, e);
                 return "INVALID EXPRESSION"; // Return the original match if there's an error
             }
@@ -381,7 +384,7 @@ function wiki_service($rootScope, db_service, shared_service) {
             //read code line by line
             for (var i = 2; i < lines.length; i++) {
                 let line = lines[i];
-                line = this.handle_calculations(line.trim())
+                // line = this.handle_calculations(line.trim())
                 if (auto_num)
                     line = `${i - 1}.,${line}`
                 line = line.split(",").map(item => item.trim())
@@ -458,6 +461,7 @@ function wiki_service($rootScope, db_service, shared_service) {
         - Total =   30
 
         */
+       // console.log(table)
         let m = table.length
         let n = table[0].length
         let html = `<table class="simple_table">`;
@@ -466,6 +470,7 @@ function wiki_service($rootScope, db_service, shared_service) {
         table.forEach((row, index) => {
             const header = index == 0 ? "heading" : "";
             const total_row = (index == m-1 && has_sum_row)?"total_row":"";
+
             let row_mid = row.map((item, pos) => {
                 if (index == m - 1 && pos == 0 && has_sum_row) {
                     total = `
@@ -476,7 +481,7 @@ function wiki_service($rootScope, db_service, shared_service) {
                     total = `class='simple_cell'`
                 }
                 return `
-                    <td ${total}>${item}</td>
+                    <td ${total}>${this.handle_calculations(item)}</td>
                     `;
             }).join("\n");
             html += `<tr class='simple_row  ${header} ${total_row}'>
