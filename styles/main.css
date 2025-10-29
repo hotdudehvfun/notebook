@@ -25,10 +25,7 @@
     -moz-user-select: none
 }
 
-h1,h2,h3,h4,h5,h6 {
-    margin: 0 0;
-    text-transform: capitalize
-}
+
 
 label.toggle_label {
     background: #aeaeae;
@@ -662,9 +659,10 @@ ul.notebooks {
 }
 
 .line {
-    height: 4px;
-    background: var(--theme_button_border);
-    margin: .5rem 0
+    height: 2px;
+    background: #737373;
+    margin: 8px 0px;
+    border: 1px dashed;
 }
 
 .list-icon {
@@ -1037,7 +1035,8 @@ span.toggle_span {
 }
 
 .plain-text {
-    padding: 0 1rem;
+    padding: 4px 1rem;
+    white-space: break-spaces;
 }
 
 .plain-text>.h1,.plain-text>.h2,.plain-text>.h3,.plain-text>.h4,.plain-text>.h5,.plain-text>.h6 {
@@ -1755,4 +1754,8 @@ td.simple_cell.total {
 
 tr.simple_row.total_row {
     color: #f3217a;
+}
+
+.plain_text {
+    white-space: pre-line;
 }

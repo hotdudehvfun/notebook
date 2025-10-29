@@ -10,191 +10,195 @@ function wiki_service($rootScope, db_service, shared_service) {
         return [list];
     }
 
+    this.format_currency = (result) => {
+        return new Intl.NumberFormat('en-IN', {
+            maximumFractionDigits: 0
+        }).format(result);
+    }
+
+
+    this.handle_currency = (text) => {
+        if (typeof text !== "string") return text;
+        return text.replace(/(\d+(\.\d+)?):c\b/g, (match, number) => {
+            try {
+                // Convert the number to currency format using Intl API
+                // console.log(`checking currency ${match}`)
+                return this.format_currency(number)
+            } catch (err) {
+                console.error("Currency formatting error:", err);
+                return number; // fallback to original number if any error
+            }
+        });
+    };
+
+
+    //find text between {}
+    //and solve it safely
+    this.handle_math = (text) => {
+        if (typeof text !== "string") return text;
+        return text.replace(/\{([^{}]+)\}/g, (match, expr) => {
+            // Pass only the expression inside {} to evaluate_exp
+            let result = this.evaluate_exp(expr.trim());
+            // console.log(`checking ${match} and result = ${result}`)
+
+            return result !== undefined ? result : match; // fallback to original if invalid
+        });
+    };
+
+
+    //replace heading globally in a text
+    this.handle_headings = (text) => {
+        // Replace from largest headings (######) to smallest (#)
+        for (let i = 6; i >= 1; i--) {
+            const regex = new RegExp(`(^|\\n)#{${i}}\\s*(.+)`, 'g');
+            text = text.replace(regex, (match, p1, headingText) => {
+                // Capitalize heading text
+                let formattedText = headingText.trim();
+                formattedText = formattedText.charAt(0).toUpperCase() + formattedText.slice(1);
+                return `${p1}<div class='h${i} bold capitalize'>${formattedText}</div>`;
+            });
+        }
+        return text;
+    };
+
+
+    this.handle_list_item = (text) => {
+        return text.replace(/^(?:-|\*)\s*(.+)$/gm, (match, content) => {
+            // Capitalize first letter for consistency (optional)
+            let formatted = content.trim();
+            formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+            return `<li class='note-list-item'>${formatted}</li>`;
+        });
+    };
+
     this.bold = (line) => {
-        return line.replace(/:(.*?)(:)/g, '<b>$1</b>')
-    }
+        return line.replace(/:([^:]+):/g, '<b>$1</b>');
+    };
+
+
     this.handle_highlight = (line) => {
-        return line.replace(/!(.*?)(!)/g, '<div class="highlight">$1</div>')
-    }
+        return line.replace(/!([^!]+)!/g, '<div class="highlight">$1</div>');
+    };
+
     this.italic = (line) => {
-        return line.replace(/_(.*?)(_)/g, '<i>$1</i>')
-    }
+        return line.replace(/_([^_]+)_/g, '<i>$1</i>');
+    };
+
     this.sup = (line) => {
-        return line.replace(/\^(.*?)(\^)/g, '<sup>$1</sup>')
-    }
+        return line.replace(/\^([^^]+)\^/g, '<sup>$1</sup>');
+    };
+
     this.sub = (line) => {
-        return line.replace(/\~(.*?)(\~)/g, '<sub>$1</sub>')
-    }
+        return line.replace(/~([^~]+)~/g, '<sub>$1</sub>');
+    };
+
 
     this.progress_bar = (text) => {
-        // #80% default color = green
-        // #90,red% color = red
         try {
-            text = text.trim()
-            if (text.startsWith("#") && text.endsWith("%")) {
-                text = text.replace(/[ #%]/g, '').trim().split(",")
-                let p1 = clamp(0, parseFloat(text[0]), 100);
-                let color = text.length == 2 ? text[1] : "green";
+            if (typeof text !== "string") return text;
+
+            return text.replace(/#\s*(\d{1,3})\s*(?:,\s*([a-zA-Z]+))?\s*%/g, (match, num, color) => {
+                console.log(`Progress match found: ${match}`);
+                let percentage = parseFloat(num);
+                percentage = Math.max(0, Math.min(100, percentage)); // clamp between 0-100
+                color = color ? color.trim() : "green";
+
                 return `
-            <div class="progress-bar-container">
-                <div class="progress-bar bg-${color}" style="width: ${p1}%;">
-                    <span class="progress-text">${p1}%</span>
-                </div>
-            </div>`;
-            }
-            return text;
+                    <div class="progress-bar-container">
+                        <div class="progress-bar bg-${color}" style="width: ${percentage}%;">
+                            <span class="progress-text">${percentage}%</span>
+                        </div>
+                    </div>`;
+            });
+
         } catch (err) {
-            console.log("Error in progress bar component", err)
-            return text
+            console.error("Error in progress_bar:", err);
+            return text;
         }
-    }
+    };
+
+
 
     this.check_for_line = (text) => {
-        if (text.trim().startsWith("---")) {
-            return `<div class="line"></div>`
-        }
-        return text
-    }
+        if (typeof text !== "string") return text;
+
+        // Replace ONLY lines that start with exactly "---" (no more, no less)
+        return text.replace(/^(---)\s*$/gm, `<div class="line"></div>`);
+    };
 
 
 
-    this.multi_progress_bar = (text) => {
-        const regex = /#((\d{1,3}(,\d{1,3})*)%)/g;
-        return text.replace(regex, (match, p1) => {
-            const percentages = p1.split(',').map(value => value.trim().replace("%", ""));
-            const progressBars = percentages.map(percentage => {
-                return `
-                <div class="progress" style="width:${percentage}%;">
-                    ${percentage}%
-                </div>`;
-            }).join('');
-            return `
-        <div class="progress_bar">
-            ${progressBars}
-        </div>`;
-        });
-    }
 
+    // solve anything 2+2 or a+b
+    this.evaluate_exp = function (value) {
+        const system_vars = db_service.read_vars()
 
-    this.check_for_system_vars = (value) => {
-        // Recursive this.to evaluate expressions
-        const system_vars = shared_service.get("system_vars")
-        let evaluate = (value) => {
-            return value.replace(/\b[a-zA-Z_]\w*\b/g, (match) => {
+        function evaluateVariables(str) {
+            // Replace variables with their values recursively
+            // console.log(`checking exp ${str}`)
+            return str.replace(/\b[a-zA-Z_]\w*\b/g, function (match) {
                 if (system_vars.hasOwnProperty(match)) {
-                    // If the match is an expression, evaluate it recursively
                     let expr = system_vars[match];
                     if (typeof expr === 'string') {
-                        return evaluate(expr);
+                        return evaluateVariables(expr); // recursive for nested expressions
                     } else {
                         return expr;
                     }
                 }
-                return match;
+                return match; // unknown variable, leave as is
             });
         }
-        try {
-            // Evaluate the expression and return the result
-            return eval(evaluate(value));
-        } catch (error) {
-            console.error("Invalid expression: ", error);
-            return "Invalid expression";
-        }
-    }
 
-    this.format_currency = (result) => {
-        let formattedResult = new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR',
-            maximumFractionDigits: 0
-        }).format(result);
-        return formattedResult;
-    }
-
-
-    this.handle_calculations = (text) => {
-        // Create a regex to match {expression} and optionally detect the ":c" flag
-        const regex = /{([^}:]+)(:c)?}/g;
-
-        // Use replace with a callback to dynamically insert the match
-        if(getType(text)!='String')
-            return text;
-        return text.replace(regex, (match, expression, isCurrency) => {
-            try {
-                // Replace variable names with values if needed
-                expression = this.check_for_system_vars(expression);
-
-                // Evaluate the expression
-                let result = eval(expression);
-
-                // If result is a floating-point number, round it to 1 decimal place
-                result = result % 1 == 0 ? result : result.toFixed(1);
-
-                // If ":c" flag is present, format the result as currency
-                if (isCurrency) {
-                    result = this.format_currency(result)
-                }
-                return result;
-            } catch (e) {
-                console.log("Error while checking",text)
-                console.log(`Error evaluating expression:`, e);
-                return "INVALID EXPRESSION"; // Return the original match if there's an error
+        function safeMath(expr) {
+            // Only allow digits, operators, parentheses, and decimals
+            if (!/^[0-9+\-*/().\s]+$/.test(expr)) {
+                return "Invalid expression";
             }
+            try {
+                // Use Function constructor in strict mode sandbox
+                let result = Function('"use strict"; return (' + expr + ')')();
+                if (isNaN(result)) return "Invalid expression";
+                result = result % 1 === 0 ? result : result.toFixed(2);
+                return result;
+            } catch {
+                return "Invalid expression";
+            }
+        }
+        // Step 1: replace variable names with their actual values/expressions
+        let replaced = evaluateVariables(value);
+        // Step 2: safely evaluate
+        return safeMath(replaced);
+    };
+
+    //_class1_class2_class3 becomes
+    //<div class="class1 class2 class3"></div>
+    this.handle_custom_style = (text) => {
+        if (typeof text !== "string") return text;
+
+        const lines = text.split('\n'); // split into lines
+
+        const processedLines = lines.map(line => {
+            // Trim only for checking, but keep original spacing if needed
+            const trimmed = line.trim();
+
+            if (trimmed.startsWith('_')) {
+                // Extract class names until first space or end
+                const parts = trimmed.split(' ');
+                const classNames = parts[0].substring(1).split('_').join(' ');
+                const content = parts.slice(1).join(' ').trim();
+
+                // If no content, return empty div with class
+                return `<div class="${classNames}">${content || ''}</div>`;
+            }
+
+            return line; // not a custom style line
         });
-    }
+
+        return processedLines.join('\n');
+    };
 
 
-    this.handle_list = (line) => {
-        // Handle lists
-        // if a single line contains many * it will be converted to list items
-        // it means * cannot be used in text if a line starts with *
-        let html = ""
-        line.split("*").forEach((item) => {
-            let text = item.replace(/[\*\-]/g, '').trim();
-            if (text.length > 0)
-                html += `<li>${text}</li>`
-        })
-        return html
-    }
 
-    this.center_aligned = (text) => {
-        const centerAlignedRegex = /::(.*?)::/g;
-        const htmlText = text.replace(centerAlignedRegex, '<div class="text-center">$1</div>');
-        return htmlText;
-    }
-
-
-    this.insert_tag = (line) => {
-        var html = ""
-        try {
-            // start tag len = 2
-            // end tag len = 3
-            // .ol ..ol
-            var arr = line.split(".")
-            var tag = arr[arr.length - 1]
-            if (arr.length == 2)
-                html = `<${tag}>`
-            else
-                html = `</${tag}>`
-        } catch (error) {
-            html = "ERROR"
-        }
-        return html
-    }
-
-    //_class1_class2_class3
-    this.handle_insert_class = (input) => {
-        // Regular expression to match lines starting with _class1_class2_... followed by text
-        if (input.startsWith("_")) {
-            return input.replace(/^_([\w_]+)\s(.+)/gm, (match, classes, text) => {
-                // Replace underscores with spaces to separate class names
-                const classList = classes.replace(/_/g, ' ');
-                return `<span class="${classList}">${text}</span>`;
-            });
-        }
-        return input
-
-    }
 
     this.handle_charts = (text) => {
         /*
@@ -215,7 +219,7 @@ function wiki_service($rootScope, db_service, shared_service) {
             theme = id.split("#")[1]
 
         const labels = lines[4].split(",")
-        const values = lines[5].split(',').map(v => this.handle_calculations(v.trim()));
+        const values = lines[5].split(',').map(v => this.evaluate_exp(v.trim()));
 
         setTimeout(() => {
             this.update_chart(labels, values, id, type, title, theme)
@@ -270,82 +274,6 @@ function wiki_service($rootScope, db_service, shared_service) {
         }
     }
 
-    this.handle_returns = (text) => {
-        /*
-        @returns
-        3 //how many lines
-        Title1,Title2,Title3 //3 lines
-        label1,lable2 //common labels
-        20, 30
-        10, 40
-        20, 40 // 3 lines with two data points
-        chartid
-        */
-        try {
-            const lines = text.split("\n");
-            let total_lines = parseInt(lines[1].trim())
-            let titles = lines[2].split(",")
-            let labels = lines[3].split(",")
-            let line1_points = lines[4].split(",").map(v => this.handle_calculations(v.trim()));
-            let line2_points = lines[5].split(",").map(v => this.handle_calculations(v.trim()));
-            let line3_points = lines[6].split(",").map(v => this.handle_calculations(v.trim()));
-            let id = lines[7].trim()
-            setTimeout(() => {
-                update_chart_returns(titles, labels, line1_points, line2_points, line3_points, id)
-            }, 50)
-            return `<canvas style="width:100%" id="${id}"></canvas>`
-        } catch (err) {
-            console.log("Error while handling returns charts", err)
-        }
-    }
-
-    this.update_chart_returns = (_titles, _labels, _line1_points, _line2_points, _line3_points, id) => {
-        try {
-            let chart = new Chart(id, {
-                type: "line",
-                data: {
-                    labels: _labels,
-                    tension: 0.5,
-                    datasets: [
-                        {
-                            label: _titles[0],
-                            data: _line1_points,
-                            borderColor: ["#ff4967"],
-                            fill: false,
-                        },
-                        {
-                            label: _titles[1],
-                            data: _line2_points,
-                            borderColor: ["#164ea6"],
-                            fill: false,
-                        },
-                        {
-                            label: _titles[2],
-                            data: _line3_points,
-                            borderColor: ["#4cd964"],
-                            fill: false,
-                        },
-                    ]
-                },
-                options: {
-                    animation: false,
-                    title: { display: false, },
-                    aspectRation: 1,
-                    scales: {
-                        y: {
-                            ticks: {
-                                display: false,
-                                maxTicksLimit: 2,
-                            }
-                        }
-                    }
-                }
-            });
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
     this.table_code_to_data = (text) => {
         try {
             // CODE
@@ -384,7 +312,6 @@ function wiki_service($rootScope, db_service, shared_service) {
             //read code line by line
             for (var i = 2; i < lines.length; i++) {
                 let line = lines[i];
-                // line = this.handle_calculations(line.trim())
                 if (auto_num)
                     line = `${i - 1}.,${line}`
                 line = line.split(",").map(item => item.trim())
@@ -396,6 +323,7 @@ function wiki_service($rootScope, db_service, shared_service) {
                 table.push(line)
             }
             if (sum_pos.length != 0) {
+                sums = sums.map(s=> this.format_currency(s))
                 sums = ["Total", ...sums]
                 table.push(sums)
                 has_sum_row = true;
@@ -461,7 +389,7 @@ function wiki_service($rootScope, db_service, shared_service) {
         - Total =   30
 
         */
-       // console.log(table)
+        // console.log(table)
         let m = table.length
         let n = table[0].length
         let html = `<table class="simple_table">`;
@@ -469,7 +397,7 @@ function wiki_service($rootScope, db_service, shared_service) {
         const end = n - (table[m - 1].length - 1);
         table.forEach((row, index) => {
             const header = index == 0 ? "heading" : "";
-            const total_row = (index == m-1 && has_sum_row)?"total_row":"";
+            const total_row = (index == m - 1 && has_sum_row) ? "total_row" : "";
 
             let row_mid = row.map((item, pos) => {
                 if (index == m - 1 && pos == 0 && has_sum_row) {
@@ -481,7 +409,7 @@ function wiki_service($rootScope, db_service, shared_service) {
                     total = `class='simple_cell'`
                 }
                 return `
-                    <td ${total}>${this.handle_calculations(item)}</td>
+                    <td ${total}>${item}</td>
                     `;
             }).join("\n");
             html += `<tr class='simple_row  ${header} ${total_row}'>
@@ -489,10 +417,10 @@ function wiki_service($rootScope, db_service, shared_service) {
                     </tr>
             `
         })
-        html+="</table>"
+        html += "</table>"
         return html;
     };
-    
+
 
     this.handle_table_component = (text) => {
         try {
@@ -507,11 +435,6 @@ function wiki_service($rootScope, db_service, shared_service) {
         }
 
     }
-
-
-
-
-
 
     this.circum = (r) => {
         return Math.PI * 2 * r;
@@ -533,8 +456,8 @@ function wiki_service($rootScope, db_service, shared_service) {
     this.handle_circular_bars = (text) => {
         try {
             let lines = text.split("\n")
-            let texts = lines[1].split(",").map(v => this.handle_calculations(v.trim()));
-            let p = lines[2].split(",").map(v => this.handle_calculations(v.trim()));
+            let texts = lines[1].split(",").map(v => this.evaluate_exp(v.trim()));
+            let p = lines[2].split(",").map(v => this.evaluate_exp(v.trim()));
             let text_pos = "LEFT" //by default text is on left side
             if (lines.length == 4) {
                 text_pos = lines[3].trim()
@@ -588,185 +511,90 @@ function wiki_service($rootScope, db_service, shared_service) {
         return "Error while handling circular progress"
     }
 
-
-    this.handle_component_transactions = (markdown) => {
-        try {
-            let transactions = [];
-            let lines = markdown.trim().split('\n');
-            if (lines.length == 1)
-                return "Missing transactions!";
-
-            let total_amounts = []
-            total_amounts["total"] = 0;
-            total_amounts["cash"] = 0;
-            total_amounts["credit"] = 0;
-            let category_amounts = []
-            let account_amounts = []
-
-            lines.forEach((line, index) => {
-                if (index >= 1) {
-                    let parts = line.split(',').map(part => part.trim());
-                    if (parts.length < 6) {
-                        return (`<p>Invalid transaction format: ${line}</p>`)
-                    }
-                    let [desc, category, method, account, amount, date] = parts;
-                    // Default values for missing or incorrect data
-                    method = ["cash", "credit"].includes(method.toLowerCase()) ? method.toLowerCase() : "cash";
-                    amount = isNaN(parseFloat(amount)) ? 0 : parseFloat(amount);
-                    //calculating totals
-                    total_amounts[method] += amount //cash or credit
-                    total_amounts["total"] += amount
-                    //categories amounts
-                    if (category_amounts[category])
-                        category_amounts[category] += amount
-                    else
-                        category_amounts[category] = amount
-
-                    //each account amounts
-                    if (account_amounts[account])
-                        account_amounts[account] += amount
-                    else
-                        account_amounts[account] = amount
-
-                    transactions.push({ desc, category, method, account, amount, date });
-                }
-            });
-
-            if (transactions.length > 0) {
-                // Render transactions
-                let categories_amount_div = ``
-                Object.entries(category_amounts).forEach((item) => {
-                    categories_amount_div += `
-                    <div class="flex-row space-between gray">
-                        <div class="bullet">${item[0]}</div>
-                        <div class="amount text-sm">₹ ${item[1].toFixed(1)}</div>
-                    </div>`
-                });
-
-                let account_amount_div = ``
-                Object.entries(account_amounts).forEach((item) => {
-                    account_amount_div += `
-                    <div class="flex-row space-between purple">
-                        <div class="bullet">${item[0]}</div>
-                        <div class="amount text-sm">₹ ${item[1].toFixed(1)}</div>
-                    </div>`
-                });
-
-                let total_div = `
-            <div class="align-items-inherit flex-col gap-1 transaction">
-                    <div class="flex-row space-between">
-                        <div class="title">Total</div>
-                        <div class="amount">₹ ${total_amounts["total"].toFixed(1)}</div>
-                    </div>
-                    
-                    <div class="flex-row space-between red">
-                        <div class="bullet">Credit</div>
-                        <div class="amount text-sm">₹ ${total_amounts["credit"].toFixed(1)}</div>
-                    </div>
-                    
-                    <div class="flex-row space-between green">
-                        <div class="bullet">Cash</div>
-                        <div class="amount text-sm">₹ ${total_amounts["cash"].toFixed(1)}</div>
-                    </div>
-                    <span class="text-sm">Accounts</span>
-                    ${account_amount_div}
-                    <span class="text-sm">Categories</span>
-                    ${categories_amount_div}
-                </div>
-            `
-                return transactions.map(t =>
-                    `<div class="transaction">
-                    <div class="transaction-info">
-                        <div class="transaction-icon">
-                            <img src="./img/icons/${t.method}.svg" class="svg-icon"/>
-                        </div>
-                        <div class="transaction-text">
-                            <div class="title">${t.category}</div>
-                            <div class="description">${t.desc}</div>
-                            <div class="time">${t.date}</div>
-                        </div>
-                    </div>
-                    <div class="transaction-details">
-                        <div class="amount green">₹ ${t.amount.toFixed(1)}</div>
-                        <div class="time">${t.account}</div>
-                    </div>
-                </div>
-            `).join('').concat(`${total_div}`);
-            }
-        } catch (error) {
-            console.log("Error processing transactions:", error);
-            return "<p>Error loading transactions.</p>";
-        }
+    this.contains_html = (text) => {
+        const regex = /<[^>]+>/;
+        return regex.test(text);
     }
 
+    this.handle_plain_text = (text) => {
+        if (!text)
+            return "Text not found!";
+        if (text.length == 0)
+            return "Text is empty!"
+        if (this.contains_html(text))
+            return text
+        return `<div class='plain_text'> ${text} </div>`;
+    }
 
-    this.parseWikiTextToHTML = (wikiText) => {
+    this.clean_whitespace = (text) => {
+        if (typeof text !== 'string') return text;
+        return text
+            .replace(/\r\n/g, '\n')       // Normalize line endings
+            .replace(/\t+/g, '\t')        // Normalize multiple tabs
+            .replace(/[ ]{2,}/g, ' ')     // Convert multiple spaces to single space
+            .replace(/\n{3,}/g, '\n\n')   // Limit blank lines to maximum 1 empty line between content
+            .trim();                      // Remove leading and trailing whitespace
+    };
 
-        wikiText = wikiText.trim()
-        if (wikiText.startsWith("@table")) {
-            return this.handle_table_component(wikiText)
+    this.convert_newlines = (text) => {
+        if (typeof text !== "string") return text;
+        return text.replace(/\n/g, "<br>");
+    };
+
+
+
+    this.parseWikiTextToHTML = (text) => {
+        if (!text)
+            return "Text not found!!!"
+
+        let html = text;
+        // 0. Trim unnecessary spaces (optional cleanup)
+        html = this.clean_whitespace(html);
+        // 1. **Math expressions FIRST (pure text only, before HTML tags appear)**
+        html = this.handle_math(html);
+
+        //handle components
+        if (html.startsWith("@table")) {
+            html = this.handle_table_component(html)
+            html = this.handle_currency(html);
+            return html;
+
         }
-        if (wikiText.startsWith("@chart")) {
-            return this.handle_charts(wikiText)
+        if (html.startsWith("@chart")) {
+            return this.handle_charts(html)
         }
-        if (wikiText.startsWith("@returns")) {
-            return this.handle_returns(wikiText)
-        }
-
-        if (wikiText.startsWith("@circular_bars")) {
-            return this.handle_circular_bars(wikiText)
-        }
-        if (wikiText.startsWith("@transcations")) {
-            return this.handle_component_transactions(wikiText)
-
+        if (html.startsWith("@circular_bars")) {
+            html = this.handle_circular_bars(html)
+            html = this.handle_currency(html);
+            return html;
         }
 
-        let html = '';
-        let lines = wikiText.split("\n")
-        lines.forEach(line => {
-            line = line.trim()
-            //if(line.length>0)
-            {
-                // !highlight!
-                line = this.handle_highlight(line)
+        // 2. **Block-level elements (entire line transforms)**
+        html = this.progress_bar(html);
 
-                // x^y^
-                line = this.sup(line)
-                // x~y~
-                line = this.sub(line)
+        html = this.handle_headings(html);
 
-                // handle {2+2} eval expression
-                line = this.handle_calculations(line)
+        html = this.check_for_line(html);
 
-                // progress bar #20%
-                line = this.progress_bar(line)
+        html = this.handle_list_item(html);
 
-                //--- means a line
-                line = this.check_for_line(line)
+        html = this.handle_custom_style(html); // custom classes like _purple_center
 
-                //handle custom class
-                line = this.handle_insert_class(line)
+        // 3. **Component-level (starts with @)**
+        // html = this.handle_components(html); // charts, tables, etc.
 
-                if (line.startsWith('#')) {
-                    // Handle headings
-                    const level = line.match(/^(#+)/)[0].length;
-                    const text = line.replace(/#+/g, '').trim().toLocaleLowerCase();
-                    html += `<h${level}>${text}</h${level}>`;
-                } else if (line.startsWith('*') || line.startsWith('-')) {
-                    html += this.handle_list(line)
-                } else if (line.startsWith(".")) {
-                    html += this.insert_tag(line)
-                }
-                else {
-                    // Handle regular text
-                    if (line.length > 0) {
-                        html += `<div class='plain-text'>${line}</div>`;
-                        // console.log(html)
-                    }
-                }
-            }
-        });
-        return `${html}`;
+        // 4. **Inline-level formatting**
+        html = this.handle_highlight(html);
+        html = this.bold(html);
+        // html = this.italic(html);
+        html = this.sup(html);
+        html = this.sub(html);
+
+        // 5. **Final plain text fallback**
+        html = this.handle_currency(html);
+        html = this.handle_plain_text(html);
+        // html = this.convert_newlines(html);
+        return html
     }
 
 }

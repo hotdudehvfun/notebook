@@ -86,7 +86,7 @@
 }
 
 .colorful {
-    filter: grayscale(0)
+    filter: grayscale(0) !important;
 }
 
 .flex-col {
@@ -137,40 +137,40 @@
     flex-grow: 1
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 
+{
+    margin: 0 0;
+    text-transform: capitalize;
+    font-weight: 700;
+}
+
 .h1 {
     font-size: 2em;
-    font-weight: 700;
-    text-transform: capitalize
 }
 
 .h2 {
     font-size: 1.5em;
-    font-weight: 700;
-    text-transform: capitalize
 }
 
 .h3 {
     font-size: 1.17em;
-    font-weight: 700;
-    text-transform: capitalize
 }
 
 .h4 {
     font-size: 1em;
-    font-weight: 700;
-    text-transform: capitalize
 }
 
 .h5 {
     font-size: .83em;
-    font-weight: 700;
-    text-transform: capitalize
 }
 
 .h6 {
     font-size: .67em;
-    font-weight: 700;
-    text-transform: capitalize
 }
 
 .hide {
@@ -323,9 +323,6 @@ grid_title_bar {
     text-align: right
 }
 
-.rounded {
-    border-radius: .25rem
-}
 
 .rounded {
     border-radius: .25rem
@@ -333,14 +330,6 @@ grid_title_bar {
 
 .rounded-1 {
     border-radius: .5rem
-}
-
-.rounded-1 {
-    border-radius: .5rem
-}
-
-.rounded-2 {
-    border-radius: 1rem
 }
 
 .rounded-2 {
@@ -357,10 +346,6 @@ grid_title_bar {
 
 .rounded-3 {
     border-radius: 1.5rem
-}
-
-.rounded-4 {
-    border-radius: 2rem
 }
 
 .rounded-4 {
@@ -456,6 +441,6 @@ grid_title_bar {
     color: #f4b424
 }
 
-.mono{
-    font-family:monospace !important;
+.mono {
+    font-family: monospace !important;
 }

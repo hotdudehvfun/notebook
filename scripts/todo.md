@@ -1,3 +1,7 @@
+## Markup codes
+
+
+
 ## ✅ **Core Functionality**
 
 * [x] Create a note

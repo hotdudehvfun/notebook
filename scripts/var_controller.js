@@ -1,5 +1,4 @@
-function var_controller($scope,shared_service,db_service)
-{
+function var_controller($scope, shared_service, db_service,wiki_service) {
     $scope.show_more_options = ""
     $scope.new_var_name = ""
     $scope.new_var_value = ""
@@ -12,16 +11,16 @@ function var_controller($scope,shared_service,db_service)
     $scope.system_vars = {}
 
     //show var list
-    $scope.$on("show_var_list_changed", function (e,state) {
+    $scope.$on("show_var_list_changed", function (e, state) {
         //current notebook is available in shared service
-        console.log('var list changed',state)
+        console.log('var list changed', state)
         $scope.show_var_list = state
         //return object
         $scope.system_vars = db_service.read_vars()
     });
 
     //create var pop up
-    $scope.$on("show_var_popup_changed", function (e,state) {
+    $scope.$on("show_var_popup_changed", function (e, state) {
         //current notebook is available in shared service
         $scope.show_dialog = shared_service.get("show_var_popup");
 
@@ -54,14 +53,14 @@ function var_controller($scope,shared_service,db_service)
     $scope.create_system_var = () => {
         let name = $scope.new_var_name.trim().toLocaleLowerCase()
         let value = $scope.new_var_value.trim().toLocaleLowerCase()
-        if (name!="" &&value!="") {
+        if (name != "" && value != "") {
             console.log("Name and value required")
         }
         $scope.system_vars[name] = value
         console.log($scope.system_vars)
         $scope.clean_up()
         db_service.write_vars($scope.system_vars)
-        shared_service.set("show_toast","Var saved")
+        shared_service.set("show_toast", "Var saved")
     }
 
     //open pop up to edit
@@ -77,34 +76,11 @@ function var_controller($scope,shared_service,db_service)
     }
 
     $scope.evaluate_exp = function (value) {
-        // Recursive function to evaluate expressions
-        function evaluate(value) {
-            return value.replace(/\b[a-zA-Z_]\w*\b/g, function (match) {
-                if ($scope.system_vars.hasOwnProperty(match)) {
-                    // If the match is an expression, evaluate it recursively
-                    let expr = $scope.system_vars[match];
-                    if (typeof expr === 'string') {
-                        return evaluate(expr);
-                    } else {
-                        return expr;
-                    }
-                }
-                return match;
-            });
-        }
+        return wiki_service.evaluate_exp(value)
+    };
 
-        try {
-            // Evaluate the expression and return the result
-            let result = eval(evaluate(value))
-            result = result % 1 == 0 ? result : result.toFixed(2);
-            return result;
-        } catch (error) {
-            console.error("Invalid expression: ", error);
-            return "Invalid expression";
-        }
-    }
 
-    $scope.handle_click_on_var = (key)=>{
+    $scope.handle_click_on_var = (key) => {
         $scope.show_more_options = key
         console.log(key)
     }
