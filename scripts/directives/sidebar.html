@@ -9,10 +9,11 @@
 <!-- settings -->
 <div class="sidebar-items-container">
     <div
-        class="sidebar_item"
+        class="sidebar_item clickable"
         ng-repeat="item in items"
         ng-click="item.action()">
-        <span class="icon">{{item.s_t}}</span>
+        <!-- <span class="icon">{{item.s_t}}</span> -->
+        <img style="height: 24px;" ng-src="{{item.s_t}}"/>
         <div class="text">{{item.p_t}}</div>
         
     </div>

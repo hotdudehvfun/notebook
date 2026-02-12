@@ -5,7 +5,7 @@
     <div class="relative text-left">
         <label for="sort_notebooks" class="absolute align-center flex-row gap-1 h-full w-full">
             <h2 class="m-1">Your notebooks</h2>
-            <span class="text-lg">🔽</span>
+            <img class="" src="./img/icons/sort.svg"/>
         </label>
         <select name="sort_notebooks" id="sort_notebooks" ng-change="handle_sort_notebook_change()"
             ng-model="sort_notebook_selected_item" class="bottom-bar-menu-select w-half">
@@ -54,7 +54,7 @@
                         <!-- notebook icon -->
                         <!-- <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon"> -->
                          <span class="notebook_icon_list_view">{{notebook.icon}}</span>
-                        <article ng-click="open_notebook(notebook)" class="selected">{{notebook.title}}</article>
+                        <article ng-click="open_notebook(notebook)" class="selected clickable">{{notebook.title}}</article>
 
                         <!-- handle click on notebook more options -->
                         <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">

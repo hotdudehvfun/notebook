@@ -444,3 +444,7 @@ grid_title_bar {
 .mono {
     font-family: monospace !important;
 }
+
+.white{
+    color:white !important;
+}

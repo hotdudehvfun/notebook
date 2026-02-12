@@ -531,3 +531,5 @@ function clean_string(str) {
 function getType(value) {
     return Object.prototype.toString.call(value).slice(8, -1);
 }
+
+

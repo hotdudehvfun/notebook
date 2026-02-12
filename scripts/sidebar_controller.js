@@ -21,21 +21,21 @@ function sidebar_controller($scope, notebook_service,shared_service,db_service) 
     $scope.init_items = ()=>{
         try {
             const primary_texts = [
-                [`Version info:4.0.0`,"version"],
-                [`App Size:${$scope.app_size()}`,"size"],
-                ["Manage Database","db"],
-                ["Manage Tags","tags"],
-                ["System Vars","system_vars"],
-                ["Recyle bin","bin"],
+                [`Version: 4.0.0`,"version"],
+                [`Size: ${$scope.app_size()}`,"size"],
+                ["Database","db"],
+                ["Tags","tags"],
+                ["Vars","system_vars"],
+                ["Bin","bin"],
 
             ];
             const secondary_texts = {
-                version:"📱",
-                size:"📚",
-                db:"💾",
-                tags:"🗃",
-                system_vars:"⚙️",
-                bin:"🗑️"
+                version:"./img/icons/leaf.svg",
+                size:"./img/icons/box.svg",
+                db:"./img/icons/database.svg",
+                tags:"./img/icons/tag.svg",
+                system_vars:"./img/icons/settings.svg",
+                bin:"./img/icons/bin.svg",
             }
     
             const actions = {

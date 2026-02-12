@@ -313,9 +313,10 @@ canvas {
     transition: .2s all;
 }
 
-.clickable:active {
-    transform: scale(0.99);
+.clickable.active {
+    color:orange;
 }
+
 
 .content {
     flex-grow: 1;
@@ -1260,7 +1261,7 @@ span.toggle_span {
 }
 
 .sidebar_item>.text {
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 .square {
@@ -1270,8 +1271,8 @@ span.toggle_span {
 }
 
 .svg-icon {
-    width: 24px;
-    height: 24px
+    width: 100%;
+    height: 32px;
 }
 
 .svg-icon-l {
@@ -1604,6 +1605,8 @@ html {
     top: 0;
     z-index: 900;
     height: 72px;
+    display: flex;
+    align-items: center;
 }
 
 .transaction {
@@ -1744,7 +1747,8 @@ table {
 }
 
 .heading{
-    color:#fd4967;
+    /* color:#fd4967; */
+    color:#85b82e;
 }
 
 td.simple_cell.total {
@@ -1758,4 +1762,13 @@ tr.simple_row.total_row {
 
 .plain_text {
     white-space: pre-line;
+}
+
+
+.google-sans-font {
+  font-family: "Google Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  font-variation-settings:"GRAD" 0;
 }

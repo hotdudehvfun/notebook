@@ -27,7 +27,7 @@ function create_note_menu_controller($scope, shared_service) {
             highlight: "!important!",
             list: "- Item",
             progress: "#50%",
-            table: "@table\n||a,b\n|c,d",
+            table: "@table\n@S.no, A, =B\n99,100",
             circular: "@circular_bars\nA, B, C\n50, 50, 50",
         };
         const menu_items = [

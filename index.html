@@ -21,30 +21,33 @@
     <!-- development -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/custom_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+        rel="stylesheet">
 </head>
 
-<body ng-app="notebook_app" ng-controller='main_controller'>
+<body 
+    ng-app="notebook_app" 
+    ng-controller='main_controller'
+    class="google-sans-font">
     <div class="main-container">
         <!-- top bar -->
         <top-bar class="topbar" ng-show="show_topbar()"></top-bar>
         <!-- content bar -->
-        <div
-            class="content"
-            ng-class="{'pt-4':!is_create_note_view_open()}">
-            <notebooks-list
-                ng-controller="notebook_controller"
-                ng-show="show_dialog">
+        <div class="content" ng-class="{'pt-4':!is_create_note_view_open()}">
+            <notebooks-list ng-controller="notebook_controller" ng-show="show_dialog">
             </notebooks-list>
-            <notes-list 
-                ng-controller="note_controller"
-                ng-show="show_dialog">
+            <notes-list ng-controller="note_controller" ng-show="show_dialog">
             </notes-list>
 
             <div ng-controller="var_controller">
                 <system-var-list ng-show="show_var_list">
                 </system-var-list>
                 <!-- create-var-popup -->
-                <popup-Create-Var style="bottom: 30vh;" class="popup" ng-show="show_dialog" ng-click="show_dialog=false">
+                <popup-Create-Var style="bottom: 30vh;" class="popup" ng-show="show_dialog"
+                    ng-click="show_dialog=false">
                 </popup-Create-Var>
             </div>
             <!-- manage notebook tags -->
@@ -55,13 +58,10 @@
             </div>
 
             <!-- create note view -->
-            <create-note-view
-            ng-init="init()" ng-controller="create_note_controller" ng-show="show_dialog">
+            <create-note-view ng-init="init()" ng-controller="create_note_controller" ng-show="show_dialog">
             </create-note-view>
 
-            <view-bin
-                ng-controller="bin_controller"
-                ng-show="show_dialog">
+            <view-bin ng-controller="bin_controller" ng-show="show_dialog">
             </view-bin>
 
             <!-- insert empty space at end -->
@@ -98,20 +98,16 @@
     </create-notebook-popup>
 
     <!-- more options panel for notebook-->
-    <div
-        ng-init="init()" ng-controller="notebook_more_options_controller" class="list-more-options-container"
-        ng-show="show_dialog"
-        ng-click="show_dialog=false;">
+    <div ng-init="init()" ng-controller="notebook_more_options_controller" class="list-more-options-container"
+        ng-show="show_dialog" ng-click="show_dialog=false;">
         <div class="chip">
             {{current_notebook.icon}} {{current_notebook.title}}
         </div>
         <div class="list-more-optionas-holder popup_style">
-            <div
-                ng-repeat="option in notebook_more_options" ng-click="option.action()" class="task-more-options-item">
-                    <div>{{option.text}}</div>
+            <div ng-repeat="option in notebook_more_options" ng-click="option.action()" class="task-more-options-item">
+                <div>{{option.text}}</div>
             </div>
         </div>
-
     </div>
 
     <!-- more options panel for note-->
@@ -144,7 +140,6 @@
     <!-- <script src="/app.js"></script> -->
     <!-- angular module file -->
     <script src="./scripts/angular.min.js"></script>
-    <script defer="" src="./scripts/sortable.min.js"></script>
     <script defer="" src="./scripts/angular-sanitize.min.js"></script>
     <script defer="" src="./scripts/crypto-js.min.js"></script>
     <script defer="" src="./scripts/aes.min.js"></script>
@@ -182,8 +177,10 @@
     <script type="text/javascript" src="scripts/wiki.js"></script>
     <script type="text/javascript" src="scripts/notebook_controller.js"></script>
     <script type="text/javascript" src="scripts/note_controller.js"></script>
-
+    <script type="text/javascript" src="scripts/touch.util.js"></script>
     
+
+
 
     <script src="scripts/angular_module.js"></script>
 </body>

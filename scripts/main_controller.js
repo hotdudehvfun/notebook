@@ -3,75 +3,89 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
     // handle sidebar open close
     $scope.open_sidebar = function (e, state) {
-        shared_service.set("open_sidebar", true)
+        try {
+            shared_service.set("open_sidebar", true)
+        } catch (err) {
+            console.log(err)
+            $scope.show_toast("Cannot open sidebar")
+        }
     }
 
     // open notebook popup
     $scope.open_notebook_popup = function (action) {
         //action=create,rename
-        $scope.$broadcast('open_notebook_popup', action);
+        try {
+            $scope.$broadcast('open_notebook_popup', action);
+        } catch (err) {
+            console.log(err)
+            $scope.show_toast("Unable to open popup")
+        }
     }
 
 
     //USE THIS FUNCTION SET VIEW FROM ANYWHERE IN APP
     //TELL MAIN CONTROLLER WHAT TO OPEN
     $scope.set_view = function (view_name) {
-        $scope.show_view = view_name;
-        console.log("set current view =", view_name);
-        reset_scroll(document.querySelector(".content"));
+        try {
+            $scope.show_view = view_name;
+            console.log("set current view =", view_name);
+            reset_scroll(document.querySelector(".content"));
+            // Default UI reset for every view
+            shared_service.set('create_note_popup', false);
+            shared_service.set('show_tag_list', false);
+            shared_service.set('show_var_list', false);
+            shared_service.set('show_bin', false);
+            shared_service.set('show_notebook_list', false);
+            shared_service.set('show_note_list', false);
 
-        // Default UI reset for every view
-        shared_service.set('create_note_popup', false);
-        shared_service.set('show_tag_list', false);
-        shared_service.set('show_var_list', false);
-        shared_service.set('show_bin', false);
-        shared_service.set('show_notebook_list', false);
-        shared_service.set('show_note_list', false);
 
 
+            switch (view_name) {
+                case shared_service.CONST.VIEW_NOTEBOOK:
+                    $scope.pageTitle = $scope.defaultPageTitle;
+                    $scope.pageIcon = $scope.default_app_icon;
 
-        switch (view_name) {
-            case shared_service.CONST.VIEW_NOTEBOOK:
-                $scope.pageTitle = $scope.defaultPageTitle;
-                $scope.pageIcon = $scope.default_app_icon;
+                    shared_service.set("current_notebook", null);
+                    shared_service.set("current_note", null);
+                    shared_service.set("show_notebook_list", true)
+                    break;
 
-                shared_service.set("current_notebook", null);
-                shared_service.set("current_note", null);
-                shared_service.set("show_notebook_list", true)
-                break;
+                case shared_service.CONST.VIEW_NOTE:
+                    $scope.current_notebook = shared_service.get("current_notebook")
+                    $scope.pageTitle = $scope.current_notebook.title;
+                    $scope.pageIcon = $scope.current_notebook.icon;
+                    shared_service.set("show_note_list", true)
+                    break;
 
-            case shared_service.CONST.VIEW_NOTE:
-                $scope.current_notebook = shared_service.get("current_notebook")
-                $scope.pageTitle = $scope.current_notebook.title;
-                $scope.pageIcon = $scope.current_notebook.icon;
-                shared_service.set("show_note_list", true)
-                break;
+                case shared_service.CONST.VIEW_TAG:
+                    console.log("open tag list");
+                    $scope.pageTitle = "Group Notebooks";
+                    $scope.pageIcon = "📚";
+                    shared_service.set('show_tag_list', true);
+                    break;
 
-            case shared_service.CONST.VIEW_TAG:
-                console.log("open tag list");
-                $scope.pageTitle = "Group Notebooks";
-                $scope.pageIcon = "📚";
-                shared_service.set('show_tag_list', true);
-                break;
+                case shared_service.CONST.VIEW_CREATE_NOTE:
+                    console.log("opening create note")
+                    shared_service.set('create_note_popup', true);
+                    break;
 
-            case shared_service.CONST.VIEW_CREATE_NOTE:
-                console.log("opening create note")
-                shared_service.set('create_note_popup', true);
-                break;
+                case shared_service.CONST.VIEW_SYSTEM:
+                    console.log("view system vars");
+                    $scope.pageTitle = "System Vars";
+                    $scope.pageIcon = "⚙️";
+                    shared_service.set('show_var_list', true);
+                    break;
 
-            case shared_service.CONST.VIEW_SYSTEM:
-                console.log("view system vars");
-                $scope.pageTitle = "System Vars";
-                $scope.pageIcon = "⚙️";
-                shared_service.set('show_var_list', true);
-                break;
-
-            case shared_service.CONST.VIEW_BIN:
-                console.log("view bin");
-                $scope.pageTitle = "Recyle Bin"
-                $scope.pageIcon = "🗑️";
-                shared_service.set('show_bin', true);
-                break;
+                case shared_service.CONST.VIEW_BIN:
+                    console.log("view bin");
+                    $scope.pageTitle = "Recyle Bin"
+                    $scope.pageIcon = "🗑️";
+                    shared_service.set('show_bin', true);
+                    break;
+            }
+        } catch (err) {
+            console.log(err)
+            $scope.show_toast("Failed to open view")
         }
     };
 
@@ -278,7 +292,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             CREATE_NOTEBOOK: 7,
         }
         $scope.dialog_flags = {
-            show_edit_note_more_options:false,
+            show_edit_note_more_options: false,
         }
 
         // do not include it in dialog flags

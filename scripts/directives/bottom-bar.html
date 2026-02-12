@@ -1,8 +1,4 @@
-<div style="display: flex;
-    width: -webkit-fill-available;
-    justify-content: end;
-    margin-right: 1rem;
-    margin-bottom: .5rem;">
+<div style="display: flex; width: -webkit-fill-available; justify-content: end; margin-right: 1rem;margin-bottom: .5rem;">
     <!-- multi select options -->
     <div ng-show="is_note_multi_select_on" class="flex-col gap-1 orange p-1 popup_style">
         <div ng-click="bulk_action(CONST.COMPLETE)">✅ Complete</div>
@@ -14,28 +10,29 @@
 </div>
 
 <!-- bottom button -->
-<div 
-ng-show="!is_note_multi_select_on"
-class="flex-row p-1/2 justify-space-between gap-1 rounded-full border blur">
+<div ng-show="!is_note_multi_select_on" class="flex-row p-1/2 justify-space-between gap-1 rounded-full border blur">
     <!-- create notebook button -->
     <div ng-click="open_notebook_popup('create');"
-        class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
-        <span class="nav_btn_icon">📖</span>
+        class="button rounded-full clickable white gap-1 icon-btn-padding">
+        <img class="svg-icon" src="./img/icons/notebook.add.outline.svg"/>
     </div>
+
     <!-- create note button -->
     <div ng-click="open_create_note_popup()"
-        class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
-        <span class="nav_btn_icon">📝</span>
-        <!-- <span>Note</span> -->
+        class="button rounded-full clickable gap-1 icon-btn-padding  white">
+        <img class="svg-icon" src="./img/icons/note.add.svg"/>
     </div>
+
     <!-- system var button -->
     <div ng-click="open_create_var_popup()"
-        class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
-        <span class="nav_btn_icon">🎛️</span>
+        class="button rounded-full clickable gap-1 icon-btn-padding white">
+         <img class="svg-icon" src="./img/icons/formula.svg"/>
     </div>
+
     <!-- view notebooks button -->
     <div ng-hide="show_view=='notebook'" ng-click="set_view('notebook')"
-        class="button rounded-full clickable orange gap-1 icon-btn-padding  col-reverse">
-        <span class="nav_btn_icon">⬅️</span>
+        class="button rounded-full clickable gap-1 icon-btn-padding">
+        <img class="svg-icon" src="./img/icons/back.svg"/>
     </div>
+
 </div>
