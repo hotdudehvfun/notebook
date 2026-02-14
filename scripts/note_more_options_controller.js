@@ -79,6 +79,119 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
         }
     }
 
+    // prepare more options when note is clicked
+    $scope.init_note_more_options = () => {
+        try {
+            const note = $scope.selected_note;
+            const is_trash = $scope.current_notebook.title.toLowerCase() === "trash";
+            const is_completed = note.isTaskCompleted;
+            $scope.is_trash_open = is_trash;
+            const set_shared = (key, value) => shared_service.set(key, value);
 
+            const menu_items = [
+                ["📝 Edit", "edit"],
+                [is_completed ? "↩️ Mark Undo" : "✅ Mark Done", is_completed ? "not_done" : "done"],
+                ["🔄 Sort", "sort"],
+                ["🎳 Split", "split"],
+                ["☑️ Select Notes", "select"],
+                ["📋 Copy", "copy"],
+                ["🍯 Paste", "paste"],
+                ["♻️ Restore it", "restore"],
+                [is_trash ? "🧹 Remove from Trash" : "🗑 Trash it", "trash"]
+            ];
+            const show_items = {
+                paste: $scope.copied_task != null,
+                restore: is_trash,
+            }
+
+            const actions = {
+                edit: () => {
+                    set_shared("current_note", note);
+                    shared_service.set("create_note_source","edit")
+                    set_shared("show_view", shared_service.CONST.VIEW_CREATE_NOTE)
+                },
+                done: () => {
+                    note.isTaskCompleted = true; //updated by reference
+                    //move complete tasks to bottom
+                    //update positions of tasks
+                    $scope.current_notebook.taskArray = note_service.set_positions($scope.current_notebook.taskArray)
+                    db_service.write_notebook($scope.current_notebook)
+                    set_shared("current_notebook", $scope.current_notebook);
+                    set_shared("show_toast", "Note completed")
+                },
+                not_done: () => {
+                    note.isTaskCompleted = false; //updated by reference
+                    db_service.write_notebook($scope.current_notebook)
+                    set_shared("current_notebook", $scope.current_notebook);
+                    set_shared("show_toast", "Note unmarked")
+                },
+                sort: () => {
+                    //enable sorting
+                    set_shared("sorting_mode",true)
+                },
+                split: () => {
+                    try {
+                        $scope.current_notebook.taskArray = note_service.split_note("new line", note, $scope.current_notebook.taskArray);
+                        console.log($scope.current_notebook)
+                        db_service.write_notebook($scope.current_notebook);
+                        set_shared("current_notebook", $scope.current_notebook);
+                        set_shared("show_toast", "Note split done")
+                    } catch (err) {
+                        console.log("Split error:", err);
+                    }
+                },
+                select: () => {
+                    set_shared("note_multi_select_on", true)
+                    set_shared("show_toast", "Multi selection is on")
+                },
+                copy: () => $scope.copy_task(),
+                paste: () => {
+                    try {
+                        if ($scope.copied_task) {
+                            const updated = notebook_service.paste_task_inside_notebook($scope.current_notebook, $scope.copied_task);
+                            set_shared("current_notebook", updated);
+                            set_shared("copied_task", null);
+                        } else {
+                            set_shared("show_toast", "No task on clipboard!");
+                        }
+                    } catch (err) {
+                        console.log(err)
+                    }
+
+                },
+                restore: () => {
+                    try {
+                        const [notebook, parent_notebook] = notebook_service.restore_note($scope.current_notebook, note);
+                        set_shared("current_notebook", notebook);
+                        set_shared("show_toast", `Note restored to ${parent_notebook.title}`);
+                    } catch (err) {
+                        console.log("Delete error:", err);
+                    }
+                },
+                trash: () => {
+                    try {
+                        const notebook = notebook_service.delete_note($scope.current_notebook, note);
+                        set_shared("current_notebook", notebook);
+                        set_shared("show_toast", !is_trash ? "Note moved to Trash" : "Note removed from Trash");
+                    } catch (err) {
+                        console.log("Delete error:", err);
+                    }
+                },
+            };
+
+            $scope.note_more_options = menu_items
+                .filter(([text, key]) => !show_items.hasOwnProperty(key) || show_items[key])
+                .map(([text, key]) => ({
+                    text,
+                    action: () => {
+                        actions[key]();
+                        $scope.show_dialog = false;
+                    }
+                }));
+
+        } catch (err) {
+            console.log("Error initializing note options:", err);
+        }
+    }
 
 }
