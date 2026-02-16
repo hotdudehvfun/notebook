@@ -132,7 +132,6 @@ function wiki_service($rootScope, db_service, shared_service) {
     // solve anything 2+2 or a+b
     this.evaluate_exp = function (value) {
         const system_vars = db_service.read_vars()
-
         function evaluateVariables(str) {
             // Replace variables with their values recursively
             // console.log(`checking exp ${str}`)

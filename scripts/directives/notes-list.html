@@ -4,10 +4,12 @@
     <div class="notebook_age">
         ⏰&nbsp; {{notebook_age()}}
     </div>
+    
     <!-- clipboard -->
     <div class="notebook_age" ng-show="!is_clipboard_empty()">
         📋 1 note
     </div>
+    
     <!-- sorting mode  -->
      <div class="notebook_age" ng-show="sorting_mode" ng-click="close_sorting_mode()">
         🔄 Close sorting mode

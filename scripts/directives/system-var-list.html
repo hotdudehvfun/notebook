@@ -1,44 +1,111 @@
 <!-- show system vars here -->
-<div>
+<div class="flex-row gap-1 w-full scroll-y" style="padding: .75rem 0rem;">
+    <div class="chip" ng-click="show_dialog=true">
+        + New var
+    </div>
+    <!-- show vars -->
+    <div ng-repeat="(key,value) in system_vars" ng-click="select_var(key,value)"
+        ng-class="{'selected':key==selected_var}" class="chip notebook_tag_chip uppercase">
+        {{key}}
+    </div>
+</div>
+
+<div class="flex-col gap-2">
     <div class="notebook_age">
         <span>Total variables:</span>
         {{get_system_var_length()}}
     </div>
 
 
-    <div
-        class="empty-notebook" ng-show="get_system_var_length()==0">
+    <div class="align-center flex-col gap-2" ng-show="selected_var==null">
+        <svg style="transform: scale(2);" width="20" height="20" viewBox="0 0 20 20" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M13.0693 10.7461C13.8583 11.5832 15.1897 11.5833 15.9795 10.7471L16.3037 10.4033C16.6015 10.5438 16.8814 10.7186 17.1387 10.9219L17.0127 11.3437C16.6834 12.4459 17.3493 13.5976 18.4688 13.8623L18.8174 13.9453C18.839 14.127 18.8506 14.3122 18.8506 14.5C18.8506 14.6559 18.8431 14.8101 18.8281 14.9619L18.3672 15.0791C17.2792 15.357 16.6332 16.4765 16.9365 17.5576L17.0928 18.1142C16.8387 18.3096 16.5629 18.4764 16.2705 18.6113L15.9336 18.2539C15.1448 17.4169 13.8143 17.4161 13.0244 18.2519L12.6992 18.5967C12.4015 18.4562 12.1214 18.2813 11.8643 18.0781L11.9902 17.6553C12.3194 16.5532 11.6535 15.4014 10.5342 15.1367L10.1846 15.0537C10.1631 14.8723 10.1523 14.6874 10.1523 14.5C10.1523 14.3441 10.1599 14.1899 10.1748 14.0381L10.6357 13.9199C11.7236 13.642 12.3695 12.5234 12.0664 11.4424L11.9102 10.8848C12.1642 10.6895 12.44 10.5226 12.7324 10.3877L13.0693 10.7461ZM9.72266 2.08397C9.89061 1.97201 10.1094 1.97201 10.2773 2.08397C12.2154 3.37602 14.3114 4.18211 16.5703 4.50487C16.8166 4.54006 17 4.75117 17 4.99999V9.49999C17 9.53327 16.9984 9.56647 16.998 9.5996C16.2484 9.21667 15.3996 8.99999 14.5 8.99999C11.4624 8.99999 9 11.4624 9 14.5C9.00001 15.807 9.45727 17.0065 10.2188 17.9502C10.2056 17.9553 10.1929 17.9617 10.1797 17.9668C10.0642 18.0112 9.93584 18.0112 9.82031 17.9668C5.30689 16.2308 3.00001 13.3913 3 9.49999V4.99999C3 4.75117 3.18336 4.54006 3.42969 4.50487C5.68857 4.18211 7.78458 3.37602 9.72266 2.08397ZM14.501 13.5C13.9489 13.5002 13.501 13.9478 13.501 14.5C13.5011 15.0521 13.9489 15.4998 14.501 15.5C15.0532 15.5 15.5009 15.0522 15.501 14.5C15.501 13.9477 15.0533 13.5 14.501 13.5Z"
+                fill="gray" />
+        </svg>
+        <div class="gray h4 text-center">
+            Create and Edit custom variables and formula
+        </div>
+        <div class="gray h4 text-center">
+            Select a variable to edit the formula
+        </div>
+    </div>
+
+    <!-- formula playground -->
+    <div class="align-center flex-col wrap" style="gap:16px;" ng-show="selected_var">
+        <div class="gray h4 text-center">
+            Formula playground
+        </div>
+        <div ng-show="push_token_index==-1" class="h4 text-center gray">
+            Tap <span class="formula_item_add">+</span> to insert token at a position
+        </div>
+
+        <div ng-repeat="item in formula track by $index" class="formula_item">
+            <span ng-class="is_operator(item) ? 'operator' : 'var'" class="formula_playground_item">{{item}}</span>
+            <span ng-click="add_token($index)" class="formula_item_add">+</span>
+            <span ng-click="remove_token($index)" class="formula_item_close">x</span>
+        </div>
+    </div>
+
+
+
+    <!-- show when selected var  -->
+    <div class="flex-col gap-2" ng-show="selected_var!=null">
+        <!-- <div ng-click="save_var()" class="chip w-max-content self-center orange">Save</div> -->
+        <!-- evulated formula -->
+        <div class="gray h4 text-center">Evaluated formula</div>
+        <div class="flex-row wrap gap-1 justify-center">
+            <div ng-repeat="item in evaluated_formula track by $index" class="formula_item">
+                <span class="uppercase italic">{{item}}</span>
+            </div>
+        </div>
+        <div class="gray h4 text-center">Result</div>
+        <div class="h4 gradient-text-orange text-center">{{result}}</div>
+
+        <!-- All vars -->
+        <div ng-show="push_token_index!=-1" class="h4 text-center orange blink">Tap token from below to add to formula
+        </div>
+        <!-- select operators -->
+        <div class="gray h4 text-center">Available operators</div>
+        <div class="flex-row justify-center mt-2 wrap gap-1">
+            <div ng-repeat="operator in operators" ng-click="push_operator(operator)" class="var_chips">
+                <span class="bold orange">{{operator}}</span>
+            </div>
+        </div>
+        <!-- input num -->
+        <div class="gray h4 text-center">Enter custom number</div>
+        <div ng-click="open_input()" class="self-center var_chips w-max-content">
+            <div class="orange">Input number</div>
+        </div>
+        <!-- select from vars -->
+        <div class="gray h4 text-center">Available variables and formulas</div>
+        <div class="flex-row justify-center mt-2 wrap gap-1 text-small">
+            <div ng-repeat="(key,value) in system_vars" ng-click="push_var(key,value)" class="var_chips">
+                <div class="uppercase">{{key}}:&nbsp;</div>
+                <span class="gray">{{evaluate_exp(value)}}</span>
+            </div>
+        </div>
+
+        <!-- danger zone -->
+        <div class="h3 red text-center">Danger Zone</div>
+        <div class="gradient-text-orange h3 mt-2 text-center" ng-click="delete_var(selected_var)">
+            Tap to remove "{{selected_var}}" variable?
+        </div>
+    </div>
+
+
+
+
+
+
+    <div class="empty-notebook" ng-show="get_system_var_length()==0">
         <div class="empty_container">
             <span class="text-xxxl">📭</span>
             <span class="gray">No custom variables</span>
-            <span class="chip orange"
-            ng-click="open_create_var_popup()">+ Create variable</span>
-        </div>
-    </div>
-
-
-
-
-
-
-    <div 
-        ng-repeat="(key,value) in system_vars"
-        class="clickable"
-        ng-click="handle_click_on_var(key)">
-        <div class="system_var_item">
-            <div class="key">{{key}}</div>
-            <div class="flex-row space-between">
-                <div class="light-gray">Formula</div>
-                <div class="value">{{value}}</div>
-            </div>
-            <div class="light-gray">Evaluated expression</div>
-            <div class="evaluated_exp">{{evaluate_exp(value)}}</div>
-            <div ng-show="show_more_options==key" class="flex-row justify-space-between m-2">
-                <span ng-click="delete_var(key)" class="red">🗑️ Delete</span>
-                <span ng-click="open_edit_var_popup(key)" class="orange">📝 Edit</span>
-            </div>
+            <span class="chip orange" ng-click="open_create_var_popup()">+ Create variable</span>
         </div>
     </div>
     <!-- insert empty space at end -->
-     <div class="empty-space"></div>
+    <div class="empty-space"></div>
 </div>

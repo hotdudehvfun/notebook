@@ -533,3 +533,21 @@ function getType(value) {
 }
 
 
+function split_formula(formula, operators) {
+    let tokens = [];
+    let buffer = "";
+
+    for (let ch of formula) {
+        if (operators.includes(ch)) {
+            if (buffer) {
+                tokens.push(buffer);
+                buffer = "";
+            }
+            tokens.push(ch);
+        } else {
+            buffer += ch;
+        }
+    }
+    if (buffer) tokens.push(buffer);
+    return tokens;
+}

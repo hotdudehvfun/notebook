@@ -89,6 +89,14 @@
     filter: grayscale(0) !important;
 }
 
+.flex {
+    flex: 1
+}
+
+.flex-grow {
+    flex-grow: 1
+}
+
 .flex-col {
     display: flex;
     flex-direction: column
@@ -142,8 +150,7 @@ h2,
 h3,
 h4,
 h5,
-h6 
-{
+h6 {
     margin: 0 0;
     text-transform: capitalize;
     font-weight: 700;
@@ -445,6 +452,116 @@ grid_title_bar {
     font-family: monospace !important;
 }
 
-.white{
-    color:white !important;
+.white {
+    color: white !important;
+}
+
+.no-select {
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+.gap-1 {
+    gap: .5rem
+}
+
+.gap-2 {
+    gap: 1rem
+}
+
+.gap-4 {
+    gap: 2rem;
+}
+
+.justify-center {
+    justify-content: center
+}
+
+.justify-content-end {
+    justify-content: end
+}
+
+.justify-end {
+    justify-content: end
+}
+
+.mt-2 {
+    margin-top: 1rem
+}
+
+.transition {
+    transition: .5s all;
+}
+
+.text-small {
+    font-size: .75rem
+}
+
+.text-120 {
+    font-size: 120%
+}
+
+.text-2 {
+    font-size: 1rem
+}
+
+.text-accent {
+    color: var(--accent)
+}
+
+.text-center {
+    text-align: center
+}
+
+.svg-icon {
+    width: 100%;
+    height: 32px;
+}
+
+.svg-icon-l {
+    width: 36px;
+    height: 36px
+}
+
+.svg-icon-l1 {
+    width: 24px !important;
+    height: 24px !important
+}
+
+.svg-icon-md {
+    width: 18px !important;
+    height: 18px !important
+}
+
+.svg-icon-sm {
+    width: 12px;
+    height: 12px
+}
+
+.self-end {
+    align-self: flex-end
+}
+
+.self-center {
+    align-self: center
+}
+
+.shadow {
+    box-shadow: 0 0 4px #0a0a0aab
+}
+
+.shadow-up {
+    box-shadow: 0 -2px 4px #c1c1c163
+}
+
+.scroll {
+    overflow: scroll
+}
+
+.scroll-y {
+    overflow-y: scroll
+}
+
+.uppercase{
+    text-transform: uppercase;
 }

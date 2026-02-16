@@ -1,5 +1,6 @@
 <!-- spacer -->
 <div class="spacer"></div>
+
 <!-- menu buttons -->
 <div class="flex-row gap-1 w-full scroll-y" style="padding: .75rem 0rem;">
     <!-- create note menu -->
@@ -12,6 +13,7 @@
         {{tag}}
     </div>
 </div>
+
 
 <!-- notebooks in selected group -->
 <div class="gray h2 text-center" ng-show="selected_tag==null && tag_arr.length!=0" style="margin-top: 8rem;">
@@ -48,4 +50,5 @@
 
 <div ng-show="selected_tag!=null" class="h3 red text-center">Danger Zone</div>
 <div ng-show="selected_tag!=null" class="gradient-text-orange h3 mt-2 ng-binding text-center"
-    ng-click="remove_notebook_tag()">Remove "{{selected_tag}} tag?"</div>
+    ng-click="remove_notebook_tag()">Remove "{{selected_tag}} tag?"
+</div>

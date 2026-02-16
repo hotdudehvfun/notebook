@@ -10,29 +10,30 @@
 </div>
 
 <!-- bottom button -->
-<div ng-show="!is_note_multi_select_on" class="flex-row p-1/2 justify-space-between gap-1 rounded-full border blur">
+<div 
+    ng-show="!is_note_multi_select_on"
+    style="padding:.75rem 2rem"
+    class="flex-row justify-space-between rounded-full border blur gap-4">
     <!-- create notebook button -->
-    <div ng-click="open_notebook_popup('create');"
-        class="button rounded-full clickable white gap-1 icon-btn-padding">
+    <div ng-click="open_notebook_popup('create');" class="clickable">
         <img class="svg-icon" src="./img/icons/notebook.add.outline.svg"/>
     </div>
 
     <!-- create note button -->
     <div ng-click="open_create_note_popup()"
-        class="button rounded-full clickable gap-1 icon-btn-padding  white">
+        class="clickable">
         <img class="svg-icon" src="./img/icons/note.add.svg"/>
     </div>
 
     <!-- system var button -->
     <div ng-click="open_create_var_popup()"
-        class="button rounded-full clickable gap-1 icon-btn-padding white">
+        class="clickable">
          <img class="svg-icon" src="./img/icons/formula.svg"/>
     </div>
 
     <!-- view notebooks button -->
     <div ng-hide="show_view=='notebook'" ng-click="set_view('notebook')"
-        class="button rounded-full clickable gap-1 icon-btn-padding">
+        class="clickable">
         <img class="svg-icon" src="./img/icons/back.svg"/>
     </div>
-
 </div>

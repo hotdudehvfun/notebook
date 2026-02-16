@@ -4,11 +4,15 @@
     <!-- Sort notebooks -->
     <div class="relative text-left">
         <label for="sort_notebooks" class="absolute align-center flex-row gap-1 h-full w-full">
-            <h2 class="m-1">Your notebooks</h2>
+            <h2 class="m-1">Notebooks</h2>
             <img class="" src="./img/icons/sort.svg"/>
         </label>
-        <select name="sort_notebooks" id="sort_notebooks" ng-change="handle_sort_notebook_change()"
-            ng-model="sort_notebook_selected_item" class="bottom-bar-menu-select w-half">
+        <select 
+            name="sort_notebooks" 
+            id="sort_notebooks" 
+            ng-change="handle_sort_notebook_change()"
+            ng-model="sort_notebook_selected_item" 
+            class="bottom-bar-menu-select w-half">
             <option value="date">Sort by Date</option>
             <option value="title">Sort by Title</option>
             <option value="tag">Sort by Tags</option>
