@@ -82,12 +82,14 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
         const copied_task = $scope.copied_task;
         const menu_definitions = [
             {
-                text: notebook.is_locked ? "🔓 Unlock notebook" : "🔏 Lock notebook",
+                text: notebook.is_locked ? "Unlock notebook" : "Lock notebook",
+                icon: "note.lock.svg",
                 show: is_lockable,
                 action: () => set_shared("show_password_popup", true)
             },
             {
-                text: "🍯 Paste Task",
+                text: "Paste Task",
+                icon: "note.paste.svg",
                 show: !!copied_task,
                 action: () => {
                     if(!copied_task)
@@ -99,20 +101,23 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                 }
             },
             {
-                text: "📘 Rename notebook",
+                text: "Rename notebook",
+                icon: "notebook.rename.svg",
                 show: is_user_notebook,
                 action: () => $rootScope.$broadcast("open_notebook_popup","rename")
             },
             {
-                text: "🚕 Move completed tasks",
+                text: "Move completed tasks",
                 show: has_completed,
+                icon: "note.move.completed.svg",
                 action: () => {
                     set_shared("quick_notebooks_action", shared_service.CONST.MOVE_COMPLETED);
                     $rootScope.$broadcast("show_quick_notebooks")
                 }
             },
             {
-                text: "🪏 Merge completed tasks",
+                text: "Merge completed tasks",
+                icon: "note.merge.completed.svg",
                 show: has_completed,
                 action: () => {
                     const updated = note_service.merge_completed_notes(notebook);
@@ -123,7 +128,8 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                 }
             },
             {
-                text: "🗑️ Remove completed tasks",
+                text: "Remove completed tasks",
+                icon: "note.select.svg",
                 show: has_completed,
                 action: () => {
                     if (confirm("Remove completed tasks?")) {
@@ -136,12 +142,14 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                 }
             },
             {
-                text: "🔄 Refresh",
+                text: "Refresh",
+                icon: "notebook.refresh.svg",
                 show: true,
                 action: () => location.reload()
             },
             {
-                text: is_trash ? "🗑️ Empty Recycling Bin" : "🧹 Delete All",
+                text: is_trash ? "Empty Bin" : "Remove all notes",
+                icon: "note.remove.all.svg",
                 show: !is_system,
                 action: () => {
                     if (confirm("Remove all tasks?")) {
@@ -154,7 +162,8 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                 }
             },
             {
-                text: "📚 Delete notebook",
+                text: "Delete notebook",
+                icon: "notebook.remove.svg",
                 show: true,
                 action: () => {
                     try {
@@ -176,8 +185,9 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
         // Filter and map visible items
         $scope.notebook_more_options = menu_definitions
             .filter(item => item.show)
-            .map(({ text, action }) => ({
+            .map(({ text,icon, action }) => ({
                 text,
+                icon,
                 action: () => {
                     action();
                     $scope.show_dialog = false;

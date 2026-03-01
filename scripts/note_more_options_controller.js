@@ -30,7 +30,7 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
         console.log("note more options using button")
         $scope.selected_note = shared_service.get("current_note")
         console.log($scope.selected_note)
-        
+
         $scope.current_notebook = shared_service.get("current_notebook")
         $scope.copied_task = shared_service.get("copied_task")
         $scope.is_note_selected = true
@@ -43,13 +43,12 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
     $scope.$on("open_note_more_options_menu", function (e, type) {
         $scope.selected_note = shared_service.get("current_note")
         let flag = true;
-        if(type=='note')
-        {
+        if (type == 'note') {
             //do not open if chart is clicked
-            if($scope.is_chart($scope.selected_note))
+            if ($scope.is_chart($scope.selected_note))
                 flag = false;
         }
-        if(flag)
+        if (flag)
             $scope.open_more_options()
     });
 
@@ -89,16 +88,30 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
             const set_shared = (key, value) => shared_service.set(key, value);
 
             const menu_items = [
-                ["📝 Edit", "edit"],
-                [is_completed ? "↩️ Mark Undo" : "✅ Mark Done", is_completed ? "not_done" : "done"],
-                ["🔄 Sort", "sort"],
-                ["🎳 Split", "split"],
-                ["☑️ Select Notes", "select"],
-                ["📋 Copy", "copy"],
-                ["🍯 Paste", "paste"],
-                ["♻️ Restore it", "restore"],
-                [is_trash ? "🧹 Remove from Trash" : "🗑 Trash it", "trash"]
+                ["Edit", "edit"],
+                ["Copy", "copy"],
+                ["Paste", "paste"],
+                ["Select Notes", "select"],
+                ["Split", "split"],
+                ["Sort", "sort"],
+                [is_completed ? "Mark Undo" : "Mark Done", is_completed ? "not_done" : "done"],
+                ["Restore it", "restore"],
+                [is_trash ? "Remove from Trash" : "Trash it", "trash"]
             ];
+
+            const icons = {
+                "edit": "note.edit.svg",
+                "not_done": "note.not_done.svg",
+                "done": "note.done.svg",
+                "sort": "note.sort.svg",
+                "split": "note.split.svg",
+                "select": "note.select.svg",
+                "copy": "note.copy.svg",
+                "paste": "note.paste.svg",
+                "restore": "note.restore.svg",
+                "trash": "note.trash.svg",
+
+            }
             const show_items = {
                 paste: $scope.copied_task != null,
                 restore: is_trash,
@@ -107,7 +120,7 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
             const actions = {
                 edit: () => {
                     set_shared("current_note", note);
-                    shared_service.set("create_note_source","edit")
+                    shared_service.set("create_note_source", "edit")
                     set_shared("show_view", shared_service.CONST.VIEW_CREATE_NOTE)
                 },
                 done: () => {
@@ -127,7 +140,7 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
                 },
                 sort: () => {
                     //enable sorting
-                    set_shared("sorting_mode",true)
+                    set_shared("sorting_mode", true)
                 },
                 split: () => {
                     try {
@@ -186,7 +199,8 @@ function note_more_options_controller($scope, $rootScope, shared_service, note_s
                     action: () => {
                         actions[key]();
                         $scope.show_dialog = false;
-                    }
+                    },
+                    icon: icons[key],
                 }));
 
         } catch (err) {

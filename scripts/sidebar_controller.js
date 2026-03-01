@@ -30,12 +30,12 @@ function sidebar_controller($scope, notebook_service,shared_service,db_service) 
 
             ];
             const secondary_texts = {
-                version:"./img/icons/leaf.svg",
-                size:"./img/icons/box.svg",
-                db:"./img/icons/database.svg",
-                tags:"./img/icons/tag.svg",
-                system_vars:"./img/icons/settings.svg",
-                bin:"./img/icons/bin.svg",
+                version:"leaf.svg",
+                size:"box.svg",
+                db:"database.svg",
+                tags:"tag.svg",
+                system_vars:"settings.svg",
+                bin:"bin.svg",
             }
     
             const actions = {
