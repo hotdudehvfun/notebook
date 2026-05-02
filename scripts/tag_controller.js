@@ -109,6 +109,8 @@ function tag_controller($scope, notebook_service, shared_service, db_service) {
 
     //tag list view is opened
     $scope.$on("show_tag_list_changed", function (e, state) {
+        if($scope.show_tag_list == state)
+            return
         console.log("show tag list changed",state)
         $scope.show_tag_list = state;
         if(state)

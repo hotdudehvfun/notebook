@@ -67,6 +67,8 @@ function bin_controller($scope, notebook_service, shared_service, db_service,wik
 
     //tag list view is opened
     $scope.$on("show_bin_changed", function (e, state) {
+        if($scope.show_dialog==state)
+            return
         console.log("show tag list changed", state)
         $scope.show_dialog = state;
         if (state) {

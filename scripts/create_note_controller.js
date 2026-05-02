@@ -30,11 +30,14 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
     $scope.show_dialog = false;
     //listen to close all dialogs event from shared service
     $scope.$on("create_note_popup_changed", function (e, state) {
+        if($scope.show_dialog==state)
+            return
         console.log("create_note_popup_changed", state)
         $scope.show_dialog = state
         //set current note when edit button is clicked
         $scope.current_note = shared_service.get("current_note")
         $scope.current_notebook = $scope.get_current_notebook();
+        console.log("current notebook",$scope.current_notebook)
         //create or edit
         const create_note_source = shared_service.get("create_note_source")
         if (state) {
@@ -72,10 +75,10 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
     };
 
     //listen to close all dialogs event from shared service
-    $scope.$on("current_notebook_changed", function (e, data) {
-        $scope.current_notebook = shared_service.get("current_notebook");
-        console.log("current_notebook_updated event received", $scope.current_notebook)
-    })
+    // $scope.$on("current_notebook_changed", function (e, data) {
+    //     $scope.current_notebook = data
+    //     console.log("current_notebook_updated event received", $scope.current_notebook)
+    // })
 
     $scope.close_create_note_dialog = () => {
         $scope.show_dialog = false;
@@ -118,6 +121,7 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
     $scope.get_current_notebook = function () {
         let notebook = shared_service.get("current_notebook");
         if (!notebook) {
+            console.log("no current notebook, returning quick notes")
             notebook = notebook_service.get_quick_notes_notebook();
             shared_service.set("current_notebook", notebook);
         }

@@ -1,3 +1,4 @@
+let init_done = false;
 function main_controller($scope, $timeout, db_service, notebook_service, note_service, graph_service, shared_service, wiki_service) {
     const set_shared = (k, v) => shared_service.set(k, v);
 
@@ -28,7 +29,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     $scope.set_view = function (view_name) {
         try {
             $scope.show_view = view_name;
-            console.log("set current view =", view_name);
+            // console.log("CURRENT VIEW = ", view_name);
             reset_scroll(document.querySelector(".content"));
             // Default UI reset for every view
             // Hide all other view
@@ -38,12 +39,11 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             shared_service.set('show_bin', false);
             shared_service.set('show_notebook_list', false);
             shared_service.set('show_note_list', false);
-            
+
             switch (view_name) {
                 case shared_service.CONST.VIEW_NOTEBOOK:
                     $scope.pageTitle = $scope.defaultPageTitle;
                     $scope.pageIcon = $scope.default_app_icon;
-
                     shared_service.set("current_notebook", null);
                     shared_service.set("current_note", null);
                     shared_service.set("show_notebook_list", true)
@@ -86,6 +86,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             console.log(err)
             $scope.show_toast("Failed to open view")
         }
+        // console.log("set view end")
     };
 
     //from top bar
@@ -271,7 +272,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
     // init everything
     $scope.init = () => {
-        console.log("main controller init")
+        console.log("MAIN CONTROLLER INIT")
         //CONST values
         $scope.CONST = {
             IMPORT: "import",
@@ -383,11 +384,5 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.show_view = $scope.CONST.VIEW_NOTEBOOK // default to show NOTEBOOK VIEW
         $scope.set_view($scope.CONST.VIEW_NOTEBOOK)
     };
-
-    $scope.$on('$viewContentLoaded', function () {
-        $timeout(function () {
-            $scope.init();
-        }, 0);
-    });
-
+    $scope.init();
 }

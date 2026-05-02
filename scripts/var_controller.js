@@ -27,6 +27,8 @@ function var_controller($scope, shared_service, db_service, wiki_service) {
     //main entry point of system var view
     $scope.$on("show_var_list_changed", function (e, state) {
         //current notebook is available in shared service
+        if($scope.show_var_list==state)
+            return
         console.log('var list changed', state)
         $scope.show_var_list = state
         //init settings
@@ -43,8 +45,9 @@ function var_controller($scope, shared_service, db_service, wiki_service) {
     //create var pop up
     $scope.$on("show_var_popup_changed", function (e, state) {
         //current notebook is available in shared service
+        if($scope.show_dialog==state)
+            return
         $scope.show_dialog = shared_service.get("show_var_popup");
-
     });
 
     $scope.get_system_var_length = () => {

@@ -10,6 +10,8 @@ function notebook_controller($scope,db_service, notebook_service, note_service, 
             if (!notebook)
                 return;
             console.log("opening notebook")
+            //notebook is saved in shared service
+            //also event is broadcast for others to listen
             shared_service.set("current_notebook", notebook)
             shared_service.set("system_vars", db_service.read_vars())
             $scope.set_view($scope.CONST.VIEW_NOTE)
