@@ -28,10 +28,7 @@
         rel="stylesheet">
 </head>
 
-<body 
-    ng-app="notebook_app" 
-    ng-controller='main_controller'
-    class="google-sans-font">
+<body ng-app="notebook_app" ng-controller='main_controller' class="google-sans-font">
     <div class="main-container">
         <!-- top bar -->
         <top-bar class="topbar" ng-show="show_topbar()"></top-bar>
@@ -64,10 +61,16 @@
             <view-bin ng-controller="bin_controller" ng-show="show_dialog">
             </view-bin>
 
+            <div id="logs">
+            Console:
+        </div>
+
             <!-- insert empty space at end -->
             <div class="empty-space"></div>
         </div>
+        
     </div>
+
 
     <!-- bottom bar -->
     <bottom-bar class="bottom-bar"></bottom-bar>
@@ -105,7 +108,7 @@
         </div>
         <div class="list-more-optionas-holder popup_style">
             <div ng-repeat="option in notebook_more_options" ng-click="option.action()" class="task-more-options-item">
-                <img ng-src="./img/icons/{{option.icon}}"/>
+                <img ng-src="./img/icons/{{option.icon}}" />
                 <div>{{option.text}}</div>
             </div>
         </div>
@@ -115,11 +118,8 @@
     <div ng-init="init()" ng-controller="note_more_options_controller" class="list-more-options-container"
         ng-click="show_dialog=false;" ng-show="show_dialog">
         <div class="list-more-optionas-holder popup_style">
-            <div
-                ng-repeat="option in note_more_options" 
-                ng-click="option.action()" 
-                class="task-more-options-item">
-                <img ng-src="./img/icons/{{option.icon}}"/>
+            <div ng-repeat="option in note_more_options" ng-click="option.action()" class="task-more-options-item">
+                <img ng-src="./img/icons/{{option.icon}}" />
                 <div>{{option.text}}</div>
             </div>
         </div>
@@ -183,11 +183,18 @@
     <script type="text/javascript" src="scripts/notebook_controller.js"></script>
     <script type="text/javascript" src="scripts/note_controller.js"></script>
     <script type="text/javascript" src="scripts/touch.util.js"></script>
-    
+
 
 
 
     <script src="scripts/angular_module.js"></script>
+    <script>
+        const logs_div = document.getElementById("logs");
+
+        console.log = function (...args) {
+            logs_div.innerHTML += args.join(" ") + "<br>";
+        };
+    </script>
 </body>
 
 </html>
