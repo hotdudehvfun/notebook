@@ -3,18 +3,18 @@ let app = angular.module("notebook_app", []);
 let patchApplied = false;
 let toast_timer_id = null;
 
-console.log(`
-> Added progress bar code:#20%
-> Copy and Paste Tasks
-> Delete Tasks
-> Delete and Rename Notebooks
-> {2+2} = 4 Expression evaluation
-> Define custom variables
-> Trash notebook
-> #Today #now #weekday
-> System and Trash Notebooks
-> Bulk move completed notes to other notebook
-`)
+// console.log(`
+// > Added progress bar code:#20%
+// > Copy and Paste Tasks
+// > Delete Tasks
+// > Delete and Rename Notebooks
+// > {2+2} = 4 Expression evaluation
+// > Define custom variables
+// > Trash notebook
+// > #Today #now #weekday
+// > System and Trash Notebooks
+// > Bulk move completed notes to other notebook
+// `)
 
 var system_vars = {}
 

@@ -8,8 +8,7 @@ function notebook_service($timeout,note_service, db_service) {
             callback(sorted);
         });
     };
-
-
+    
     // get notebook age
     this.get_notebook_age = function (notebook) {
         return notebook?.dateCreated ? timeSince(notebook.dateCreated) : "Notebook is very old";
@@ -271,9 +270,6 @@ function notebook_service($timeout,note_service, db_service) {
             return false
         if (content.length == 0)
             return false
-        if (content.length > 999)
-            return false
-
         return true
     }
 

@@ -31,15 +31,14 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             console.log("set current view =", view_name);
             reset_scroll(document.querySelector(".content"));
             // Default UI reset for every view
+            // Hide all other view
             shared_service.set('create_note_popup', false);
             shared_service.set('show_tag_list', false);
             shared_service.set('show_var_list', false);
             shared_service.set('show_bin', false);
             shared_service.set('show_notebook_list', false);
             shared_service.set('show_note_list', false);
-
-
-
+            
             switch (view_name) {
                 case shared_service.CONST.VIEW_NOTEBOOK:
                     $scope.pageTitle = $scope.defaultPageTitle;
@@ -272,7 +271,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
     // init everything
     $scope.init = () => {
-        console.log("INIT CALLED")
+        console.log("main controller init")
         //CONST values
         $scope.CONST = {
             IMPORT: "import",
@@ -291,6 +290,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             CANCEL: 6,
             CREATE_NOTEBOOK: 7,
         }
+
         $scope.dialog_flags = {
             show_edit_note_more_options: false,
         }
@@ -299,7 +299,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.show_note_popup = false; //to show create note popup
 
         $scope.toast_msg = "" // toast message
-        $scope.show_view = $scope.CONST.VIEW_NOTEBOOK // default to show NOTEBOOK VIEW
 
         //button flags
         $scope.show_delete_system_var_button = false // delete button in system var popup
@@ -326,21 +325,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
 
         $scope.action_on_quick_notebook_item = $scope.CONST.OPEN // what to do when quick notebook item is clicked
 
-
-
-        // transaction component
-        $scope.new_transaction = {
-            desc: "",
-            category: "Bill",
-            categories: ["Bill", "Food", "Shopping", "Entertainment", "Travel", "Health", "Education", "Investments", "Savings", "Books", "Luxury item", "Misc"],
-            method: "cash",
-            //cash or credit
-            account: "none",
-            date: "none",
-            amount: 0,
-            show: false,
-        }
-
         // circular progress component 
         $scope.circular_progress = {
             heading_pos: "left",
@@ -358,8 +342,6 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.textarea_max_height = 200
         //show this icon on create notebook and update it automatically
 
-
-
         //default values
         $scope.defaultPageTitle = "Notebooks";
         $scope.default_app_icon = "☘️"
@@ -367,6 +349,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         $scope.trash_icon = "🗑️"
         $scope.pageTitle = $scope.defaultPageTitle;
         $scope.pageIcon = $scope.default_app_icon
+
         //svg source
         $scope.copied_task = null
         $scope.db_operation = null
@@ -397,11 +380,14 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         //group notebooks
         //date, title, tags
         //view notebooks by default
+        $scope.show_view = $scope.CONST.VIEW_NOTEBOOK // default to show NOTEBOOK VIEW
         $scope.set_view($scope.CONST.VIEW_NOTEBOOK)
     };
 
     $scope.$on('$viewContentLoaded', function () {
-        $scope.init();
+        $timeout(function () {
+            $scope.init();
+        }, 0);
     });
 
 }

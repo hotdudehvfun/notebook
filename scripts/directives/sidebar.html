@@ -13,7 +13,15 @@
         ng-repeat="item in items"
         ng-click="item.action()">
         <!-- <span class="icon">{{item.s_t}}</span> -->
-        <img style="height: 24px;" ng-src="./img/icons/{{item.s_t}}"/>
+        <!-- <img style="height: 24px;" ng-src="./img/icons/{{item.s_t}}"/> -->
+        <div
+            class="mask-icon" 
+            style="
+                -webkit-mask-image: url('./img/icons/{{item.s_t}}'); 
+                mask-image: url('./img/icons/{{item.s_t}}');
+                background-color: {{item.accent_color}};
+                ">
+        </div>
         <div class="text">{{item.p_t}}</div>        
     </div>
 </div>
