@@ -101,9 +101,10 @@ function notebook_controller($scope,db_service, notebook_service, note_service, 
     });
 
     // EVENT: SHOW HIDE NOTEBOOK VIEW
-    $scope.$on('show_notebook_list_changed', function (event,state) {
+    $scope.$on('show_notebook_list', function (event,state) {
         try {
             $scope.show_dialog = state;
+            console.log("hide notebook list",$scope.show_dialog)
             if(state)
             {
                 $scope.notebooks = db_service.read_notebooks();
@@ -114,4 +115,6 @@ function notebook_controller($scope,db_service, notebook_service, note_service, 
             console.log(err)
         }
     });
+    $scope.$emit("notebook_controller_ready");
+
 }

@@ -29,7 +29,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
     $scope.set_view = function (view_name) {
         try {
             $scope.show_view = view_name;
-            // console.log("CURRENT VIEW = ", view_name);
+            console.log("CURRENT VIEW = ", view_name);
             reset_scroll(document.querySelector(".content"));
             // Default UI reset for every view
             // Hide all other view
@@ -37,7 +37,7 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
             shared_service.set('show_tag_list', false);
             shared_service.set('show_var_list', false);
             shared_service.set('show_bin', false);
-            shared_service.set('show_notebook_list', false);
+            $scope.$broadcast("show_notebook_list", false);
             shared_service.set('show_note_list', false);
 
             switch (view_name) {
@@ -46,7 +46,12 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
                     $scope.pageIcon = $scope.default_app_icon;
                     shared_service.set("current_notebook", null);
                     shared_service.set("current_note", null);
-                    shared_service.set("show_notebook_list", true)
+                    // shared_service.set("show_notebook_list", true)
+                    // $timeout(function () {
+                        
+                    // }, 1000);
+                    $scope.$broadcast("show_notebook_list", true);
+                    // $scope.$broadcast("refresh_notebook_list");
                     break;
 
                 case shared_service.CONST.VIEW_NOTE:
@@ -88,6 +93,15 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         }
         // console.log("set view end")
     };
+
+    //emit from notebook controller that we are ready
+    $scope.$on("notebook_controller_ready", function () {
+        // console.log("hide loading...")
+        //hide loading
+        $scope.notebook_list_ready = true
+        //set notebooks
+        $scope.set_view($scope.CONST.VIEW_NOTEBOOK)
+    });
 
     //from top bar
     $scope.handle_click_on_more_vert = (_notebook) => {
@@ -381,8 +395,8 @@ function main_controller($scope, $timeout, db_service, notebook_service, note_se
         //group notebooks
         //date, title, tags
         //view notebooks by default
-        $scope.show_view = $scope.CONST.VIEW_NOTEBOOK // default to show NOTEBOOK VIEW
-        $scope.set_view($scope.CONST.VIEW_NOTEBOOK)
+        // $scope.show_view = $scope.CONST.VIEW_NOTEBOOK // default to show NOTEBOOK VIEW
+        $scope.notebook_list_ready = false
     };
     $scope.init();
 }

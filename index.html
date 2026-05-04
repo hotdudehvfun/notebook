@@ -37,12 +37,19 @@
         <top-bar class="topbar" ng-show="show_topbar()"></top-bar>
         <!-- content bar -->
         <div class="content" ng-class="{'pt-4':!is_create_note_view_open()}">
-            <notebooks-list ng-controller="notebook_controller" ng-show="show_dialog">
+            <div class="align-center flex-col h-60vh justify-center orange" ng-hide="notebook_list_ready">
+                Loading notebooks...
+            </div>
+            <notebooks-list 
+                ng-controller="notebook_controller" 
+                ng-show="show_dialog">
             </notebooks-list>
-            <notes-list ng-controller="note_controller" ng-show="show_dialog">
+            <notes-list 
+                ng-controller="note_controller" 
+                ng-show="show_dialog">
             </notes-list>
-
-            <div ng-controller="var_controller">
+            <div 
+                ng-controller="var_controller">
                 <system-var-list ng-show="show_var_list">
                 </system-var-list>
                 <!-- create-var-popup -->
@@ -58,7 +65,7 @@
             </div>
 
             <!-- create note view -->
-            <create-note-view ng-init="init()" ng-controller="create_note_controller" ng-show="show_dialog">
+            <create-note-view ng-controller="create_note_controller" ng-show="show_dialog">
             </create-note-view>
 
             <view-bin ng-controller="bin_controller" ng-show="show_dialog">
@@ -93,16 +100,16 @@
 
     <!-- passwrord popup -->
     <popup-password style="bottom: 30vh;" ng-show="show_dialog" ng-click="show_dialog=false;"
-        ng-controller="passwrord_popup_controller" ng-init="init()" class="popup">
+        ng-controller="passwrord_popup_controller"  class="popup">
     </popup-password>
 
     <!-- create-notebook-popup -->
-    <create-notebook-popup ng-init="init()" ng-controller="create_notebook_dialog_controller" style="bottom: 30vh;"
+    <create-notebook-popup  ng-controller="create_notebook_dialog_controller" style="bottom: 30vh;"
         class="popup" ng-show="show_dialog" ng-click="show_dialog=false;">
     </create-notebook-popup>
 
     <!-- more options panel for notebook-->
-    <div ng-init="init()" ng-controller="notebook_more_options_controller" class="list-more-options-container"
+    <div  ng-controller="notebook_more_options_controller" class="list-more-options-container"
         ng-show="show_dialog" ng-click="show_dialog=false;">
         <div class="chip">
             {{current_notebook.icon}} {{current_notebook.title}}
@@ -116,7 +123,7 @@
     </div>
 
     <!-- more options panel for note-->
-    <div ng-init="init()" ng-controller="note_more_options_controller" class="list-more-options-container"
+    <div  ng-controller="note_more_options_controller" class="list-more-options-container"
         ng-click="show_dialog=false;" ng-show="show_dialog">
         <div class="list-more-optionas-holder popup_style">
             <div ng-repeat="option in note_more_options" ng-click="option.action()" class="task-more-options-item">
@@ -127,7 +134,7 @@
     </div>
 
     <!-- create note menu -->
-    <div ng-init="init()" ng-controller="create_note_menu_controller" class="text-menu-container" ng-show="show_dialog"
+    <div  ng-controller="create_note_menu_controller" class="text-menu-container" ng-show="show_dialog"
         ng-click="show_dialog=false;">
         <div class="text-menu-container-child popup_style">
             <div ng-repeat="option in sub_menu"
@@ -139,7 +146,7 @@
 
 
     <!-- notebooks list for various options -->
-    <quick-notebooks class="list-more-options-container" ng-controller="quick_notebooks_controller" ng-init="init()"
+    <quick-notebooks class="list-more-options-container" ng-controller="quick_notebooks_controller" 
         ng-show="show_dialog" ng-click="show_dialog=false">
     </quick-notebooks>
 
