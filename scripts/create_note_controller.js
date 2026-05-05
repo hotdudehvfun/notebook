@@ -23,7 +23,7 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
     $scope.is_list_mode_on = false; // to check if list mode is on
     $scope.current_list_symbol = "-"; // to hold current list symbol
     $scope.menu = [];
-    $scope.note_content_placeholder = "Enter note content here...";
+    $scope.note_content_placeholder = "Write here...";
     $scope.show_create_button = true;
 
     //dialog flag
@@ -206,7 +206,7 @@ function create_note_controller($scope, $rootScope, notebook_service, shared_ser
     $scope.init_menu = () => {
         // call this function when you want to open create note popup
         $scope.menu = [{
-            text: "Format",
+            text: "Aa",
             show: true,
             action: () => {
                 console.log("edit menu clicked");

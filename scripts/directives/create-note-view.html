@@ -1,18 +1,11 @@
 <!-- controller: create note controller -->
-<div class="flex-row gap-2 justify-center">
-    <div class="align-center flex-col" ng-click="open_quick_notebooks()">
-        <span class="create_note_notebook_icon ng-binding">{{current_notebook.icon}}</span>
-        <div class="chip">
-            {{current_notebook.title}}
-        </div>
-
-    </div>
+<div class="flex-row gap-2 justify-center mt-2 ng-binding orange text-lg">
+    {{current_notebook.title}}
 </div>
-
 <!-- hide if chart dialog is opened -->
-<div ng-hide="new_chart.show">
+<div ng-hide="new_chart.show" class="flex-col gap-2 p-1.5">
     <!-- menu buttons -->
-    <div class="flex-row gap-1 w-full scroll-y mt-2 px-1">
+    <div class="flex-row gap-1 w-full scroll-y mt-1 px-1">
         <!-- create note menu -->
         <div ng-repeat="item in menu" ng-show="true" ng-class="" ng-click="item.action(item)" class="chip">
             {{item.text}}
@@ -27,9 +20,11 @@
         <!-- hide note content when chart dialog is visible-->
         <textarea
             autocomplete="off"
-            ng-model="note_content" ng-keyup="handle_keypress_note_input($event)"
-            id="note_content" 
-            class="new-task-content" placeholder={{note_content_placeholder}} autofocus>
+            ng-model="note_content" 
+            ng-keyup="handle_keypress_note_input($event)"
+            id="note_content"
+            class="new-task-content" 
+            placeholder={{note_content_placeholder}} autofocus>
         </textarea>
     </div>
 

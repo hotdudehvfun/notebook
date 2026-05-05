@@ -21,17 +21,15 @@
     <!-- development -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/custom_styles.css">
+
+    <!-- google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap"
         rel="stylesheet">
 </head>
 
-<body
-    ng-app="notebook_app" 
-    ng-controller='main_controller' 
-    class="google-sans-font">
+<body ng-app="notebook_app" ng-controller='main_controller' class="libre-baskerville-font">
     <div class="main-container">
         <!-- top bar -->
         <top-bar class="topbar" ng-show="show_topbar()"></top-bar>
@@ -40,16 +38,11 @@
             <div class="align-center flex-col h-60vh justify-center orange" ng-hide="notebook_list_ready">
                 Loading notebooks...
             </div>
-            <notebooks-list 
-                ng-controller="notebook_controller" 
-                ng-show="show_dialog">
+            <notebooks-list ng-controller="notebook_controller" ng-show="show_dialog">
             </notebooks-list>
-            <notes-list 
-                ng-controller="note_controller" 
-                ng-show="show_dialog">
+            <notes-list ng-controller="note_controller" ng-show="show_dialog">
             </notes-list>
-            <div 
-                ng-controller="var_controller">
+            <div ng-controller="var_controller">
                 <system-var-list ng-show="show_var_list">
                 </system-var-list>
                 <!-- create-var-popup -->
@@ -71,12 +64,12 @@
             <view-bin ng-controller="bin_controller" ng-show="show_dialog">
             </view-bin>
 
-           
+
 
             <!-- insert empty space at end -->
             <div class="empty-space"></div>
         </div>
-        
+
     </div>
 
 
@@ -100,17 +93,17 @@
 
     <!-- passwrord popup -->
     <popup-password style="bottom: 30vh;" ng-show="show_dialog" ng-click="show_dialog=false;"
-        ng-controller="passwrord_popup_controller"  class="popup">
+        ng-controller="passwrord_popup_controller" class="popup">
     </popup-password>
 
     <!-- create-notebook-popup -->
-    <create-notebook-popup  ng-controller="create_notebook_dialog_controller" style="bottom: 30vh;"
-        class="popup" ng-show="show_dialog" ng-click="show_dialog=false;">
+    <create-notebook-popup ng-controller="create_notebook_dialog_controller" style="bottom: 30vh;" class="popup"
+        ng-show="show_dialog" ng-click="show_dialog=false;">
     </create-notebook-popup>
 
     <!-- more options panel for notebook-->
-    <div  ng-controller="notebook_more_options_controller" class="list-more-options-container"
-        ng-show="show_dialog" ng-click="show_dialog=false;">
+    <div ng-controller="notebook_more_options_controller" class="list-more-options-container" ng-show="show_dialog"
+        ng-click="show_dialog=false;">
         <div class="chip">
             {{current_notebook.icon}} {{current_notebook.title}}
         </div>
@@ -123,8 +116,8 @@
     </div>
 
     <!-- more options panel for note-->
-    <div  ng-controller="note_more_options_controller" class="list-more-options-container"
-        ng-click="show_dialog=false;" ng-show="show_dialog">
+    <div ng-controller="note_more_options_controller" class="list-more-options-container" ng-click="show_dialog=false;"
+        ng-show="show_dialog">
         <div class="list-more-optionas-holder popup_style">
             <div ng-repeat="option in note_more_options" ng-click="option.action()" class="task-more-options-item">
                 <img ng-src="./img/icons/{{option.icon}}" />
@@ -134,7 +127,7 @@
     </div>
 
     <!-- create note menu -->
-    <div  ng-controller="create_note_menu_controller" class="text-menu-container" ng-show="show_dialog"
+    <div ng-controller="create_note_menu_controller" class="text-menu-container" ng-show="show_dialog"
         ng-click="show_dialog=false;">
         <div class="text-menu-container-child popup_style">
             <div ng-repeat="option in sub_menu"
@@ -146,7 +139,7 @@
 
 
     <!-- notebooks list for various options -->
-    <quick-notebooks class="list-more-options-container" ng-controller="quick_notebooks_controller" 
+    <quick-notebooks class="list-more-options-container" ng-controller="quick_notebooks_controller"
         ng-show="show_dialog" ng-click="show_dialog=false">
     </quick-notebooks>
 

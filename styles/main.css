@@ -5,7 +5,7 @@
     --border-color: #2997ff;
     --list-border: #d1d1d1;
     --list-bg: #222222;
-    --chip-bg: #191919;
+    --chip-bg: #151618;
     --chip2-border: #404040;
     --progress-a: #2997ff;
     --progress-b: #121212;
@@ -56,7 +56,7 @@ body {
     left: 0;
     padding: 0;
     width: 100%;
-    background-color: #1c1c1c;
+    background-color: #111214;
     color: white;
     font-size: 1rem;
     font-family: system-ui;
@@ -372,13 +372,10 @@ canvas {
 }
 
 .create-note-text {
-    color: #ccc;
+    color: #464646;
     display: flex;
-    justify-content: center
-}
-
-.create-note-text {
-    color: #464646
+    justify-content: center;
+    margin-top:1rem;
 }
 
 .create-notebook-popup {
@@ -531,11 +528,10 @@ select:focus-visible {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    border: 1px gray;
+    border: 1px solid gray;
     border-radius: 1rem;
     padding: 0.5rem 1rem;
     width: 72%;
-    border-style: dashed;
 }
 
 text.circular_bar_text {
@@ -592,6 +588,7 @@ text.circular_bar_text {
     padding: .5rem;
     color: gray;
     text-transform: capitalize;
+    font-size: .85rem;
 }
 
 .group_notebook_selected_state {
@@ -783,16 +780,16 @@ img.empty_svg {
 
 .new-task-content {
     overflow-y: auto;
-    color: var(--font-color);
-    font-size: 1.2rem;
-    font-family: monospace;
+    font-size: 1rem;
+    color: white;
     resize: none;
     height: 100%;
     width: 100%;
-    background: #0b0b0b29;
+    background: var(--chip-bg);
     padding: 12px 16px;
-    border: 1px solid #2f2f2f;
-    border-radius: 8px;
+    border: 1px solid rgb(43, 44, 48);
+    border-radius: 20px;
+    font-family: 'Libre Baskerville';
 }
 
 .new-task-content:empty:before {
@@ -844,11 +841,9 @@ img.empty_svg {
 
 .note_textarea_container {
     align-items: center;
-    height: 200px;
-    width: 95%;
-    margin: 12px 2.5%;
-    /* border: 1px solid #585858; */
-    border-radius: 0rem 2rem 2rem 2rem;
+    height: 40vh;
+    /* width: 95%; */
+    /* margin: 12px 2.5%; */
 }
 
 .notebook_age {
@@ -1721,4 +1716,13 @@ tr.simple_row.total_row {
    mask-repeat: no-repeat;
    -webkit-mask-position: center;
    mask-position: center;
+}
+
+
+
+.libre-baskerville-font {
+  font-family: "Libre Baskerville", serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
 }

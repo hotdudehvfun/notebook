@@ -255,6 +255,9 @@ h6 {
 .p-1 {
     padding: 1rem
 }
+.p-1\.5{
+    padding: 1.5rem;
+}
 
 .p-125 {
     padding: .125rem
@@ -265,11 +268,7 @@ h6 {
 }
 
 .p-2 {
-    padding: 1rem
-}
-
-.p-2 {
-    padding: 1rem
+    padding: 2rem
 }
 
 .p-bottom-1\.5 {
