@@ -4,7 +4,7 @@
     <!-- Sort notebooks -->
     <div class="relative text-left">
         <label for="sort_notebooks" class="absolute align-center flex-row gap-1 h-full w-full">
-            <div class="m-1 text-lg">Notebooks</div>
+            <div class="">Sort notebooks</div>
             <img class="" src="./img/icons/sort.svg"/>
         </label>
         <select 
@@ -27,22 +27,17 @@
     <div ng-repeat="(group, items) in grouped_notebooks">
         <div class="group_by_text" ng-show="items.length>0">{{ group }}</div>
         <ul ng-show="items.length>0" class="reset_ul notebooks">
-            <li class="notebooks_li" ng-repeat="notebook in items">
+            <li class="notebooks_li" ng-repeat="notebook in items" ng-click="open_notebook(notebook)">
                 <div class="list-panel-item">
                     <div class="list-panel-item-title">
-                        <!-- notebook icon -->
-                        <!-- <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon"> -->
                         <span class="notebook_icon_list_view">{{notebook.icon}}</span>
-                        <article ng-click="open_notebook(notebook)" class="selected clickable">{{notebook.title}}</article>
-
-                        <!-- handle click on notebook more options -->
-                        <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
-                            <!-- notes length -->
-                            <span class="list-sub-text">
-                                {{get_total_notes_len(notebook.taskArray)}}
-                            </span>
+                        <div class="flex-col gap-1">
+                            <article
+                            class="selected clickable">
+                            {{notebook.title}}
+                            </article>
+                            <span class="notes-count">{{notebook.taskArray.length}} notes</span>
                         </div>
-
                     </div>
                 </div>
             </li>
@@ -52,19 +47,19 @@
     <div ng-repeat="(month, items) in grouped_notebooks['Older']">
         <div class="group_by_text" ng-show="items.length>0">{{ month }}</div>
         <ul class="reset_ul notebooks">
-            <li class="notebooks_li" ng-repeat="notebook in items">
+            <li class="notebooks_li" ng-repeat="notebook in items" ng-click="open_notebook(notebook)" >
                 <div class="list-panel-item">
                     <div class="list-panel-item-title">
-                        <!-- notebook icon -->
-                        <!-- <img class="svg-icon" ng-src="{{get_svg_src(get_notebook_icon(notebook))}}" alt="NoteBook icon"> -->
-                         <span class="notebook_icon_list_view">{{notebook.icon}}</span>
-                        <article ng-click="open_notebook(notebook)" class="selected clickable">{{notebook.title}}</article>
-
-                        <!-- handle click on notebook more options -->
-                        <div class="flex-row" ng-click="handle_click_on_more_vert(notebook)">
-                            <!-- notes length -->
-                            <span class="list-sub-text">{{get_notes_length(notebook)}}</span>
+                        <span class="notebook_icon_list_view">{{notebook.icon}}</span>
+                        <div class="flex-col gap-1">
+                            <article
+                            ng-click="open_notebook(notebook)" 
+                            class="selected clickable">
+                            {{notebook.title}}
+                            </article>
+                            <span class="notes-count">{{notebook.taskArray.length}} notes</span>
                         </div>
+                        
                     </div>
                 </div>
             </li>
@@ -74,17 +69,8 @@
     <!-- empty space at last -->
     <div 
         ng-show="notebooks.length!=0" ng-click="open_notebook_popup('create');" class="create-note-text clickable">
-        <span>Tap here to open new notebook</span>
+        <span>Tap to create new notebook</span>
     </div>
-
-    
-
-
-
-
-
-
-
     
      
     
