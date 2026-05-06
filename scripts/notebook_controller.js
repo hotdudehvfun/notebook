@@ -4,6 +4,10 @@ function notebook_controller($scope,db_service, notebook_service, note_service, 
     $scope.show_dialog = false
     $scope.sort_notebook_selected_item = 'date'
 
+    $scope.get_live_notes_count = (notebook)=>{
+        return notebook_service.get_live_notes_count(notebook)
+    }
+
     // open notebook
     $scope.open_notebook = function (notebook) {
         try {

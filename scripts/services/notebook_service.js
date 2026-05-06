@@ -8,7 +8,7 @@ function notebook_service($timeout,note_service, db_service) {
             callback(sorted);
         });
     };
-    
+
     // get notebook age
     this.get_notebook_age = function (notebook) {
         return notebook?.dateCreated ? timeSince(notebook.dateCreated) : "Notebook is very old";
@@ -435,5 +435,16 @@ function notebook_service($timeout,note_service, db_service) {
         // console.log(sortedGrouped);
         return sortedGrouped;
     };
+
+    //notes which are not deleted
+    this.get_live_notes_count = (notebook)=>{
+        try {
+            let del_count = notebook.taskArray.filter(note => note.isDeleted === true).length
+            return notebook.taskArray.length - del_count;
+        } catch (err) {
+            console.log("Error while getting live notes")
+        }
+        return 0
+    }
 
 }

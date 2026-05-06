@@ -1,33 +1,22 @@
 <!-- notes -->
 <div ng-if="!is_notebook_locked()" ng-show="show_view==CONST.VIEW_NOTE">
-    <!-- notebook age -->
-    <div class="notebook_age">
-        ⏰&nbsp; {{notebook_age()}}
-    </div>
-    
-    <!-- clipboard -->
-    <div class="notebook_age" ng-show="!is_clipboard_empty()">
-        📋 1 note
-    </div>
-    
-    <!-- sorting mode  -->
-     <div class="notebook_age" ng-show="sorting_mode" ng-click="close_sorting_mode()">
-        🔄 Close sorting mode
-    </div>
-
     <div class="flex-row">
-        <div ng-hide="selectedListName.toLowerCase()=='system'" class="group_by_text">
+        <div class="group_by_text">
             {{get_total_notes_len(notes)}} notes
         </div>
-        <div ng-show="notebook_has_completed_tasks()" class="group_by_text">
-            {{get_completed_notes_len(notes)}} completed
+        <div class="group_by_text" ng-show="!is_clipboard_empty()">
+            &nbsp;|&nbsp;📋 1 note
+        </div>
+        <!-- sorting mode  -->
+        <div class="group_by_text" ng-show="sorting_mode" ng-click="close_sorting_mode()">
+            &nbsp;|&nbsp;🔄 Close sorting
         </div>
     </div>
 
     <!--notes inside notebook  -->
     <ul class="notes reset_ul">
-        <li ng-if="!note.isDeleted" data-index="{{$index}}" ng-repeat="note in notes">
-            <div class="task" ng-class="{'completed':note.isTaskCompleted}">
+        <li ng-if="!note.isDeleted && !note.isTaskCompleted" data-index="{{$index}}" ng-repeat="note in notes">
+            <div class="task">
                 <!-- multi select checkbox -->
                 <div class="roundedOne" ng-show="is_note_multi_select_on">
                     <label id="multi-select-{{note.id}}" class="clickable">
@@ -43,14 +32,10 @@
 
                 <!-- show sorting button -->
                 <div ng-show="sorting_mode" class="flex-col m-2">
-                    <span
-                        ng-click="sort_note(note,-1)"
-                        class="text-lg">
+                    <span ng-click="sort_note(note,-1)" class="text-lg">
                         ⬆️
                     </span>
-                    <span
-                        ng-click="sort_note(note,1)"
-                        class="text-lg">
+                    <span ng-click="sort_note(note,1)" class="text-lg">
                         ⬇️
                     </span>
                 </div>
@@ -65,6 +50,18 @@
     </ul>
 
     <!-- show completed tasks if any -->
+    <div ng-if="notebook_has_completed_tasks()" class="div-style1 flex-col mt-4 p-3/4">
+        <div class="h3">{{get_completed_notes_len(notes)}} notes done</div>
+        <ul>
+            <li ng-if="note.isTaskCompleted" data-index="{{$index}}" ng-repeat="note in notes">
+                <div class="task gray">
+                    <div class="task-content-div" ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
+                        ng-click="handle_tap_on_note(note,'note');">
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
 
 
     <!-- empty state empty list-->

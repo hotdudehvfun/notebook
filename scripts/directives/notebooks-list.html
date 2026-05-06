@@ -28,15 +28,15 @@
         <div class="group_by_text" ng-show="items.length>0">{{ group }}</div>
         <ul ng-show="items.length>0" class="reset_ul notebooks">
             <li class="notebooks_li" ng-repeat="notebook in items" ng-click="open_notebook(notebook)">
-                <div class="list-panel-item">
+                <div class="list-panel-item div-style1">
                     <div class="list-panel-item-title">
                         <span class="notebook_icon_list_view">{{notebook.icon}}</span>
                         <div class="flex-col gap-1">
                             <article
-                            class="selected clickable">
+                            class="clickable capitalize">
                             {{notebook.title}}
                             </article>
-                            <span class="notes-count">{{notebook.taskArray.length}} notes</span>
+                            <span class="notes-count">{{get_live_notes_count(notebook)}} notes</span>
                         </div>
                     </div>
                 </div>
@@ -48,16 +48,16 @@
         <div class="group_by_text" ng-show="items.length>0">{{ month }}</div>
         <ul class="reset_ul notebooks">
             <li class="notebooks_li" ng-repeat="notebook in items" ng-click="open_notebook(notebook)" >
-                <div class="list-panel-item">
+                <div class="list-panel-item div-style1">
                     <div class="list-panel-item-title">
                         <span class="notebook_icon_list_view">{{notebook.icon}}</span>
                         <div class="flex-col gap-1">
                             <article
                             ng-click="open_notebook(notebook)" 
-                            class="selected clickable">
+                            class="clickable capitalize">
                             {{notebook.title}}
                             </article>
-                            <span class="notes-count">{{notebook.taskArray.length}} notes</span>
+                            <span class="notes-count">{{get_live_notes_count(notebook)}} notes</span>
                         </div>
                         
                     </div>

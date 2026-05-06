@@ -167,7 +167,7 @@ canvas {
 .blur_icon_btn {
     padding: 1rem;
     font-size: 1.8rem;
-    color: orange;
+    color: gray;
 }
 
 .botom_bar_title {
@@ -341,7 +341,8 @@ canvas {
     border-radius: 8px;
     height: 100%;
     width: 100%;
-    padding-top: 48px;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .create-chart-theme-wrapper {
@@ -362,10 +363,9 @@ canvas {
 }
 
 .create-note-text {
-    color: #464646;
-    display: flex;
-    justify-content: center;
     margin-top:1rem;
+    text-align: center;
+    color: gray;
 }
 
 .create-notebook-popup {
@@ -575,7 +575,7 @@ text.circular_bar_text {
 }
 
 .group_by_text {
-    padding: .5rem;
+    padding: .5rem 0rem;
     color: gray;
     text-transform: capitalize;
     font-size: .85rem;
@@ -688,9 +688,6 @@ ul.notebooks {
     flex-direction: column;
     padding: 1rem .75rem;
     width: 100%;
-    border: 1px solid rgb(72 72 72);
-    border-radius: 18px;
-    background: rgb(33 33 33);
 }
 
 .list-panel-item-title {
@@ -738,7 +735,7 @@ ul.notebooks {
     height: 100%;
     margin: 0;
     flex-direction: column;
-    padding: 1rem;
+    padding: 0px;
 }
 
 img.empty_svg {
@@ -861,7 +858,6 @@ img.empty_svg {
 
 .notebook_count {
     color: gray;
-    margin-left: .75rem;
     font-size: .85rem
 }
 
@@ -1328,12 +1324,7 @@ span.toggle_span {
     border: none
 }
 
-.task.completed {
-    text-decoration: line-through;
-    opacity: 0.4;
-    transition: 1s all;
-    text-align: right;
-}
+.task.completed {color: gray;}
 
 .task:has(table) {
     border-radius: 6px
@@ -1479,6 +1470,7 @@ span.toggle_span {
     align-items: center;
     justify-content: space-between;
     padding: 1rem;1rem:;
+    backdrop-filter: blur(16px);
 }
 
 
@@ -1722,5 +1714,11 @@ tr.simple_row.total_row {
 
 .notes-count{
     color: gray;
-    font-size: .85rem;
+    font-size: .75rem;
+}
+
+.div-style1{
+    border: 1px solid rgb(72 72 72);
+    border-radius: 18px;
+    background: rgb(33 33 33);
 }

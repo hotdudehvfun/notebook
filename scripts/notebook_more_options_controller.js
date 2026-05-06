@@ -82,7 +82,7 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
         const copied_task = $scope.copied_task;
         const menu_definitions = [
             {
-                text: notebook.is_locked ? "Unlock notebook" : "Lock notebook",
+                text: notebook.is_locked ? "Unlock" : "Lock",
                 icon: "note.lock.svg",
                 show: is_lockable,
                 action: () => set_shared("show_password_popup", true)
@@ -101,7 +101,7 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                 }
             },
             {
-                text: "Rename notebook",
+                text: "Rename",
                 icon: "notebook.rename.svg",
                 show: is_user_notebook,
                 action: () => $rootScope.$broadcast("open_notebook_popup","rename")
@@ -142,7 +142,7 @@ function notebook_more_options_controller($scope, $rootScope, shared_service, no
                 }
             },
             {
-                text: "Refresh",
+                text: "Reload",
                 icon: "notebook.refresh.svg",
                 show: true,
                 action: () => location.reload()

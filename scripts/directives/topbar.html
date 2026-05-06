@@ -5,12 +5,13 @@
         <span class="page_icon">{{pageIcon}}</span>
         <span class="capitalize text-center text-lg">{{pageTitle}}</span>
 </div>
-<div ng-click="open_sidebar(true)" class="blur_icon_btn clickable">☰</div>
+<!-- sidebar button for homepage -->
+<div ng-hide="show_view=='note'" ng-click="open_sidebar(true)" class="blur_icon_btn clickable">☰</div>
 <!-- more options button -->
 <div
     ng-show="show_view==CONST.VIEW_NOTE"
     style="right: 1rem;"
     ng-click="handle_click_on_more_vert(current_notebook)"
     class="blur_icon_btn clickable">
-    <span class="bold text-lg">📚</span>
+    <img ng-src="./img/icons/more_vert.svg" />
 </div>
