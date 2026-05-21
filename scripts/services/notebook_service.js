@@ -186,10 +186,11 @@ function notebook_service($timeout,note_service, db_service) {
     };
 
 
+    // return if 
     this.notebook_has_completed_tasks = (notebook) => {
         if (!notebook) return false
         if (notebook)
-            return notebook?.taskArray.some(note => note?.isTaskCompleted === true)
+            return notebook?.taskArray.some(note => (note?.isTaskCompleted === true && note?.isDeleted === false) )
         return false
     };
 
@@ -439,10 +440,11 @@ function notebook_service($timeout,note_service, db_service) {
     //notes which are not deleted
     this.get_live_notes_count = (notebook)=>{
         try {
+            if(!notebook.hasOwnProperty("taskArray")) return 0
             let del_count = notebook.taskArray.filter(note => note.isDeleted === true).length
             return notebook.taskArray.length - del_count;
         } catch (err) {
-            console.log("Error while getting live notes")
+            console.log("Error while getting live notes",err)
         }
         return 0
     }

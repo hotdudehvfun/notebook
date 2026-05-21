@@ -518,10 +518,11 @@ select:focus-visible {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    border: 1px solid gray;
-    border-radius: 1rem;
     padding: 0.5rem 1rem;
     width: 72%;
+    border: 1px solid rgb(72 72 72);
+    border-radius: 18px;
+    background: rgb(33 33 33);
 }
 
 text.circular_bar_text {
@@ -950,7 +951,7 @@ input[type=text] {
 }
 
 .page_icon {
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 span.lock_icon {

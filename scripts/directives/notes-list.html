@@ -49,11 +49,11 @@
         </li>
     </ul>
 
-    <!-- show completed tasks if any -->
+    <!-- show completed tasks which are not deleted if any -->
     <div ng-if="notebook_has_completed_tasks()" class="div-style1 flex-col mt-4 p-3/4">
         <div class="h3">{{get_completed_notes_len(notes)}} notes done</div>
         <ul>
-            <li ng-if="note.isTaskCompleted" data-index="{{$index}}" ng-repeat="note in notes">
+            <li ng-if="note.isTaskCompleted && !note.isDeleted" data-index="{{$index}}" ng-repeat="note in notes">
                 <div class="task gray">
                     <div class="task-content-div" ng-bind-html="parse_markdown_to_html(note.title) | sanitize"
                         ng-click="handle_tap_on_note(note,'note');">
@@ -68,9 +68,19 @@
     <!-- hide empty state if create note is open -->
     <div class="empty-notebook" ng-if="show_empty_notebook_state()">
         <div class="empty_container">
-            <span class="text-xxxl">📭</span>
-            <span class="gray">No notes</span>
-            <span class="chip orange" ng-click="open_create_note_popup()">+ Create note</span>
+            <svg 
+            style="width: 60%;height: auto;"
+            width="608" height="578" viewBox="0 0 608 578" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M272.462 0.0251096C364.093 1.24638 443.588 57.0875 505.915 124.268C565.623 188.625 619.959 271.337 604.315 357.721C589.821 437.757 502.362 475.01 434.326 519.585C384.723 552.083 331.629 571.163 272.462 575.139C207.473 579.506 137.274 584.654 87.2774 542.905C34.1173 498.514 20.9172 426.414 12.0949 357.721C1.4726 275.012 -16.3726 185.38 32.7018 117.961C87.1909 43.1028 179.881 -1.20881 272.462 0.0251096Z"
+                    fill="#363636" />
+                <path
+                    d="M275.244 377.026L429.42 222.61L405.489 198.641L251.313 353.057L275.244 377.026ZM155.125 417.128C124.443 415.592 101.585 409.139 86.5511 397.769C71.517 386.399 64 369.959 64 348.448C64 328.474 72.2074 312.264 88.6222 299.818C105.037 287.373 127.818 279.921 156.966 277.463C168.932 276.541 177.906 274.62 183.889 271.701C189.872 268.781 192.864 264.71 192.864 259.486C192.864 251.496 188.338 245.504 179.287 241.509C170.236 237.514 155.278 234.595 134.415 232.751L137.636 195.875C169.239 198.334 192.48 204.71 207.361 215.005C222.241 225.299 229.682 240.126 229.682 259.486C229.682 275.772 223.776 288.525 211.963 297.744C200.151 306.963 182.739 312.494 159.727 314.338C140.091 315.874 125.364 319.485 115.545 325.17C105.727 330.855 100.818 338.614 100.818 348.448C100.818 359.203 105.114 366.962 113.705 371.725C122.295 376.489 136.716 379.331 156.966 380.253L155.125 417.128ZM283.989 420.355L208.051 344.299L383.858 168.219C389.994 162.073 397.281 159 405.719 159C414.156 159 421.443 162.073 427.58 168.219L459.795 200.485C465.932 206.631 469 213.929 469 222.38C469 230.83 465.932 238.129 459.795 244.275L283.989 420.355ZM210.813 435.566C205.597 436.795 200.994 435.413 197.006 431.418C193.017 427.423 191.636 422.813 192.864 417.589L208.051 344.299L283.989 420.355L210.813 435.566Z"
+                    fill="#838383" />
+            </svg>
+
+            <span class="white">No notes</span>
+            <span class="orange" ng-click="open_create_note_popup()">Tap to Create note</span>
         </div>
     </div>
 

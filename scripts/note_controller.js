@@ -52,6 +52,7 @@ function note_controller($scope,$rootScope, $timeout, db_service, notebook_servi
     }
 
     //used by notes list
+    //check if notebook has completed tasks but not removed
     $scope.notebook_has_completed_tasks = () => {
         let _notebook = shared_service.get("current_notebook")
         return notebook_service.notebook_has_completed_tasks(_notebook);
